@@ -23,10 +23,11 @@ interfaces it provides to other projects.
 
 The project is prototyping. The Book contains an initial system design, structured
 anchor and authority definitions, and designs for record rendering, configuration,
-and structural checking, marked as drafts for review. The engine is not implemented yet.
+and structural checking, marked as drafts for review. The first Rust library
+reads and validates structured records and their authority relationships.
 
-These chapters describe intended behavior, not available commands. The
+Rendering and operational commands are still pending. The
 [Record Rendering](implementation-roadmaps/record-rendering.md),
 [Engine Bootstrap](implementation-roadmaps/bootstrap.md), and
 [Structural Checking](implementation-roadmaps/structural-checker.md) roadmaps are now
-in the Book as proposals for review.
+in the Book, with completion evidence and proposed work kept distinct.

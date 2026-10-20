@@ -1,10 +1,10 @@
 # Anchor Definitions
 
 **Status: draft schema for review.** This is the single proposed authoring format
-for anchors. The checker design uses it now as source data; the engine does not
-yet parse, validate, or render it. The structural checker remains scoped to layout
-and navigation. Record parsing and validation will first be exercised by the
-[rendering prototype](record-rendering.md), independently of structural checking.
+for anchors. The record library parses and validates this format; rendering is
+not implemented yet. The structural checker remains scoped to layout and
+navigation. The [rendering prototype](record-rendering.md) exercises record
+parsing and validation independently of structural checking.
 
 An anchor defines a property of the goal system, cites the authority that
 establishes it, and states criteria for verifying it. Surrounding design prose
@@ -107,8 +107,7 @@ Requirements and decisions use the [structured authority formats](authority-defi
 Their typed definitions, rather than headings or HTML targets, establish the
 identities used by `authorities`. All cited authorities of an accepted anchor
 must be accepted; an accepted decision must also cite only accepted requirements.
-The shared record index checks these relationships. This validation is designed
-but not yet implemented in the engine.
+The implemented shared record index checks these relationships.
 
 The library owns these rules. A future mdBook preprocessor consumes the same
 validated model to render anchors and links. Rendering must not define a second

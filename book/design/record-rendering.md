@@ -1,8 +1,8 @@
 # Record Rendering
 
-**Status: prototype design for review.** No renderer or engine command is
-implemented yet. This is the first planned engine increment, brought forward so
-we can read and refine structured records in this Book while preparing the checker.
+**Status: prototype in progress.** The shared record reader, inventory, and
+relationship validation are implemented. The mdBook adapter and readable HTML
+presentation are next; records still appear as TOML in the Book.
 
 Anchors, requirements, and decisions stay in their canonical TOML blocks in the
 source. In the rendered Book, they become readable sections with permalinks,
@@ -17,6 +17,12 @@ and authored verification criteria. Canonical TOML definitions are the single
 input format. The mdBook adapter renders records from that model in
 their design and authority chapters. Separate indexes, evidence pages, Rust
 source associations, and progress reporting are later work.
+
+The implemented `records` module is the reusable foundation for this path.
+The preprocessor hook itself is still pending: mdBook will invoke `anchorbook md`,
+the adapter will pass chapters to `records`, and `rendering` will produce the
+replacement content from the validated inventory. The adapter returns the
+transformed Book to mdBook for normal HTML generation.
 
 ## Components
 
@@ -36,8 +42,8 @@ Start the single Rust library/CLI package described in [Rust Engine](rust-engine
 The library owns reading, record types, validation, indexing, and presentation.
 The adapter only handles mdBook's protocol and translates chapter data. It does
 not implement another parser or reference resolver. Keep modules private until
-callers demonstrate a need for a public interface; exact API signatures remain
-an implementation choice.
+callers demonstrate a need for a public interface. The implemented record API
+and its module boundaries are documented in [Rust Engine](rust-engine.md#implemented-record-api).
 
 The input inventory is the chapters supplied by mdBook, including nested and
 unnumbered chapters with source paths. Record validation does not require the
@@ -61,9 +67,10 @@ Do not render a successful partial Book when that validation fails.
 Return typed diagnostics with a stable code, chapter path, available source
 position, explanation, and related definition location where useful. Order them
 by chapter path, source position, then code. The prototype's diagnostic families
-are `record.invalid-definition`, `record.duplicate-id`,
+are `record.invalid-input`, `record.invalid-definition`, `record.duplicate-id`,
 `record.invalid-reference`, `record.incompatible-status`, and
-`render.invalid-input`. Refine their detailed messages during implementation;
+the future adapter code `render.invalid-input`. The record input code covers
+missing or repeated chapter paths. Refine detailed messages during implementation;
 do not reuse structural-check codes for a different rule scope.
 
 These checks establish record and relationship consistency. They do not validate

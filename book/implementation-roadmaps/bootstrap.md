@@ -30,7 +30,8 @@ Each milestone enables an outcome with tasks and evidence for completion.
 The initial Book was built locally and published through GitHub Actions and
 Pages. Subsequent design, diagram, and contract changes have been checked
 locally; these later revisions have not yet been verified on GitHub. Fresh
-agent startup has not yet been tested. The engine is not implemented.
+agent startup has not yet been tested. The shared record library is implemented;
+the structural checker remains planned.
 
 ## Milestones
 
@@ -76,7 +77,7 @@ not a prerequisite for completing Bootstrap.
 <tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, five checker decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The committed draft baseline is <code>f396bcf</code>; subsequent rendering-design changes bring record parsing ahead of checker implementation. Local Book builds and record/link checks have passed. These are documentation checks, not engine verification or acceptance of the governing records.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
 <tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending review and scope agreement. The rendering prototype will establish the initial crate and parser choices; checker-specific choices remain open.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending review and scope agreement. The rendering prototype has established the initial crate and parser choices; checker-specific choices remain open.</td></tr>
 </tbody>
 </table>
 </div>

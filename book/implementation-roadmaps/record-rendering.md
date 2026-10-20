@@ -2,7 +2,7 @@
 
 **Roadmap identifier:** `record-rendering`
 
-**Status:** Proposed prototype milestones; implementation not started.
+**Status:** Milestone 1 complete locally; milestones 2 and 3 proposed.
 
 ## Goal
 
@@ -10,11 +10,11 @@ Read and review this Book's anchors, requirements, and decisions as formatted,
 linked content while keeping their structured TOML as the source. Use the
 prototype to exercise and refine the schemas during Prototyping.
 
-This is the next engine implementation increment. It can proceed alongside
+This is the first engine implementation increment. It can proceed alongside
 [Engine Bootstrap](bootstrap.md), which still prepares the Book for checker
 implementation. Prototype work does not require the whole checker design or
 bootstrap readiness exercise to be complete. The engineer has selected this
-direction; milestone details below are the proposed work agreement.
+direction and assigned milestone 1. Milestones 2 and 3 remain proposed work.
 
 ## Design basis
 
@@ -36,18 +36,33 @@ does not automatically accept its design or prove its properties.
 The rendering design, component and sequence diagrams, presentation rules,
 failure behavior, and acceptance criteria are drafted. One requirement, one
 design decision, and two anchors establish the prototype's intended behavior.
-The milestones below define the proposed implementation work, and the checker
-roadmap now builds on the shared crate this prototype will establish.
+The milestones below record implementation progress, and the checker roadmap
+builds on the shared crate established by this prototype.
 
-The Book builds locally with these drafts. The records still display as TOML;
-there is no Rust crate or record-rendering preprocessor yet. Scope review,
-toolchain and dependency selection, implementation, and verification remain.
+The Book builds locally with these drafts. The Rust library now reads and
+validates its records. Records still display as TOML; the adapter and renderer
+remain to be built. Toolchain, dependencies, and API boundaries are documented
+in [Rust Engine](../design/rust-engine.md#implemented-record-api).
+
+## Module organization follow-up
+
+Following milestone 1, the record implementation is grouped under the `records`
+capability with private model, Markdown, schema, inventory, and diagnostic modules.
+The public capability namespace is `anchor_book::records`; initial crate-root
+imports remain supported. This refactor prepares the boundary for milestone 2's
+separate rendering and mdBook adapter code. It does not implement that hook.
+
+The module refactor was verified locally before amending this milestone commit:
+independent tests and Clippy pass on Rust 1.85 and 1.90; the current-Book acceptance
+test, API documentation, formatting, and Book build/link checks pass. The refactor
+is included in this commit; push and remote verification are pending. Record
+behavior and the milestone's scope are unchanged.
 
 ## Milestones
 
 | Milestone | Outcome | Status | Depends on |
 | --- | --- | --- | --- |
-| [1](#record-rendering-1) | Engine code can read and validate the Book's records | Proposed | Current schema drafts and agreed prototype scope |
+| [1](#record-rendering-1) | Engine code can read and validate the Book's records | Complete locally | Current schema drafts and agreed prototype scope |
 | [2](#record-rendering-2) | Readers can understand and navigate the rendered records | Proposed | Milestone 1 |
 | [3](#record-rendering-3) | Local preview and CI use the same rendering path | Proposed | Milestone 2 |
 
@@ -60,40 +75,43 @@ toolchain and dependency selection, implementation, and verification remain.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">A Rust library constructs a typed record inventory and reports invalid definitions and relationships independently of rendering.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Complete — local implementation and verification</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">current schemas and agreement on prototype scope.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="#design-basis">Rendering design and governing records</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>record-rendering-1</code></td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled> Establish the single library/CLI crate. Choose and record the edition, supported Rust version, mdBook protocol version, and focused parser dependencies.</label></li><li><label><input type="checkbox" disabled> Implement Markdown block recognition with offsets, strict TOML decoding, typed records, global identity indexing, and authority-reference validation.</label></li><li><label><input type="checkbox" disabled> Return located diagnostics and derive backlinks from the same inventory.</label></li><li><label><input type="checkbox" disabled> Exercise the actual Book&#x27;s records and independent positive/negative fixtures.</label></li></ul></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled checked> Establish the single library/CLI crate. Choose and record the edition, supported Rust version, mdBook protocol version, and focused parser dependencies.</label></li><li><label><input type="checkbox" disabled checked> Implement Markdown block recognition with offsets, strict TOML decoding, typed records, global identity indexing, and authority-reference validation.</label></li><li><label><input type="checkbox" disabled checked> Return located diagnostics and derive backlinks from the same inventory.</label></li><li><label><input type="checkbox" disabled checked> Exercise the actual Book&#x27;s records and independent positive/negative fixtures.</label></li></ul></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
 <tr id="record-rendering-1-valid-inventory" class="roadmap-criterion-summary"><th scope="row">Valid inventory</th><td><p class="roadmap-condition">Read the full current inventory with expected kinds, fields, and edges; chapter order affects neither resolution nor diagnostic ordering.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for valid inventory" aria-expanded="true" aria-controls="record-rendering-1-valid-inventory-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-1-valid-inventory-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>valid-inventory</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — inventory acceptance</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Passed: the separate <code>current_book</code> acceptance test reads all chapters listed in SUMMARY and checks 24 records (11 anchors, 7 requirements, 6 decisions), their expected identities, 33 authority edges, criterion IDs, backlinks, source ranges, and chapter-order independence. Independent fixtures check every record kind and field. See the milestone evidence for the tested work and commands.</p>
 </td></tr>
 <tr id="record-rendering-1-invalid-inventory" class="roadmap-criterion-summary"><th scope="row">Invalid inventory</th><td><p class="roadmap-condition">Reject the canonical-format violations and invalid relationships specified by the anchor; literal examples are not collected.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for invalid inventory" aria-expanded="true" aria-controls="record-rendering-1-invalid-inventory-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-1-invalid-inventory-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>invalid-inventory</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/record-rendering.html#render-validated-records">render-validated-records</a> · <code>invalid-inventory</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Passed: <code>tests/records.rs</code> rejects noncanonical fences, schema violations, duplicate identities, wrong-kind, missing, invalid, ambiguous, repeated, and incompatible-status references. Literal code examples are excluded. Tests check stable diagnostics, parser causes, Unicode positions, and truncation safety. This covers record validation; it does not verify rendering or the adapter.</p>
 </td></tr>
 <tr id="record-rendering-1-independent-build" class="roadmap-criterion-summary"><th scope="row">Independent build</th><td><p class="roadmap-condition">Compile and run fixture tests with an invalid or unrendered Book; formatting, Clippy, and library tests pass.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for independent build" aria-expanded="true" aria-controls="record-rendering-1-independent-build-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-1-independent-build-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-build</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/record-rendering.html#render-validated-records">render-validated-records</a> · <code>protocol-and-independence</code> — Partial: compilation and fixture-test independence</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Passed: formatting on Rust 1.90; Clippy, independent tests, and documentation tests on Rust 1.85 and 1.90. <code>scripts/check-engine-independence.sh</code> runs a temporary source copy with no Book, then an invalid Book: independent tests pass both times, while explicit Book acceptance fails as expected. No renderer or mdBook build is invoked.</p>
 </td></tr>
 <tr id="record-rendering-1-declared-scope" class="roadmap-criterion-summary"><th scope="row">Declared scope</th><td><p class="roadmap-condition">Document available operations without claiming a structural checker or configuration reader.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for declared scope" aria-expanded="true" aria-controls="record-rendering-1-declared-scope-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-1-declared-scope-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>declared-scope</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — delivery scope</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Passed: Rust Engine and CONTRIBUTING describe the available library API and unsupported operations. Actual-process CLI tests verify help/version, exit status 2 for unsupported commands, and no misleading successful output. Configuration and structural checking are not implemented.</p>
 </td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="record-rendering-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="record-rendering-1-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="record-rendering-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — local checks passed</button></td></tr>
+<tr id="record-rendering-1-evidence" class="roadmap-criterion-details"><td colspan="2"><p><strong>Tested work:</strong> Record Rendering milestone 1 working tree based on <code>7f45b14</code>, verified 2026-10-20. Implementation, fixtures, workflow, and Book updates are included together in this milestone commit. Checks were run locally before committing; remote verification is pending.</p>
+<p><strong>Checks:</strong> <code>cargo fmt --all -- --check</code>; <code>cargo clippy --all-targets --locked -- -D warnings</code>; <code>cargo test --locked</code>; <code>cargo test --locked --test current_book -- --ignored</code>; and <code>scripts/check-engine-independence.sh</code>. Toolchain checks cover Rust 1.85.0 and 1.90.0. Independent tests include 12 record tests, 2 CLI tests, and 1 documentation example; Book acceptance is a separate test.</p>
+<p><strong>Result and supporting records:</strong> Local checks pass. Tests live in <code>tests/records.rs</code>, <code>tests/cli.rs</code>, and <code>tests/current_book.rs</code>; the isolation experiment is reproducible with the script above. The Engine workflow is configured for Rust 1.85 and stable.</p>
+<p><strong>Limitations and integration:</strong> No remote Actions result yet. The mdBook adapter, rendered records, configuration reader, and structural checker remain unimplemented. This milestone establishes the parsing and validation portion of the rendering anchors, not their complete verification or design acceptance.</p></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Complete locally on 2026-10-20. The library reads this Book and independent fixtures, rejects invalid input with located diagnostics, and builds independently of Book validity. Push and remote verification are pending.</td></tr>
 </tbody>
 </table>
 </div>
@@ -164,7 +182,7 @@ toolchain and dependency selection, implementation, and verification remain.
 <tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Record Rendering — Milestone 2.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="#design-basis">Rendering design and governing records</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>record-rendering-3</code></td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled> Configure <code>book.toml</code> and preprocessor ordering; document local setup and preview.</label></li><li><label><input type="checkbox" disabled> Add independent engine checks and record rendering to CI, preserving the existing Pages output path. Do not add a placeholder structural check.</label></li><li><label><input type="checkbox" disabled> Exercise a clean build and a live source-edit/rebuild cycle.</label></li><li><label><input type="checkbox" disabled> Record actual GitHub Actions results for the implemented revision when that revision is pushed through the engineer&#x27;s chosen contribution workflow.</label></li></ul></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled> Configure <code>book.toml</code> and preprocessor ordering; document local setup and preview.</label></li><li><label><input type="checkbox" disabled> Extend the existing engine checks with record rendering in CI, preserving the existing Pages output path. Do not add a placeholder structural check.</label></li><li><label><input type="checkbox" disabled> Exercise a clean build and a live source-edit/rebuild cycle.</label></li><li><label><input type="checkbox" disabled> Record actual GitHub Actions results for the implemented revision when that revision is pushed through the engineer&#x27;s chosen contribution workflow.</label></li></ul></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
 <tr id="record-rendering-3-local-preview" class="roadmap-criterion-summary"><th scope="row">Local preview</th><td><p class="roadmap-condition">Clean builds and live source-edit/rebuild cycles use the record adapter successfully.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for local preview" aria-expanded="true" aria-controls="record-rendering-3-local-preview-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>

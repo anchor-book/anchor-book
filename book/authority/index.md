@@ -21,5 +21,5 @@ separate claims; none follows from the record's presence.
 
 Each requirement and decision uses its single [structured definition format](../design/authority-definitions.md).
 Anchors refer to those typed record identities. Human-readable headings and links
-provide navigation; they do not define authority. Engine validation is still to
-be implemented.
+provide navigation; they do not define authority. The record library validates
+these schemas and relationships without establishing design acceptance.

@@ -13,7 +13,7 @@ establishes a binding property, the corresponding anchor can cite it as authorit
 design draft. None is marked accepted by adding it here. Each records its
 requirements, rationale, alternatives, and reconsideration conditions.
 Each record uses the single [authority definition format](../design/authority-definitions.md).
-The engine does not validate these records yet. Links below the blocks are
+The record library validates their schema and references. Links below the blocks are
 reading aids; the anchor definitions own their authority references.
 
 <a id="decision-explicit-configuration"></a>

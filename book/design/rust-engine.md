@@ -1,11 +1,13 @@
 # Rust Engine
 
-**Status: draft for review.** These are design boundaries, not an implemented API.
+**Status: prototype implementation in progress.** The record library described
+below is implemented. Configuration, structural checking, and rendering remain
+design drafts.
 
 ## Package and adapters
 
-Start with one Cargo package containing a library and a CLI. Working names are
-package `anchor-book`, library `anchor_book`, and executable `anchorbook`.
+The repository has one Cargo package containing a library and a CLI: package
+`anchor-book`, library `anchor_book`, and executable `anchorbook`.
 Confirm registry availability before release. Multiple crates are justified only
 when actual dependency or release requirements call for them.
 
@@ -40,7 +42,40 @@ flowchart TB
 
 ## Internal boundaries
 
-Begin with ordinary private modules, exposing only the types callers need.
+Organize the library by capability from the start. Each capability exposes a
+small interface and owns private implementation modules. Keep one Cargo package
+until dependency or release requirements justify splitting it.
+
+The implemented layout is:
+
+```text
+src/
+  lib.rs                  Library entry point and initial API re-exports
+  main.rs                 CLI entry point
+  records.rs              Public record capability interface
+  records/
+    model.rs              Record types and chapter input
+    markdown.rs           Canonical block recognition
+    schema.rs             TOML decoding and schema validation
+    inventory.rs          Identity, reference resolution, and backlinks
+    diagnostics.rs        Record-specific findings and source locations
+```
+
+New work adds capability modules when implemented: `configuration`, `checking`,
+`materialization`, `contract`, and `rendering`. External protocol handling belongs
+under `adapters`, beginning with the mdBook adapter. Do not create empty modules
+or mix new capabilities into the record parser merely because it was built first.
+
+The dependency direction is from operations and adapters toward shared models
+and validation. `records` does not depend on rendering, command handling, or
+mdBook. The renderer consumes its validated inventory; the mdBook adapter
+coordinates record reading and rendering and owns protocol input/output.
+Record diagnostics remain within `records`; extract shared diagnostic primitives
+only when another implemented capability demonstrates the need.
+
+Callers can use `anchor_book::records`. The initial crate-root re-exports remain
+available. Internal record modules use their capability's interface, and their
+construction details are visible only within that capability.
 
 | Boundary | Responsibility |
 | --- | --- |
@@ -64,6 +99,61 @@ data that must survive in a returned report.
 Start with synchronous Rust and explicit inputs. Avoid global configuration,
 changing the process working directory, and a speculative plugin framework.
 Internal data structures need not become public extension interfaces.
+
+## Implemented record API
+
+`read_records(&[Chapter<'_>]) -> Result<RecordInventory, RecordErrors>` is the
+first library operation. `Chapter` borrows a path and source string; the caller
+supplies the chapter inventory. Paths must be nonempty and unique. The operation
+does not open files, load configuration, invoke mdBook, or run verification.
+
+The returned inventory owns its validated data. Its private fields prevent
+callers from bypassing validation; `get`, `records`, and `backlinks` expose read
+access. Records retain typed anchor, requirement, or decision data, definition
+and body byte ranges, and locations for authority references. A later renderer
+can replace exactly those blocks and resolve links from the same inventory.
+Backlinks contain sorted, unique IDs of direct referring records.
+
+The internal modules separate Markdown recognition, schema decoding, record
+models, inventory resolution, and diagnostics. Raw Serde types remain private.
+Public types use standard `Path`/`PathBuf`, enums, borrowed inputs, owned results,
+and `std::error::Error`; parser-specific types are not API requirements.
+
+An invalid inventory returns diagnostics, never a partially validated inventory.
+Each diagnostic exposes a stable code, typed problem, explanation, source
+location, related locations, and a parser cause when available. Byte ranges are
+half-open; lines and Unicode-scalar columns are one-based. Diagnostics are sorted
+by path, byte position, code, and message. Record iteration is sorted by identity.
+Both orders are independent of the caller's chapter order.
+
+Invalid definitions retain their identity when it can be decoded reliably.
+References to those definitions report an invalid target, rather than a missing
+one. When a malformed definition's identity cannot be recovered, unresolved
+references report that resolution is blocked by invalid input. Duplicate
+identities never select an arbitrary winner.
+
+### Toolchain and dependencies
+
+The package uses **Rust 2024**, with **Rust 1.85** as its declared minimum.
+Local verification covers 1.85 and 1.90. The engine workflow targets 1.85 and
+stable; a remote run is still pending publication of this work.
+
+| Dependency | Purpose |
+| --- | --- |
+| `pulldown-cmark` 0.13 | Parse Markdown events and source offsets; recognize definitions without regex extraction |
+| `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
+| `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
+
+`Cargo.lock` records the exact tested dependency versions. The initial adapter
+will target the repository's pinned **mdBook 0.5.2** preprocessor protocol.
+No mdBook dependency or adapter is needed to compile or test the record library.
+Argument-parsing dependencies will be selected when operational CLI commands
+are introduced; the current binary only handles help and version.
+
+The public API and schema version 1 remain prototypes. The crate has
+`publish = false` until release metadata, packaging, and compatibility policy
+are ready. Authority schema changes must update the design, records, and tests
+together; schema flexibility does not mean accepting alternate current formats.
 
 ## Results and errors
 
@@ -107,10 +197,10 @@ Use standard traits where they have useful semantics; do not add traits or
 generic parameters merely to anticipate future integrations. These choices
 follow the [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/checklist.html).
 
-Before the first implementation is accepted:
+For each implementation increment:
 
-- Select the Rust edition and declare the minimum supported Rust version after
-  checking dependency requirements; exercise that version and stable Rust in CI.
+- Keep the declared minimum Rust version compatible with dependencies; exercise
+  that version and stable Rust in CI.
 - Choose focused dependencies for TOML, argument parsing, Markdown parsing, and
   the mdBook protocol; add navigation-reader dependencies when checking is built.
   Keep dependency choices and versions explicit in the implementation review.
@@ -131,8 +221,9 @@ policy are part of release readiness.
 
 ## Choices still open
 
-The initial implementation review must settle dependency versions, supported
-mdBook versions, Rust version support, and exact public API shapes. The first
+The record library establishes the initial toolchain and parser choices. Adapter
+implementation will settle the protocol-facing API; structural checking will
+settle configuration and navigation-reader dependencies and APIs. The first
 checker does not need an asynchronous runtime, dynamic rule registration, or
 test-verifier execution APIs. Those require concrete workflows before design.
 

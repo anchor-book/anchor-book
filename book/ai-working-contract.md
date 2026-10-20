@@ -144,9 +144,10 @@ for authored anchors; do not introduce alternate markers, field aliases, or
 prose-based extraction conventions. Use the corresponding [structured authority
 formats](design/authority-definitions.md) for requirements and design decisions.
 References must name a record of the required kind; headings and ordinary links
-do not supply authority identity. The schemas are review drafts and their engine
-enforcement is not implemented. Keep draft acceptance, implementation progress,
-and executed verification evidence distinct.
+do not supply authority identity. The schemas remain review drafts; the shared
+record library now enforces their current format and relationship rules. Keep
+draft acceptance, implementation progress, and executed verification evidence
+distinct.
 
 The authority model is still evolving. During design work, propose changes to
 its fields and relationships when needed, and reconcile the schema, affected
@@ -165,13 +166,15 @@ and their results. Missing, skipped, stale, or inconclusive evidence is not a pa
 
 ## Work in this repository
 
-The engine is not implemented yet. Design chapters are review drafts. Do not run
-the proposed `anchorbook` commands or imply that they are available. The current
-Book build and preview instructions are in `CONTRIBUTING.md` at the repository root.
+The record library is implemented; operational commands and rendering remain
+planned. The binary supports only help and version. Do not run proposed commands
+such as `anchorbook check`, `md`, or `contract` as if they are available.
+`CONTRIBUTING.md` at the repository root documents engine tests, the separate
+current-Book acceptance test, and Book build and preview instructions.
 
 Edit Book sources under `book/`; generated output belongs in `target/anchorbook/`.
-For Book changes, build the Book and check affected links and diagrams. Once
-engine code exists, use checks appropriate to the change and the agreed
+For Book changes, build the Book and check affected links and diagrams. For
+engine changes, use checks appropriate to the change and the agreed
 completion criteria. Report validation limits explicitly.
 
 This is a public repository. Keep private reference material, credentials,

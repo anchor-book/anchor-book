@@ -1,0 +1,35 @@
+name: Engine
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Rust ${{ matrix.toolchain }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        toolchain: ["1.85.0", stable]
+    env:
+      RUSTUP_TOOLCHAIN: ${{ matrix.toolchain }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component clippy,rustfmt
+      - name: Formatting
+        if: matrix.toolchain == 'stable'
+        run: cargo fmt --all --check
+      - name: Lints
+        run: cargo clippy --all-targets --locked -- -D warnings
+      - name: Independent engine tests
+        run: cargo test --locked
+      - name: Current Book acceptance
+        run: cargo test --locked --test current_book -- --ignored
+      - name: Absent and invalid Book experiments
+        run: scripts/check-engine-independence.sh

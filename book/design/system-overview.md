@@ -1,7 +1,8 @@
 # System Overview
 
 **Status: draft for review.** This describes the intended system. The repository
-currently has a rendered Book; the engine is not implemented.
+currently has a rendered Book and a shared Rust record library. Operational
+commands and record rendering remain to be implemented.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.

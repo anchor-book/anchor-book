@@ -15,7 +15,7 @@ acceptance or implementation. Their source describes the product need; links to
 anchors identify the properties intended to satisfy it.
 
 Each record uses the single [authority definition format](../design/authority-definitions.md).
-The engine does not validate these records yet. Links below the blocks are
+The record library validates their schema and references. Links below the blocks are
 reading aids; the anchor definitions own their authority references.
 
 <a id="requirement-configured-structure"></a>

@@ -164,10 +164,9 @@ planned milestone alone does not establish completion.
 
 ## Current roadmaps
 
-- [Record Rendering](record-rendering.md) has a drafted design and proposed
-  milestones. It is the next implementation increment:
-  read and validate the structured records, render them in their chapters, and
-  connect that path to local preview and CI.
+- [Record Rendering](record-rendering.md) has completed its record-library
+  milestone locally. Next are readable records in their chapters, followed by
+  local-preview and CI rendering integration.
 - [Engine Bootstrap](bootstrap.md) is in progress. The design, authority, anchors,
   working contract, and checker roadmap are drafted. Review, remaining technical
   choices, and fresh-agent readiness checks are still outstanding. That
@@ -182,6 +181,6 @@ The checker extends the crate established by rendering; it does not require a
 rendered Book to run. Roadmap and milestone identifiers remain unchanged.
 
 Completed drafting tasks are recorded separately from milestone completion.
-Implementation milestone details remain proposals for review. Later capabilities need their relevant design
+Unassigned implementation milestones remain proposals for review. Later capabilities need their relevant design
 and detailed work agreed before implementation begins. The Book owns these
 roadmaps now; engine automation is not a prerequisite for maintaining them.
