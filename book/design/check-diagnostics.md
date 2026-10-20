@@ -231,3 +231,74 @@ findings and the operational error, go to stderr as one coherent report.
 Do not split a single report across streams. All essential information must be
 readable without color, terminal control sequences, or an interactive prompt.
 Help is guidance, not an automatic repair or additional authorization.
+
+## Anchors
+
+These draft [structured definitions](anchor-definitions.md) govern the report
+behavior above. Implementation and verification evidence are pending.
+
+<a id="check-truthful-results"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-truthful-results"
+title = "Results distinguish conformance, failure, and incomplete evaluation"
+status = "draft"
+property = '''
+A pass requires every required check in the declared scope to have passed.
+Known structural violations produce failure, with dependent checks explicitly
+blocked. Invalid input or operational errors produce incomplete evaluation,
+even when structural findings have already been collected; those findings
+remain available as partial results. The report identifies evaluated scope
+without claiming anchor verification, implementation, or roadmap completion.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-truthful-results" },
+  { kind = "decision", id = "decision-typed-check-results" },
+]
+
+[[criteria]]
+id = "outcomes-and-precedence"
+statement = "Verify CLI exits 0, 1, and 2 for passing, structural-failure, and incomplete cases; mixed violations and operational failure return 2 and retain explicitly partial findings."
+
+[[criteria]]
+id = "blocked-evaluation"
+statement = "Missing prerequisites yield root-cause findings and blocked dependent checks without cascaded invented defects; an empty findings list with incomplete evaluation never passes."
+
+[[criteria]]
+id = "report-scope"
+statement = "Assert evaluated and blocked groups and limits of the passing claim. Completed reports appear on stdout and incomplete reports with partial findings appear together on stderr."
+```
+
+<a id="check-actionable-diagnostics"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-actionable-diagnostics"
+title = "Diagnostics support scoped repairs"
+status = "draft"
+property = '''
+Each diagnostic supplies a stable code, kind, severity, relevant locations,
+expected and observed conditions, and useful next-action guidance as defined
+in this chapter. Reports have deterministic ordering and remain understandable
+without color or interactive prompts. Guidance preserves uncertainty about
+project intent and does not authorize edits or recommend weakening obligations.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-repair-feedback" },
+  { kind = "decision", id = "decision-separate-check-and-repair" },
+  { kind = "decision", id = "decision-typed-check-results" },
+]
+
+[[criteria]]
+id = "diagnostic-content"
+statement = "Assert the documented fields and location accuracy for missing chapters, misplaced roles, renderer drift, and invalid input; unavailable observations or source positions are not invented."
+
+[[criteria]]
+id = "stable-presentation"
+statement = "Repeat checks with filesystem enumeration order varied and terminal styling disabled; diagnostic ordering and essential information remain consistent."
+
+[[criteria]]
+id = "agent-repair"
+statement = "Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance."
+```

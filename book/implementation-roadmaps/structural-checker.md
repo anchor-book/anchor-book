@@ -32,6 +32,28 @@ The design is defined in:
 The roadmap sequences that design without maintaining a second configuration
 schema or rule specification.
 
+## Authority and anchors
+
+The initial [requirements](../authority/requirements.md#initial-checker-requirements),
+[design decisions](../authority/design-decisions.md#initial-checker-decisions),
+and anchors below are drafts for review. Their links establish traceability,
+not acceptance or implementation evidence. Each anchor carries its governing
+authority and verification criteria in the [structured format](../design/anchor-definitions.md).
+
+| Milestone | Relevant anchors |
+| --- | --- |
+| [1](#structural-checking-1) | [Book selection](../design/configuration.md#check-book-selection), [configuration validity](../design/configuration.md#check-configuration-validity), [shared typed results](../design/rust-engine.md#check-shared-typed-results), [independent build](../design/system-overview.md#check-independent-build) |
+| [2](#structural-checking-2) | [Observation-only checking](../design/structural-checking.md#check-observation-only), [navigation conformance](../design/structural-checking.md#check-navigation-conformance), [renderer alignment](../design/structural-checking.md#check-renderer-alignment), [shared typed results](../design/rust-engine.md#check-shared-typed-results), [truthful results](../design/check-diagnostics.md#check-truthful-results), [actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) |
+| [3](#structural-checking-3) | [Independent build](../design/system-overview.md#check-independent-build), [truthful results](../design/check-diagnostics.md#check-truthful-results), [observation-only checking](../design/structural-checking.md#check-observation-only) |
+| [4](#structural-checking-4) | [Actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics), [truthful results](../design/check-diagnostics.md#check-truthful-results), [observation-only checking](../design/structural-checking.md#check-observation-only) |
+
+Some criteria span milestones. Completing one milestone does not establish every
+criterion of an associated anchor. Parsing anchor definitions, resolving their
+authority automatically, and aggregating evidence are later engine work, not
+additional requirements for the first layout and navigation checker.
+
+## Milestones
+
 | Milestone | Outcome | Status | Depends on |
 | --- | --- | --- | --- |
 | [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap complete |
@@ -57,6 +79,8 @@ invalid inputs independently of rendering or creating Book files.
 
 - Establish the library/CLI Cargo package and agreed Rust/dependency versions.
 - Implement typed configuration parsing, validation, and path resolution.
+- Validate and expose the configured project phase without changing structural
+  rules or claiming automated design-readiness or completion checks.
 - Add the real configuration for this repository once the reader works.
 - Exercise other layouts, invocation directories, and invalid inputs.
 

@@ -13,6 +13,9 @@ The proposed configuration for this repository is:
 ```toml
 schema-version = 1
 
+[project]
+phase = "prototyping"
+
 [book]
 source = "book"
 output = "target/anchorbook"
@@ -31,6 +34,36 @@ The three section roles are the initial required set. Each maps to a distinct
 chapter at the top level of `SUMMARY.md`. The display title can differ.
 Later schemas can add more detailed roles and policies; the initial mapping
 does not establish semantic validity of requirements, decisions, or anchors.
+
+## Project phase
+
+`[project].phase` selects the working expectations described in the
+[AI Working Contract](../ai-working-contract.md#work-in-the-projects-phase).
+It belongs in `anchorbook.toml`, alongside the project's Book configuration;
+mdBook's `book.toml` only configures rendering.
+
+The field is required and accepts exactly one of these strings:
+
+| Value | Meaning |
+| --- | --- |
+| `"prototyping"` | Explore design and implementation through assigned experiments; draft governing records are allowed. |
+| `"building"` | Implement assigned roadmap work against accepted governing design and authority. |
+| `"complete"` | Declare the defined goal system complete for a recorded scope and revision, supported by completion and verification evidence. |
+
+Reject missing, unknown, or non-string values; do not silently choose a phase.
+This repository is currently prototyping. Until the reader exists and this
+configuration is added, the working contract records that bootstrap state.
+
+The initial configuration reader validates and exposes the phase as data. All
+three phases use the same initial structural rules: prototyping does not disable
+layout checks, and a structural pass in Complete does not establish implementation
+or verification. Automated enforcement of design readiness and completion is
+later work. The phase value expresses the chosen workflow; it is not evidence.
+
+The engineer directs transitions, with their scope and basis recorded in the
+roadmap. Later development can begin a new iteration while preserving the prior
+completed baseline. A scoped experiment alongside accepted work is described in
+its roadmap and assignment; no per-capability override syntax is introduced here.
 
 ## Paths
 
@@ -78,3 +111,66 @@ unrelated configuration. The renderer continues to consume ordinary
 Separately located mdBook configuration, optional profiles, extensions, and
 cross-Book dependencies remain future schema work. They do not make the
 initial required roles optional.
+
+## Anchors
+
+These draft [structured definitions](anchor-definitions.md) express the properties
+above. Verification criteria are planned; implementation and evidence are pending.
+
+<a id="check-book-selection"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-book-selection"
+title = "The explicit configuration selects the Book"
+status = "draft"
+property = '''
+For the same explicit configuration file and filesystem state, checking selects
+the same Book and resolves the same source, output, and section roles regardless
+of the caller's working directory. Directory names and display titles do not
+determine section roles.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-explicit-configuration" },
+]
+
+[[criteria]]
+id = "invocation-directory"
+statement = "Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings."
+
+[[criteria]]
+id = "alternative-layout"
+statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
+```
+
+<a id="check-configuration-validity"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-configuration-validity"
+title = "Only valid configuration reaches structural evaluation"
+status = "draft"
+property = '''
+Structural evaluation uses validated configuration with the required schema
+fields and distinct section mappings. Paths remain within their declared roots,
+and source and output neither coincide nor contain each other, including through
+symlink aliases. Invalid or unresolvable configuration cannot produce a pass.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-explicit-configuration" },
+]
+
+[[criteria]]
+id = "schema-rejection"
+statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce specific configuration errors."
+
+[[criteria]]
+id = "path-boundaries"
+statement = "Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment."
+
+[[criteria]]
+id = "missing-paths"
+statement = "Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors."
+```

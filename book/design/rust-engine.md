@@ -118,3 +118,36 @@ The initial implementation review must settle dependency versions, supported
 mdBook versions, Rust version support, and exact public API shapes. The first
 checker does not need an asynchronous runtime, dynamic rule registration, or
 test-verifier execution APIs. Those require concrete workflows before design.
+
+## Anchor
+
+This draft uses the [structured anchor format](anchor-definitions.md).
+Implementation and verification evidence are pending.
+
+<a id="check-shared-typed-results"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-shared-typed-results"
+title = "All callers use shared rules and typed results"
+status = "draft"
+property = '''
+The Rust library owns checking behavior and exposes findings, locations, scope,
+and errors as typed data. The CLI obtains its results through that library and
+only handles invocation and presentation. Library callers can distinguish
+structural failure from incomplete evaluation without parsing display text;
+malformed user input does not cause the library to print, exit, or panic.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-shared-checker" },
+  { kind = "decision", id = "decision-typed-check-results" },
+]
+
+[[criteria]]
+id = "equivalent-callers"
+statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
+
+[[criteria]]
+id = "library-boundary"
+statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
+```

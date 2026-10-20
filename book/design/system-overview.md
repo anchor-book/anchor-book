@@ -130,3 +130,34 @@ and materialization need a shared definition of conformance. The actual Book in
 this repository is the first acceptance case, supplemented by deliberately
 broken copies and other layouts. Subsequent increments add managed content,
 contract delivery, and anchor and evidence behavior.
+
+## Anchor for developing the engine with this Book
+
+This draft uses the [structured anchor format](anchor-definitions.md).
+Implementation and verification evidence are pending.
+
+<a id="check-independent-build"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-independent-build"
+title = "A broken Book does not prevent building its checker"
+status = "draft"
+property = '''
+Engine compilation and independent fixture tests do not require a valid or
+rendered repository Book. Checking the current Book is a separate acceptance
+step before rendering, so the engine remains usable to diagnose a broken Book.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-independent-engine" },
+  { kind = "decision", id = "decision-independent-book-acceptance" },
+]
+
+[[criteria]]
+id = "broken-book"
+statement = "In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure."
+
+[[criteria]]
+id = "ci-order"
+statement = "Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it."
+```

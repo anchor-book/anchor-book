@@ -155,3 +155,96 @@ cross-Book authority, and evidence applicability will extend the common model.
 Their findings must still identify what was evaluated. Running project verifiers
 and aggregating their completed evidence remain separate responsibilities;
 expanding `check` must not introduce a recursive dependency on its own test run.
+
+## Anchors
+
+These draft [structured definitions](anchor-definitions.md) link the initial
+rules to authority. Implementation and verification evidence are pending.
+
+<a id="check-observation-only"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-observation-only"
+title = "Checking only observes the project"
+status = "draft"
+property = '''
+A check leaves project content and directory entries unchanged on success,
+structural failure, and incomplete evaluation. It does not execute subprocesses,
+configured preprocessors, project tests, or verifiers, fetch dependencies, or
+render the Book. An agent's repair is a separate action.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-observation-only" },
+  { kind = "decision", id = "decision-separate-check-and-repair" },
+]
+
+[[criteria]]
+id = "file-preservation"
+statement = "Compare project file contents and directory entries before and after passing, failing, and incomplete library and CLI checks, including missing source and output; they remain unchanged."
+
+[[criteria]]
+id = "no-execution"
+statement = "Use fixtures with configured execution traps and run with subprocess and network activity denied or observed; checking neither attempts those operations nor requires generated Book output."
+```
+
+<a id="check-navigation-conformance"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-navigation-conformance"
+title = "Navigation determines chapter and role conformance"
+status = "draft"
+property = '''
+A structural pass requires an existing source directory, supported readable
+SUMMARY.md navigation, existing local chapter files contained in the source,
+and distinct top-level linked chapters for all configured required roles.
+Numbered, unnumbered, and nested chapter targets are checked. Part headings,
+separators, draft entries without targets, and external destinations do not
+satisfy required local roles. Unsupported navigation cannot be treated as valid.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-mdbook-structure" },
+]
+
+[[criteria]]
+id = "chapter-inventory"
+statement = "Independently enumerate expected targets in supported summary fixtures; detect missing files, non-file targets, and source escapes at numbered, unnumbered, and nested locations."
+
+[[criteria]]
+id = "required-roles"
+statement = "Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link; only distinct configured top-level local chapters satisfy the roles."
+
+[[criteria]]
+id = "grammar-boundary"
+statement = "Document the supported mdBook grammar and version; supported targetless drafts outside required roles remain valid, external links are not fetched, and malformed or unsupported navigation yields incomplete evaluation."
+```
+
+<a id="check-renderer-alignment"></a>
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-renderer-alignment"
+title = "Renderer paths agree with the intended Book layout"
+status = "draft"
+property = '''
+A structural pass requires adjacent book.toml settings, including the supported
+mdBook version's defaults, to resolve to the configured source and output.
+Comparison uses resolved locations rather than literal path spelling.
+Drift is reported without changing either configuration. The claim covers
+file-based settings, not environment or command-line overrides.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-mdbook-structure" },
+]
+
+[[criteria]]
+id = "resolved-comparison"
+statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations; source or output drift yields a specific finding."
+
+[[criteria]]
+id = "renderer-input"
+statement = "A missing book.toml is a structural violation; malformed or unreadable renderer configuration prevents a pass. Verify neither configuration is changed."
+```

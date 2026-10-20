@@ -66,7 +66,10 @@ has agreed on its scope.
 Unresolved choices that affect implementation are resolved or explicitly deferred
 outside that scope.
 
-**Completion record:** Pending.
+**Completion record:** Pending. Initial requirements, decisions, and structured
+checker anchors are drafted and [mapped to implementation work](structural-checker.md#authority-and-anchors).
+They still need review. Dependencies, supported tool versions, and remaining API
+choices are not settled; this milestone is not complete.
 
 <a id="engine-bootstrap-2"></a>
 
@@ -105,9 +108,11 @@ When Bootstrap is complete, the engineer can assign work from
 check, repair, and recheck loop. Bootstrap completion does not itself assign
 or start that implementation.
 
-The next design work here is defining the initial anchors for the current
-designs, grounded in requirements and design decisions. Defining those properties
-does not require an implemented anchor parser or cross-Book authority.
+The initial anchors are now drafted alongside the checker designs, grounded in
+requirements and design decisions. Review their properties and criteria together
+with the [canonical definition format](../design/anchor-definitions.md). Defining
+those properties does not require an implemented anchor parser or cross-Book
+authority.
 
 ## Scope changes and reserved identifiers
 

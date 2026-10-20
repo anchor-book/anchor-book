@@ -13,7 +13,14 @@ been agreed.
 | [System Overview](system-overview.md) | Components, Book concepts, operations, and how the engine will develop using its own Book |
 | [Rust Engine](rust-engine.md) | Library and CLI boundaries, data and errors, and Rust development conventions |
 | [Configuration](configuration.md) | Mapping a project's layout into Book roles |
+| [Anchor Definitions](anchor-definitions.md) | One structured authoring format, authority references, and verification criteria |
+| [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
 | [Structural Checking](structural-checking.md) | First capability, execution flow, findings, and acceptance cases |
 
 [Design Proposals](proposals/index.md) provides a place to discuss changes to
 that goal state. Proposed content is distinguished from the accepted design.
+
+The checker chapters now contain initial anchor definitions in the canonical
+block format described above. They are drafts for review, grounded in the draft
+requirements and decisions under Authority. None has implementation or executed
+verification evidence yet.

@@ -55,6 +55,42 @@ the process below. The engineer's agreement makes that proposal the basis for
 implementation. Do not represent a draft roadmap as agreed or a written design
 as implemented.
 
+## Work in the project's phase
+
+The project phase sets the working expectations for the current development
+iteration. Read it from `[project].phase` in `anchorbook.toml` once configuration
+is in use. During this repository's bootstrap, before that file exists, the
+current phase is **Prototyping**. Move this declaration into configuration when
+the reader is available; do not maintain two independent phase settings.
+
+All phases use the same cycle: **design, agree on an implementation roadmap,
+build and verify, reconcile what was learned, and repeat**. Phase, record
+acceptance, milestone progress, and verification evidence describe different
+things. One does not automatically establish another.
+
+| Phase | Working expectations |
+| --- | --- |
+| **Prototyping** | Draft designs can guide assigned experiments. Iterate on design, schemas, roadmaps, and implementation together. Roadmaps may be short and provisional, but identify the experimental scope, intended learning or outcome, and how it will be assessed. Record what worked, what changed, and what remains unresolved. |
+| **Building** | Implement roadmap work against accepted design. Before starting an assigned chunk, its governing design, requirements, decisions, and anchors must be accepted. Draft proposals for later work can remain in the Book. Reconcile and obtain agreement on changes to the governing design before implementing those changes. |
+| **Complete** | The defined goal system for a recorded scope and revision is implemented and its verification criteria are satisfied by evidence. Preserve that completed baseline. Further development starts another iteration in Prototyping or Building, according to the work needed. |
+
+Prototyping permits experimentation with unsettled design; it does not waive the
+current record format, reference validity, assigned scope, or truthful reporting.
+An experiment succeeding does not automatically accept its design, verify every
+associated anchor, or complete a milestone.
+
+The engineer directs phase transitions. Do not change the phase merely to bypass
+an unmet prerequisite. Entering Building does not automatically accept draft
+records. Before recording Complete, identify the scope, revision, completed work,
+and verification evidence in the roadmap completion records. A configuration
+value or structural check alone cannot establish completion.
+
+A new capability can be prototyped alongside an accepted system. Make that
+experimental scope explicit in the agreed roadmap and assignment, preserving
+the accepted baseline and its obligations. Do not loosen expectations for
+unrelated work by changing the entire project's phase. Per-capability phase
+configuration is not defined yet.
+
 ## Create and maintain implementation roadmaps
 
 Give each roadmap a simple name and an explicit goal. Start from the intended
@@ -94,8 +130,20 @@ commands or prompt templates may be added later.
 Design describes the intended system as currently understood. Requirements and
 design decisions supply authority. Anchors express named properties grounded in
 at least one authority and connect those properties to verification criteria.
-Anchor syntax and enforcement are still being designed; do not invent a working
-engine or accepted schema.
+Use the single [structured anchor definition format](design/anchor-definitions.md)
+for authored anchors; do not introduce alternate markers, field aliases, or
+prose-based extraction conventions. Use the corresponding [structured authority
+formats](design/authority-definitions.md) for requirements and design decisions.
+References must name a record of the required kind; headings and ordinary links
+do not supply authority identity. The schemas are review drafts and their engine
+enforcement is not implemented. Keep draft acceptance, implementation progress,
+and executed verification evidence distinct.
+
+The authority model is still evolving. During design work, propose changes to
+its fields and relationships when needed, and reconcile the schema, affected
+records, and validation expectations together. Use the current defined format
+consistently without treating its draft fields as permanently fixed. Acceptance
+of an authority record does not freeze the schema used to represent it.
 
 A design proposal identifies affected design, authorities, and anchors, including
 proposed additions or changes. After approval, reconcile those changes with the
