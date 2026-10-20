@@ -1,0 +1,19 @@
+[book]
+title = "Anchor Book"
+description = "The design and development of the anchor-book engine."
+language = "en"
+src = "md"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+no-section-label = false
+additional-css = ["theme/navigation.css"]
+git-repository-url = "https://github.com/anchor-book/anchor-book"
+edit-url-template = "https://github.com/anchor-book/anchor-book/edit/main/{path}"
+
+[output.html.fold]
+enable = true
+level = 1

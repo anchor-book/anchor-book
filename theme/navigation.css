@@ -1,0 +1,4 @@
+/* Emphasize top-level navigation while keeping child pages at normal weight. */
+.chapter > .chapter-item > .chapter-link-wrapper > a:first-child {
+    font-weight: 700;
+}
