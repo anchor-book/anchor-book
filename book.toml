@@ -2,19 +2,23 @@
 title = "Anchor Book"
 description = "The design and development of the anchor-book engine."
 language = "en"
-src = "md"
+src = "book"
 
 [build]
-build-dir = "book"
+build-dir = "target/anchorbook"
 create-missing = false
 
 [output.html]
 site-url = "/anchor-book/"
 no-section-label = false
-additional-css = ["theme/navigation.css"]
+additional-css = ["theme/navigation.css", "theme/diagrams.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 git-repository-url = "https://github.com/anchor-book/anchor-book"
 edit-url-template = "https://github.com/anchor-book/anchor-book/edit/main/{path}"
 
 [output.html.fold]
 enable = true
 level = 1
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

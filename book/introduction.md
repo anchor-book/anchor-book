@@ -21,7 +21,9 @@ interfaces it provides to other projects.
 
 ## Current state
 
-The project is bootstrapping. This Book currently establishes the initial
-structure; the engine is not implemented yet. Detailed working design and
-bootstrap planning remain outside the repository until they are ready to become
-maintained Book content.
+The project is bootstrapping. The Book now contains an initial system design
+and a design for configuration and structural checking, marked as drafts for
+review. The engine is not implemented yet.
+
+These chapters describe intended behavior, not available commands. Implementation
+roadmaps and remaining working notes will move into the Book as they are reviewed.

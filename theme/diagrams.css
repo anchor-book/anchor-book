@@ -1,0 +1,5 @@
+/* Preserve readable diagram labels in narrow book views. */
+.mermaid {
+    overflow-x: auto;
+    margin-block: 1.5em;
+}
