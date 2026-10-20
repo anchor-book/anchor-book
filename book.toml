@@ -9,6 +9,7 @@ build-dir = "book"
 create-missing = false
 
 [output.html]
+site-url = "/anchor-book/"
 no-section-label = false
 additional-css = ["theme/navigation.css"]
 git-repository-url = "https://github.com/anchor-book/anchor-book"
