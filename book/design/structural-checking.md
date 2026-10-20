@@ -7,6 +7,12 @@ and library operation are not implemented.
 The first increment covers configured layout and navigation. It supplies the
 shared basis for later initialization, adoption, and materialization.
 
+The user outcome is an agent that can iterate on a Book's structure until it
+conforms: check, understand the findings, make appropriate changes within the
+assigned scope, and recheck. Diagnostics must identify what is wrong, where it
+is, and what is expected. In the first increment, the agent performs the edits;
+the checker itself remains read-only.
+
 ## Invocation and flow
 
 Proposed invocation:
@@ -80,6 +86,10 @@ unrecognized navigation as an empty, valid Book.
 
 ## Findings and incomplete checks
 
+The [Checking Diagnostics](check-diagnostics.md) design specifies the report
+fields, diagnostic codes, expected/found descriptions, repair guidance, and
+concrete examples for failed, incomplete, and passing invocations.
+
 Each finding carries a stable rule identifier, severity, relevant location,
 explanation, and suggested next action when useful. Diagnostics should name the
 configured path and role rather than prescribe a hard-coded `book/` layout.
@@ -103,7 +113,8 @@ turn an incomplete evaluation into a pass.
 
 Operational failure takes precedence if structural violations were also found.
 The library returns typed data; only the CLI chooses exit status. Human-readable
-reports go to stdout and operational error diagnostics to stderr. A machine
+completed reports go to stdout; incomplete reports and their partial findings
+go together to stderr. A machine
 output format can be added with its own documented schema.
 
 A passing report states its limited scope. It does not establish that design
@@ -130,6 +141,8 @@ as soon as the reader is usable. Keep destructive test cases in disposable copie
 | Both passing and failing runs | Project files and directory entries remain unchanged |
 | Library and CLI on the same fixture | Equivalent findings and scope |
 | Broken current Book | Engine still compiles and independent fixture tests run |
+| Agent repairs a deliberately broken Book copy | Findings guide scoped edits; rechecking passes, and independent review confirms valid repairs and preservation of unrelated content |
+| Diagnostic report | Codes, locations, expected/found conditions, help, evaluated scope, and blocked checks match the diagnostics design; all information is readable without color |
 
 Tests must assert expected failures as well as successful self-use. Include
 navigation cases and path-resolution cases independently of the actual Book.

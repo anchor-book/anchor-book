@@ -4,32 +4,43 @@
 
 **Status:** Proposed; implementation not started.
 
-This roadmap supplies the outcome of
-[Engine Bootstrap — Milestone 3](bootstrap.md#engine-bootstrap-3).
-Governing requirements, decisions, and relevant design anchors must be recorded
-and linked here during [Engine Bootstrap — Milestone 1](bootstrap.md#engine-bootstrap-1)
-before this implementation work is ready.
+This roadmap follows [Engine Bootstrap](bootstrap.md). Bootstrap prepares the
+Book, authority, anchors, working contract, and agreed implementation scope used
+here. Link the governing records here before marking implementation ready.
 
 ## Goal
 
-A developer or agent can point the CLI at this Book's configuration and receive
-structural findings. Rust callers use the same library operation. Neither path
-renders the Book, changes files, fetches dependencies, or runs project tests.
+An agent can use the checker's feedback to bring a Book into conformance with
+its configured structure: run the check, understand the findings, make appropriate
+changes within its assignment, and recheck until the structure passes.
+
+The checker supplies information through a CLI and a reusable Rust library.
+It stays read-only: it does not render the Book, modify files, fetch dependencies,
+or run project tests. In this first increment, the agent makes the repairs.
+Later engine operations may support those changes, but are not required here.
+
+A pass must result from correcting the structure according to the intended
+configuration and rules, not from bypassing checks or weakening the requirements.
 
 The design is defined in:
 
 - [Rust Engine](../design/rust-engine.md)
 - [Configuration](../design/configuration.md)
 - [Structural Checking](../design/structural-checking.md)
+- [Checking Diagnostics](../design/check-diagnostics.md)
 
 The roadmap sequences that design without maintaining a second configuration
 schema or rule specification.
 
 | Milestone | Outcome | Status | Depends on |
 | --- | --- | --- | --- |
-| [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap — Milestone 1 |
+| [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap complete |
 | [2](#structural-checking-2) | Developers receive actionable structural findings | Proposed | [1](#structural-checking-1) |
 | [3](#structural-checking-3) | Continuous checks protect the current Book | Proposed | [2](#structural-checking-2) |
+| [4](#structural-checking-4) | An agent can repair Book structure using checker feedback | Proposed | [2](#structural-checking-2) |
+
+Milestones 3 and 4 can proceed independently after milestone 2. All four are
+required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 
 <a id="structural-checking-1"></a>
 
@@ -37,7 +48,7 @@ schema or rule specification.
 
 **Identifier:** `structural-checking-1`
 
-**Status:** Proposed. **Depends on:** [Engine Bootstrap — Milestone 1](bootstrap.md#engine-bootstrap-1).
+**Status:** Proposed. **Depends on:** [Engine Bootstrap](bootstrap.md) complete.
 
 **Outcome:** Rust code can resolve this project's Book configuration and reject
 invalid inputs independently of rendering or creating Book files.
@@ -77,7 +88,10 @@ in this Book and distinguish those findings from an incomplete evaluation.
 - Read renderer settings, navigation, and chapter metadata without executing
   preprocessors or creating missing files.
 - Evaluate the initial structural rules against those observations.
-- Expose typed findings and evaluated scope through the library and CLI.
+- Expose typed findings and evaluated scope through the library and CLI, including
+  the affected location, expected structure, and useful next action.
+- Explain missing prerequisites and incomplete evaluation so an agent knows
+  whether it needs to repair structure or resolve an input/operational problem.
 - Exercise the current Book and independently specified failure cases.
 
 **Complete when:**
@@ -87,6 +101,8 @@ in this Book and distinguish those findings from an incomplete evaluation.
   renderer drift is reported without repair.
 - Malformed, unreadable, and unsupported inputs cannot produce a clean result.
 - Library and CLI findings agree, and the CLI implements the documented statuses.
+- Diagnostic cases demonstrate the designed codes, locations, expectations,
+  repair guidance, blocked checks, report scope, and stream behavior.
 - Passing and failing runs leave file contents and directory entries unchanged.
 - The [structural-checking acceptance cases](../design/structural-checking.md#acceptance-against-this-book)
   have recorded results, including alternate layouts and failure cases.
@@ -123,6 +139,44 @@ and an acceptance check against its current Book before rendering.
 
 **Completion record:** Pending.
 
+<a id="structural-checking-4"></a>
+
+## Milestone 4. An agent can repair Book structure using checker feedback
+
+**Identifier:** `structural-checking-4`
+
+**Status:** Proposed. **Depends on:** Structural Checking — Milestone 2.
+
+**Outcome:** An agent can use findings to make scoped structural repairs and
+reach a passing check while preserving unrelated content.
+
+**Tasks:**
+
+- Prepare disposable copies of this Book with known structural defects and
+  independently specified expected findings and valid repairs.
+- Give an agent the Book, the checker, and an explicit repair assignment; have it
+  check, interpret the findings, edit the permitted files, and recheck.
+- Include missing chapters, misplaced required sections, and renderer-setting
+  drift. Exercise an invalid-input case that must be resolved before evaluation.
+- Improve unclear diagnostics or workflow guidance and repeat affected cases.
+- Record the initial defects, findings, edits, final result, and any human help.
+
+**Complete when:**
+
+- Recorded agent runs reach a passing structural check by correcting the known
+  defects according to the intended configuration and rules.
+- Review of the diff and independent expected outcomes confirms the repairs;
+  the checker agreeing with itself is not the sole evidence.
+- Unrelated content is preserved and the agent does not disable checks, remove
+  required roles, or change the intended configuration merely to get a pass.
+- Each checker invocation remains read-only; the agent's edits are identifiable
+  separately from the check operation.
+- Cases the agent cannot resolve within its scope produce an explicit explanation
+  rather than a false completion claim. Record tool versions and assistance so
+  the result does not imply that every agent will repair every Book unaided.
+
+**Completion record:** Pending.
+
 ## Updating and completing the work
 
 Use disposable copies for deliberate failures and public-safe reusable fixtures.
@@ -134,6 +188,8 @@ When all completion criteria hold, mark the milestone Complete and replace its
 pending record with the revision, checks, results, and integration context.
 Reconcile design changes before claiming completion against revised criteria.
 
-Engine Bootstrap — Milestone 3 is complete when all three milestones here are complete. That does not establish anchor semantics,
-evidence adequacy, managed writes, or completion of later bootstrap milestones.
-Materialization and contract generation remain separately agreed work.
+This roadmap is complete when all four milestones are complete: the current
+Book and independent fixtures validate the checker, CI exercises it, and recorded
+agent runs demonstrate the check, repair, and recheck loop. A successful structural
+check does not establish full anchor verification or completion of other roadmaps.
+Materialization and contract generation remain separate later work.

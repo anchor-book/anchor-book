@@ -79,6 +79,11 @@ human wording can improve without changing rule identity. A serialized report
 format would be a separately versioned interface, not an accidental dump of
 internal types.
 
+The [diagnostics design](check-diagnostics.md) defines the information carried
+by these types and its CLI presentation. Keep diagnostic code, kind, locations,
+expected/found conditions, help, and per-check outcomes available as data rather
+than requiring Rust callers to parse rendered messages.
+
 ## Rust development conventions
 
 Keep the public surface small and document its behavior, errors, and examples.

@@ -88,10 +88,11 @@ planned milestone alone does not establish completion.
 
 ## Current roadmaps
 
-- [Engine Bootstrap](bootstrap.md) aims to make the engine check and manage its
-  own Book and deliver the AI Working Contract.
-- [Structural Checking](structural-checker.md) aims to provide useful structural
-  findings through a Rust library and CLI, with continuous checks on this Book.
+- [Engine Bootstrap](bootstrap.md) prepares the Book's design, authority, anchors,
+  working contract, and agreed roadmap so an agent can use it to build the checker.
+- [Structural Checking](structural-checker.md) enables an agent to use checker
+  feedback to repair a Book's structure and recheck until it passes, supported
+  by independent engine tests and continuous checks on this Book.
 
 Both are proposals for review. Later capabilities need their relevant design
 and detailed work agreed before implementation begins. The Book owns these

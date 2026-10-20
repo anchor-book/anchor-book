@@ -9,6 +9,7 @@
   - [Rust Engine](design/rust-engine.md)
   - [Configuration](design/configuration.md)
   - [Structural Checking](design/structural-checking.md)
+    - [Checking Diagnostics](design/check-diagnostics.md)
   - [Design Proposals](design/proposals/index.md)
 - [Authority](authority/index.md)
   - [Design Decisions](authority/design-decisions.md)
