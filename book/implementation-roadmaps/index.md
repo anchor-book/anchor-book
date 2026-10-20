@@ -23,15 +23,39 @@ Group work into chunks that enable an outcome an engineer can take on with
 their agents. Call these chunks milestones. Organize around what
 becomes possible when the work is done, with tasks describing how to get there.
 
-Each chunk records:
+Each roadmap has an identifier, title, goal, and ordered milestone table. Each
+milestone records:
 
 - **Identifier:** a stable reference unique across the Book's roadmaps.
 - **Outcome:** the capability or result the work enables.
 - **Design basis:** the relevant design, governing authority, and anchors where defined.
 - **Dependencies:** prerequisites and other chunks required for this result.
 - **Tasks:** bounded work that advances the outcome.
-- **Complete when:** observable criteria that establish the outcome.
-- **Status and completion record:** current progress, followed by evidence when complete.
+- **Completion criteria:** stable criterion identifiers, observable
+  completion conditions, and anchor-criterion references with planned coverage.
+- **Evidence and completion:** results associated with those criteria, remaining
+  gaps, and the milestone completion record.
+
+Status is shown with the milestone identifier and dependencies. Completed
+preparation can be described before the evidence section, without presenting it
+as acceptance evidence. Tasks use checkboxes so completed work remains visible.
+
+Each milestone appears in one table, leading with outcome and status, followed
+by dependencies, design basis, identifier, tasks, completion criteria, progress
+where recorded, and evidence and completion record. Tasks and complete-when
+conditions remain visible. Expand anchor details and evidence to read the
+criterion identifier, anchor references, planned coverage, partial-coverage scope,
+and supporting evidence. Milestone evidence also expands within the table;
+its completion record stays visible.
+Details are included when printing and remain readable without JavaScript.
+Direct criterion links open the relevant details. Evidence stays Pending until
+results are recorded and assessed; the table does not infer success from tasks.
+
+During prototyping we maintain this structure directly in Markdown. The engine
+does not yet parse or render roadmap records. The intended structured source
+will use `anchorbook-roadmap` and `anchorbook-milestone` blocks; their exact TOML
+schemas and engine support must be designed together before migrating these
+pages. The criteria here are the working model for those records.
 
 Chunks may be decomposed into smaller outcome-based chunks when needed. Keep
 detailed tasks and evidence in one place and link to them from the parent.
@@ -55,6 +79,36 @@ when reordering work or refining titles; do not reuse a retired identifier.
 Assign a new unused number to new work. These are work references, not anchors
 that define system properties.
 
+## Anchor criteria and planned coverage
+
+Give each milestone completion criterion an identifier unique within that
+milestone. Refer to it by milestone ID and criterion ID together. Preserve both
+identifiers as titles and presentation change. Its page fragment combines them
+as `<milestone-id>-<criterion-id>`.
+
+An anchor-criterion reference contains the anchor ID and criterion ID, not a
+copied verification requirement. The anchor remains the source of that
+requirement. Each entry links to the anchor definition and names the
+criteria it addresses. Several entries can address one anchor criterion, and
+one completion criterion can address several anchor criteria.
+
+State **Full** when the planned work addresses the entire referenced criterion.
+State **Partial** with the precise portion when it addresses only part. This is
+planned coverage, not a verification result. Combining partial entries does not
+automatically establish full coverage; review their scope and evidence together.
+
+Use **None** with a short explanation when a completion condition has no anchor
+reference, such as design preparation or contributor setup. Do not invent a
+system anchor just to give every task a reference. Ordinary design references
+give context; requirements and decisions are reached through the anchors' own
+authority references.
+
+Changing a referenced anchor criterion requires reviewing the affected milestone
+scope and evidence. Evidence for an earlier design revision must not silently
+become evidence for a changed requirement. When the engine supports these
+records, identity validation and derived backlinks will make these relationships
+navigable without maintaining duplicate coverage lists.
+
 ## Recording progress
 
 Use these statuses consistently:
@@ -76,6 +130,28 @@ Keep code, tests, and corresponding Book updates together in the project's
 chosen contribution workflow. The roadmap model does not mandate direct pushes
 or pull requests. Scope expansions and changed completion criteria must be
 reconciled with the engineer, rather than silently changed to match the work done.
+
+## Evidence records
+
+Record evidence under the relevant milestone using these fields. Until results
+exist, say that no acceptance evidence is recorded rather than adding empty or
+successful-looking entries.
+
+| Field | Meaning |
+| --- | --- |
+| Completion criterion | The local completion criterion ID; include the milestone ID when referencing it elsewhere |
+| Revision | The tested code and Book revisions, identifying both if different |
+| Check or observation | What ran or was reviewed, including relevant versions and scope |
+| Result | Passed, failed, or inconclusive, with the observed result |
+| Supporting record | A test report, CI run, review, or reproducible observation record |
+| Limitations | Missing cases, partial coverage, assistance, or other limits; explicitly state none when appropriate |
+| Integration context | Branch work or integrated into main |
+
+Keep failed and inconclusive results visible. A milestone is complete only when
+its outcome and every completion criterion have supporting evidence. A task
+checkmark, a reference to an anchor, or a successful structural check cannot
+establish this. Milestone completion does not automatically mark linked anchors
+verified; their criteria may span several milestones or require other evidence.
 
 ## Keeping the agreement current
 

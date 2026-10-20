@@ -1,0 +1,39 @@
+/* Completion summaries stay compact; expanded details use the full row. */
+.roadmap-table-wrap { overflow-x: auto; margin-block: 1em; }
+table.roadmap-criteria { display: table; width: 100%; table-layout: fixed; }
+.roadmap-criteria th, .roadmap-criteria td {
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+    padding: .7em;
+}
+.roadmap-condition { margin: 0 0 .65em; }
+.roadmap-toggle {
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+.roadmap-criterion-summary .roadmap-toggle { color: var(--links); font-size: .85em; }
+.roadmap-toggle:focus-visible { outline: 2px solid var(--links); outline-offset: 3px; }
+.roadmap-criterion-details td { background: var(--bg); }
+.roadmap-criterion-details p { margin: .5em 0; }
+.roadmap-criterion-summary:target { outline: 2px solid var(--links); outline-offset: -2px; }
+.roadmap-milestone-field > td { background: var(--bg); }
+.roadmap-section th { background: var(--table-header-bg); }
+.roadmap-tasks { list-style: none; padding-left: 0; margin: 0; }
+.roadmap-tasks li + li { margin-top: .65em; }
+.roadmap-tasks input { margin-inline: 0 .3em; }
+@media (max-width: 500px) {
+    .roadmap-criteria th, .roadmap-criteria td { padding: .45em; }
+    .roadmap-criteria th { font-size: .8em; }
+}
+@media print {
+    .roadmap-criterion-details[hidden] { display: table-row; }
+    .roadmap-table-wrap { overflow: visible; }
+    .roadmap-toggle-icon { display: none; }
+}

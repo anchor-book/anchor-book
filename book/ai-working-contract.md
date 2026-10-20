@@ -111,6 +111,15 @@ anchors merely to organize the roadmap. Use the
 Propose enough task detail to make the next chunk assignable, while keeping
 later work explicitly proposed where design is still open. Review the chunks
 with the engineer and reconcile changes before treating them as agreed.
+Give completion criteria stable identifiers within their milestone. Reference
+specific anchor IDs and criterion IDs, with full or partial planned coverage;
+describe the portion for partial coverage. Keep the verification requirement in
+the anchor rather than copying it into the roadmap. Preparation and development
+conditions may have no anchor reference. Record evidence against milestone
+completion criteria using the roadmap convention, including tested revisions,
+results, supporting records, limitations, and integration context. Completing a
+milestone does not automatically verify its linked anchors.
+
 Ownership belongs with the assignment; owner fields and issue tracking are
 optional, not prerequisites for a usable roadmap.
 
