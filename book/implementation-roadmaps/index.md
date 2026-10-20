@@ -15,15 +15,67 @@ completion criteria.
 
 ## Defining the work
 
-A ready unit of work identifies:
+Give each roadmap a short, descriptive name and a goal that states what becomes
+possible when the roadmap is complete. Keep work outside that goal for a separate
+roadmap rather than extending bootstrap to cover the entire product.
 
-- the result it will produce;
-- the part of the design it advances;
-- the dependencies it requires; and
-- observable completion criteria.
+Group work into chunks that enable an outcome an engineer can take on with
+their agents. Call these chunks milestones. Organize around what
+becomes possible when the work is done, with tasks describing how to get there.
 
-The roadmap can organize these units into milestones and workstreams, showing
-which work can proceed independently and which requires earlier results.
+Each chunk records:
+
+- **Identifier:** a stable reference unique across the Book's roadmaps.
+- **Outcome:** the capability or result the work enables.
+- **Design basis:** the relevant design, governing authority, and anchors where defined.
+- **Dependencies:** prerequisites and other chunks required for this result.
+- **Tasks:** bounded work that advances the outcome.
+- **Complete when:** observable criteria that establish the outcome.
+- **Status and completion record:** current progress, followed by evidence when complete.
+
+Chunks may be decomposed into smaller outcome-based chunks when needed. Keep
+detailed tasks and evidence in one place and link to them from the parent.
+Different chunks can advance the same anchor, and one chunk can advance several
+anchors. Anchor relationships provide traceability; they do not dictate work
+boundaries.
+
+An engineer's assignment carries ownership and coordination. Owner fields and
+issue links are not required in the roadmap. Optional tracking can be added
+when useful without moving the agreed scope and completion criteria out of the Book.
+
+## Naming and references
+
+Refer to work by roadmap name and milestone number, such as **Engine Bootstrap —
+Milestone 1**. Its descriptive title states the outcome.
+
+Assign a unique roadmap identifier, such as `engine-bootstrap`, and give each
+milestone an identifier such as `engine-bootstrap-1`. Record it in the milestone
+and provide a matching link target. Preserve identifiers and milestone numbers
+when reordering work or refining titles; do not reuse a retired identifier.
+Assign a new unused number to new work. These are work references, not anchors
+that define system properties.
+
+## Recording progress
+
+Use these statuses consistently:
+
+| Status | Meaning |
+| --- | --- |
+| Proposed | Outcome and work are drafted for review |
+| Ready | Scope and criteria are agreed, and prerequisites are satisfied |
+| In progress | Assigned work has begun; remaining tasks and gaps are recorded |
+| Blocked | A stated obstacle prevents further progress on the chunk |
+| Complete | The outcome and all completion criteria have supporting evidence |
+
+Update the Book as tasks progress. Finishing a task does not automatically
+complete its chunk. When marking a chunk Complete, record the relevant revision,
+checks or observations, their results, and any limits on the claim. Identify
+whether evidence describes a branch or work integrated into main.
+
+Keep code, tests, and corresponding Book updates together in the project's
+chosen contribution workflow. The roadmap model does not mandate direct pushes
+or pull requests. Scope expansions and changed completion criteria must be
+reconciled with the engineer, rather than silently changed to match the work done.
 
 ## Keeping the agreement current
 
@@ -34,6 +86,13 @@ roadmap changes for review. The agreed roadmap remains the basis for agent work.
 Verification evidence establishes whether a capability works; agreement on a
 planned milestone alone does not establish completion.
 
-During bootstrap, the working milestone plan remains outside this repository.
-The current implementation roadmaps will move into this section when the Book
-is ready to own them.
+## Current roadmaps
+
+- [Engine Bootstrap](bootstrap.md) aims to make the engine check and manage its
+  own Book and deliver the AI Working Contract.
+- [Structural Checking](structural-checker.md) aims to provide useful structural
+  findings through a Rust library and CLI, with continuous checks on this Book.
+
+Both are proposals for review. Later capabilities need their relevant design
+and detailed work agreed before implementation begins. The Book owns these
+roadmaps now; engine automation is not a prerequisite for maintaining them.

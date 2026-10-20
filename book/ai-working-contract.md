@@ -50,10 +50,44 @@ of a roadmap does not authorize starting or expanding it. If the assigned work
 has an unresolved prerequisite, explain the gap and resolve the affected scope
 with the engineer.
 
-When relevant design is clear enough, propose implementation roadmap work with
-dependencies and observable completion criteria. The engineer's agreement makes
-that proposal the basis for implementation. Do not represent a draft roadmap
-as agreed or a written design as implemented.
+When relevant design is clear enough, propose implementation roadmap work using
+the process below. The engineer's agreement makes that proposal the basis for
+implementation. Do not represent a draft roadmap as agreed or a written design
+as implemented.
+
+## Create and maintain implementation roadmaps
+
+Give each roadmap a simple name and an explicit goal. Start from the intended
+design and identify outcomes within that goal that can be delivered as
+coherent chunks of work. Each chunk should be something an engineer can take on
+with their agents and mark complete when its outcome has been demonstrated.
+Call these chunks milestones; do not divide work solely by file,
+component, or anchor. Refer to each by roadmap name and milestone number.
+Assign a stable identifier, such as `engine-bootstrap-1`, following the Book's
+roadmap convention. Preserve it when reordering work or changing a title.
+
+For each chunk, state the outcome, relevant design and authority, dependencies,
+tasks, and observable completion criteria. Link affected anchors when they are
+defined; several anchors can relate to one chunk and vice versa. Do not invent
+anchors merely to organize the roadmap. Use the
+[roadmap structure and statuses](implementation-roadmaps/index.md) consistently.
+
+Propose enough task detail to make the next chunk assignable, while keeping
+later work explicitly proposed where design is still open. Review the chunks
+with the engineer and reconcile changes before treating them as agreed.
+Ownership belongs with the assignment; owner fields and issue tracking are
+optional, not prerequisites for a usable roadmap.
+
+As you carry out assigned tasks, update the Book with progress, remaining work,
+and evidence alongside the implementation. Mark a chunk Complete only when its
+outcome and all completion criteria hold. Record the revision, checks or
+observations, results, and whether they describe branch work or work integrated
+into main. Report gaps rather than weakening criteria to declare completion.
+
+Follow the project's chosen contribution workflow for code, tests, and Book
+updates. Roadmap work does not itself authorize pushing, merging, or changes to
+unrelated work. This process currently uses ordinary Book content; specialized
+commands or prompt templates may be added later.
 
 ## Maintain the Book's relationships
 

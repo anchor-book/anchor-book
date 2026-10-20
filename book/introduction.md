@@ -25,5 +25,7 @@ The project is bootstrapping. The Book now contains an initial system design
 and a design for configuration and structural checking, marked as drafts for
 review. The engine is not implemented yet.
 
-These chapters describe intended behavior, not available commands. Implementation
-roadmaps and remaining working notes will move into the Book as they are reviewed.
+These chapters describe intended behavior, not available commands. The
+[Engine Bootstrap](implementation-roadmaps/bootstrap.md) and
+[Structural Checking](implementation-roadmaps/structural-checker.md) roadmaps are now
+in the Book as proposals for review.

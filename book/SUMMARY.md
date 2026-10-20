@@ -14,3 +14,5 @@
   - [Design Decisions](authority/design-decisions.md)
   - [Requirements](authority/requirements.md)
 - [Implementation Roadmaps](implementation-roadmaps/index.md)
+  - [Engine Bootstrap](implementation-roadmaps/bootstrap.md)
+  - [Structural Checking](implementation-roadmaps/structural-checker.md)
