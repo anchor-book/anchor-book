@@ -6,7 +6,10 @@
 
 This roadmap follows [Engine Bootstrap](bootstrap.md). Bootstrap prepares the
 Book, authority, anchors, working contract, and agreed implementation scope used
-here. Link the governing records here before marking implementation ready.
+here. It extends the crate established in [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
+The planned delivery order brings rendering first, but checker execution never
+depends on rendered output. Review the governing records before marking this
+implementation ready.
 
 ## Goal
 
@@ -48,15 +51,15 @@ authority and verification criteria in the [structured format](../design/anchor-
 | [4](#structural-checking-4) | [Actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics), [truthful results](../design/check-diagnostics.md#check-truthful-results), [observation-only checking](../design/structural-checking.md#check-observation-only) |
 
 Some criteria span milestones. Completing one milestone does not establish every
-criterion of an associated anchor. Parsing anchor definitions, resolving their
-authority automatically, and aggregating evidence are later engine work, not
-additional requirements for the first layout and navigation checker.
+criterion of an associated anchor. Record parsing and authority resolution now
+belong to the preceding rendering prototype. They do not become additional rules
+of the initial layout/navigation check. Evidence aggregation remains later work.
 
 ## Milestones
 
 | Milestone | Outcome | Status | Depends on |
 | --- | --- | --- | --- |
-| [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap complete |
+| [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap complete and Record Rendering — Milestone 1 |
 | [2](#structural-checking-2) | Developers receive actionable structural findings | Proposed | [1](#structural-checking-1) |
 | [3](#structural-checking-3) | Continuous checks protect the current Book | Proposed | [2](#structural-checking-2) |
 | [4](#structural-checking-4) | An agent can repair Book structure using checker feedback | Proposed | [2](#structural-checking-2) |
@@ -70,14 +73,16 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 
 **Identifier:** `structural-checking-1`
 
-**Status:** Proposed. **Depends on:** [Engine Bootstrap](bootstrap.md) complete.
+**Status:** Proposed. **Depends on:** [Engine Bootstrap](bootstrap.md) complete
+and [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
 
 **Outcome:** Rust code can resolve this project's Book configuration and reject
 invalid inputs independently of rendering or creating Book files.
 
 **Tasks:**
 
-- Establish the library/CLI Cargo package and agreed Rust/dependency versions.
+- Extend the prototype's library/CLI package; confirm or update Rust/dependency
+  versions for configuration and navigation checking.
 - Implement typed configuration parsing, validation, and path resolution.
 - Validate and expose the configured project phase without changing structural
   rules or claiming automated design-readiness or completion checks.
@@ -147,7 +152,8 @@ and an acceptance check against its current Book before rendering.
 
 **Tasks:**
 
-- Add engine build/tests and supported-toolchain checks to CI.
+- Extend the independent engine and supported-toolchain checks introduced by
+  rendering with configuration and structural-rule tests.
 - Add a separate current-Book check followed by mdBook rendering.
 - Exercise successful and deliberately broken Book cases.
 - Document local commands and record CI evidence for the implemented revision.

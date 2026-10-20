@@ -3,7 +3,8 @@
 **Status: draft schema for review.** This is the single proposed authoring format
 for anchors. The checker design uses it now as source data; the engine does not
 yet parse, validate, or render it. The structural checker remains scoped to layout
-and navigation. Anchor validation will be a separate increment.
+and navigation. Record parsing and validation will first be exercised by the
+[rendering prototype](record-rendering.md), independently of structural checking.
 
 An anchor defines a property of the goal system, cites the authority that
 establishes it, and states criteria for verifying it. Surrounding design prose

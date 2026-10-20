@@ -10,6 +10,7 @@
   - [Configuration](design/configuration.md)
   - [Anchor Definitions](design/anchor-definitions.md)
   - [Authority Definitions](design/authority-definitions.md)
+  - [Record Rendering](design/record-rendering.md)
   - [Structural Checking](design/structural-checking.md)
     - [Checking Diagnostics](design/check-diagnostics.md)
   - [Design Proposals](design/proposals/index.md)
@@ -18,4 +19,5 @@
   - [Requirements](authority/requirements.md)
 - [Implementation Roadmaps](implementation-roadmaps/index.md)
   - [Engine Bootstrap](implementation-roadmaps/bootstrap.md)
+  - [Record Rendering](implementation-roadmaps/record-rendering.md)
   - [Structural Checking](implementation-roadmaps/structural-checker.md)

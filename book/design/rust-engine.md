@@ -11,8 +11,14 @@ when actual dependency or release requirements call for them.
 
 The library owns configuration resolution, the Book model, rules, findings, and
 operations. The binary handles arguments, presentation, streams, and exit status.
-A project integration test calls the library directly. The later mdBook adapter
-translates between mdBook's protocol and the shared model.
+A project integration test calls the library directly. The initial mdBook adapter
+translates between mdBook's protocol and the shared record model.
+
+[Record Rendering](record-rendering.md) is the first implementation increment.
+It establishes this package, canonical record parsing, authority resolution, and
+HTML presentation through `anchorbook md`. The configuration reader and
+`anchorbook check` follow. Compiling the crate requires neither a valid Book nor
+rendered output; this order introduces no build-time dependence on the Book.
 
 Cargo supports [library and binary targets in one package](https://doc.rust-lang.org/cargo/reference/cargo-targets.html);
 the binary uses the library's public API.
@@ -22,8 +28,10 @@ the binary uses the library's public API.
 flowchart TB
     cli["CLI: arguments and output"] --> api["Library operation API"]
     tests["Project integration tests"] --> api
-    md["Later mdBook adapter"] --> api
-    api --> load["Read and resolve configuration"]
+    md["mdBook adapter"] --> records["Read and validate typed records"]
+    api --> records
+    records --> render["Record presentation and links"]
+    api --> load["Later: read and resolve configuration"]
     load --> inspect["Inspect Book files and navigation"]
     inspect --> evaluate["Evaluate rules on observed data"]
     evaluate --> report["Typed findings and evaluation scope"]
@@ -38,8 +46,10 @@ Begin with ordinary private modules, exposing only the types callers need.
 | --- | --- |
 | Configuration | Deserialize input, validate its schema, and resolve paths and roles |
 | Book inspection | Read files and parse navigation, retaining relevant source locations |
+| Records | Read canonical blocks from supplied chapter text, decode typed records, and resolve authority relationships |
 | Rules | Evaluate observed data without further filesystem access |
 | Diagnostics | Represent findings, scope, and operational failures |
+| Presentation | Render validated records and derived relationships without changing source files |
 | Operations | Coordinate the preceding pieces for each supported operation |
 
 Keep raw deserialization types separate from validated configuration. A caller
@@ -56,6 +66,12 @@ changing the process working directory, and a speculative plugin framework.
 Internal data structures need not become public extension interfaces.
 
 ## Results and errors
+
+The first record operations accept supplied chapter text and locations, returning
+a validated inventory or located diagnostics. Rendering accepts that inventory;
+it does not re-parse definitions or independently resolve relationships. The
+mdBook adapter owns JSON serialization, stderr reporting, and protocol exit
+statuses. These do not imply the checking operation below is already implemented.
 
 A successfully completed check returns a report, even if that report contains
 structural violations. Missing required files follow the structural rules;
@@ -95,7 +111,8 @@ Before the first implementation is accepted:
 
 - Select the Rust edition and declare the minimum supported Rust version after
   checking dependency requirements; exercise that version and stable Rust in CI.
-- Choose focused dependencies for TOML, argument parsing, and navigation parsing.
+- Choose focused dependencies for TOML, argument parsing, Markdown parsing, and
+  the mdBook protocol; add navigation-reader dependencies when checking is built.
   Keep dependency choices and versions explicit in the implementation review.
 - Run formatting, Clippy, unit and integration tests, and documentation tests
   for usable public examples.

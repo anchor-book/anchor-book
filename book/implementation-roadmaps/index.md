@@ -88,12 +88,24 @@ planned milestone alone does not establish completion.
 
 ## Current roadmaps
 
-- [Engine Bootstrap](bootstrap.md) prepares the Book's design, authority, anchors,
-  working contract, and agreed roadmap so an agent can use it to build the checker.
-- [Structural Checking](structural-checker.md) enables an agent to use checker
+- [Record Rendering](record-rendering.md) has a drafted design and proposed
+  milestones. It is the next implementation increment:
+  read and validate the structured records, render them in their chapters, and
+  connect that path to local preview and CI.
+- [Engine Bootstrap](bootstrap.md) is in progress. The design, authority, anchors,
+  working contract, and checker roadmap are drafted. Review, remaining technical
+  choices, and fresh-agent readiness checks are still outstanding. That
+  preparation can proceed alongside the rendering prototype.
+- [Structural Checking](structural-checker.md) has a drafted design and proposed
+  milestones; implementation has not started. It enables an agent to use checker
   feedback to repair a Book's structure and recheck until it passes, supported
   by independent engine tests and continuous checks on this Book.
 
-Both are proposals for review. Later capabilities need their relevant design
+The planned implementation order is record rendering, then structural checking.
+The checker extends the crate established by rendering; it does not require a
+rendered Book to run. Roadmap and milestone identifiers remain unchanged.
+
+Completed drafting tasks are recorded separately from milestone completion.
+Implementation milestone details remain proposals for review. Later capabilities need their relevant design
 and detailed work agreed before implementation begins. The Book owns these
 roadmaps now; engine automation is not a prerequisite for maintaining them.

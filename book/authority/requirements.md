@@ -154,3 +154,27 @@ circular dependency that prevents diagnosing or repairing that Book.
 ```
 
 **Anchor:** [Independent engine build](../design/system-overview.md#check-independent-build).
+
+## Rendering prototype requirement
+
+<a id="requirement-readable-records"></a>
+
+### Read structured records naturally in the Book
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-readable-records"
+title = "Read structured records naturally in the Book"
+status = "draft"
+statement = '''
+Readers must be able to understand anchors, requirements, and design decisions
+as formatted content in their Book chapters and navigate their declared authority
+relationships. Structured definitions remain the source. Invalid records or
+relationships must not be hidden by rendering, and presentation must not claim
+that a property has been implemented or verified.
+'''
+source = "The prototyping goal of reviewing the Book's structured design and authority as readable, connected content while refining the model."
+```
+
+**Anchors:** [Rendered records](../design/record-rendering.md#render-records-in-context)
+and [validated inventory](../design/record-rendering.md#render-validated-records).

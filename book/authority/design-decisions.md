@@ -193,3 +193,39 @@ they must still avoid depending on results of the test run that contains them.
 ```
 
 **Anchor:** [Independent engine build](../design/system-overview.md#check-independent-build).
+
+## Rendering prototype decision
+
+<a id="decision-shared-record-rendering"></a>
+
+### Render records through a shared model and mdBook adapter
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-shared-record-rendering"
+title = "Render records through a shared model and mdBook adapter"
+status = "draft"
+choice = '''
+Bring forward the mdBook adapter as the first engine prototype. Parse canonical
+Markdown/TOML definitions into a shared Rust record inventory, validate their
+typed relationships, and render readable sections in their original chapters.
+The adapter transforms mdBook's in-memory input without editing source files.
+Derive backlinks from the same references, preserving explicit record identities.
+'''
+requirements = ["requirement-readable-records"]
+rationale = '''
+Readable records let us use and refine the schemas during prototyping. Separating
+record parsing and validation from mdBook presentation lets engine operations
+reuse the same model. Shared types prevent validation and
+presentation from developing different interpretations of the same records.
+'''
+alternatives = [
+  "Leaving the TOML visible makes design review harder and delays feedback on the record model.",
+  "Maintaining prose copies of records introduces a second source that can drift.",
+  "Parsing records only in browser JavaScript would duplicate the engine model and make readable output depend on runtime transformation.",
+]
+reconsider-when = "Prototype use reveals presentation or schema needs, or another output format needs an adapter. Preserve one source of record identity and relationships while refining the design."
+```
+
+**Anchors:** [Rendered records](../design/record-rendering.md#render-records-in-context)
+and [validated inventory](../design/record-rendering.md#render-validated-records).

@@ -3,8 +3,8 @@
 **Status: draft schema for review.** Requirements and design decisions are typed
 records, just as anchors are. The authority pages use these definitions now;
 engine parsing, reference validation, and rendering are not implemented yet.
-They belong to the later record-validation increment, not the first structural
-check of layout and navigation.
+They will first be exercised by the [record-rendering prototype](record-rendering.md).
+They are a separate scope from the structural check of layout and navigation.
 
 An authority reference identifies a record, not a heading or an arbitrary link.
 The engine can therefore establish whether the record exists, has the expected

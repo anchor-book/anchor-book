@@ -15,7 +15,8 @@ been agreed.
 | [Configuration](configuration.md) | Mapping a project's layout into Book roles |
 | [Anchor Definitions](anchor-definitions.md) | One structured authoring format, authority references, and verification criteria |
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
-| [Structural Checking](structural-checking.md) | First capability, execution flow, findings, and acceptance cases |
+| [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
+| [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
 
 [Design Proposals](proposals/index.md) provides a place to discuss changes to
 that goal state. Proposed content is distinguished from the accepted design.

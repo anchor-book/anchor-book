@@ -1,7 +1,8 @@
 # Structural Checking
 
-**Status: draft for review.** This is the selected first capability. The command
-and library operation are not implemented.
+**Status: draft for review.** This is the first layout/navigation checking
+capability, planned after the [rendering prototype](record-rendering.md). The
+command and library operation are not implemented.
 
 `check` answers whether the current Book conforms to a declared set of rules.
 The first increment covers configured layout and navigation. It supplies the
