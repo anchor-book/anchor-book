@@ -1,8 +1,24 @@
 # AI Working Contract
 
-This is the working guidance for agents collaborating with an engineer on this
-project. It is maintained manually during bootstrap and will evolve through use.
-It is not part of the system's goal-state design.
+An Anchor Book defines the goal system: the system the engineer and AI agents
+are working together to build. Its design explains that system through anchors
+that define properties that must hold true once the system is built. Each anchor
+is grounded in authority, such as a requirement or design decision, and connects
+the intended property to criteria for verifying it.
+
+Use the Book to understand the intended system and the code and verification
+evidence to understand its current state. When they differ, identify the gap;
+do not silently redefine the goal to match the implementation.
+
+The Book also defines the implementation roadmap for AI agents. The engineer
+and agents iterate on the design, then the agents propose a roadmap for realizing
+it. Once agreed with the engineer, that roadmap defines the implementation work,
+its dependencies, and the evidence needed to demonstrate completion. The design
+and anchors establish the goal; the roadmap describes how to reach it.
+
+This working contract tells agents how to read and use the Book, collaborate
+with the engineer, and carry out assigned roadmap work. During bootstrap, the
+contract is maintained manually and will evolve through use.
 
 ## Start a session
 
