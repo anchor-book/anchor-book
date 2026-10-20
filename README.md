@@ -1,7 +1,5 @@
 # AnchorBook
 
-AnchorBook is part of the Rust Strategic Projects initiative.
-
 ## License
 
 AnchorBook is dual-licensed under the [MIT license](LICENSE-MIT) or the
