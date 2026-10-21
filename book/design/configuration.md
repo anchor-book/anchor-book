@@ -117,8 +117,6 @@ initial required roles optional.
 These draft [structured definitions](anchor-definitions.md) express the properties
 above. Verification criteria are planned; implementation and evidence are pending.
 
-<a id="check-book-selection"></a>
-
 ```anchorbook-anchor
 schema-version = 1
 id = "check-book-selection"
@@ -143,8 +141,6 @@ statement = "Invoke from different working directories with arguments naming the
 id = "alternative-layout"
 statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
 ```
-
-<a id="check-configuration-validity"></a>
 
 ```anchorbook-anchor
 schema-version = 1

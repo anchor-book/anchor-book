@@ -48,6 +48,25 @@ Run the ordinary tests first to populate the dependency cache; the script is off
 or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
-The binary currently supports only `--help` and `--version`. Rendering,
-configuration, structural checking, and contract generation remain future work.
+The binary supports `anchorbook md`, `anchorbook md supports html`, help, and
+version. The adapter targets **mdBook 0.5.2** and its HTML renderer. Configuration,
+structural checking, and contract generation remain future work.
+
+The Book's preprocessor entry runs the local binary through Cargo with locked
+dependencies, after mdBook's include/link processing and before Mermaid. A first
+build may need to download Cargo dependencies. The adapter itself does not fetch
+anything or write source files. Source edits rebuild through `mdbook serve`;
+after Rust or theme changes, rebuild or restart the preview if needed.
+
+After building, check the rendered record inventory, fields, and links (including
+combined-print links) with Python 3.11 or later:
+
+```sh
+python3 scripts/check-rendered-book.py target/anchorbook
+```
+
+The generated record HTML is self-contained. The local theme supplies appearance
+and a small print helper that opens decision details for printing; it does not
+parse records. Schema examples stay literal. Field strings are escaped plain
+text with paragraph breaks; inline Markdown is not interpreted.
 The package is not publishable yet; release readiness is a separate milestone.

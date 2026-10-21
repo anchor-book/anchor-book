@@ -1,7 +1,7 @@
-//! Read and validate the canonical design records in an Anchor Book.
+//! Read, validate, and render the canonical design records in an Anchor Book.
 //!
 //! Callers supply Markdown chapters. This library performs no filesystem access,
-//! rendering, subprocess execution, or verification of the system being described.
+//! subprocess execution, or verification of the system being described.
 //! A successful inventory establishes schema and authority-reference consistency.
 //!
 //! ```
@@ -14,7 +14,9 @@
 //! # Ok::<(), anchor_book::RecordErrors>(())
 //! ```
 
+pub mod adapters;
 pub mod records;
+pub mod rendering;
 
 // Preserve the initial API while offering a capability-scoped namespace.
 pub use records::{

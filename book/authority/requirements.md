@@ -15,12 +15,8 @@ acceptance or implementation. Their source describes the product need; links to
 anchors identify the properties intended to satisfy it.
 
 Each record uses the single [authority definition format](../design/authority-definitions.md).
-The record library validates their schema and references. Links below the blocks are
-reading aids; the anchor definitions own their authority references.
-
-<a id="requirement-configured-structure"></a>
-
-### Check the project's configured Book structure
+The record library validates their schema and references. Rendered links are derived from the record inventory; the anchor definitions
+own their authority references.
 
 ```anchorbook-requirement
 schema-version = 1
@@ -38,14 +34,6 @@ layouts, including a configurable source and generated-output directory.
 '''
 ```
 
-**Anchors:** [Book selection](../design/configuration.md#check-book-selection),
-[configuration validity](../design/configuration.md#check-configuration-validity),
-[navigation conformance](../design/structural-checking.md#check-navigation-conformance),
-and [renderer alignment](../design/structural-checking.md#check-renderer-alignment).
-
-<a id="requirement-repair-feedback"></a>
-
-### Give agents enough information to repair structure
 
 ```anchorbook-requirement
 schema-version = 1
@@ -64,11 +52,6 @@ structure until it conforms.
 '''
 ```
 
-**Anchor:** [Actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics).
-
-<a id="requirement-observation-only"></a>
-
-### Preserve the project during checking
 
 ```anchorbook-requirement
 schema-version = 1
@@ -86,11 +69,6 @@ that create or manage it.
 '''
 ```
 
-**Anchor:** [Observation-only checking](../design/structural-checking.md#check-observation-only).
-
-<a id="requirement-truthful-results"></a>
-
-### Report only what was established
 
 ```anchorbook-requirement
 schema-version = 1
@@ -109,11 +87,6 @@ verification evidence, and completion claims.
 '''
 ```
 
-**Anchor:** [Truthful results and scope](../design/check-diagnostics.md#check-truthful-results).
-
-<a id="requirement-shared-checker"></a>
-
-### Provide the same checking behavior to tools and Rust callers
 
 ```anchorbook-requirement
 schema-version = 1
@@ -131,11 +104,6 @@ library usable by consuming projects.
 '''
 ```
 
-**Anchor:** [Shared typed checking](../design/rust-engine.md#check-shared-typed-results).
-
-<a id="requirement-independent-engine"></a>
-
-### Keep the engine usable when its own Book is broken
 
 ```anchorbook-requirement
 schema-version = 1
@@ -153,13 +121,8 @@ circular dependency that prevents diagnosing or repairing that Book.
 '''
 ```
 
-**Anchor:** [Independent engine build](../design/system-overview.md#check-independent-build).
 
 ## Rendering prototype requirement
-
-<a id="requirement-readable-records"></a>
-
-### Read structured records naturally in the Book
 
 ```anchorbook-requirement
 schema-version = 1
@@ -175,6 +138,3 @@ that a property has been implemented or verified.
 '''
 source = "The prototyping goal of reviewing the Book's structured design and authority as readable, connected content while refining the model."
 ```
-
-**Anchors:** [Rendered records](../design/record-rendering.md#render-records-in-context)
-and [validated inventory](../design/record-rendering.md#render-validated-records).

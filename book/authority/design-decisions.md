@@ -13,12 +13,8 @@ establishes a binding property, the corresponding anchor can cite it as authorit
 design draft. None is marked accepted by adding it here. Each records its
 requirements, rationale, alternatives, and reconsideration conditions.
 Each record uses the single [authority definition format](../design/authority-definitions.md).
-The record library validates their schema and references. Links below the blocks are
-reading aids; the anchor definitions own their authority references.
-
-<a id="decision-explicit-configuration"></a>
-
-### Select and resolve a Book through explicit configuration
+The record library validates their schema and references. Rendered links are derived from the record inventory; the anchor definitions
+own their authority references.
 
 ```anchorbook-decision
 schema-version = 1
@@ -48,12 +44,6 @@ workflow and explicit selection and containment rules.
 '''
 ```
 
-**Anchors:** [Book selection](../design/configuration.md#check-book-selection)
-and [configuration validity](../design/configuration.md#check-configuration-validity).
-
-<a id="decision-mdbook-structure"></a>
-
-### Use mdBook navigation and compare its file-based settings
 
 ```anchorbook-decision
 schema-version = 1
@@ -84,12 +74,6 @@ supported mdBook grammar changes. Parser implementation remains an open choice.
 '''
 ```
 
-**Anchors:** [Navigation conformance](../design/structural-checking.md#check-navigation-conformance)
-and [renderer alignment](../design/structural-checking.md#check-renderer-alignment).
-
-<a id="decision-separate-check-and-repair"></a>
-
-### Keep checking separate from repair
 
 ```anchorbook-decision
 schema-version = 1
@@ -119,12 +103,6 @@ That adds a separate operation; it does not implicitly make `check` mutating.
 '''
 ```
 
-**Anchors:** [Observation-only checking](../design/structural-checking.md#check-observation-only)
-and [actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics).
-
-<a id="decision-typed-check-results"></a>
-
-### Keep checking and typed results in the library
 
 ```anchorbook-decision
 schema-version = 1
@@ -157,13 +135,6 @@ versioned serialized interface. Exact Rust types remain an implementation choice
 '''
 ```
 
-**Anchors:** [Shared typed checking](../design/rust-engine.md#check-shared-typed-results),
-[truthful results](../design/check-diagnostics.md#check-truthful-results), and
-[actionable diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics).
-
-<a id="decision-independent-book-acceptance"></a>
-
-### Test the engine independently, then check its current Book
 
 ```anchorbook-decision
 schema-version = 1
@@ -192,13 +163,8 @@ they must still avoid depending on results of the test run that contains them.
 '''
 ```
 
-**Anchor:** [Independent engine build](../design/system-overview.md#check-independent-build).
 
 ## Rendering prototype decision
-
-<a id="decision-shared-record-rendering"></a>
-
-### Render records through a shared model and mdBook adapter
 
 ```anchorbook-decision
 schema-version = 1
@@ -226,6 +192,3 @@ alternatives = [
 ]
 reconsider-when = "Prototype use reveals presentation or schema needs, or another output format needs an adapter. Preserve one source of record identity and relationships while refining the design."
 ```
-
-**Anchors:** [Rendered records](../design/record-rendering.md#render-records-in-context)
-and [validated inventory](../design/record-rendering.md#render-validated-records).

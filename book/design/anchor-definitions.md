@@ -1,8 +1,8 @@
 # Anchor Definitions
 
 **Status: draft schema for review.** This is the single proposed authoring format
-for anchors. The record library parses and validates this format; rendering is
-not implemented yet. The structural checker remains scoped to layout and
+for anchors. The record library parses and validates this format, and the mdBook
+adapter renders it as readable content. The structural checker remains scoped to layout and
 navigation. The [rendering prototype](record-rendering.md) exercises record
 parsing and validation independently of structural checking.
 
@@ -109,7 +109,7 @@ identities used by `authorities`. All cited authorities of an accepted anchor
 must be accepted; an accepted decision must also cite only accepted requirements.
 The implemented shared record index checks these relationships.
 
-The library owns these rules. A future mdBook preprocessor consumes the same
+The library owns these rules. The mdBook preprocessor consumes the same
 validated model to render anchors and links. Rendering must not define a second
 interpretation of the source.
 

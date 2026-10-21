@@ -11,8 +11,8 @@ create-missing = false
 [output.html]
 site-url = "/anchor-book/"
 no-section-label = false
-additional-css = ["theme/navigation.css", "theme/diagrams.css", "theme/roadmaps.css"]
-additional-js = ["mermaid.min.js", "mermaid-init.js", "theme/roadmaps.js"]
+additional-css = ["theme/navigation.css", "theme/diagrams.css", "theme/roadmaps.css", "theme/records.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js", "theme/roadmaps.js", "theme/records.js"]
 git-repository-url = "https://github.com/anchor-book/anchor-book"
 edit-url-template = "https://github.com/anchor-book/anchor-book/edit/main/{path}"
 
@@ -22,3 +22,8 @@ level = 1
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
+
+[preprocessor.anchorbook]
+command = "cargo run --quiet --locked --bin anchorbook -- md"
+after = ["links"]
+before = ["mermaid"]

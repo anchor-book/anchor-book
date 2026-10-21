@@ -166,9 +166,10 @@ and their results. Missing, skipped, stale, or inconclusive evidence is not a pa
 
 ## Work in this repository
 
-The record library is implemented; operational commands and rendering remain
-planned. The binary supports only help and version. Do not run proposed commands
-such as `anchorbook check`, `md`, or `contract` as if they are available.
+The record library and `anchorbook md` preprocessor are implemented. The binary
+supports mdBook preprocessing, the HTML capability probe, help, and version.
+Do not run proposed commands such as `anchorbook check` or `contract` as if they
+are available.
 `CONTRIBUTING.md` at the repository root documents engine tests, the separate
 current-Book acceptance test, and Book build and preview instructions.
 

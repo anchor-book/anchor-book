@@ -164,9 +164,9 @@ planned milestone alone does not establish completion.
 
 ## Current roadmaps
 
-- [Record Rendering](record-rendering.md) has completed its record-library
-  milestone locally. Next are readable records in their chapters, followed by
-  local-preview and CI rendering integration.
+- [Record Rendering](record-rendering.md) has completed its record-library and
+  readable-rendering milestones locally. The book uses the adapter in local
+  preview; complete CI integration and remote verification remain in milestone 3.
 - [Engine Bootstrap](bootstrap.md) is in progress. The design, authority, anchors,
   working contract, and checker roadmap are drafted. Review, remaining technical
   choices, and fresh-agent readiness checks are still outstanding. That

@@ -28,7 +28,6 @@ fn unavailable_operations_never_report_success() {
     for args in [
         vec![],
         vec!["check"],
-        vec!["md", "supports", "html"],
         vec!["materialize"],
         vec!["--help", "check"],
     ] {
@@ -41,7 +40,7 @@ fn unavailable_operations_never_report_success() {
         assert!(
             String::from_utf8(output.stderr)
                 .unwrap()
-                .contains("No engine operation is available")
+                .contains("Unknown or missing operation")
         );
     }
 }

@@ -1,8 +1,8 @@
 # Rust Engine
 
 **Status: prototype implementation in progress.** The record library described
-below is implemented. Configuration, structural checking, and rendering remain
-design drafts.
+below is implemented, along with record rendering and the mdBook adapter.
+Configuration and structural checking remain design drafts.
 
 ## Package and adapters
 
@@ -52,6 +52,10 @@ The implemented layout is:
 src/
   lib.rs                  Library entry point and initial API re-exports
   main.rs                 CLI entry point
+  adapters.rs             External protocol interfaces
+  adapters/mdbook.rs       JSON input, validation, and Book transformation
+  rendering.rs            Record rendering operation and typed errors
+  rendering/              Private HTML and link generation
   records.rs              Public record capability interface
   records/
     model.rs              Record types and chapter input
@@ -62,14 +66,15 @@ src/
 ```
 
 New work adds capability modules when implemented: `configuration`, `checking`,
-`materialization`, `contract`, and `rendering`. External protocol handling belongs
-under `adapters`, beginning with the mdBook adapter. Do not create empty modules
+`materialization`, and `contract`. Record presentation is in `rendering`; external
+protocol handling is under `adapters`, beginning with the mdBook adapter. Do not create empty modules
 or mix new capabilities into the record parser merely because it was built first.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
-mdBook. The renderer consumes its validated inventory; the mdBook adapter
-coordinates record reading and rendering and owns protocol input/output.
+mdBook. The rendering operation uses the record reader to obtain a validated inventory,
+then presents it. The mdBook adapter translates input into that operation and owns
+protocol serialization; the CLI owns process streams and exit statuses.
 Record diagnostics remain within `records`; extract shared diagnostic primitives
 only when another implemented capability demonstrates the need.
 
@@ -143,12 +148,14 @@ stable; a remote run is still pending publication of this work.
 | `pulldown-cmark` 0.13 | Parse Markdown events and source offsets; recognize definitions without regex extraction |
 | `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
 | `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
+| `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 
-`Cargo.lock` records the exact tested dependency versions. The initial adapter
-will target the repository's pinned **mdBook 0.5.2** preprocessor protocol.
-No mdBook dependency or adapter is needed to compile or test the record library.
-Argument-parsing dependencies will be selected when operational CLI commands
-are introduced; the current binary only handles help and version.
+`Cargo.lock` records the exact tested dependency versions. The adapter targets
+only the repository's pinned **mdBook 0.5.2** preprocessor protocol and rejects
+other versions explicitly. No mdBook dependency or rendered Book is needed to
+compile or test the library. The CLI handles `md`, renderer capability probes,
+help, and version with a small explicit argument dispatch. Argument-parsing
+dependencies can be reconsidered as more commands are implemented.
 
 The public API and schema version 1 remain prototypes. The crate has
 `publish = false` until release metadata, packaging, and compatibility policy
@@ -221,8 +228,8 @@ policy are part of release readiness.
 
 ## Choices still open
 
-The record library establishes the initial toolchain and parser choices. Adapter
-implementation will settle the protocol-facing API; structural checking will
+The record library and adapter establish the initial toolchain, parser, and
+protocol choices. Structural checking will
 settle configuration and navigation-reader dependencies and APIs. The first
 checker does not need an asynchronous runtime, dynamic rule registration, or
 test-verifier execution APIs. Those require concrete workflows before design.
@@ -231,8 +238,6 @@ test-verifier execution APIs. Those require concrete workflows before design.
 
 This draft uses the [structured anchor format](anchor-definitions.md).
 Implementation and verification evidence are pending.
-
-<a id="check-shared-typed-results"></a>
 
 ```anchorbook-anchor
 schema-version = 1

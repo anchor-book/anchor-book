@@ -5,7 +5,8 @@ includes the overall system and the details of its capabilities, responsibilitie
 interfaces, and behavior.
 
 The initial chapters are **drafts for review**. They establish a proposed goal
-state. The record library is implemented; other capabilities remain planned.
+state. The record library and mdBook rendering are implemented; other capabilities
+remain planned.
 See the roadmaps for assigned work and its evidence.
 
 | Chapter | Scope |

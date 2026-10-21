@@ -1,8 +1,8 @@
 # Record Rendering
 
-**Status: prototype in progress.** The shared record reader, inventory, and
-relationship validation are implemented. The mdBook adapter and readable HTML
-presentation are next; records still appear as TOML in the Book.
+**Status: prototype implemented locally.** The record library, mdBook adapter,
+and readable HTML presentation are implemented. Local rendering and acceptance
+checks pass; remote workflow verification remains in milestone 3.
 
 Anchors, requirements, and decisions stay in their canonical TOML blocks in the
 source. In the rendered Book, they become readable sections with permalinks,
@@ -19,9 +19,9 @@ their design and authority chapters. Separate indexes, evidence pages, Rust
 source associations, and progress reporting are later work.
 
 The implemented `records` module is the reusable foundation for this path.
-The preprocessor hook itself is still pending: mdBook will invoke `anchorbook md`,
-the adapter will pass chapters to `records`, and `rendering` will produce the
-replacement content from the validated inventory. The adapter returns the
+The preprocessor hook invokes `anchorbook md`; the adapter passes chapters to
+`records` through the `rendering` operation, which produces replacement content
+from the validated inventory. The adapter returns the
 transformed Book to mdBook for normal HTML generation.
 
 ## Components
@@ -69,7 +69,7 @@ position, explanation, and related definition location where useful. Order them
 by chapter path, source position, then code. The prototype's diagnostic families
 are `record.invalid-input`, `record.invalid-definition`, `record.duplicate-id`,
 `record.invalid-reference`, `record.incompatible-status`, and
-the future adapter code `render.invalid-input`. The record input code covers
+the adapter code `render.invalid-input`. The record input code covers
 missing or repeated chapter paths. Refine detailed messages during implementation;
 do not reuse structural-check codes for a different rule scope.
 
@@ -114,10 +114,28 @@ parser, remote badge service, or external script is required to read the records
 
 ## mdBook integration
 
-Proposed command: `anchorbook md`. This is not available yet. For development,
-`book.toml` will invoke the local Cargo binary through a preprocessor entry. CI
-will compile and test the same crate before building the Book. Lock dependency
-versions and document the supported Rust and mdBook versions when implementing.
+Implemented command: `anchorbook md`. The local `book.toml` invokes
+`cargo run --quiet --locked --bin anchorbook -- md`, after mdBook's `links`
+preprocessor and before Mermaid. The prototype requires mdBook **0.5.2** and
+supports HTML only. The adapter uses `serde_json` to validate the needed protocol
+fields while preserving navigation and unknown metadata. It does not depend on
+the mdBook crate or launch a nested Book build.
+
+`rendering::render_chapters` accepts supplied sources and output routes; it calls
+the shared record reader and returns transformed chapter strings or typed errors.
+Output routes must be nonempty, relative UTF-8 paths without traversal, backslashes,
+control characters, or colon-based schemes. Their HTML destinations must be
+unique. Every supplied chapter needs source and output paths, including unnumbered
+chapters; draft chapters without paths are currently rejected.
+
+Generated links are relative and percent-encode path components. mdBook 0.5.2
+rewrites these HTML links into fragment links in its combined print view. The
+local theme opens decision details in that view and during browser printing.
+No record parsing runs in the browser. Formatting, source wrapping, and repeated
+blank lines within prose are normalized for readable paragraphs.
+
+The existing engine workflow tests the crate separately. Milestone 3 will reconcile
+and verify the complete CI rendering path; no remote result is claimed here.
 
 ```mermaid
 sequenceDiagram
@@ -169,10 +187,9 @@ generation, cross-Book authorities, or evidence aggregation.
 
 ## Anchors
 
-These draft properties govern the rendering prototype. No implementation or
-verification evidence is recorded yet.
-
-<a id="render-records-in-context"></a>
+These draft properties govern the rendering prototype. Local implementation and
+verification evidence is recorded in the Record Rendering roadmap; design
+acceptance remains separate.
 
 ```anchorbook-anchor
 schema-version = 1
@@ -203,8 +220,6 @@ statement = "Exercise direct links and derived backlinks across nested chapters,
 id = "preservation-and-escaping"
 statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
 ```
-
-<a id="render-validated-records"></a>
 
 ```anchorbook-anchor
 schema-version = 1

@@ -2,7 +2,7 @@
 
 **Status: draft schema for review.** Requirements and design decisions are typed
 records, just as anchors are. The authority pages use these definitions now;
-engine parsing and reference validation are implemented; rendering is still pending.
+engine parsing, reference validation, and local mdBook rendering are implemented.
 These capabilities are developed through the [record-rendering prototype](record-rendering.md).
 They are a separate scope from the structural check of layout and navigation.
 

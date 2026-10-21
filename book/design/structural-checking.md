@@ -162,8 +162,6 @@ expanding `check` must not introduce a recursive dependency on its own test run.
 These draft [structured definitions](anchor-definitions.md) link the initial
 rules to authority. Implementation and verification evidence are pending.
 
-<a id="check-observation-only"></a>
-
 ```anchorbook-anchor
 schema-version = 1
 id = "check-observation-only"
@@ -188,8 +186,6 @@ statement = "Compare project file contents and directory entries before and afte
 id = "no-execution"
 statement = "Use fixtures with configured execution traps and run with subprocess and network activity denied or observed; checking neither attempts those operations nor requires generated Book output."
 ```
-
-<a id="check-navigation-conformance"></a>
 
 ```anchorbook-anchor
 schema-version = 1
@@ -221,8 +217,6 @@ statement = "Exercise each required role as present, absent, nested, or replaced
 id = "grammar-boundary"
 statement = "Document the supported mdBook grammar and version; supported targetless drafts outside required roles remain valid, external links are not fetched, and malformed or unsupported navigation yields incomplete evaluation."
 ```
-
-<a id="check-renderer-alignment"></a>
 
 ```anchorbook-anchor
 schema-version = 1

@@ -1,0 +1,27 @@
+/* Record fields are escaped text, with layout supplied by this local theme. */
+.ab-record { border: 1px solid var(--table-border-color); border-inline-start: 4px solid var(--links); border-radius: 6px; padding: 1.35rem 1.6rem; margin: 2rem 0; background: var(--bg); overflow-wrap: anywhere; }
+.ab-record-header { padding-bottom: 1rem; border-bottom: 1px solid var(--table-border-color); }
+.ab-record-meta { display: flex; gap: 1rem; align-items: center; justify-content: space-between; font-size: .85em; font-weight: 600; }
+.ab-status { border: 1px solid var(--table-border-color); border-radius: 1rem; padding: .15rem .75rem; font-size: .9em; }
+.ab-record h3 { margin: .65rem 0 .4rem; font-size: 1.2em; }
+.ab-record h4 { margin: 0 0 .6rem; font-size: .9em; font-weight: 650; }
+.ab-permalink, .ab-link-id { font-family: var(--mono-font); font-size: .8em; }
+.ab-link-id { display: block; color: var(--fg); opacity: .8; }
+.ab-text { white-space: pre-line; line-height: 1.6; }
+.ab-field { margin-top: 1.4rem; }
+.ab-links, .ab-criteria { padding-inline-start: 1.5rem; margin: .6rem 0 0; }
+.ab-links li + li, .ab-criteria li + li { margin-top: .85rem; }
+.ab-criteria code { display: inline-block; margin-bottom: .35rem; }
+.ab-backlinks { border-top: 1px solid var(--table-border-color); padding-top: 1.2rem; }
+.ab-details { margin-top: 1.4rem; }
+.ab-details summary { cursor: pointer; color: var(--links); font-weight: 600; padding: .3rem 0; }
+.ab-details-body { padding-bottom: .3rem; }
+.ab-record a:focus-visible, .ab-details summary:focus-visible { outline: 2px solid var(--links); outline-offset: 3px; }
+.ab-record:target { outline: 2px solid var(--links); outline-offset: 3px; }
+@media (max-width: 500px) { .ab-record { padding: 1rem; } }
+@media print {
+  .ab-record { border-color: #777; color: #000; background: #fff; }
+  .ab-record-header, .ab-record h4 { break-after: avoid; }
+  .ab-details::details-content { display: block; content-visibility: visible; }
+  .ab-details summary { color: #000; }
+}

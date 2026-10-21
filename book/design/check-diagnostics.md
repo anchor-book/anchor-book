@@ -237,8 +237,6 @@ Help is guidance, not an automatic repair or additional authorization.
 These draft [structured definitions](anchor-definitions.md) govern the report
 behavior above. Implementation and verification evidence are pending.
 
-<a id="check-truthful-results"></a>
-
 ```anchorbook-anchor
 schema-version = 1
 id = "check-truthful-results"
@@ -269,8 +267,6 @@ statement = "Missing prerequisites yield root-cause findings and blocked depende
 id = "report-scope"
 statement = "Assert evaluated and blocked groups and limits of the passing claim. Completed reports appear on stdout and incomplete reports with partial findings appear together on stderr."
 ```
-
-<a id="check-actionable-diagnostics"></a>
 
 ```anchorbook-anchor
 schema-version = 1

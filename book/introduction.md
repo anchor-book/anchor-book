@@ -26,7 +26,8 @@ anchor and authority definitions, and designs for record rendering, configuratio
 and structural checking, marked as drafts for review. The first Rust library
 reads and validates structured records and their authority relationships.
 
-Rendering and operational commands are still pending. The
+The `anchorbook md` preprocessor renders these records in this Book. Other
+engine operations remain planned. The
 [Record Rendering](implementation-roadmaps/record-rendering.md),
 [Engine Bootstrap](implementation-roadmaps/bootstrap.md), and
 [Structural Checking](implementation-roadmaps/structural-checker.md) roadmaps are now

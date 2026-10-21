@@ -1,8 +1,8 @@
 # System Overview
 
 **Status: draft for review.** This describes the intended system. The repository
-currently has a rendered Book and a shared Rust record library. Operational
-commands and record rendering remain to be implemented.
+currently has a shared Rust record library and an mdBook adapter that renders
+anchors and authorities. Other engine operations remain to be implemented.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
@@ -26,7 +26,8 @@ flowchart LR
 ```
 
 The boxes describe responsibilities, not separate services or Cargo packages.
-All engine components are planned. Dashed inputs identify later cross-Book and
+Record parsing and rendering are implemented; other engine components are
+planned. Dashed inputs identify later cross-Book and
 verification integrations whose formats still need design. The preprocessor is
 the first planned adapter, introduced by the [record-rendering prototype](record-rendering.md).
 It uses the shared record model to present anchors and authorities. The later
@@ -149,8 +150,6 @@ contract delivery, and evidence behavior.
 
 This draft uses the [structured anchor format](anchor-definitions.md).
 Implementation and verification evidence are pending.
-
-<a id="check-independent-build"></a>
 
 ```anchorbook-anchor
 schema-version = 1
