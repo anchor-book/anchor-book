@@ -54,15 +54,6 @@ of the initial layout/navigation check. The new
 to [Record Rendering — Milestone 3](record-rendering.md#record-rendering-3-authority-coverage).
 Evidence aggregation remains later work.
 
-## Milestones
-
-| Milestone | Outcome | Status | Depends on |
-| --- | --- | --- | --- |
-| [1](#structural-checking-1) | The engine understands this Book's configured layout | Proposed | Engine Bootstrap complete and Record Rendering — Milestone 1 |
-| [2](#structural-checking-2) | Developers receive actionable structural findings | Proposed | [1](#structural-checking-1) |
-| [3](#structural-checking-3) | Continuous checks protect the current Book | Proposed | [2](#structural-checking-2) |
-| [4](#structural-checking-4) | An agent can repair Book structure using checker feedback | Proposed | [2](#structural-checking-2) |
-
 Milestones 3 and 4 can proceed independently after milestone 2. All four are
 required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 

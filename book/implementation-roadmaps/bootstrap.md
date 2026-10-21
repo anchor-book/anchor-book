@@ -29,13 +29,6 @@ The [System Overview](../design/system-overview.md) supplies the system context;
 the [AI Working Contract](../ai-working-contract.md) defines how agents work.
 Each milestone enables an outcome with tasks and evidence for completion.
 
-## Milestones
-
-| Milestone | Outcome | Status | Depends on |
-| --- | --- | --- | --- |
-| [1](#engine-bootstrap-1) | The Book defines the checker and the agreed work to build it | In progress | Current design drafts |
-| [2](#engine-bootstrap-2) | An agent can use the Book to take up assigned checker work | Proposed | Milestone 1 and the working contract |
-
 Bootstrap is complete when both milestones are complete: the engineer can use
 this Book to assign checker implementation, and an agent can load the intended
 behavior, governing authority, anchors, and completion criteria from it. A

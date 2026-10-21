@@ -23,8 +23,9 @@ Group work into chunks that enable an outcome an engineer can take on with
 their agents. Call these chunks milestones. Organize around what
 becomes possible when the work is done, with tasks describing how to get there.
 
-Each roadmap has an identifier, title, goal, and ordered milestone table. Each
-milestone records:
+Each roadmap has an identifier, title, goal, and a sequence of milestone entries.
+List the milestones directly, without a separate overview section or summary
+table. Each milestone records:
 
 - **Identifier:** a stable reference unique across the Book's roadmaps.
 - **Outcome:** the capability or result the work enables.

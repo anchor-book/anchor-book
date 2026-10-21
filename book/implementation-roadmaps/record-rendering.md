@@ -82,14 +82,6 @@ Anchors now appear before design detail, redundant card headings were removed,
 and general authoring guidance lives in the working contract. Those presentation
 changes passed Book checks and do not add another engine capability.
 
-## Milestones
-
-| Milestone | Outcome | Status | Depends on |
-| --- | --- | --- | --- |
-| [1](#record-rendering-1) | Engine code can read and validate the Book's records | Complete locally | Current schema drafts and agreed prototype scope |
-| [2](#record-rendering-2) | Readers can understand and navigate the rendered records | Complete locally | Milestone 1 |
-| [3](#record-rendering-3) | Local preview and CI use the same rendering path | Proposed | Milestone 2 |
-
 <a id="record-rendering-1"></a>
 
 ## Milestone 1. Engine code can read and validate the Book's records
