@@ -9,6 +9,7 @@
 - [Design](design/index.md)
   - [System Overview](design/system-overview.md)
   - [Rust Engine](design/rust-engine.md)
+  - [Formal Verification](design/formal-verification.md)
   - [Configuration](design/configuration.md)
   - [Anchor Definitions](design/anchor-definitions.md)
   - [Authority Definitions](design/authority-definitions.md)
@@ -23,4 +24,5 @@
   - [Engine Bootstrap](implementation-roadmaps/bootstrap.md)
   - [Record Rendering](implementation-roadmaps/record-rendering.md)
   - [Mutation Testing](implementation-roadmaps/mutation-testing.md)
+  - [Formal Verification](implementation-roadmaps/formal-verification.md)
   - [Structural Checking](implementation-roadmaps/structural-checker.md)

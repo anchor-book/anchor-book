@@ -33,6 +33,14 @@ statement = "Use independent fixtures with missing, wrong-kind, invalid, and amb
 [[criteria]]
 id = "compatible-status"
 statement = "Accept draft anchors citing draft or accepted authorities and accepted anchors citing accepted authorities; reject accepted anchors citing draft authorities with an incompatible-status diagnostic."
+
+[[criteria]]
+id = "formal-authority"
+statement = "Use Verus to prove the executable authority-validation functions enforce nonempty anchor authority, unique valid targets of the declared kind, distinct references, and compatible acceptance states over their declared input domain. Check every reference, including requirements cited by decisions. Record the specification, proved functions, assumptions, and unverified boundaries; preconditions must not assume the authority relationships are valid."
+
+[[criteria]]
+id = "production-integration"
+statement = "Demonstrate that read_records calls the same executable functions verified by Verus, with faithful input conversion and rejection propagation. Exercise valid and invalid inputs through the record API and actual mdBook adapter; invalid authority yields diagnostics and no successful inventory or Book JSON. Record which integration obligations are tested rather than proved."
 ```
 
 ```anchorbook-anchor
@@ -302,5 +310,14 @@ tool versions and repository integration remain project guidance.
 ## Choices still open
 
 Structural checking must settle configuration and navigation-reader dependencies
-and APIs. Async runtimes, dynamic rules, and verifier execution need concrete
-workflows before design; the first checker does not require them.
+and APIs. Async runtimes and dynamic rules need concrete workflows before design.
+
+## Formal verification
+
+[Formal Verification](formal-verification.md) introduces Verus for the existing
+`engine-valid-authority` anchor. The planned proof covers executable validation
+logic used by `read_records`; parsing, input conversion, and diagnostic delivery
+remain explicit integration boundaries. No Verus integration or proof exists yet.
+The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
+and production integration, then CI and evidence. The first structural checker
+and mdBook adapter do not execute verifiers.

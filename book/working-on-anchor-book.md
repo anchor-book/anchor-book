@@ -56,6 +56,12 @@ records local evidence separately from the full campaign, GitHub execution,
 and required merge rules. These must be demonstrated before claiming merge
 protection; adding a workflow alone does not enable that protection.
 
+[Formal Verification](design/formal-verification.md) plans Verus support for the
+production authority-validation functions. Its [roadmap](implementation-roadmaps/formal-verification.md)
+covers local proof and integration, then GitHub verification. Verus is not yet
+configured; no authority proof has run. Existing tests and mutation findings remain
+part of the verification work.
+
 ## Public content
 
 This repository is public. Keep private reference material, credentials, personal
