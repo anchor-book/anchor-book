@@ -1,34 +1,23 @@
 # Introduction
 
 anchor-book is an open-source engine for creating, maintaining, and checking
-Anchor Books. An Anchor Book holds a project's living system definition and
-working context: its design, the requirements and decisions that govern it,
-the properties that must hold, and the path toward implementation.
+Anchor Books. An Anchor Book is a project's living system definition and working
+context. It describes the design, the requirements and decisions that govern it,
+and anchors: properties that must hold in the built system. Its implementation
+roadmaps organize the agreed work needed to reach that goal.
 
-This is the Book for the anchor-book engine itself. It uses mdBook for structure
-and rendering. As the engine develops, it will manage this Book through the same
-interfaces it provides to other projects.
+This is the engine's own Book. It uses mdBook for structure and rendering and
+will use the same engine interfaces provided to other projects.
 
 ## Reading this Book
 
-- [Design](design/index.md) describes the intended system, starting with a
-  system overview and developing component responsibilities and behavior.
-- [Authority](authority/index.md) records the requirements and decisions that
-  establish why properties bind the system.
-- [Implementation Roadmaps](implementation-roadmaps/index.md) turn sufficiently
-  clear design into AI-proposed implementation work that we review and agree on
-  before AI agents carry it out.
+- [Design](design/index.md) defines the intended system and its behavior.
+- [Authority](authority/index.md) records governing requirements and decisions.
+- [Implementation Roadmaps](implementation-roadmaps/index.md) organize the work
+  agreed between engineers and AI agents, with completion criteria and evidence.
 
 ## Current state
 
-The project is prototyping. The Book contains an initial system design, structured
-anchor and authority definitions, and designs for record rendering, configuration,
-and structural checking, marked as drafts for review. The first Rust library
-reads and validates structured records and their authority relationships.
-
-The `anchorbook md` preprocessor renders these records in this Book. Other
-engine operations remain planned. The
-[Record Rendering](implementation-roadmaps/record-rendering.md),
-[Engine Bootstrap](implementation-roadmaps/bootstrap.md), and
-[Structural Checking](implementation-roadmaps/structural-checker.md) roadmaps are now
-in the Book, with completion evidence and proposed work kept distinct.
+The project is prototyping. Record parsing, authority validation, and mdBook
+record rendering are implemented; other operations remain planned. See the
+[roadmaps](implementation-roadmaps/index.md#current-roadmaps) for progress and evidence.

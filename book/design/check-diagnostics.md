@@ -3,14 +3,10 @@
 **Status: draft for review.** These examples define proposed output, not output
 from an implemented command. Paths and configuration values are illustrative.
 
-The diagnostics support the agent's check, repair, and recheck loop. Each problem
-must explain what was observed, what the configured structure requires, where to
-look, and a useful next action. A failure code alone is not sufficient.
+Diagnostics support the check, repair, and recheck loop by identifying the
+observed problem, expected structure, location, and useful next action.
 
 ## Anchors
-
-These draft [structured definitions](anchor-definitions.md) govern the report
-behavior above. Implementation and verification evidence are pending.
 
 ```anchorbook-anchor
 schema-version = 1

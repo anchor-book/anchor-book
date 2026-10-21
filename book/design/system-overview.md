@@ -11,9 +11,6 @@ mdBook supplies the underlying Book structure and rendering.
 
 ## Anchor for developing the engine with this Book
 
-This draft uses the [structured anchor format](anchor-definitions.md).
-Implementation and verification evidence are pending.
-
 ```anchorbook-anchor
 schema-version = 1
 id = "check-independent-build"
@@ -54,15 +51,14 @@ flowchart LR
 ```
 
 The boxes describe responsibilities, not separate services or Cargo packages.
-Record parsing and rendering are implemented; other engine components are
-planned. Dashed inputs identify later cross-Book and
-verification integrations whose formats still need design. The preprocessor is
-the first implemented adapter, introduced by the [record-rendering prototype](record-rendering.md).
-It uses the shared record model to present anchors and authorities. The later
-structural checker does not invoke it or require its output.
+Dashed inputs identify later cross-Book and verification integrations whose
+formats still need design. People and agents use the CLI; automation can call
+either the CLI or Rust library. On the rendering path, mdBook reads the authored
+and managed Book files and supplies their chapter content to the preprocessor.
 
-People and agents use the CLI; automation can use either the CLI or the library.
-The rendering path reads authored and managed Book files through mdBook.
+The [record-rendering adapter](record-rendering.md) is implemented. It uses shared
+records to present anchors and authorities within files read by mdBook. Structural
+checking is planned and will not depend on the renderer or its output.
 
 ## What a Book describes
 
@@ -131,15 +127,10 @@ library from integration tests. Neither Git nor GitHub is required to evaluate
 a local Book.
 
 The [mdBook preprocessor](https://rust-lang.github.io/mdBook/for_developers/preprocessors.html)
-handles render-time integration. It consumes the
-Book passed by mdBook and calls shared engine logic. It does not repair source
-files, run project tests, or recursively invoke a Book build. Diagram
-preprocessors remain presentation integrations alongside it.
-
-[Record Rendering](record-rendering.md) separates parsing, indexing, and
-validation from presentation through a shared record model. The initial adapter
-renders readable records and their authority links in existing chapters. Richer
-indexes, evidence pages, and progress reporting remain later increments.
+calls shared engine logic on mdBook's input. It does not repair files, run tests,
+or recursively build the Book. Diagram preprocessors run alongside it.
+[Record Rendering](record-rendering.md) defines the shared-model integration;
+indexes, evidence pages, and progress reporting follow later.
 
 ## Developing the engine with this Book
 
@@ -154,22 +145,22 @@ flowchart TB
     render --> pages["Published Book"]
 ```
 
-This is the intended CI dependency order once structural checking is available.
-The rendering prototype first establishes engine compilation and fixture tests,
-followed by mdBook with the record adapter; it has no placeholder structural-check
-step. Compiling the engine must not require
-a valid or rendered Book. Independent engine tests use fixtures; a separate
-acceptance check exercises the current Book. A broken Book can therefore be
-diagnosed and repaired with the engine.
+The diagram shows the intended CI order once structural checking is available:
+compile and test the engine, check this repository's Book, then render and publish
+it. Engine compilation and independent fixture tests must not require a valid
+or rendered Book. Current-Book acceptance is a separate step, so the engine remains
+usable to diagnose and repair its own Book when that Book is broken.
+
+The rendering prototype has no placeholder structural-check step. Its remaining
+[CI integration work](../implementation-roadmaps/record-rendering.md#record-rendering-3)
+will make rendering and publication depend on engine checks and record acceptance
+for the same revision.
 
 Later, project verification runs independently and supplies completed evidence
 to Book build. A structural integration test may run inside a project test suite;
 it must not depend on the final results of the suite that contains it.
 
-[Record rendering](record-rendering.md) comes first so the Book's structured
-design can be read and refined during prototyping. It establishes the Rust crate
-and shared record model. [Structural checking](structural-checking.md) follows,
-providing the conformance rules needed by initialization and materialization.
-The actual Book is the primary acceptance case, supplemented by independent
-fixtures and deliberately broken copies. Later increments add managed content,
-contract delivery, and evidence behavior.
+[Structural checking](structural-checking.md) follows rendering and supplies
+conformance rules for initialization and materialization. This Book is the primary
+acceptance case, supplemented by independent fixtures and deliberately broken copies.
+Managed content, contract delivery, and evidence behavior follow later.

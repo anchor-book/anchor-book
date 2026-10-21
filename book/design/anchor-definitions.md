@@ -1,14 +1,11 @@
 # Anchor Definitions
 
-**Status: draft schema for review.** This is the single proposed authoring format
-for anchors. The record library parses and validates this format, and the mdBook
-adapter renders it as readable content. The structural checker remains scoped to layout and
-navigation. The [rendering prototype](record-rendering.md) exercises record
-parsing and validation independently of structural checking.
+**Status: draft schema for review; parsing and rendering implemented.**
 
-An anchor defines a property of the goal system, cites the authority that
-establishes it, and states criteria for verifying it. Surrounding design prose
-explains the property but is not implicitly part of the anchor.
+An anchor defines a property of the goal system, its authority, and verification criteria.
+Surrounding prose explains it but is not part of the definition. The
+[record library and renderer](record-rendering.md) implement this format separately
+from layout/navigation checking.
 
 ## One canonical format
 
@@ -16,10 +13,8 @@ An anchor is a top-level fenced Markdown code block. Its opening line is exactly
 three backticks followed by `anchorbook-anchor`; its closing line is exactly
 three backticks. Its body is TOML matching schema version 1 below.
 
-Use this format for every anchor. There are no inline marker definitions,
-heading-based definitions, YAML alternatives, inferred fields, or aliases.
-Examples of the format must be enclosed inside a different outer code block,
-as below, so they are literal examples rather than definitions.
+There are no inline or heading-based definitions, alternate formats, inferred
+fields, or aliases. Enclose literal examples in a different outer code block:
 
 ````text
 ```anchorbook-anchor
@@ -103,11 +98,9 @@ anchors may cite draft authority while the design is being reviewed. Reference
 validity does not establish that an authority logically justifies the property;
 that relationship still needs review.
 
-Requirements and decisions use the [structured authority formats](authority-definitions.md).
-Their typed definitions, rather than headings or HTML targets, establish the
-identities used by `authorities`. All cited authorities of an accepted anchor
-must be accepted; an accepted decision must also cite only accepted requirements.
-The implemented shared record index checks these relationships.
+[Typed authority definitions](authority-definitions.md) supply reference identity;
+headings and HTML targets do not. Accepted decisions must also cite only accepted
+requirements. The shared index checks all these relationships.
 
 The library owns these rules. The mdBook preprocessor consumes the same
 validated model to render anchors and links. Rendering must not define a second
@@ -120,7 +113,5 @@ It does not mean implemented, tested, or proven. Keep implementation association
 executed results, and roadmap completion outside the authored definition.
 Reports can derive progress from those records as the engine gains that support.
 
-The initial checker anchors are drafts and have no implementation evidence.
-Their criteria are verification plans. Ordinary HTML link targets beside the
-blocks support navigation during bootstrap; they are not another definition
-format and will be generated from anchor identities when rendering is available.
+The initial checker anchors remain drafts with planned verification criteria.
+The renderer derives navigation targets from record identities.

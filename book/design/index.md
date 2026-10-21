@@ -1,13 +1,12 @@
 # Design
 
-This section describes the system anchor-book is intended to become. Design
-includes the overall system and the details of its capabilities, responsibilities,
-interfaces, and behavior.
+This section describes the system anchor-book is intended to become, from the
+system overview to component responsibilities, interfaces, and detailed behavior.
+It represents the goal as currently understood, rather than only what is implemented.
 
-The initial chapters are **drafts for review**. They establish a proposed goal
-state. The record library and mdBook rendering are implemented; other capabilities
-remain planned.
-See the roadmaps for assigned work and its evidence.
+Chapters remain **drafts for review**. The record library and mdBook rendering
+are implemented; other capabilities remain planned. See the
+[roadmaps](../implementation-roadmaps/index.md) for progress and evidence.
 
 | Chapter | Scope |
 | --- | --- |
@@ -21,8 +20,3 @@ See the roadmaps for assigned work and its evidence.
 
 [Design Proposals](proposals/index.md) provides a place to discuss changes to
 that goal state. Proposed content is distinguished from the accepted design.
-
-The checker chapters now contain initial anchor definitions in the canonical
-block format described above. They are drafts for review, grounded in the draft
-requirements and decisions under Authority. None has implementation or executed
-verification evidence yet.

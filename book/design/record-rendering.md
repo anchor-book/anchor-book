@@ -11,10 +11,6 @@ literal code examples. Rendering does not establish implementation or verificati
 
 ## Anchors
 
-These draft properties govern the rendering prototype. Local implementation and
-verification evidence is recorded in the Record Rendering roadmap; design
-acceptance remains separate.
-
 ```anchorbook-anchor
 schema-version = 1
 id = "render-records-in-context"
@@ -73,18 +69,15 @@ statement = "Exercise the actual adapter process with valid and malformed mdBook
 
 ## Approach
 
-Anchor Book separates record parsing, indexing, and validation from presentation.
-The shared record model uses explicit identities, typed authority relationships,
-and authored verification criteria. Canonical TOML definitions are the single
-input format. The mdBook adapter renders records from that model in
-their design and authority chapters. Separate indexes, evidence pages, Rust
-source associations, and progress reporting are later work.
+Record parsing and validation are separate from presentation. Canonical TOML
+blocks define record identities, authority relationships, and verification criteria.
+The shared library collects and validates that inventory before it can be rendered.
 
-The implemented `records` module is the reusable foundation for this path.
-The preprocessor hook invokes `anchorbook md`; the adapter passes chapters to
-`records` through the `rendering` operation, which produces replacement content
-from the validated inventory. The adapter returns the
-transformed Book to mdBook for normal HTML generation.
+mdBook invokes `anchorbook md` with chapter input. The adapter calls the library's
+`rendering` operation, which uses `records` to validate the definitions and then
+replaces their source ranges with readable HTML in memory. The adapter returns
+the transformed Book to mdBook for normal HTML generation. Separate indexes,
+evidence pages, Rust source associations, and progress reporting are later work.
 
 ## Components
 
@@ -100,12 +93,12 @@ flowchart TB
     model -.-> future["Later engine operations reuse this model"]
 ```
 
-Start the single Rust library/CLI package described in [Rust Engine](rust-engine.md).
-The library owns reading, record types, validation, indexing, and presentation.
-The adapter only handles mdBook's protocol and translates chapter data. It does
-not implement another parser or reference resolver. Keep modules private until
-callers demonstrate a need for a public interface. The implemented record API
-and its module boundaries are documented in [Rust Engine](rust-engine.md#implemented-record-api).
+The single [Rust package](rust-engine.md#internal-boundaries) contains the library
+and CLI. The library owns record reading, validation, indexing, and presentation.
+The adapter translates mdBook's protocol and chapter data; it does not define
+another parser or reference resolver. Keep implementation modules private until
+callers need a public interface. [Rust Engine](rust-engine.md#implemented-record-api)
+documents the implemented API.
 
 The input inventory is the chapters supplied by mdBook, including nested and
 unnumbered chapters with source paths. Record validation does not require the
@@ -218,11 +211,9 @@ sequenceDiagram
     end
 ```
 
-Only HTML rendering is supported initially; reject unsupported renderers through
-the mdBook capability probe. For preprocessing, stdout contains only the complete
-Book JSON on success. Input/protocol errors and record-validation failures produce
-stderr diagnostics and a nonzero exit, with no successful partial JSON. These
-protocol statuses are separate from the proposed `anchorbook check` exit contract.
+The capability probe rejects unsupported renderers. Preprocessing success writes
+only complete Book JSON to stdout; failures write diagnostics to stderr and exit
+nonzero without partial JSON. These statuses are separate from `anchorbook check`.
 
 Replace definition-block ranges in memory. Preserve the rest of each chapter and
 the Book's navigation metadata. Require no writes to source files, recursive
@@ -230,10 +221,9 @@ Book builds, subprocess verification, or dependency fetching by the adapter.
 Choose and test preprocessor ordering with Mermaid so examples and diagrams
 retain their intended meaning.
 
-Remove manually duplicated record headings, HTML targets, and relationship lists
-from authored chapters when generated equivalents are connected. Keep real prose
-and logical section headings. This is an explicit source migration during
-implementation, not an automatic mutation performed by the preprocessor.
+Replacing manual headings, targets, and relationship lists with generated
+versions is an explicit source migration. Preserve prose and logical section
+headings; the preprocessor does not perform that migration.
 
 ## Acceptance and boundaries
 

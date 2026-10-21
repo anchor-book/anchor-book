@@ -4,26 +4,24 @@
 
 **Status:** Proposed; implementation not started.
 
-This roadmap follows [Engine Bootstrap](bootstrap.md). Bootstrap prepares the
-Book, authority, anchors, working contract, and agreed implementation scope used
-here. It extends the crate established in [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
-The planned delivery order brings rendering first, but checker execution never
-depends on rendered output. Review the governing records before marking this
-implementation ready.
+This roadmap follows [Engine Bootstrap](bootstrap.md), which prepares the Book's
+checker design, requirements, decisions, anchors, working contract, and agreed
+scope. It extends the crate from
+[Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
+Review those governing records before marking the work Ready. The checker runs
+independently of rendering and does not require generated Book output.
 
 ## Goal
 
-An agent can use the checker's feedback to bring a Book into conformance with
-its configured structure: run the check, understand the findings, make appropriate
-changes within its assignment, and recheck until the structure passes.
+An agent can use checker feedback to bring a Book into conformance with its
+configured structure: run the check, understand the findings, make appropriate
+changes within its assignment, and recheck until it passes. Diagnostics must
+identify the problem, its location, and the expected structure. Repairs must
+satisfy the intended rules without weakening them.
 
-The checker supplies information through a CLI and a reusable Rust library.
-It stays read-only: it does not render the Book, modify files, fetch dependencies,
-or run project tests. In this first increment, the agent makes the repairs.
-Later engine operations may support those changes, but are not required here.
-
-A pass must result from correcting the structure according to the intended
-configuration and rules, not from bypassing checks or weakening the requirements.
+The checker provides a read-only CLI and Rust library. It does not render, edit
+files, fetch dependencies, or run project tests. Agents make repairs in this
+increment; later engine operations may support them.
 
 The design is defined in:
 
@@ -37,25 +35,17 @@ schema or rule specification.
 
 ## Authority and anchors
 
-The initial [requirements](../authority/requirements.md#initial-checker-requirements),
-[design decisions](../authority/design-decisions.md),
-and anchors below are drafts for review. Their links establish traceability,
-not acceptance or implementation evidence. Each anchor carries its governing
-authority and verification criteria in the [structured format](../design/anchor-definitions.md).
+The [requirements](../authority/requirements.md#initial-checker-requirements),
+[decisions](../authority/design-decisions.md), and referenced anchors remain drafts.
+Milestone criteria link to specific anchor criteria with full or partial planned
+coverage, following the [roadmap convention](index.md#anchor-criteria-and-planned-coverage).
 
-Each milestone’s completion criteria below identify the exact anchor criteria
-it addresses and whether the planned coverage is full or partial.
-
-Some criteria span milestones. Completing one milestone does not establish every
-criterion of an associated anchor. Record parsing and authority resolution now
-belong to the preceding rendering prototype. They do not become additional rules
-of the initial layout/navigation check. The new
-[valid-authority anchor](../design/rust-engine.md#engine-valid-authority) is mapped
-to [Record Rendering — Milestone 3](record-rendering.md#record-rendering-3-authority-coverage).
-Evidence aggregation remains later work.
+Record parsing and authority resolution belong to rendering, including the
+[authority-coverage follow-up](record-rendering.md#record-rendering-3-authority-coverage).
+They do not expand this layout/navigation check. Evidence aggregation is later work.
 
 Milestones 3 and 4 can proceed independently after milestone 2. All four are
-required to complete this roadmap; milestone 4 demonstrates the agent workflow.
+required to complete this roadmap.
 
 <a id="structural-checking-1"></a>
 
@@ -77,19 +67,19 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 <tr id="structural-checking-1-book-selection-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>book-selection</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/configuration.html#check-book-selection">check-book-selection</a> · <code>invocation-directory</code>, <code>alternative-layout</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-1-configuration-validation" class="roadmap-criterion-summary"><th scope="row">Configuration validation</th><td><p class="roadmap-condition">Reject invalid fields, versions, phases, mappings, escapes, overlaps, and symlink aliases; allow a resolvable separate nonexistent output and distinguish missing from unresolvable paths.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for configuration validation" aria-expanded="true" aria-controls="structural-checking-1-configuration-validation-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-1-configuration-validation-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>configuration-validation</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/configuration.html#check-configuration-validity">check-configuration-validity</a> · <code>schema-rejection</code>, <code>path-boundaries</code>, <code>missing-paths</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-1-configuration-preservation" class="roadmap-criterion-summary"><th scope="row">Configuration preservation</th><td><p class="roadmap-condition">Configuration operations preserve files on success and failure.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for configuration preservation" aria-expanded="true" aria-controls="structural-checking-1-configuration-preservation-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-1-configuration-preservation-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>configuration-preservation</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-observation-only">check-observation-only</a> · <code>file-preservation</code> — Partial: configuration operations only</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-1-phase-handoff" class="roadmap-criterion-summary"><th scope="row">Phase handoff</th><td><p class="roadmap-condition">The reader exposes the phase from the real repository configuration. The working contract directs agents to that value and no longer declares a separate bootstrap phase. Valid phase choices do not alter structural rules or imply design acceptance or system completion.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for phase handoff" aria-expanded="true" aria-controls="structural-checking-1-phase-handoff-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-1-phase-handoff-details" class="roadmap-criterion-details"><td colspan="2">
@@ -101,10 +91,10 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 <tr id="structural-checking-1-independent-build-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-build</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/system-overview.html#check-independent-build">check-independent-build</a> · <code>broken-book</code> — Partial: engine build and fixture tests; current-Book checking follows</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="structural-checking-1-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="structural-checking-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. No operational checker is claimed by this milestone.</td></tr>
 </tbody>
 </table>
@@ -130,46 +120,46 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 <tr id="structural-checking-2-navigation-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>navigation</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-navigation-conformance">check-navigation-conformance</a> · <code>chapter-inventory</code>, <code>required-roles</code>, <code>grammar-boundary</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-renderer-alignment" class="roadmap-criterion-summary"><th scope="row">Renderer alignment</th><td><p class="roadmap-condition">Report renderer drift without repair; handle defaults, equivalent paths, missing configuration, and malformed or unreadable input.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for renderer alignment" aria-expanded="true" aria-controls="structural-checking-2-renderer-alignment-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-renderer-alignment-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>renderer-alignment</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-renderer-alignment">check-renderer-alignment</a> · <code>resolved-comparison</code>, <code>renderer-input</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-typed-results" class="roadmap-criterion-summary"><th scope="row">Typed results</th><td><p class="roadmap-condition">Library and actual CLI results agree against independent expectations; library errors preserve causes without printing, exiting, or panicking.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for typed results" aria-expanded="true" aria-controls="structural-checking-2-typed-results-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-typed-results-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>typed-results</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#check-shared-typed-results">check-shared-typed-results</a> · <code>equivalent-callers</code>, <code>library-boundary</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-truthful-results" class="roadmap-criterion-summary"><th scope="row">Truthful results</th><td><p class="roadmap-condition">Verify documented exit statuses, incomplete and mixed failures, blocked checks, evaluated scope, and stdout/stderr behavior.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for truthful results" aria-expanded="true" aria-controls="structural-checking-2-truthful-results-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-truthful-results-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>truthful-results</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/check-diagnostics.html#check-truthful-results">check-truthful-results</a> · <code>outcomes-and-precedence</code>, <code>blocked-evaluation</code>, <code>report-scope</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-diagnostics" class="roadmap-criterion-summary"><th scope="row">Diagnostics</th><td><p class="roadmap-condition">Verify diagnostic fields, locations, next actions, stable order, and readable output without styling.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for diagnostics" aria-expanded="true" aria-controls="structural-checking-2-diagnostics-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-diagnostics-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>diagnostics</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/check-diagnostics.html#check-actionable-diagnostics">check-actionable-diagnostics</a> · <code>diagnostic-content</code>, <code>stable-presentation</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-observation-only" class="roadmap-criterion-summary"><th scope="row">Observation only</th><td><p class="roadmap-condition">Passing, failing, and incomplete checks preserve contents and directory entries; execution traps establish no subprocess, network, preprocessor, or verifier activity.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for observation only" aria-expanded="true" aria-controls="structural-checking-2-observation-only-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-observation-only-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>observation-only</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-observation-only">check-observation-only</a> · <code>file-preservation</code>, <code>no-execution</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-2-acceptance-cases" class="roadmap-criterion-summary"><th scope="row">Acceptance cases</th><td><p class="roadmap-condition">Record results for the design’s <a href="../design/structural-checking.html#acceptance-against-this-book">acceptance cases</a>, including alternate layouts and deliberate failures.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for acceptance cases" aria-expanded="true" aria-controls="structural-checking-2-acceptance-cases-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-2-acceptance-cases-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>acceptance-cases</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — acceptance suite record</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-2-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="structural-checking-2-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="structural-checking-2-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. This result establishes local checking; Structural Checking — Milestone 3 owns continuous integration.</td></tr>
 </tbody>
 </table>
@@ -195,28 +185,28 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 <tr id="structural-checking-3-independent-acceptance-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-acceptance</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/system-overview.html#check-independent-build">check-independent-build</a> · <code>broken-book</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-3-ci-order" class="roadmap-criterion-summary"><th scope="row">CI order</th><td><p class="roadmap-condition">Record actual CI showing engine checks, Book acceptance, then rendering for a valid revision; a broken Book fails acceptance usefully.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for ci order" aria-expanded="true" aria-controls="structural-checking-3-ci-order-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-ci-order-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>ci-order</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/system-overview.html#check-independent-build">check-independent-build</a> · <code>ci-order</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-3-no-repair" class="roadmap-criterion-summary"><th scope="row">No repair</th><td><p class="roadmap-condition">The acceptance check performs no source repair; a valid Book renders after acceptance.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for no repair" aria-expanded="true" aria-controls="structural-checking-3-no-repair-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-no-repair-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>no-repair</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-observation-only">check-observation-only</a> · <code>file-preservation</code> — Partial: CI acceptance invocation</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-3-ci-evidence" class="roadmap-criterion-summary"><th scope="row">CI evidence</th><td><p class="roadmap-condition">Record the tested revision, actual workflow results, and local commands; local success alone is not CI evidence.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for ci evidence" aria-expanded="true" aria-controls="structural-checking-3-ci-evidence-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-ci-evidence-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>ci-evidence</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — integration evidence</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-3-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="structural-checking-3-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="structural-checking-3-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
 </tbody>
 </table>
@@ -242,22 +232,22 @@ required to complete this roadmap; milestone 4 demonstrates the agent workflow.
 <tr id="structural-checking-4-agent-repair-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>agent-repair</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/check-diagnostics.html#check-actionable-diagnostics">check-actionable-diagnostics</a> · <code>agent-repair</code> — Full</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-4-separate-edits" class="roadmap-criterion-summary"><th scope="row">Separate edits</th><td><p class="roadmap-condition">Each checker invocation remains read-only; agent edits are separately identifiable.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for separate edits" aria-expanded="true" aria-controls="structural-checking-4-separate-edits-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-4-separate-edits-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>separate-edits</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-observation-only">check-observation-only</a> · <code>file-preservation</code> — Partial: invocations during the agent workflow</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="structural-checking-4-unresolved-cases" class="roadmap-criterion-summary"><th scope="row">Unresolved cases</th><td><p class="roadmap-condition">Cases outside the assignment or the agent’s ability produce an explicit explanation rather than a false completion claim; record versions and assistance.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for unresolved cases" aria-expanded="true" aria-controls="structural-checking-4-unresolved-cases-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-4-unresolved-cases-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>unresolved-cases</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/check-diagnostics.html#check-truthful-results">check-truthful-results</a> · <code>report-scope</code> — Partial: reported scope and limits during the workflow</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-4-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="structural-checking-4-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="structural-checking-4-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
 </tbody>
 </table>
@@ -269,10 +259,8 @@ Use disposable copies for deliberate failures and public-safe reusable fixtures.
 Exercise the actual Book as each capability becomes usable; Structural Checking — Milestone 3 is not the first
 self-use experiment. Do not add success-returning placeholder commands.
 
-Update task progress and remaining work in the Book during implementation.
-When all completion criteria hold, mark the milestone Complete and replace its
-pending record with the revision, checks, results, and integration context.
-Reconcile design changes before claiming completion against revised criteria.
+Follow the [working contract](../ai-working-contract.md) for progress, evidence,
+and design-to-roadmap updates.
 
 This roadmap is complete when all four milestones are complete: the current
 Book and independent fixtures validate the checker, CI exercises it, and recorded

@@ -9,9 +9,6 @@ choices. Role names describe responsibilities, independently of page titles.
 
 ## Anchors
 
-These draft [structured definitions](anchor-definitions.md) express the properties
-above. Verification criteria are planned; implementation and evidence are pending.
-
 ```anchorbook-anchor
 schema-version = 1
 id = "check-book-selection"

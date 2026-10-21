@@ -1,37 +1,24 @@
 # Authority Definitions
 
-**Status: draft schema for review.** Requirements and design decisions are typed
-records, just as anchors are. The authority pages use these definitions now;
-engine parsing, reference validation, and local mdBook rendering are implemented.
-These capabilities are developed through the [record-rendering prototype](record-rendering.md).
-They are a separate scope from the structural check of layout and navigation.
-
-An authority reference identifies a record, not a heading or an arbitrary link.
-The engine can therefore establish whether the record exists, has the expected
-kind, and has an acceptance status compatible with the referencing record.
+**Status: draft schemas for review; parsing, reference validation, and rendering
+implemented.** Requirements and decisions are typed records. Their identities,
+kinds, and acceptance states support authority-link validation independently of
+layout/navigation checks.
 
 ## Evolving the authority model
 
-The authority schemas are provisional. We will refine them through use before
-deciding which parts to stabilize. The current fields, requiredness, authority
-kinds, acceptance states, and relationships are starting choices, not a final
-model of every authority a Book may need.
+The authority model remains provisional. Its fields, which fields are required,
+record kinds, acceptance states, and relationships will be refined through use.
+Maintain one defined current schema while experimenting. When it changes, update
+the affected records, examples, and validation expectations together. Preserve
+record identities when their meaning is unchanged; reconcile references when it
+changes. Propose schema changes rather than adding ad hoc fields.
 
-Keep one clear definition of the current schema while iterating. When a field or
-relationship needs to change, update its schema, affected records, examples, and
-validation expectations together. Preserve record identities when their meaning
-is unchanged, and reconcile references when their meaning changes. Agents should
-propose these changes during design work rather than introduce ad hoc fields.
-
-For now, `schema-version = 1` identifies an unpublished draft. We can revise that
-draft in place and update this Book's records together; each design iteration
-does not need a new version number or a second supported format. Before publishing
-a supported schema, define its compatibility and migration policy. Later changes
-must follow that policy so consuming Books can be updated deliberately.
-
-Accepting a particular requirement or decision does not freeze its storage
-schema. An authority schema change also need not change the anchor schema unless
-it affects how anchors identify or interpret their authority references.
+`schema-version = 1` is an unpublished draft that can evolve in place with this
+Book. Before publication, define compatibility and migration policy for consuming
+Books; subsequent changes follow that policy. Accepting a record does not freeze
+its schema. An authority schema change need not change the anchor schema unless
+it affects how anchors identify or interpret authority references.
 
 ## One format for each record kind
 
@@ -40,11 +27,9 @@ backticks followed by `anchorbook-requirement` or `anchorbook-decision`, and a
 closing line of exactly three backticks. The label determines the record kind;
 there is no second `kind` field in the body. The body is TOML.
 
-These labels, together with `anchorbook-anchor`, are the only definition labels.
-Each kind has exactly one schema. Headings, HTML link targets, and formatted prose
-do not define records. There are no aliases, shorthand forms, or alternate
-serialization formats. Literal examples belong inside an outer code block, as
-shown below; they do not enter the record inventory.
+These labels and `anchorbook-anchor` are the only definition labels, with one
+schema per kind. Headings, links, prose, aliases, and alternate formats do not
+define records. Examples inside outer code blocks are excluded from the inventory.
 
 The [anchor format's rules](anchor-definitions.md#required-fields) for identifiers,
 schema version, nonempty strings, and acceptance status apply to all three kinds.
@@ -169,13 +154,10 @@ unrecognized fields to acquire meaning implicitly.
 
 ## Authored relationships and derived views
 
-The referencing record owns the relationship: an anchor lists its authorities,
-and a decision lists its requirements. Do not author a second reverse-reference
-field on the targets. The engine can derive which anchors rely on a requirement
-or decision from that same index.
-
-The mdBook preprocessor generates readable records and backlinks from the
-validated model. Rendered links do not supply identity to validation.
+Anchors own their authority references; decisions own their requirement references.
+The engine derives backlinks from that index without reverse-reference fields on
+targets. The preprocessor renders the validated model; rendered links do not
+supply identity to validation.
 
 Valid references establish structural consistency and declared acceptance status.
 They do not prove that an authority justifies a property, that a human actually

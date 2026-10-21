@@ -6,15 +6,10 @@
 
 ## Goal
 
-Read and review this Book's anchors, requirements, and decisions as formatted,
-linked content while keeping their structured TOML as the source. Use the
-prototype to exercise and refine the schemas during Prototyping.
-
-This is the first engine implementation increment. It can proceed alongside
-[Engine Bootstrap](bootstrap.md), which still prepares the Book for checker
-implementation. Prototype work does not require the whole checker design or
-bootstrap readiness exercise to be complete. The engineer has selected this
-direction and assigned milestones 1 and 2. Milestone 3 remains proposed work.
+Read this Book's anchors, requirements, and decisions as formatted, linked
+content while retaining canonical TOML sources. Use the prototype to refine the
+schemas. The engineer assigned milestones 1 and 2; milestone 3 remains proposed.
+This work can proceed alongside [Engine Bootstrap](bootstrap.md).
 
 ## Design basis
 
@@ -31,30 +26,19 @@ direction and assigned milestones 1 and 2. Milestone 3 remains proposed work.
   govern [rendered records](../design/record-rendering.md#render-records-in-context)
   and [validated inventory](../design/record-rendering.md#render-validated-records).
 
-All records remain drafts during this prototype. Assignment of an experiment
-does not automatically accept its design or prove its properties.
+Records remain drafts; assignment does not establish design acceptance.
 
 ## Preparation already done
 
-The rendering design, component and sequence diagrams, presentation rules,
-failure behavior, and acceptance criteria are drafted. The original rendering
-requirement, decision, and two anchors are now joined by the authority
-traceability requirement and Rust Engine authority anchor.
-The milestones below record implementation progress, and the checker roadmap
-builds on the shared crate established by this prototype.
-
-The Book builds locally with readable records, linked authority, backlinks, and
-expandable decision details. The source remains canonical TOML. Toolchain,
-dependencies, and API boundaries are documented
-in [Rust Engine](../design/rust-engine.md#implemented-record-api).
+The design and governing records are drafted. Milestones below record the
+implementation and verification of readable records, authority links, backlinks,
+and expandable decision details. [Rust Engine](../design/rust-engine.md#implemented-record-api)
+documents the API and dependencies used by this prototype and the later checker.
 
 ## Module organization follow-up
 
-Following milestone 1, the record implementation is grouped under the `records`
-capability with private model, Markdown, schema, inventory, and diagnostic modules.
-The public capability namespace is `anchor_book::records`; initial crate-root
-imports remain supported. Milestone 2 adds separate `rendering` and
-`adapters::mdbook` modules on that foundation.
+The `records`, `rendering`, and `adapters::mdbook` capabilities follow the
+[Rust Engine module boundaries](../design/rust-engine.md#internal-boundaries).
 
 The module refactor was verified locally before amending milestone 1 (<code>b405bc1</code>):
 independent tests and Clippy pass on Rust 1.85 and 1.90; the current-Book acceptance
@@ -64,23 +48,18 @@ behavior and the milestone's scope are unchanged.
 
 ## Design reconciliation
 
-The design baseline at `b9df14a` adds `engine-valid-authority` and its requirement.
-Record tests, current-Book acceptance, rendering, and local-link checks passed
-during that change. The subsequent decision review retains five decisions that
-constrain later design; the Book now contains 25 records and 32 authority
-references. The independent-build anchor cites its requirement directly. Testing
-strategy, CLI details, and implementation order remain in their design and
-roadmaps. This cleanup changes authority records, not implementation scope or
-anchor criteria; existing completed evidence remains historical. The earlier 24-record evidence
-below remains the evidence for milestones 1 and 2 at their recorded revisions.
-Milestone 2 was committed as `2f761c5`.
+At `b9df14a`, the design added `engine-valid-authority` and its requirement.
+Record tests, current-Book acceptance, rendering, and local-link checks passed.
+The subsequent decision review retained five decisions and direct requirement
+authority for the independent-build anchor: 25 records and 32 authority references.
+It changed authority records, not implementation scope or anchor criteria.
+The 24-record evidence below remains historical evidence for milestones 1 and 2;
+milestone 2 was committed as `2f761c5`.
 
-Milestone 3 now includes an explicit review of test coverage for all three new
-anchor criteria and any missing cases. Existing tests are a starting point;
-adding the anchor does not automatically establish complete verification.
-Anchors now appear before design detail, redundant card headings were removed,
-and general authoring guidance lives in the working contract. Those presentation
-changes passed Book checks and do not add another engine capability.
+Milestone 3 covers all three criteria of the new authority anchor, including
+reviewing existing tests and filling gaps. Adding the anchor does not establish
+verification. Moving anchors above design detail and removing redundant headings
+passed Book checks without adding engine scope.
 
 <a id="record-rendering-1"></a>
 
@@ -214,19 +193,19 @@ changes passed Book checks and do not add another engine capability.
 <tr id="record-rendering-3-local-preview-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>local-preview</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — contributor workflow</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="record-rendering-3-independent-ci" class="roadmap-criterion-summary"><th scope="row">Independent CI</th><td><p class="roadmap-condition">Engine compilation and fixture tests remain runnable with an invalid Book; separate current-Book acceptance reports invalid input usefully and must pass before rendering and publishing the same revision.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for independent ci" aria-expanded="true" aria-controls="record-rendering-3-independent-ci-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-independent-ci-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-ci</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/record-rendering.html#render-validated-records">render-validated-records</a> · <code>protocol-and-independence</code> — Partial: independence and failure reporting in CI</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="record-rendering-3-published-build" class="roadmap-criterion-summary"><th scope="row">Published build</th><td><p class="roadmap-condition">Record passing engine, current-Book, rendered-output, and Pages deployment results for the same implementation revision; review the published cards and authority links under the project URL. A local pass is insufficient.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for published build" aria-expanded="true" aria-controls="record-rendering-3-published-build-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-published-build-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>published-build</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — CI integration</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="record-rendering-3-documented-limits" class="roadmap-criterion-summary"><th scope="row">Documented limits</th><td><p class="roadmap-condition">Document setup, supported versions, and schema/rendering limits. Pushing remains a separately directed action.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for documented limits" aria-expanded="true" aria-controls="record-rendering-3-documented-limits-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-documented-limits-details" class="roadmap-criterion-details"><td colspan="2">
@@ -235,7 +214,7 @@ changes passed Book checks and do not add another engine capability.
 <p><strong>Evidence:</strong> Local setup and version/schema limits are documented in CONTRIBUTING and the rendering design at <code>2f761c5</code>. Recheck these instructions against the final CI configuration; publication evidence remains pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="record-rendering-3-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="record-rendering-3-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="record-rendering-3-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
 </tbody>
 </table>
@@ -243,13 +222,12 @@ changes passed Book checks and do not add another engine capability.
 
 ## Handoff and later work
 
-Record what the prototype teaches us about authoring, presentation, and schema
-changes. Reconcile these changes with the design and records during the work.
-Do not mark a milestone complete solely because it renders the happy-path Book.
+Reconcile prototype findings with design and records under the
+[working contract](../ai-working-contract.md). Happy-path rendering alone does
+not complete a milestone.
 
-[Structural Checking](structural-checker.md) will extend the same crate with the
-configuration reader and layout/navigation checks. It can reuse record-model
-infrastructure where applicable without invoking the renderer. Materialization,
-generated contracts, cross-Book authority, evidence pages, and generated progress
-indexes remain separate increments. No existing checker milestone is completed
+[Structural Checking](structural-checker.md) extends this crate with configuration
+and layout/navigation checks, reusing record infrastructure without invoking the
+renderer. See [later work](index.md#later-work-retained-from-the-design) for deferred
+capabilities. No existing checker milestone is completed
 or renumbered by this roadmap.

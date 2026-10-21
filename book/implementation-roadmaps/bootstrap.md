@@ -5,35 +5,24 @@
 **Status:** In progress. Design and working-contract drafts are in place;
 review and agent-readiness checks remain.
 
-The initial Book is published through GitHub Actions and Pages. Current rendering
-and design changes have been checked locally; remote verification remains pending.
-
 ## Goal
 
-Prepare this Book to guide building the structural checker. It must contain
-the checker design, governing requirements and decisions, initial design anchors,
-an agreed implementation roadmap, and a working contract that enables agents
-to read the Book and carry out assigned work.
+Prepare this Book so an engineer can assign structural-checker implementation
+and an agent can understand the intended behavior, applicable requirements and
+decisions, anchors, and completion criteria before starting.
 
-Bootstrap prepares that working context. It does not implement the checker,
-materialization, or engine-generated contracts.
+The Book needs a reviewed checker design, an agreed implementation roadmap, and
+a working contract that guides agents to read and use that context. Bootstrap
+completes when both milestones demonstrate that readiness. A working checker is
+the outcome of the [Structural Checking roadmap](structural-checker.md);
+materialization and engine-generated contracts are later work.
 
-The [Record Rendering prototype](record-rendering.md) has delivered its record
-library and readable cards locally while bootstrap preparation continues.
-Authority-criterion coverage and CI integration remain in its third milestone.
-Its own scoped design and roadmap govern that experiment;
-it does not depend on completing all checker preparation. Bootstrap's goal and
-milestone identifiers remain focused on readiness to build the checker.
+[Record Rendering](record-rendering.md) proceeds alongside this preparation under
+its own scoped design and roadmap. Its first two milestones are complete locally;
+authority-criterion coverage and CI integration remain in milestone 3.
 
-The [System Overview](../design/system-overview.md) supplies the system context;
+The [System Overview](../design/system-overview.md) provides system context;
 the [AI Working Contract](../ai-working-contract.md) defines how agents work.
-Each milestone enables an outcome with tasks and evidence for completion.
-
-Bootstrap is complete when both milestones are complete: the engineer can use
-this Book to assign checker implementation, and an agent can load the intended
-behavior, governing authority, anchors, and completion criteria from it. A
-working checker is the outcome of the subsequent Structural Checking roadmap,
-not a prerequisite for completing Bootstrap.
 
 <a id="engine-bootstrap-1"></a>
 
@@ -55,17 +44,17 @@ not a prerequisite for completing Bootstrap.
 <tr id="engine-bootstrap-1-traceable-design-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>traceable-design</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — design preparation</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="engine-bootstrap-1-agreed-scope" class="roadmap-criterion-summary"><th scope="row">Agreed scope</th><td><p class="roadmap-condition">The engineer agrees on the checker scope and roadmap. Implementation choices are resolved or explicitly deferred outside that scope.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for agreed scope" aria-expanded="true" aria-controls="engine-bootstrap-1-agreed-scope-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="engine-bootstrap-1-agreed-scope-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>agreed-scope</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — work agreement</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The current design baseline is <code>b9df14a</code>. Record parsing and rendering are implemented locally. The new authority traceability requirement and Rust Engine anchor are covered by the <a href="record-rendering.html#record-rendering-3-authority-coverage">rendering follow-up</a>; they do not expand the first structural check. Local Book builds and record/link checks have passed. These checks do not establish checker implementation or acceptance of the governing records. Completed rendering evidence remains in its own roadmap.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending review and scope agreement. The rendering prototype has established the initial crate and parser choices; checker-specific choices remain open.</td></tr>
 </tbody>
 </table>
@@ -91,13 +80,13 @@ not a prerequisite for completing Bootstrap.
 <tr id="engine-bootstrap-2-agent-startup-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>agent-startup</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — workflow readiness</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="engine-bootstrap-2-assigned-scope" class="roadmap-criterion-summary"><th scope="row">Assigned scope</th><td><p class="roadmap-condition">Each agent identifies the assigned checker milestone, governing design, authority, anchors, and completion criteria without beginning unassigned implementation.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for assigned scope" aria-expanded="true" aria-controls="engine-bootstrap-2-assigned-scope-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="engine-bootstrap-2-assigned-scope-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>assigned-scope</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — workflow readiness</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="engine-bootstrap-2-design-reconciliation" class="roadmap-criterion-summary"><th scope="row">Design reconciliation</th><td><p class="roadmap-condition">A fresh-session exercise changes a design criterion and updates the affected roadmap in the same change. The agent identifies stale evidence and proposed follow-up work without claiming completion or starting unassigned implementation.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for design reconciliation" aria-expanded="true" aria-controls="engine-bootstrap-2-design-reconciliation-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="engine-bootstrap-2-design-reconciliation-details" class="roadmap-criterion-details"><td colspan="2">
@@ -109,11 +98,11 @@ not a prerequisite for completing Bootstrap.
 <tr id="engine-bootstrap-2-readiness-record-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>readiness-record</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — workflow readiness</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Preparation already done</th><td colspan="1"><code>AGENTS.md</code> directs agents to the manually maintained <a href="../ai-working-contract.html">AI Working Contract</a>, which requires reading the Book before taking up assigned work. The contract now covers the goal system, authority and anchors, project phases, roadmap creation, scoped implementation, progress updates, anchor placement, authority reasoning, and design-to-roadmap reconciliation.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-2-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="engine-bootstrap-2-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>
+<tr id="engine-bootstrap-2-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. Fresh-session startup and the assigned checker readiness walkthrough have not been demonstrated. The preparation above does not establish that agents follow the instructions successfully.</td></tr>
 </tbody>
 </table>
@@ -121,16 +110,11 @@ not a prerequisite for completing Bootstrap.
 
 ## Handoff to Structural Checking
 
-When Bootstrap is complete, the engineer can assign work from
-[Structural Checking](structural-checker.md). That roadmap delivers the agent's
-check, repair, and recheck loop. Bootstrap completion does not itself assign
-or start that implementation.
-
-The initial anchors are now drafted alongside the checker designs, grounded in
-requirements and design decisions. Review their properties and criteria together
-with the [canonical definition format](../design/anchor-definitions.md). Defining
-those properties does not require an implemented anchor parser or cross-Book
-authority.
+After both milestones complete, the engineer can assign
+[Structural Checking](structural-checker.md) work. Bootstrap completion does not
+itself assign that work. Review the drafted anchors and their criteria with the
+[canonical format](../design/anchor-definitions.md); cross-Book authority is not
+needed for this local design.
 
 ## Scope changes and reserved identifiers
 

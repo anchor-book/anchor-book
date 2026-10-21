@@ -1,22 +1,12 @@
 # Requirements
 
-Requirements establish what the system must accomplish and the constraints it
-must respect. They provide authority for design choices and for anchors that
-express the properties the built system must preserve.
-
-Each requirement should make its intended outcome and source clear. Proposed
-requirements remain distinguishable from accepted requirements.
+Requirements state required outcomes and constraints, with their source.
 
 ## Initial checker requirements
 
-**Status: draft for review.** All records below are proposed formulations of the
-checker goals developed during bootstrap. Recording them does not establish
-acceptance or implementation. Their source describes the product need; links to
-anchors identify the properties intended to satisfy it.
-
-Each record uses the single [authority definition format](../design/authority-definitions.md).
-The record library validates their schema and references. Rendered links are derived from the record inventory; the anchor definitions
-own their authority references.
+**Status: draft for review.** These records express the checker goals; their
+sources explain the product need. Authority links and backlinks are derived
+from the record inventory.
 
 ```anchorbook-requirement
 schema-version = 1

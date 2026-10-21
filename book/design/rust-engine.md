@@ -73,11 +73,9 @@ operations. The binary handles arguments, presentation, streams, and exit status
 A project integration test calls the library directly. The initial mdBook adapter
 translates between mdBook's protocol and the shared record model.
 
-[Record Rendering](record-rendering.md) is the first implementation increment.
-It establishes this package, canonical record parsing, authority resolution, and
-HTML presentation through `anchorbook md`. The configuration reader and
-`anchorbook check` follow. Compiling the crate requires neither a valid Book nor
-rendered output; this order introduces no build-time dependence on the Book.
+[Record Rendering](record-rendering.md) establishes parsing, authority resolution,
+and `anchorbook md`. Configuration and `anchorbook check` follow. Compiling the
+crate requires neither a valid Book nor rendered output.
 
 Cargo supports [library and binary targets in one package](https://doc.rust-lang.org/cargo/reference/cargo-targets.html);
 the binary uses the library's public API.
@@ -99,9 +97,8 @@ flowchart TB
 
 ## Internal boundaries
 
-Organize the library by capability from the start. Each capability exposes a
-small interface and owns private implementation modules. Keep one Cargo package
-until dependency or release requirements justify splitting it.
+Organize the library by capability, each with a small interface and private
+implementation modules.
 
 The implemented layout is:
 
@@ -122,10 +119,8 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-New work adds capability modules when implemented: `configuration`, `checking`,
-`materialization`, and `contract`. Record presentation is in `rendering`; external
-protocol handling is under `adapters`, beginning with the mdBook adapter. Do not create empty modules
-or mix new capabilities into the record parser merely because it was built first.
+Add `configuration`, `checking`, `materialization`, and `contract` as they are
+implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -176,10 +171,10 @@ and body byte ranges, and locations for authority references. A later renderer
 can replace exactly those blocks and resolve links from the same inventory.
 Backlinks contain sorted, unique IDs of direct referring records.
 
-The internal modules separate Markdown recognition, schema decoding, record
-models, inventory resolution, and diagnostics. Raw Serde types remain private.
-Public types use standard `Path`/`PathBuf`, enums, borrowed inputs, owned results,
-and `std::error::Error`; parser-specific types are not API requirements.
+Raw Serde deserialization types remain private. Public types use `Path` and
+`PathBuf` for filesystem paths, enums for finite states, borrowed inputs, owned
+results, and `std::error::Error`. Callers do not need parser-specific types to
+inspect records or failures.
 
 An invalid inventory returns diagnostics, never a partially validated inventory.
 Each diagnostic exposes a stable code, typed problem, explanation, source
@@ -221,11 +216,11 @@ together; schema flexibility does not mean accepting alternate current formats.
 
 ## Results and errors
 
-The first record operations accept supplied chapter text and locations, returning
-a validated inventory or located diagnostics. Rendering accepts that inventory;
-it does not re-parse definitions or independently resolve relationships. The
-mdBook adapter owns JSON serialization, stderr reporting, and protocol exit
-statuses. These do not imply the checking operation below is already implemented.
+Record operations accept supplied chapter text and locations and return a
+validated inventory or diagnostics with source locations. Rendering uses that
+inventory without reparsing definitions or independently resolving relationships.
+The mdBook adapter handles protocol serialization; the CLI handles process streams
+and exit statuses. The following checking interface remains a design draft.
 
 A successfully completed check returns a report, even if that report contains
 structural violations. Missing required files follow the structural rules;
@@ -256,10 +251,9 @@ than requiring Rust callers to parse rendered messages.
 
 ## Rust development conventions
 
-Keep the public surface small and document its behavior, errors, and examples.
-Use standard traits where they have useful semantics; do not add traits or
-generic parameters merely to anticipate future integrations. These choices
-follow the [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/checklist.html).
+Keep the public API small, with documented behavior, errors, and examples. Use
+standard traits where useful; avoid speculative traits or generics. Follow the
+[Rust API Guidelines](https://rust-lang.github.io/api-guidelines/checklist.html).
 
 For each implementation increment:
 
@@ -285,8 +279,6 @@ policy are part of release readiness.
 
 ## Choices still open
 
-The record library and adapter establish the initial toolchain, parser, and
-protocol choices. Structural checking will
-settle configuration and navigation-reader dependencies and APIs. The first
-checker does not need an asynchronous runtime, dynamic rule registration, or
-test-verifier execution APIs. Those require concrete workflows before design.
+Structural checking must settle configuration and navigation-reader dependencies
+and APIs. Async runtimes, dynamic rules, and verifier execution need concrete
+workflows before design; the first checker does not require them.

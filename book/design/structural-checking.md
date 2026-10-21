@@ -4,20 +4,15 @@
 capability, planned after the [rendering prototype](record-rendering.md). The
 command and library operation are not implemented.
 
-`check` answers whether the current Book conforms to a declared set of rules.
-The first increment covers configured layout and navigation. It supplies the
-shared basis for later initialization, adoption, and materialization.
+`check` answers whether the current Book conforms to its configured layout and
+navigation rules. These rules will also support initialization, adoption of existing
+projects, and materialization of managed content.
 
-The user outcome is an agent that can iterate on a Book's structure until it
-conforms: check, understand the findings, make appropriate changes within the
-assigned scope, and recheck. Diagnostics must identify what is wrong, where it
-is, and what is expected. In the first increment, the agent performs the edits;
-the checker itself remains read-only.
+An agent uses the findings to locate defects, understand the expected structure,
+make appropriate changes within its assignment, and recheck until the structure
+passes. The agent performs those edits; the checker remains read-only.
 
 ## Anchors
-
-These draft [structured definitions](anchor-definitions.md) link the initial
-rules to authority. Implementation and verification evidence are pending.
 
 ```anchorbook-anchor
 schema-version = 1
@@ -142,9 +137,10 @@ sequenceDiagram
     end
 ```
 
-The library performs no writes, dependency downloads, subprocess execution,
-materialization, or project test runs. Reading configuration must not execute
-configured preprocessors. Checking works without rendering the Book.
+All stages preserve the [observation-only property](#check-observation-only).
+Reading configuration must not execute configured preprocessors, and checking
+works without rendered output. Repairs, materialization, and project test runs
+are separate from this operation.
 
 ## Initial rules
 
@@ -168,9 +164,8 @@ that prevent reliable evaluation produce an unsupported-input error.
 Validation of links inside chapter prose and of heading fragments is outside
 this first scope.
 
-The detailed syntax support and mdBook version must be documented with the
-parser chosen for implementation. The checker must not silently interpret
-unrecognized navigation as an empty, valid Book.
+Document the parser's supported syntax and mdBook version. Unrecognized
+navigation cannot be interpreted as an empty, valid Book.
 
 ## Findings and incomplete checks
 
@@ -178,10 +173,8 @@ The [Checking Diagnostics](check-diagnostics.md) design specifies the report
 fields, diagnostic codes, expected/found descriptions, repair guidance, and
 concrete examples for failed, incomplete, and passing invocations.
 
-Each finding carries a stable rule identifier, severity, relevant location,
-explanation, and suggested next action when useful. Diagnostics should name the
-configured path and role rather than prescribe a hard-coded `book/` layout.
-Prefer project-relative locations in user-facing output.
+Findings use configured paths and roles, with project-relative display locations,
+rather than prescribing a hard-coded `book/` layout.
 
 A missing source, summary, chapter, or renderer configuration is a structural
 violation. Report the root cause and identify dependent rules as blocked,
@@ -199,11 +192,10 @@ turn an incomplete evaluation into a pass.
 | `1` | Evaluation completed and found structural violations |
 | `2` | Invalid invocation/configuration or inability to complete evaluation |
 
-Operational failure takes precedence if structural violations were also found.
-The library returns typed data; only the CLI chooses exit status. Human-readable
-completed reports go to stdout; incomplete reports and their partial findings
-go together to stderr. A machine
-output format can be added with its own documented schema.
+Operational failure takes precedence when structural violations were also found.
+The library returns typed data; only the CLI maps it to an exit status. Completed
+reports go to stdout. Incomplete reports, including any partial findings, go
+together to stderr. A future machine-readable format needs its own documented schema.
 
 A passing report states its limited scope. It does not establish that design
 is complete, anchors have adequate authority, implementation exists, tests pass,
