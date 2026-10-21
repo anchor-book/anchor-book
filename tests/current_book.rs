@@ -34,11 +34,11 @@ fn current_book_records() {
         }
         panic!("current Book failed record acceptance")
     });
-    assert_eq!(inventory.len(), 26);
+    assert_eq!(inventory.len(), 25);
     for (kind, expected) in [
         (RecordKind::Anchor, 12),
         (RecordKind::Requirement, 8),
-        (RecordKind::Decision, 6),
+        (RecordKind::Decision, 5),
     ] {
         assert_eq!(
             inventory.records().filter(|r| r.kind() == kind).count(),
@@ -50,7 +50,7 @@ fn current_book_records() {
             .records()
             .map(|r| r.references().len())
             .sum::<usize>(),
-        34
+        32
     );
     let expected = [
         "check-actionable-diagnostics",
@@ -63,7 +63,6 @@ fn current_book_records() {
         "check-shared-typed-results",
         "check-truthful-results",
         "decision-explicit-configuration",
-        "decision-independent-book-acceptance",
         "decision-mdbook-structure",
         "decision-separate-check-and-repair",
         "decision-shared-record-rendering",

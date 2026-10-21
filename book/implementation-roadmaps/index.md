@@ -159,6 +159,12 @@ An AI-generated roadmap is a proposal until we agree on it. If the design change
 or implementation reveals a new constraint, the AI proposes the corresponding
 roadmap changes for review. The agreed roadmap remains the basis for agent work.
 
+Reconcile affected roadmaps in the same change as the design. Review outcomes,
+dependencies, tasks, completion criteria, anchor references, and evidence;
+record new work or an explicit deferral. Completed evidence remains tied to its
+tested revision. The [AI Working Contract](../ai-working-contract.md#keep-roadmaps-aligned-with-the-goal-design)
+defines the agent's responsibilities for this reconciliation.
+
 Verification evidence establishes whether a capability works; agreement on a
 planned milestone alone does not establish completion.
 
@@ -166,7 +172,8 @@ planned milestone alone does not establish completion.
 
 - [Record Rendering](record-rendering.md) has completed its record-library and
   readable-rendering milestones locally. The book uses the adapter in local
-  preview; complete CI integration and remote verification remain in milestone 3.
+  preview; milestone 3 includes explicit coverage of the new authority anchor,
+  CI integration, and remote verification.
 - [Engine Bootstrap](bootstrap.md) is in progress. The design, authority, anchors,
   working contract, and checker roadmap are drafted. Review, remaining technical
   choices, and fresh-agent readiness checks are still outstanding. That
@@ -184,3 +191,24 @@ Completed drafting tasks are recorded separately from milestone completion.
 Unassigned implementation milestones remain proposals for review. Later capabilities need their relevant design
 and detailed work agreed before implementation begins. The Book owns these
 roadmaps now; engine automation is not a prerequisite for maintaining them.
+
+## Later work retained from the design
+
+These capabilities are part of the goal system but are outside the three current
+roadmaps. They remain deferred, not omitted or assigned. Each needs a sufficiently
+clear design and outcome-based milestones before implementation.
+
+| Capability | Design basis | Work to define before implementation |
+| --- | --- | --- |
+| Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
+| Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
+| Deliver the working contract | [Contract transition](../ai-working-contract.md#transition-to-engine-delivery) | Engine-owned content, configuration specialization, command retrieval, and agent bootstrap; remove the temporary Book copy when that path works. |
+| Structured roadmaps and proposal support | [Roadmap model](#defining-the-work), [Design Proposals](../design/proposals/index.md) | Define roadmap/milestone schemas and criterion references before parsing or rendering them. Define any proposal tooling beyond the manual workflow; preserve the distinction between approval, design reconciliation, and implementation. |
+| Anchor progress and verification evidence | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Source/test associations, provided test surfaces, evidence ingestion, and progress views. Include formal verification assumptions, bounds, and inconclusive results; distinguish existing tests from passing executions and keep verification independent of its consuming Book build. |
+| Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |
+| Automated phase and readiness checks | [Project phase](../design/configuration.md#project-phase) | Define what can establish design readiness or completion and how further iterations preserve a completed baseline. The first configuration reader only exposes the phase. |
+| Crate release | [Rust Engine](../design/rust-engine.md#rust-development-conventions) | Registry naming, package contents, public API and schema compatibility, bundled resources when introduced, and release verification. Publishing is separate from local prototyping. |
+
+The prototype's mdBook-version, output-format, and plain-text-field limits remain
+documented constraints. Expanding them needs its own design and roadmap change;
+they are not implicit tasks in the current rendering milestone.

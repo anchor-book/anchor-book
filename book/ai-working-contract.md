@@ -134,7 +134,46 @@ updates. Roadmap work does not itself authorize pushing, merging, or changes to
 unrelated work. This process currently uses ordinary Book content; specialized
 commands or prompt templates may be added later.
 
+## Keep roadmaps aligned with the goal design
+
+When the goal design changes, update the affected roadmaps in the same change.
+This includes changes to requirements, decisions, anchors, and verification
+criteria. The roadmap must describe the work needed to reach the current goal,
+not a previous version of it. Do this during design iteration, before agents take
+up implementation against an outdated plan.
+
+Review affected milestone outcomes, dependencies, tasks, completion criteria,
+anchor-criterion references, progress, and evidence. Add, revise, or retire work
+as needed, preserving stable identifiers. Map new properties to planned work or
+record an explicit deferral and its reason. Wording or presentation changes may
+need no roadmap change; check their impact without inventing implementation work.
+
+The obligation is the same in every phase; how we agree on and carry out the
+revised work differs:
+
+| Project phase | Roadmap updates when the goal design changes |
+| --- | --- |
+| **Prototyping** | Evolve draft design and provisional milestones together. Revise experiments, tasks, and completion criteria as we learn. Record what changed and what remains uncertain. Keep completed experiments as evidence of what was tried; they do not automatically verify the revised goal. A whole-system design review is not a prerequisite for a scoped experiment agreed with the engineer. |
+| **Building** | Identify the agreed work and accepted governing records affected by the change. Reconcile revised design, scope, dependencies, and completion criteria with the engineer before implementing the changed work. Identify work that must be repeated or reverified; unaffected assigned work can continue. |
+| **Complete** | Preserve the completed scope, revision, and evidence. Further design changes define another iteration, with new or revised milestones for the additional work. The engineer chooses Prototyping or Building for that iteration; do not reinterpret earlier completion as proof of the new goal. |
+
+Design-to-implementation iteration happens in every phase; it is not a separate
+phase. A scoped prototype alongside accepted work must state its boundaries
+without loosening the obligations of unrelated work.
+
+Keep prior evidence tied to the design and implementation revision it tested.
+Review its applicability to changed criteria and record remaining gaps in open
+work. Do not silently carry a Complete status over to a changed outcome. New
+scope remains proposed until agreed, and updating the roadmap does not by itself
+authorize starting that implementation.
+
 ## Maintain the Book's relationships
+
+Record a design decision only when it constrains other parts of the design.
+State the choice and which later design must account for it. Keep local details
+in their design and work sequencing in the roadmap. Do not repeat requirements
+as decisions or create a decision merely to give an anchor authority. Keep each
+record focused and concise; a requirement can ground an anchor directly.
 
 Place a design chapter's anchors at the top, after its brief introduction and
 before the detailed design. Keep general guidance about authoring and using

@@ -119,7 +119,6 @@ The `requirements` field is always present. An empty array explicitly declares
 that the decision is not derived from a recorded requirement; its rationale must
 explain its independent basis. A decision can itself provide authority for an
 anchor. The schema does not invent a requirement merely to fill a reference.
-All five initial checker decisions do reference requirements.
 
 ## Validating authority relationships
 
@@ -175,10 +174,8 @@ and a decision lists its requirements. Do not author a second reverse-reference
 field on the targets. The engine can derive which anchors rely on a requirement
 or decision from that same index.
 
-For now, the authority pages have ordinary links below their blocks to aid human
-review. Those links are not another source of relationships or valid definitions.
-A future preprocessor will generate readable records and backlinks from the
-validated model. Temporary HTML link targets do not supply identity to validation.
+The mdBook preprocessor generates readable records and backlinks from the
+validated model. Rendered links do not supply identity to validation.
 
 Valid references establish structural consistency and declared acceptance status.
 They do not prove that an authority justifies a property, that a human actually

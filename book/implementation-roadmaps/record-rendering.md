@@ -2,7 +2,7 @@
 
 **Roadmap identifier:** `record-rendering`
 
-**Status:** Milestones 1 and 2 complete locally; milestone 3 awaits CI integration and remote verification.
+**Status:** Milestones 1 and 2 complete locally; milestone 3 covers authority-criterion evidence, CI integration, and remote verification.
 
 ## Goal
 
@@ -22,7 +22,10 @@ direction and assigned milestones 1 and 2. Milestone 3 remains proposed work.
   presentation, validation behavior, and source preservation.
 - [Anchor Definitions](../design/anchor-definitions.md) and
   [Authority Definitions](../design/authority-definitions.md) define the current schemas.
-- [Rust Engine](../design/rust-engine.md) supplies package and API boundaries.
+- [Rust Engine](../design/rust-engine.md) supplies package and API boundaries. Its
+  [valid-authority anchor](../design/rust-engine.md#engine-valid-authority), grounded
+  in [traceable properties](../authority/requirements.md#requirement-traceable-properties),
+  defines the authority checks to exercise explicitly in milestone 3.
 - [Readable records requirement](../authority/requirements.md#requirement-readable-records)
   and [shared rendering decision](../authority/design-decisions.md#decision-shared-record-rendering)
   govern [rendered records](../design/record-rendering.md#render-records-in-context)
@@ -34,8 +37,9 @@ does not automatically accept its design or prove its properties.
 ## Preparation already done
 
 The rendering design, component and sequence diagrams, presentation rules,
-failure behavior, and acceptance criteria are drafted. One requirement, one
-design decision, and two anchors establish the prototype's intended behavior.
+failure behavior, and acceptance criteria are drafted. The original rendering
+requirement, decision, and two anchors are now joined by the authority
+traceability requirement and Rust Engine authority anchor.
 The milestones below record implementation progress, and the checker roadmap
 builds on the shared crate established by this prototype.
 
@@ -52,11 +56,31 @@ The public capability namespace is `anchor_book::records`; initial crate-root
 imports remain supported. Milestone 2 adds separate `rendering` and
 `adapters::mdbook` modules on that foundation.
 
-The module refactor was verified locally before amending this milestone commit:
+The module refactor was verified locally before amending milestone 1 (<code>b405bc1</code>):
 independent tests and Clippy pass on Rust 1.85 and 1.90; the current-Book acceptance
 test, API documentation, formatting, and Book build/link checks pass. The refactor
-is included in this commit; push and remote verification are pending. Record
+is included in that commit; push and remote verification are pending. Record
 behavior and the milestone's scope are unchanged.
+
+## Design reconciliation
+
+The design baseline at `b9df14a` adds `engine-valid-authority` and its requirement.
+Record tests, current-Book acceptance, rendering, and local-link checks passed
+during that change. The subsequent decision review retains five decisions that
+constrain later design; the Book now contains 25 records and 32 authority
+references. The independent-build anchor cites its requirement directly. Testing
+strategy, CLI details, and implementation order remain in their design and
+roadmaps. This cleanup changes authority records, not implementation scope or
+anchor criteria; existing completed evidence remains historical. The earlier 24-record evidence
+below remains the evidence for milestones 1 and 2 at their recorded revisions.
+Milestone 2 was committed as `2f761c5`.
+
+Milestone 3 now includes an explicit review of test coverage for all three new
+anchor criteria and any missing cases. Existing tests are a starting point;
+adding the anchor does not automatically establish complete verification.
+Anchors now appear before design detail, redundant card headings were removed,
+and general authoring guidance lives in the working contract. Those presentation
+changes passed Book checks and do not add another engine capability.
 
 ## Milestones
 
@@ -185,22 +209,28 @@ behavior and the milestone's scope are unchanged.
 <tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Record Rendering — Milestone 2.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="#design-basis">Rendering design and governing records</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>record-rendering-3</code></td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled checked> Configure <code>book.toml</code> and preprocessor ordering; document local setup and preview. Completed alongside milestone 2 to enable local review.</label></li><li><label><input type="checkbox" disabled> Extend the existing engine checks with record rendering in CI, preserving the existing Pages output path. Do not add a placeholder structural check.</label></li><li><label><input type="checkbox" disabled> Exercise a clean build and a live source-edit/rebuild cycle.</label></li><li><label><input type="checkbox" disabled> Record actual GitHub Actions results for the implemented revision when that revision is pushed through the engineer&#x27;s chosen contribution workflow.</label></li></ul></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled checked> Configure <code>book.toml</code> and preprocessor ordering; document local setup and preview. Completed alongside milestone 2 to enable local review.</label></li><li><label><input type="checkbox" disabled> Review and complete independent test coverage for every criterion of <code>engine-valid-authority</code>; record the exact tests and remaining gaps.</label></li><li><label><input type="checkbox" disabled> Make Book rendering and Pages publication depend on passing engine checks and current-Book acceptance for the same revision. The current Engine and Book workflows run independently, so passing one does not gate the other. Preserve <code>target/anchorbook</code> and do not add a placeholder structural check.</label></li><li><label><input type="checkbox" disabled> Run rendered field/link acceptance in CI with Python 3.11 or later and the pinned mdBook version, including authority links and combined-print targets.</label></li><li><label><input type="checkbox" disabled> Exercise a clean build and a live source-edit/rebuild cycle.</label></li><li><label><input type="checkbox" disabled> Record actual GitHub Actions results for the implemented revision when that revision is pushed through the engineer&#x27;s chosen contribution workflow.</label></li></ul></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
+<tr id="record-rendering-3-authority-coverage" class="roadmap-criterion-summary"><th scope="row">Authority coverage</th><td><p class="roadmap-condition">Independent tests exercise every authority criterion through the record API; invalid authority also fails the actual preprocessor without successful partial output. Record the tests and results for the implementation revision.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for authority coverage" aria-expanded="true" aria-controls="record-rendering-3-authority-coverage-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="record-rendering-3-authority-coverage-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>authority-coverage</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#engine-valid-authority">engine-valid-authority</a> · <code>required-authority</code>, <code>resolved-authority</code>, <code>compatible-status</code> — Full</p>
+<p><strong>Evidence:</strong> Pending criterion-by-criterion review. Existing record/schema/reference and adapter tests passed before this anchor was added; current-Book acceptance checks the new reference and backlink. Those results alone do not establish complete coverage of the new criteria.</p>
+</td></tr>
 <tr id="record-rendering-3-local-preview" class="roadmap-criterion-summary"><th scope="row">Local preview</th><td><p class="roadmap-condition">Clean builds and live source-edit/rebuild cycles use the record adapter successfully.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for local preview" aria-expanded="true" aria-controls="record-rendering-3-local-preview-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-local-preview-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>local-preview</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — contributor workflow</p>
 <p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
 </td></tr>
-<tr id="record-rendering-3-independent-ci" class="roadmap-criterion-summary"><th scope="row">Independent CI</th><td><p class="roadmap-condition">Engine compilation and fixture tests remain runnable with an invalid Book; the separate Book build reports invalid input usefully.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for independent ci" aria-expanded="true" aria-controls="record-rendering-3-independent-ci-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="record-rendering-3-independent-ci" class="roadmap-criterion-summary"><th scope="row">Independent CI</th><td><p class="roadmap-condition">Engine compilation and fixture tests remain runnable with an invalid Book; separate current-Book acceptance reports invalid input usefully and must pass before rendering and publishing the same revision.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for independent ci" aria-expanded="true" aria-controls="record-rendering-3-independent-ci-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-independent-ci-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-ci</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/record-rendering.html#render-validated-records">render-validated-records</a> · <code>protocol-and-independence</code> — Partial: independence and failure reporting in CI</p>
 <p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
 </td></tr>
-<tr id="record-rendering-3-published-build" class="roadmap-criterion-summary"><th scope="row">Published build</th><td><p class="roadmap-condition">Record a successful GitHub Actions run for the valid implementation revision using the same rendering path as local builds. A local pass is insufficient.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for published build" aria-expanded="true" aria-controls="record-rendering-3-published-build-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="record-rendering-3-published-build" class="roadmap-criterion-summary"><th scope="row">Published build</th><td><p class="roadmap-condition">Record passing engine, current-Book, rendered-output, and Pages deployment results for the same implementation revision; review the published cards and authority links under the project URL. A local pass is insufficient.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for published build" aria-expanded="true" aria-controls="record-rendering-3-published-build-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-rendering-3-published-build-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>published-build</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — CI integration</p>
@@ -210,7 +240,7 @@ behavior and the milestone's scope are unchanged.
 <tr id="record-rendering-3-documented-limits-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>documented-limits</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — contributor documentation</p>
-<p><strong>Evidence:</strong> Not recorded. Record the tested revision, checks, results, supporting records, limitations, and integration context here.</p>
+<p><strong>Evidence:</strong> Local setup and version/schema limits are documented in CONTRIBUTING and the rendering design at <code>2f761c5</code>. Recheck these instructions against the final CI configuration; publication evidence remains pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="record-rendering-3-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
 <tr id="record-rendering-3-evidence" class="roadmap-criterion-details"><td colspan="2">No milestone acceptance evidence recorded. See <a href="index.html#evidence-records">evidence fields</a> when recording results.</td></tr>

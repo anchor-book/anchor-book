@@ -26,7 +26,6 @@ step before rendering, so the engine remains usable to diagnose a broken Book.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-independent-engine" },
-  { kind = "decision", id = "decision-independent-book-acceptance" },
 ]
 
 [[criteria]]
@@ -58,7 +57,7 @@ The boxes describe responsibilities, not separate services or Cargo packages.
 Record parsing and rendering are implemented; other engine components are
 planned. Dashed inputs identify later cross-Book and
 verification integrations whose formats still need design. The preprocessor is
-the first planned adapter, introduced by the [record-rendering prototype](record-rendering.md).
+the first implemented adapter, introduced by the [record-rendering prototype](record-rendering.md).
 It uses the shared record model to present anchors and authorities. The later
 structural checker does not invoke it or require its output.
 

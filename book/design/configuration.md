@@ -1,7 +1,8 @@
 # Configuration
 
 **Status: draft for review.** The example is a proposed schema; no configuration
-reader or `anchorbook` command exists yet.
+reader or `anchorbook check` command exists yet. The separate `anchorbook md`
+rendering command is implemented.
 
 `anchorbook.toml` maps a project into the Book model. Directory names are project
 choices. Role names describe responsibilities, independently of page titles.
