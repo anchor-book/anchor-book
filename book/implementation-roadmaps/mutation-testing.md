@@ -2,9 +2,9 @@
 
 **Roadmap identifier:** `mutation-testing`
 
-**Status:** Milestone 1 complete locally; milestone 2 in progress. The initial
-full campaign found unresolved survivors; remote execution and required-check
-enforcement remain.
+**Status:** Milestone 1 complete locally; milestone 2 in progress. Full campaigns
+locally and on GitHub found the same unresolved survivors. Corrections, the PR
+workflow demonstration, and required-check enforcement remain.
 
 ## Goal
 
@@ -65,12 +65,13 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr><th scope="row">Outcome</th><td>The complete engine campaign has reviewed results, and GitHub requires passing tests before merging into main.</td></tr>
-<tr><th scope="row">Status</th><td>In progress — local campaign and remote setup assessment</td></tr>
+<tr><th scope="row">Status</th><td>In progress — local and remote baselines recorded; findings and merge workflow remain</td></tr>
 <tr><th scope="row">Identifier</th><td><code>mutation-testing-2</code></td></tr>
 <tr><th scope="row">Design basis</th><td>Working-contract testing policy and Rust Engine testing guidance.</td></tr>
 <tr><th scope="row">Dependencies</th><td>Mutation Testing milestone 1; publication of the workflow and access to repository merge rules.</td></tr>
 <tr><th scope="row">Tasks</th><td><ul class="roadmap-tasks">
 <li><label><input type="checkbox" checked disabled> Run the initial unfiltered engine campaign and record its scope, results, and limits.</label></li>
+<li><label><input type="checkbox" checked disabled> Manually run the workflow on the published prototype checkpoint; verify failure reporting and retained evidence.</label></li>
 <li><label><input type="checkbox" disabled> Review survivors and unviable mutations. Correct test gaps or defects, justify any equivalent mutations, and repeat affected checks and the full campaign.</label></li>
 <li><label><input type="checkbox" disabled> Exercise the workflow on a PR and record its revision, results, artifacts, and runtime. Tune or split the 45-minute budget if needed without dropping coverage.</label></li>
 <li><label><input type="checkbox" disabled> Configure the main branch rule to require Mutation tests and ordinary engine checks, with results current for the revision being merged. Verify that a failed check prevents merging under the intended contributor policy.</label></li>
@@ -86,7 +87,8 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 <p><strong>Engine campaign:</strong> Working tree based on <code>d66184b</code> with the milestone 1 test corrections, tested 2026-10-21 using cargo-mutants 27.1.0 and Rust 1.90.0 on macOS. Command: <code>target/mutation-tools/bin/cargo-mutants mutants --jobs 2 --build-timeout 120 --output target/mutation-full</code>. No source filters or exclusions. The baseline passed; all 226 generated mutations were attempted in approximately 10 minutes: 154 caught, 28 missed, 44 unviable, zero timeouts. Exit status 2 correctly reports failure.</p>
 <p><strong>Outstanding review:</strong> Survivors occur in Markdown recognition (10), record diagnostics (8), rendering errors (3), mdBook adapter errors (3), inventory behavior (2), schema source locations (1), and HTML presentation (1). Review their diffs against the specified behavior before choosing tests or implementation corrections. Parser-option mutations may include equivalent changes; none has been excluded or accepted as equivalent. The 44 unviable mutations are not counted as test detection.</p>
 <p><strong>Supporting records and limits:</strong> Reproduce with the command above; local output remains ignored under <code>target/mutation-full/mutants.out/</code>. Source and dependency files are unchanged. Findings have not all been corrected or classified, so this is a baseline, not a passing campaign or anchor verification.</p>
-<p><strong>Remote assessment:</strong> GitHub inspection on 2026-10-21 found no rulesets or classic branch protection on main. Existing Engine and Book runs passed for <code>b296eb6</code>, with checks named <code>Rust 1.85.0</code>, <code>Rust stable</code>, and <code>Build mdBook</code>. These are ordinary-test observations, not mutation evidence. The engineer authorized publishing this prototype checkpoint directly to main and manually running the mutation workflow before trying the PR correction loop. Remote mutation results and merge enforcement remain pending.</p>
+<p><strong>Remote campaign:</strong> Setup commit <code>46f47c8</code> was published to main with the engineer's authorization. The <a href="https://github.com/anchor-book/anchor-book/actions/runs/39662175193">manual GitHub mutation run</a> completed on 2026-10-21 using Ubuntu 24.04, Rust 1.99.1, and cargo-mutants 27.1.0. Ordinary tests and the mutation baseline passed. All 226 mutations were attempted in approximately 3 minutes: 154 caught, 28 missed, 44 unviable, zero timeouts. The surviving mutations match the local run exactly. The mutation step exited 2 and the job failed, as required; the subsequent artifact upload succeeded. The <code>mutation-results</code> artifact contains outcomes, mutation descriptions, diffs, and logs, with 14-day retention. Total job time, including installation and upload, was approximately 4 minutes.</p>
+<p><strong>Integration and limits:</strong> The <a href="https://github.com/anchor-book/anchor-book/actions/runs/39662145649">Engine checks</a> and <a href="https://github.com/anchor-book/anchor-book/actions/runs/39662146023">Book build and Pages deployment</a> passed for <code>46f47c8</code>. The initial GitHub inspection found no rulesets or classic branch protection on main; no merge rule was changed. This manual run demonstrates remote execution, failure propagation, and artifact retention. It does not resolve the survivors, demonstrate the PR correction loop, or establish merge enforcement.</p>
 </td></tr>
 <tr><th scope="row">Completion record</th><td>Pending.</td></tr>
 </tbody>
