@@ -6,6 +6,65 @@ reader or `anchorbook` command exists yet.
 `anchorbook.toml` maps a project into the Book model. Directory names are project
 choices. Role names describe responsibilities, independently of page titles.
 
+## Anchors
+
+These draft [structured definitions](anchor-definitions.md) express the properties
+above. Verification criteria are planned; implementation and evidence are pending.
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-book-selection"
+title = "The explicit configuration selects the Book"
+status = "draft"
+property = '''
+For the same explicit configuration file and filesystem state, checking selects
+the same Book and resolves the same source, output, and section roles regardless
+of the caller's working directory. Directory names and display titles do not
+determine section roles.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-explicit-configuration" },
+]
+
+[[criteria]]
+id = "invocation-directory"
+statement = "Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings."
+
+[[criteria]]
+id = "alternative-layout"
+statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
+```
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-configuration-validity"
+title = "Only valid configuration reaches structural evaluation"
+status = "draft"
+property = '''
+Structural evaluation uses validated configuration with the required schema
+fields and distinct section mappings. Paths remain within their declared roots,
+and source and output neither coincide nor contain each other, including through
+symlink aliases. Invalid or unresolvable configuration cannot produce a pass.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "decision", id = "decision-explicit-configuration" },
+]
+
+[[criteria]]
+id = "schema-rejection"
+statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce specific configuration errors."
+
+[[criteria]]
+id = "path-boundaries"
+statement = "Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment."
+
+[[criteria]]
+id = "missing-paths"
+statement = "Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors."
+```
+
 ## Initial schema
 
 The proposed configuration for this repository is:
@@ -111,62 +170,3 @@ unrelated configuration. The renderer continues to consume ordinary
 Separately located mdBook configuration, optional profiles, extensions, and
 cross-Book dependencies remain future schema work. They do not make the
 initial required roles optional.
-
-## Anchors
-
-These draft [structured definitions](anchor-definitions.md) express the properties
-above. Verification criteria are planned; implementation and evidence are pending.
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-book-selection"
-title = "The explicit configuration selects the Book"
-status = "draft"
-property = '''
-For the same explicit configuration file and filesystem state, checking selects
-the same Book and resolves the same source, output, and section roles regardless
-of the caller's working directory. Directory names and display titles do not
-determine section roles.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "decision", id = "decision-explicit-configuration" },
-]
-
-[[criteria]]
-id = "invocation-directory"
-statement = "Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings."
-
-[[criteria]]
-id = "alternative-layout"
-statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-configuration-validity"
-title = "Only valid configuration reaches structural evaluation"
-status = "draft"
-property = '''
-Structural evaluation uses validated configuration with the required schema
-fields and distinct section mappings. Paths remain within their declared roots,
-and source and output neither coincide nor contain each other, including through
-symlink aliases. Invalid or unresolvable configuration cannot produce a pass.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "decision", id = "decision-explicit-configuration" },
-]
-
-[[criteria]]
-id = "schema-rejection"
-statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce specific configuration errors."
-
-[[criteria]]
-id = "path-boundaries"
-statement = "Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment."
-
-[[criteria]]
-id = "missing-paths"
-statement = "Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors."
-```

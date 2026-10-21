@@ -122,6 +122,21 @@ circular dependency that prevents diagnosing or repairing that Book.
 ```
 
 
+## Authority traceability requirement
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-traceable-properties"
+title = "Every binding system property has a traceable justification"
+status = "draft"
+statement = '''
+Every binding system property expressed by an anchor must be grounded in at least
+one requirement or design decision. Engineers and agents must be able to follow
+those references to understand why the property must hold.
+'''
+source = "The Anchor Book method makes the reasons for system properties explicit so engineers and agents can review and evolve the design together."
+```
+
 ## Rendering prototype requirement
 
 ```anchorbook-requirement

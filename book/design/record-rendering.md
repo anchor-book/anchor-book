@@ -9,6 +9,68 @@ source. In the rendered Book, they become readable sections with permalinks,
 status labels, authority links, and derived backlinks. Schema examples remain
 literal code examples. Rendering does not establish implementation or verification.
 
+## Anchors
+
+These draft properties govern the rendering prototype. Local implementation and
+verification evidence is recorded in the Record Rendering roadmap; design
+acceptance remains separate.
+
+```anchorbook-anchor
+schema-version = 1
+id = "render-records-in-context"
+title = "Structured records become readable linked content"
+status = "draft"
+property = '''
+The rendered Book presents each authored anchor, requirement, and decision in
+its chapter with its complete statement, identity, acceptance status, and the
+supporting fields defined for its kind. Authority links and derived backlinks
+resolve to the corresponding record. Literal schema examples remain code.
+Rendering preserves source files and does not imply implementation or verification.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-readable-records" },
+  { kind = "decision", id = "decision-shared-record-rendering" },
+]
+
+[[criteria]]
+id = "record-presentation"
+statement = "Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation."
+
+[[criteria]]
+id = "relationship-navigation"
+statement = "Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record."
+
+[[criteria]]
+id = "preservation-and-escaping"
+statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
+```
+
+```anchorbook-anchor
+schema-version = 1
+id = "render-validated-records"
+title = "Rendering uses one validated record inventory"
+status = "draft"
+property = '''
+The library parses the canonical record formats and resolves typed authority
+relationships before the mdBook adapter emits transformed Book JSON. Invalid
+definitions or relationships fail preprocessing with located diagnostics; they
+cannot be skipped to produce a successful partial Book. Rendering and reference
+validation use the same record identities and model.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-readable-records" },
+  { kind = "decision", id = "decision-shared-record-rendering" },
+]
+
+[[criteria]]
+id = "invalid-inventory"
+statement = "Independent fixtures cover malformed fences/TOML, missing and unknown fields, duplicate IDs across kinds, dangling/wrong-kind/repeated references, and accepted records citing drafts; each fails with the expected located diagnostic."
+
+[[criteria]]
+id = "protocol-and-independence"
+statement = "Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book."
+```
+
 ## Approach
 
 Anchor Book separates record parsing, indexing, and validation from presentation.
@@ -184,65 +246,3 @@ Book. The prototype CI order is compile/test, then mdBook with the record adapte
 Structural checking will later add its separate acceptance step before rendering.
 This prototype does not implement `anchorbook check`, materialization, contract
 generation, cross-Book authorities, or evidence aggregation.
-
-## Anchors
-
-These draft properties govern the rendering prototype. Local implementation and
-verification evidence is recorded in the Record Rendering roadmap; design
-acceptance remains separate.
-
-```anchorbook-anchor
-schema-version = 1
-id = "render-records-in-context"
-title = "Structured records become readable linked content"
-status = "draft"
-property = '''
-The rendered Book presents each authored anchor, requirement, and decision in
-its chapter with its complete statement, identity, acceptance status, and the
-supporting fields defined for its kind. Authority links and derived backlinks
-resolve to the corresponding record. Literal schema examples remain code.
-Rendering preserves source files and does not imply implementation or verification.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-readable-records" },
-  { kind = "decision", id = "decision-shared-record-rendering" },
-]
-
-[[criteria]]
-id = "record-presentation"
-statement = "Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation."
-
-[[criteria]]
-id = "relationship-navigation"
-statement = "Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record."
-
-[[criteria]]
-id = "preservation-and-escaping"
-statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "render-validated-records"
-title = "Rendering uses one validated record inventory"
-status = "draft"
-property = '''
-The library parses the canonical record formats and resolves typed authority
-relationships before the mdBook adapter emits transformed Book JSON. Invalid
-definitions or relationships fail preprocessing with located diagnostics; they
-cannot be skipped to produce a successful partial Book. Rendering and reference
-validation use the same record identities and model.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-readable-records" },
-  { kind = "decision", id = "decision-shared-record-rendering" },
-]
-
-[[criteria]]
-id = "invalid-inventory"
-statement = "Independent fixtures cover malformed fences/TOML, missing and unknown fields, duplicate IDs across kinds, dangling/wrong-kind/repeated references, and accepted records citing drafts; each fails with the expected located diagnostic."
-
-[[criteria]]
-id = "protocol-and-independence"
-statement = "Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book."
-```

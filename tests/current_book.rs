@@ -34,10 +34,10 @@ fn current_book_records() {
         }
         panic!("current Book failed record acceptance")
     });
-    assert_eq!(inventory.len(), 24);
+    assert_eq!(inventory.len(), 26);
     for (kind, expected) in [
-        (RecordKind::Anchor, 11),
-        (RecordKind::Requirement, 7),
+        (RecordKind::Anchor, 12),
+        (RecordKind::Requirement, 8),
         (RecordKind::Decision, 6),
     ] {
         assert_eq!(
@@ -50,7 +50,7 @@ fn current_book_records() {
             .records()
             .map(|r| r.references().len())
             .sum::<usize>(),
-        33
+        34
     );
     let expected = [
         "check-actionable-diagnostics",
@@ -68,6 +68,7 @@ fn current_book_records() {
         "decision-separate-check-and-repair",
         "decision-shared-record-rendering",
         "decision-typed-check-results",
+        "engine-valid-authority",
         "render-records-in-context",
         "render-validated-records",
         "requirement-configured-structure",
@@ -76,11 +77,16 @@ fn current_book_records() {
         "requirement-readable-records",
         "requirement-repair-feedback",
         "requirement-shared-checker",
+        "requirement-traceable-properties",
         "requirement-truthful-results",
     ];
     assert_eq!(
         inventory.records().map(|r| r.id()).collect::<Vec<_>>(),
         expected
+    );
+    assert_eq!(
+        inventory.backlinks("requirement-traceable-properties"),
+        ["engine-valid-authority"]
     );
     assert_eq!(
         inventory.backlinks("requirement-readable-records"),

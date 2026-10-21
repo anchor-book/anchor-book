@@ -4,6 +4,63 @@
 below is implemented, along with record rendering and the mdBook adapter.
 Configuration and structural checking remain design drafts.
 
+## Anchors
+
+```anchorbook-anchor
+schema-version = 1
+id = "engine-valid-authority"
+title = "Every anchor resolves to valid authority"
+status = "draft"
+property = '''
+The engine validates an anchor only when it cites at least one requirement or
+design decision and every authority reference resolves unambiguously to a valid
+record of the declared kind. An accepted anchor may cite only accepted
+authorities. Invalid authority relationships produce diagnostics rather than a
+successfully validated inventory.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-traceable-properties" },
+]
+
+[[criteria]]
+id = "required-authority"
+statement = "Accept anchors with a valid requirement or design decision reference; reject missing or empty authority lists with an invalid-definition diagnostic."
+
+[[criteria]]
+id = "resolved-authority"
+statement = "Use independent fixtures with missing, wrong-kind, invalid, and ambiguous authority targets; return the expected located diagnostics and no validated inventory."
+
+[[criteria]]
+id = "compatible-status"
+statement = "Accept draft anchors citing draft or accepted authorities and accepted anchors citing accepted authorities; reject accepted anchors citing draft authorities with an incompatible-status diagnostic."
+```
+
+```anchorbook-anchor
+schema-version = 1
+id = "check-shared-typed-results"
+title = "All callers use shared rules and typed results"
+status = "draft"
+property = '''
+The Rust library owns checking behavior and exposes findings, locations, scope,
+and errors as typed data. The CLI obtains its results through that library and
+only handles invocation and presentation. Library callers can distinguish
+structural failure from incomplete evaluation without parsing display text;
+malformed user input does not cause the library to print, exit, or panic.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-shared-checker" },
+  { kind = "decision", id = "decision-typed-check-results" },
+]
+
+[[criteria]]
+id = "equivalent-callers"
+statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
+
+[[criteria]]
+id = "library-boundary"
+statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
+```
+
 ## Package and adapters
 
 The repository has one Cargo package containing a library and a CLI: package
@@ -233,34 +290,3 @@ protocol choices. Structural checking will
 settle configuration and navigation-reader dependencies and APIs. The first
 checker does not need an asynchronous runtime, dynamic rule registration, or
 test-verifier execution APIs. Those require concrete workflows before design.
-
-## Anchor
-
-This draft uses the [structured anchor format](anchor-definitions.md).
-Implementation and verification evidence are pending.
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-shared-typed-results"
-title = "All callers use shared rules and typed results"
-status = "draft"
-property = '''
-The Rust library owns checking behavior and exposes findings, locations, scope,
-and errors as typed data. The CLI obtains its results through that library and
-only handles invocation and presentation. Library callers can distinguish
-structural failure from incomplete evaluation without parsing display text;
-malformed user input does not cause the library to print, exit, or panic.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-shared-checker" },
-  { kind = "decision", id = "decision-typed-check-results" },
-]
-
-[[criteria]]
-id = "equivalent-callers"
-statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
-
-[[criteria]]
-id = "library-boundary"
-statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
-```

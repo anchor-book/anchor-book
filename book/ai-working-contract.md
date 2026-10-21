@@ -136,6 +136,10 @@ commands or prompt templates may be added later.
 
 ## Maintain the Book's relationships
 
+Place a design chapter's anchors at the top, after its brief introduction and
+before the detailed design. Keep general guidance about authoring and using
+anchors in this contract rather than repeating it on design pages.
+
 Design describes the intended system as currently understood. Requirements and
 design decisions supply authority. Anchors express named properties grounded in
 at least one authority and connect those properties to verification criteria.
@@ -148,6 +152,11 @@ do not supply authority identity. The schemas remain review drafts; the shared
 record library now enforces their current format and relationship rules. Keep
 draft acceptance, implementation progress, and executed verification evidence
 distinct.
+
+Review whether the cited requirement or decision actually justifies the property;
+the engine validates references, not the reasoning behind them. If an anchor
+reveals a missing requirement, articulate why the property must hold and author
+that requirement alongside it. Do not add a requirement merely to pass validation.
 
 The authority model is still evolving. During design work, propose changes to
 its fields and relationships when needed, and reconcile the schema, affected
