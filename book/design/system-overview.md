@@ -105,19 +105,30 @@ within explicit ownership boundaries, detects conflicts, and produces no changes
 when managed content already conforms. It does not prevent subsequent edits;
 checks detect drift and CI can gate it.
 
-The AI Working Contract is engine-owned guidance specialized by the Book's
-configuration. Its source content is versioned with the engine. Its generated
-text will be returned on demand, without a checked-in generated artifact or a
-permanent Book chapter. During bootstrap, the manually maintained
-[AI Working Contract](../ai-working-contract.md) supplies that guidance; it will
-move into the engine when command-based delivery works.
-An agent integration must retrieve and read it; generation alone does not put
-it into an agent's working context.
-
 Build keeps three views distinct: anchor development, verification evidence,
 and agreed roadmap completion. Missing, failed, stale, or incomplete evidence
 cannot count as successful verification. Concrete evidence adapters follow the
 initial structural checker.
+
+## Contract delivery
+
+The engine owns and versions the reusable AI Working Contract. Project-specific
+state, paths, commands, and policies remain in normal Book content and configuration.
+Repository bootstrap instructions identify the contract, project guidance, and
+Book source. Agents read all three; retrieving the contract alone does not supply
+project context.
+
+The contract currently includes Rust guidance. Language-specific instruction
+extensions may be designed later; there is no extension mechanism yet.
+
+During bootstrap, the [contract source](../ai-working-contract.md) is maintained
+in this Book, with local context in [Working on Anchor Book](../working-on-anchor-book.md).
+Once command delivery works, move the maintained source into the engine and update
+agent startup to retrieve it. Remove the temporary Book copy and its navigation
+entry in the same transition. Maintain one contract source, without injecting
+project-specific content into it or checking in generated contract artifacts.
+An agent integration must retrieve and read the contract; generation alone does
+not place it in the agent's working context.
 
 ## Tooling boundaries
 

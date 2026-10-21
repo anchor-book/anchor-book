@@ -3,9 +3,10 @@
 This repository develops the Anchor Book engine and its own Book.
 
 Before project work, read [the AI Working Contract](book/ai-working-contract.md)
-in full, then follow its instructions for reading the Book and taking up the
-engineer's task. Paths here are relative to this repository root, regardless
-of your current working directory.
+in full, then read [Working on Anchor Book](book/working-on-anchor-book.md) for
+project guidance. The Book index is [book/SUMMARY.md](book/SUMMARY.md); read every
+chapter it lists before taking up the engineer's task. Paths here are relative
+to this repository root, regardless of your current working directory.
 
 The contract is currently a source file. No contract-generation command exists
 yet. Read it directly; do not install or run a similarly named tool.

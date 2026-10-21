@@ -108,8 +108,10 @@ The field is required and accepts exactly one of these strings:
 | `"complete"` | Declare the defined goal system complete for a recorded scope and revision, supported by completion and verification evidence. |
 
 Reject missing, unknown, or non-string values; do not silently choose a phase.
-This repository is currently prototyping. Until the reader exists and this
-configuration is added, the working contract records that bootstrap state.
+Until the reader exists and this configuration is added,
+[Working on Anchor Book](../working-on-anchor-book.md#current-phase) records this
+repository's phase. The contract defines phase behavior without declaring a
+project's current value.
 
 The initial configuration reader validates and exposes the phase as data. All
 three phases use the same initial structural rules: prototyping does not disable

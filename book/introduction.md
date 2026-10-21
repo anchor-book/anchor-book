@@ -11,6 +11,9 @@ will use the same engine interfaces provided to other projects.
 
 ## Reading this Book
 
+[Working on Anchor Book](working-on-anchor-book.md) identifies this repository's
+phase, source locations, authoring references, and development instructions.
+
 - [Design](design/index.md) defines the intended system and its behavior.
 - [Authority](authority/index.md) records governing requirements and decisions.
 - [Implementation Roadmaps](implementation-roadmaps/index.md) organize the work
@@ -18,6 +21,6 @@ will use the same engine interfaces provided to other projects.
 
 ## Current state
 
-The project is prototyping. Record parsing, authority validation, and mdBook
+Record parsing, authority validation, and mdBook
 record rendering are implemented; other operations remain planned. See the
 [roadmaps](implementation-roadmaps/index.md#current-roadmaps) for progress and evidence.

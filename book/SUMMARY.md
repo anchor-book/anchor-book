@@ -2,6 +2,8 @@
 
 [Introduction](introduction.md)
 
+[Working on Anchor Book](working-on-anchor-book.md)
+
 [AI Working Contract](ai-working-contract.md)
 
 - [Design](design/index.md)
