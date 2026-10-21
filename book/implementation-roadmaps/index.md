@@ -131,7 +131,8 @@ for phase-specific responsibilities.
   pull-request execution, and required merge checks.
 - [Formal Verification](formal-verification.md): planned Verus proof of authority
   validation using the actual engine functions, followed by GitHub verification
-  and revision-specific evidence. No proof is implemented yet.
+  and revision-specific evidence. Milestone 3 adds criterion-method declarations
+  as schema preparation; no proof is implemented yet.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 complete locally.
   Milestone 3 covers authority criteria, CI integration, and remote verification.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific

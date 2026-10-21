@@ -93,7 +93,12 @@ for source in (PROJECT / "book").rglob("*.md"):
                 else:
                     values_to_check = [field]
                 for value_to_check in values_to_check:
-                    assert normalize(value_to_check) in text, (record["id"], key, value_to_check)
+                    items = value_to_check if isinstance(value_to_check, list) else [value_to_check]
+                    for item in items:
+                        assert normalize(item) in text, (record["id"], key, item)
+        for criterion in record.get("criteria", []):
+            methods = ", ".join(criterion["verification"])
+            assert f"Required verification: {methods}" in text, (record["id"], criterion["id"])
         assert record["status"].title() in text
 
 print_page = pages[OUTPUT / "print.html"]

@@ -34,5 +34,6 @@ authorities = [
 
 [[criteria]]
 id = "source-comparison"
+verification = ["test"]
 statement = "Compare input before and after validation."
 ```

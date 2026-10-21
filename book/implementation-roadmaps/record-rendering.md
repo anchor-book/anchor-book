@@ -65,6 +65,10 @@ The later [Formal Verification roadmap](formal-verification.md) owns the added
 `formal-authority` and `production-integration` criteria. Reconcile shared tests
 when the verified functions are integrated; the prior rendering evidence does
 not establish these new criteria, and this roadmap does not claim a formal proof.
+The subsequent [criterion-method preparation](formal-verification.md#formal-verification-3)
+adds required-method labels to records and owns their new presentation evidence.
+The earlier completion records remain evidence for their original revisions;
+method selections do not establish execution results.
 
 <a id="record-rendering-1"></a>
 

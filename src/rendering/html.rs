@@ -103,9 +103,15 @@ pub(super) fn record(
                 "<div class=\"ab-field\"><h4>Verification criteria</h4><ol class=\"ab-criteria\">",
             );
             for criterion in &anchor.criteria {
+                let methods = criterion
+                    .verification
+                    .iter()
+                    .map(|method| method.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ");
                 write!(
                     out,
-                    "<li><code>{}</code>{}</li>",
+                    "<li><code>{}</code>{}<p>Required verification: {methods}</p></li>",
                     escape(&criterion.id),
                     paragraphs(&criterion.statement)
                 )

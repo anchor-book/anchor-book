@@ -60,7 +60,9 @@ protection; adding a workflow alone does not enable that protection.
 production authority-validation functions. Its [roadmap](implementation-roadmaps/formal-verification.md)
 covers local proof and integration, then GitHub verification. Verus is not yet
 configured; no authority proof has run. Existing tests and mutation findings remain
-part of the verification work.
+part of the verification work. Criterion-level required methods are supported by
+the record parser and renderer; they declare obligations without executing any
+verification tool or consuming results.
 
 ## Public content
 

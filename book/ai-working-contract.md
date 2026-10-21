@@ -187,6 +187,27 @@ its applicability to changed criteria and record gaps in open work. Do not carry
 Complete status over to a changed outcome without reassessment. New scope remains
 proposed until agreed; updating a roadmap does not authorize implementation.
 
+## Develop verification with the code
+
+Write anchor properties with clear behavior, conditions, and outcomes. Follow the
+project's schema to declare required verification methods for each criterion.
+Every listed method is an obligation; a selection is not evidence of completion.
+Keep tool choices and execution steps in the verification design and roadmap.
+
+For criteria requiring proof, derive an explicit formal specification and maintain
+it with the production code and supporting proofs in the implementing codebase.
+Associate it with the anchor and criterion IDs. Develop the proof alongside the
+implementation and verify the functions the system actually executes. Examine
+caller preconditions, input conversion, and failure propagation; identify which
+boundaries are proved, tested, or still unresolved.
+
+Give the engineer a readable account of the formal claim, assumptions, coverage,
+and gaps in its translation from the anchor. Do not weaken the anchor or assume
+its property to obtain a successful proof. Changes to intended behavior require
+design reconciliation. Record results against code and design revisions and
+reassess affected evidence when either changes. Partial evidence does not satisfy
+an entire criterion, and tests or review do not silently replace a required proof.
+
 ## Keep the Book concise
 
 Clarity and precision take priority over brevity. Include enough context to make

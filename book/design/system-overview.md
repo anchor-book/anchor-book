@@ -27,10 +27,12 @@ authorities = [
 
 [[criteria]]
 id = "broken-book"
+verification = ["test"]
 statement = "In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure."
 
 [[criteria]]
 id = "ci-order"
+verification = ["test"]
 statement = "Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it."
 ```
 

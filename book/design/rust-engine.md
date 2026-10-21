@@ -24,23 +24,28 @@ authorities = [
 
 [[criteria]]
 id = "required-authority"
+verification = ["test"]
 statement = "Accept anchors with a valid requirement or design decision reference; reject missing or empty authority lists with an invalid-definition diagnostic."
 
 [[criteria]]
 id = "resolved-authority"
+verification = ["test"]
 statement = "Use independent fixtures with missing, wrong-kind, invalid, and ambiguous authority targets; return the expected located diagnostics and no validated inventory."
 
 [[criteria]]
 id = "compatible-status"
+verification = ["test"]
 statement = "Accept draft anchors citing draft or accepted authorities and accepted anchors citing accepted authorities; reject accepted anchors citing draft authorities with an incompatible-status diagnostic."
 
 [[criteria]]
 id = "formal-authority"
-statement = "Use Verus to prove the executable authority-validation functions enforce nonempty anchor authority, unique valid targets of the declared kind, distinct references, and compatible acceptance states over their declared input domain. Check every reference, including requirements cited by decisions. Record the specification, proved functions, assumptions, and unverified boundaries; preconditions must not assume the authority relationships are valid."
+verification = ["proof"]
+statement = "For the complete typed record input, authority validation succeeds exactly when all defined authority rules hold: nonempty anchor authority, unique valid targets of the declared kind, distinct references, and compatible acceptance states, including requirements cited by decisions. The domain includes invalid relationships; their absence must not be assumed."
 
 [[criteria]]
 id = "production-integration"
-statement = "Demonstrate that read_records calls the same executable functions verified by Verus, with faithful input conversion and rejection propagation. Exercise valid and invalid inputs through the record API and actual mdBook adapter; invalid authority yields diagnostics and no successful inventory or Book JSON. Record which integration obligations are tested rather than proved."
+verification = ["test", "review"]
+statement = "The engine executes the verified authority-validation functions. Conversion preserves the records and references being validated, and validation failures prevent a successful inventory or rendered Book. Identify which integration boundaries are tested or reviewed rather than proved."
 ```
 
 ```anchorbook-anchor
@@ -62,10 +67,12 @@ authorities = [
 
 [[criteria]]
 id = "equivalent-callers"
+verification = ["test"]
 statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
 
 [[criteria]]
 id = "library-boundary"
+verification = ["test", "review"]
 statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
 ```
 
@@ -174,8 +181,10 @@ does not open files, load configuration, invoke mdBook, or run verification.
 
 The returned inventory owns its validated data. Its private fields prevent
 callers from bypassing validation; `get`, `records`, and `backlinks` expose read
-access. Records retain typed anchor, requirement, or decision data, definition
-and body byte ranges, and locations for authority references. A later renderer
+access. Criteria expose required verification methods as typed values, preserving
+authored order without implying verification results. Records retain typed anchor,
+requirement, or decision data, definition and body byte ranges, and locations for
+authority references. A later renderer
 can replace exactly those blocks and resolve links from the same inventory.
 Backlinks contain sorted, unique IDs of direct referring records.
 

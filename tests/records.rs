@@ -2,7 +2,8 @@
 use std::{error::Error, path::Path};
 
 use anchor_book::records::{
-    Chapter, DiagnosticCode, Problem, RecordData, RecordErrors, RecordKind, Status, read_records,
+    Chapter, DiagnosticCode, Problem, RecordData, RecordErrors, RecordKind, Status,
+    VerificationMethod, read_records,
 };
 
 const FIXTURE: &str = include_str!("fixtures/records.md");
@@ -118,6 +119,73 @@ fn parses_all_supported_line_endings_and_fence_at_eof() {
 }
 
 #[test]
+fn verification_methods_are_explicit_typed_obligations_in_authored_order() {
+    use VerificationMethod::{Proof, Review, Test};
+    for (authored, expected) in [
+        (r#"["proof"]"#, vec![Proof]),
+        (r#"["test"]"#, vec![Test]),
+        (r#"["review"]"#, vec![Review]),
+        (r#"["review", "proof", "test"]"#, vec![Review, Proof, Test]),
+    ] {
+        let text = FIXTURE.replace(
+            r#"verification = ["test"]"#,
+            &format!("verification = {authored}"),
+        );
+        let inventory = inspect(&text).unwrap();
+        let RecordData::Anchor(anchor) = inventory.get("immutable-input").unwrap().data() else {
+            panic!()
+        };
+        assert_eq!(anchor.criteria[0].verification, expected);
+        // Selecting a proof method does not require proof artifacts or change design status.
+        assert_eq!(
+            inventory.get("immutable-input").unwrap().status(),
+            Status::Accepted
+        );
+    }
+}
+
+#[test]
+fn rejects_invalid_verification_on_each_criterion_with_located_diagnostics() {
+    let original = "verification = [\"test\"]";
+    for replacement in [
+        "",
+        "verification = []",
+        "verification = [\"proof\", \"proof\"]",
+        "verification = [\"test\", \"test\"]",
+        "verification = [\"review\", \"proof\", \"review\"]",
+        "verification = [\"verus\"]",
+        "verification = [\"Proof\"]",
+        "verification = [\"\"]",
+        "verification = [\" test\"]",
+        "verification = [\"test\", false]",
+        "verification = \"test\"",
+        "verification = true",
+        "verification = { test = true }",
+        "methods = [\"test\"]",
+        "verification = [\"test\"]\nverification = [\"review\"]",
+    ] {
+        for second in [false, true] {
+            let text = if second {
+                FIXTURE.replace(
+                    "statement = \"Compare input before and after validation.\"",
+                    &format!("statement = \"Compare input before and after validation.\"\n\n[[criteria]]\nid = \"second\"\nstatement = \"Another obligation.\"\n{replacement}"),
+                )
+            } else {
+                FIXTURE.replace(original, replacement)
+            };
+            let errors = failures(&text);
+            assert_eq!(errors.diagnostics().len(), 1, "{text}\n{errors:?}");
+            let diagnostic = &errors.diagnostics()[0];
+            assert_eq!(diagnostic.code(), DiagnosticCode::InvalidDefinition);
+            assert_eq!(diagnostic.problem(), Problem::InvalidDefinition);
+            assert_eq!(diagnostic.location().path(), Path::new("fixture.md"));
+            assert!(diagnostic.location().range().start >= text.find("[[criteria]]").unwrap());
+            assert!(!diagnostic.message().is_empty());
+        }
+    }
+}
+
+#[test]
 fn only_real_definitions_enter_inventory() {
     let examples = format!(
         "# Examples\n\n````text\n{FIXTURE}\n````\n\n```rust\n{{anchor}}`example`\n```\n\n`{{anchor}}` is a literal.\n\n    ordinary code\n"
@@ -198,9 +266,9 @@ fn rejects_anchor_and_decision_schema_errors() {
         FIXTURE.replace("choice = \"Accept supplied chapters.\"", "choice = \"\""),
         FIXTURE.replace("reconsider-when = \"A new adapter needs to acquire input differently.\"", "reconsider-when = \"\""),
         FIXTURE.replace("requirements = [\"preserve-input\"]", ""),
-        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nstatement = \"Compare input before and after validation.\"", "criteria = []"),
-        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nstatement = \"Compare input before and after validation.\"", "criteria = [{id = \"source-comparison\", statement = \"Compare inputs\"}]"),
-        FIXTURE.replace("statement = \"Compare input before and after validation.\"", "statement = \"Compare inputs\"\n[[criteria]]\nid = \"source-comparison\"\nstatement = \"Duplicate\""),
+        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Compare input before and after validation.\"", "criteria = []"),
+        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Compare input before and after validation.\"", "criteria = [{id = \"source-comparison\", statement = \"Compare inputs\", verification = [\"test\"]}]"),
+        FIXTURE.replace("statement = \"Compare input before and after validation.\"", "statement = \"Compare inputs\"\n[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Duplicate\""),
         FIXTURE.replace("id = \"source-comparison\"", "id = \"bad_id\""),
     ];
     for text in mutations {

@@ -5,7 +5,7 @@ use toml_edit::{Document, Item};
 
 use super::{
     Anchor, AuthorityKind, AuthorityReference, Chapter, Criterion, Decision, Diagnostic, Problem,
-    Record, RecordData, RecordKind, Requirement, SourceLocation, Status,
+    Record, RecordData, RecordKind, Requirement, SourceLocation, Status, VerificationMethod,
 };
 
 pub(super) struct Candidate {
@@ -36,6 +36,7 @@ struct RawAuthority {
 struct RawCriterion {
     id: String,
     statement: String,
+    verification: Vec<VerificationMethod>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "kebab-case")]
@@ -194,9 +195,19 @@ impl Context<'_> {
                         ));
                     }
                     self.nonempty("criteria", &c.statement)?;
+                    let mut methods = BTreeSet::new();
+                    if c.verification.is_empty()
+                        || c.verification.iter().any(|method| !methods.insert(*method))
+                    {
+                        return Err(self.invalid(
+                            "criteria",
+                            "criterion verification must be a nonempty array of distinct methods",
+                        ));
+                    }
                     criteria.push(Criterion {
                         id: c.id,
                         statement: c.statement,
+                        verification: c.verification,
                     });
                 }
                 let authorities = raw

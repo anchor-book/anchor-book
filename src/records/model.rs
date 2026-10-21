@@ -71,6 +71,29 @@ pub struct AuthorityReference {
     pub location: SourceLocation,
 }
 
+/// A required evidence method, independent of tools and execution results.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
+#[serde(rename_all = "lowercase")]
+pub enum VerificationMethod {
+    /// Formal verification of the relevant production code against a specification.
+    Proof,
+    /// Executed tests with assertions derived from the criterion.
+    Test,
+    /// A recorded assessment against the criterion.
+    Review,
+}
+
+impl VerificationMethod {
+    /// Canonical schema spelling, also used to display required evidence.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Proof => "proof",
+            Self::Test => "test",
+            Self::Review => "review",
+        }
+    }
+}
+
 /// A verification obligation, identified within its anchor.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Criterion {
@@ -78,6 +101,9 @@ pub struct Criterion {
     pub id: String,
     /// What verification must establish.
     pub statement: String,
+    /// Nonempty, distinct required methods in authored order; every method is required.
+    /// This is verification intent, not evidence that any method has succeeded.
+    pub verification: Vec<VerificationMethod>,
 }
 
 /// An anchor's kind-specific fields.

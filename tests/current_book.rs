@@ -1,5 +1,5 @@
 //! Separate acceptance check against the current Book, loaded only at runtime.
-use anchor_book::records::{Chapter, RecordData, RecordKind, read_records};
+use anchor_book::records::{Chapter, RecordData, RecordKind, VerificationMethod, read_records};
 use pulldown_cmark::{Event, Parser, Tag};
 use std::{
     fs,
@@ -106,6 +106,27 @@ fn current_book_records() {
             .map(|c| c.id.as_str())
             .collect::<Vec<_>>(),
         ["invalid-inventory", "protocol-and-independence"]
+    );
+    let RecordData::Anchor(authority) = inventory.get("engine-valid-authority").unwrap().data()
+    else {
+        panic!()
+    };
+    assert_eq!(
+        authority
+            .criteria
+            .iter()
+            .map(|c| (c.id.as_str(), c.verification.as_slice()))
+            .collect::<Vec<_>>(),
+        [
+            ("required-authority", &[VerificationMethod::Test][..]),
+            ("resolved-authority", &[VerificationMethod::Test][..]),
+            ("compatible-status", &[VerificationMethod::Test][..]),
+            ("formal-authority", &[VerificationMethod::Proof][..]),
+            (
+                "production-integration",
+                &[VerificationMethod::Test, VerificationMethod::Review][..]
+            ),
+        ]
     );
     let reversed: Vec<_> = chapters.iter().rev().copied().collect();
     let again = read_records(&reversed).unwrap();

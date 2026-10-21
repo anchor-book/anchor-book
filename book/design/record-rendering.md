@@ -30,14 +30,17 @@ authorities = [
 
 [[criteria]]
 id = "record-presentation"
+verification = ["test", "review"]
 statement = "Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation."
 
 [[criteria]]
 id = "relationship-navigation"
+verification = ["test"]
 statement = "Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record."
 
 [[criteria]]
 id = "preservation-and-escaping"
+verification = ["test"]
 statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
 ```
 
@@ -60,10 +63,12 @@ authorities = [
 
 [[criteria]]
 id = "invalid-inventory"
+verification = ["test"]
 statement = "Independent fixtures cover malformed fences/TOML, missing and unknown fields, duplicate IDs across kinds, dangling/wrong-kind/repeated references, and accepted records citing drafts; each fails with the expected located diagnostic."
 
 [[criteria]]
 id = "protocol-and-independence"
+verification = ["test", "review"]
 statement = "Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book."
 ```
 
@@ -140,7 +145,7 @@ be conveyed by words, not color alone. Identifiers remain visible but secondary.
 
 | Record | Always visible | Supporting detail |
 | --- | --- | --- |
-| Anchor | Title, identifier/permalink, Draft or Accepted, complete property, linked authorities, verification criteria | Derived relationships when applicable |
+| Anchor | Title, identifier/permalink, Draft or Accepted, complete property, linked authorities, verification criteria with their required methods | Derived relationships when applicable |
 | Requirement | Title, identifier/permalink, status, requirement statement, source | Derived links to anchors and decisions that cite it |
 | Decision | Title, identifier/permalink, status, choice, linked requirements | Expandable rationale, alternatives, and reconsideration conditions; derived links to citing anchors |
 
@@ -149,6 +154,8 @@ requirements list is shown explicitly as no recorded requirements. Derive
 backlinks from the referencing records; do not maintain two relationship sources.
 Sort backlink lists deterministically. Acceptance labels do not become
 "implemented", "tested", or "verified" badges.
+Each criterion shows its authored methods as **Required verification**, with all
+methods required. These labels are obligations, not results from running tools.
 
 Each record owns the fragment matching its identifier. Generate chapter-relative
 links so navigation works on localhost and under the GitHub Pages project prefix.

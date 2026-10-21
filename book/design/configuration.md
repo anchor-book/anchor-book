@@ -27,10 +27,12 @@ authorities = [
 
 [[criteria]]
 id = "invocation-directory"
+verification = ["test"]
 statement = "Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings."
 
 [[criteria]]
 id = "alternative-layout"
+verification = ["test"]
 statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
 ```
 
@@ -52,14 +54,17 @@ authorities = [
 
 [[criteria]]
 id = "schema-rejection"
+verification = ["test"]
 statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce specific configuration errors."
 
 [[criteria]]
 id = "path-boundaries"
+verification = ["test"]
 statement = "Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment."
 
 [[criteria]]
 id = "missing-paths"
+verification = ["test"]
 statement = "Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors."
 ```
 

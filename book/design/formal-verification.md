@@ -6,6 +6,14 @@ authority remains [traceable properties](../authority/requirements.md#requiremen
 The anchor and its verification criteria live in Rust Engine; this chapter defines
 the proof boundary and integration. No proof or verifier workflow is implemented.
 
+This experiment also develops a reusable way for projects to connect anchor
+criteria to proofs of their production code. The engine is the first case. The
+[criterion schema](anchor-definitions.md#verification-methods) declares required
+evidence methods; Verus is this project's chosen proof tool. Formal specifications
+and supporting proofs live with the code and identify the anchor and criterion
+they address. Refine the association convention through the first proof before
+defining a general source-annotation syntax or evidence adapter.
+
 ## First proof: authority validation
 
 The first specification expresses the existing [authority rules](authority-definitions.md#validating-authority-relationships):
@@ -111,7 +119,8 @@ prove the new revision.
 
 Initially, maintain this evidence in the [Formal Verification roadmap](../implementation-roadmaps/formal-verification.md).
 Keep generated proof output out of authored Book sources and review artifacts
-for public-safe content. There is no new anchor schema or automatic verified badge.
+for public-safe content. Required verification methods do not create an automatic
+verified badge; proof results remain separate from the authored anchor.
 Later evidence ingestion can associate Verus results with anchors alongside tests
 and other verifiers. That adapter and its schema remain deferred; proof development
 does not depend on building them first.

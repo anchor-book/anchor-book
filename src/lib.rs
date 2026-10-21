@@ -22,5 +22,5 @@ pub mod rendering;
 pub use records::{
     Anchor, AuthorityKind, AuthorityReference, Chapter, Criterion, Decision, Diagnostic,
     DiagnosticCode, Problem, Record, RecordData, RecordErrors, RecordInventory, RecordKind,
-    Requirement, SourceLocation, Status, read_records,
+    Requirement, SourceLocation, Status, VerificationMethod, read_records,
 };

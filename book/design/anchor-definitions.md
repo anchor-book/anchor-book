@@ -33,6 +33,7 @@ authorities = [
 
 [[criteria]]
 id = "file-preservation"
+verification = ["test"]
 statement = "Compare project file contents and directory entries before and after passing, failing, and incomplete checks; they are unchanged."
 ```
 ````
@@ -51,7 +52,7 @@ they do not provide alternate field names, record shapes, or definitions.
 | `status` | Exactly `"draft"` or `"accepted"`; this is design acceptance only |
 | `property` | Nonempty string containing the complete property, including any qualifications |
 | `authorities` | Nonempty array of inline tables, each with exactly `kind` and `id` |
-| `criteria` | Nonempty sequence of `[[criteria]]` tables, each with exactly `id` and `statement` |
+| `criteria` | Nonempty sequence of `[[criteria]]` tables, each with exactly `id`, `statement`, and `verification` |
 
 Identifiers consist of lowercase ASCII letters and digits separated by single
 hyphens, start with a letter, and have no trailing hyphen. Anchor identifiers
@@ -65,8 +66,51 @@ required. Cross-Book references are outside this schema.
 
 Each criterion has an identifier unique within its anchor and a nonempty
 statement of what verification must establish. Evidence can later reference
-the anchor identifier and criterion identifier together. A criterion is not a
-test result and does not require a particular test framework or proof tool.
+the anchor identifier and criterion identifier together.
+
+### Verification methods
+
+Every criterion requires a nonempty `verification` array of distinct strings.
+The only values are `"proof"`, `"test"`, and `"review"`, with exactly that spelling.
+Every listed method is required; the list is not a choice between alternatives.
+Order has no semantic significance and is preserved for presentation. Missing,
+empty, repeated, unknown, or incorrectly typed methods are invalid definitions.
+
+| Value | Required evidence |
+| --- | --- |
+| `"proof"` | Formal verification of the relevant production code against an explicit specification expressing the criterion, with assumptions and coverage stated. |
+| `"test"` | Executed tests whose assertions derive from the criterion, with inputs, results, and coverage recorded. |
+| `"review"` | A recorded assessment against the criterion, identifying what was examined, the conclusion, and limits. |
+
+Different criteria within an anchor may require different methods. Listing proof
+does not make an anchor accepted or verified. Methods declare obligations; parsing
+and rendering them do not run tools or establish evidence. Concrete tool choices
+and commands belong in the verification design and roadmap, not in this field.
+
+For example, one criterion can require a proof of the validation algorithm while
+another requires tests and review of its integration. If a method covers only a
+portion, identify that portion and the remaining obligations explicitly; partial
+evidence does not satisfy the whole criterion.
+
+The renderer displays **Required verification** beside each criterion. It must
+not turn these selections into success badges or inferred results.
+
+### Writing properties for verification
+
+State the behavior, relevant conditions, and required outcome precisely in
+`property`; define terms in the surrounding design. Criteria state what evidence
+must establish. Keep implementation steps, tool commands, and proof mechanics in
+their owning design and roadmap. The working contract defines the agent's
+[verification responsibilities](../ai-working-contract.md#develop-verification-with-the-code).
+
+Formal specifications, production code, and supporting proofs live together in
+the implementing codebase. Associate each specification with the anchor and
+criterion IDs it addresses. A source-association syntax is still experimental;
+do not invent new anchor fields for file paths, proof text, results, or timestamps.
+Assumptions that narrow the intended property require design review; assumptions
+about unverified implementation boundaries must remain visible in evidence.
+
+### Value validation and schema evolution
 
 Whitespace-only strings are empty. Do not coerce strings to numbers, infer
 missing values from surrounding prose, or accept misspelled status values.
@@ -75,6 +119,11 @@ schema revision rather than parser leniency. During bootstrap, an unpublished
 draft can be revised in place with its records; this does not require a new
 version number for every design iteration. The [authority schemas](authority-definitions.md#evolving-the-authority-model)
 remain provisional and will evolve through use.
+
+This unpublished schema-1 revision adds required criterion methods. Existing
+records must supply them explicitly; there is no default, legacy fallback, or
+inference from the statement. The Book, parser, renderer, and fixtures migrate
+together. This is not a published-schema compatibility promise.
 
 ## Parsing and validation
 

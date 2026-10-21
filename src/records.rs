@@ -14,5 +14,5 @@ pub use diagnostics::{Diagnostic, DiagnosticCode, Problem, RecordErrors, SourceL
 pub use inventory::{RecordInventory, read_records};
 pub use model::{
     Anchor, AuthorityKind, AuthorityReference, Chapter, Criterion, Decision, Record, RecordData,
-    RecordKind, Requirement, Status,
+    RecordKind, Requirement, Status, VerificationMethod,
 };

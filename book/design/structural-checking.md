@@ -32,10 +32,12 @@ authorities = [
 
 [[criteria]]
 id = "file-preservation"
+verification = ["test"]
 statement = "Compare project file contents and directory entries before and after passing, failing, and incomplete library and CLI checks, including missing source and output; they remain unchanged."
 
 [[criteria]]
 id = "no-execution"
+verification = ["test"]
 statement = "Use fixtures with configured execution traps and run with subprocess and network activity denied or observed; checking neither attempts those operations nor requires generated Book output."
 ```
 
@@ -59,14 +61,17 @@ authorities = [
 
 [[criteria]]
 id = "chapter-inventory"
+verification = ["test"]
 statement = "Independently enumerate expected targets in supported summary fixtures; detect missing files, non-file targets, and source escapes at numbered, unnumbered, and nested locations."
 
 [[criteria]]
 id = "required-roles"
+verification = ["test"]
 statement = "Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link; only distinct configured top-level local chapters satisfy the roles."
 
 [[criteria]]
 id = "grammar-boundary"
+verification = ["test", "review"]
 statement = "Document the supported mdBook grammar and version; supported targetless drafts outside required roles remain valid, external links are not fetched, and malformed or unsupported navigation yields incomplete evaluation."
 ```
 
@@ -89,10 +94,12 @@ authorities = [
 
 [[criteria]]
 id = "resolved-comparison"
+verification = ["test"]
 statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations; source or output drift yields a specific finding."
 
 [[criteria]]
 id = "renderer-input"
+verification = ["test"]
 statement = "A missing book.toml is a structural violation; malformed or unreadable renderer configuration prevents a pass. Verify neither configuration is changed."
 ```
 

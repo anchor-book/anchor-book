@@ -28,14 +28,17 @@ authorities = [
 
 [[criteria]]
 id = "outcomes-and-precedence"
+verification = ["test"]
 statement = "Verify CLI exits 0, 1, and 2 for passing, structural-failure, and incomplete cases; mixed violations and operational failure return 2 and retain explicitly partial findings."
 
 [[criteria]]
 id = "blocked-evaluation"
+verification = ["test"]
 statement = "Missing prerequisites yield root-cause findings and blocked dependent checks without cascaded invented defects; an empty findings list with incomplete evaluation never passes."
 
 [[criteria]]
 id = "report-scope"
+verification = ["test"]
 statement = "Assert evaluated and blocked groups and limits of the passing claim. Completed reports appear on stdout and incomplete reports with partial findings appear together on stderr."
 ```
 
@@ -59,14 +62,17 @@ authorities = [
 
 [[criteria]]
 id = "diagnostic-content"
+verification = ["test"]
 statement = "Assert the documented fields and location accuracy for missing chapters, misplaced roles, renderer drift, and invalid input; unavailable observations or source positions are not invented."
 
 [[criteria]]
 id = "stable-presentation"
+verification = ["test"]
 statement = "Repeat checks with filesystem enumeration order varied and terminal styling disabled; diagnostic ordering and essential information remain consistent."
 
 [[criteria]]
 id = "agent-repair"
+verification = ["test", "review"]
 statement = "Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance."
 ```
 

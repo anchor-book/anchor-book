@@ -70,6 +70,19 @@ fn renders_all_fields_and_preserves_unrelated_content() {
     }
     assert!(output.contains("href=\"#preserve-input\""));
     assert!(output.contains("href=\"#immutable-input\""));
+    for (identity, heading) in [
+        ("immutable-input", "Authority"),
+        ("pure-reader", "Requirements"),
+    ] {
+        let section = output
+            .split(&format!("id=\"{identity}\""))
+            .nth(1)
+            .unwrap()
+            .split("</section>")
+            .next()
+            .unwrap();
+        assert!(section.contains(&format!("<h4>{heading}</h4>")));
+    }
 }
 #[test]
 fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
@@ -227,4 +240,52 @@ fn capability_probe_and_arguments_have_defined_statuses() {
     }
     let empty = run(&["md"], &request(vec![]).to_string());
     assert!(empty.status.success());
+}
+
+#[test]
+fn renders_required_methods_per_criterion_without_claiming_results() {
+    let text = RECORDS.replace(
+        "verification = [\"test\"]",
+        "verification = [\"review\", \"proof\", \"test\"]",
+    ).replace(
+        "statement = \"Compare input before and after validation.\"",
+        "statement = \"Compare input before and after validation.\"\n\n[[criteria]]\nid = \"second\"\nstatement = \"Review the assumptions.\"\nverification = [\"review\"]",
+    );
+    let output = run(
+        &["md"],
+        &request(vec![chapter("a.md", "a.md", &text)]).to_string(),
+    );
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let book: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let html = book["items"][0]["Chapter"]["content"].as_str().unwrap();
+    assert!(html.contains("<li><code>source-comparison</code><div class=\"ab-text\">Compare input before and after validation.</div><p>Required verification: review, proof, test</p></li>"));
+    assert!(html.contains("<li><code>second</code><div class=\"ab-text\">Review the assumptions.</div><p>Required verification: review</p></li>"));
+    assert!(!html.contains("Verified"));
+    assert!(!html.contains("Passed"));
+    assert!(html.contains(">Accepted<"));
+}
+
+#[test]
+fn invalid_verification_fails_preprocessing_without_success_json() {
+    for replacement in [
+        "",
+        "verification = []",
+        "verification = [\"test\", \"test\"]",
+        "verification = [\"verus\"]",
+    ] {
+        let text = RECORDS.replace("verification = [\"test\"]", replacement);
+        let output = run(
+            &["md"],
+            &request(vec![chapter("a.md", "a.md", &text)]).to_string(),
+        );
+        assert!(!output.status.success());
+        assert!(output.stdout.is_empty());
+        let diagnostics = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            diagnostics.contains("record.invalid-definition"),
+            "{diagnostics}"
+        );
+        assert!(diagnostics.contains("a.md"), "{diagnostics}");
+    }
 }

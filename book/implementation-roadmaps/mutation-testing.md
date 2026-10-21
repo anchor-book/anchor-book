@@ -99,3 +99,13 @@ Keep the engine's independent tests usable with an invalid Book. Mutation testin
 does not invoke mdBook, structural checking, or the ignored current-Book test.
 The roadmap retains unresolved findings until addressed; passing a scoped run
 does not complete milestone 2 or authorize merging.
+
+## Scoped follow-up during criterion-method work
+
+The schema preparation in [Formal Verification milestone 3](formal-verification.md#formal-verification-3)
+reproduced the HTML heading-label survivor from the baseline above. Assertions now
+check Authority on anchor records and Requirements on decisions. The local scoped
+rerun caught that mutation; its complete scope, commands, and results are recorded
+there. This correction is in the uncommitted working tree based on `5c86d1a`.
+The historical full-campaign results remain unchanged; a new full campaign and
+review of the remaining findings are still required by milestone 2.
