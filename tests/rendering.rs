@@ -119,11 +119,11 @@ fn nested_chapters_routes_and_metadata_survive_process_boundary() {
     assert!(result.stderr.is_empty());
     let mut actual: Value = serde_json::from_slice(&result.stdout).unwrap();
     let first = actual["items"][2]["Chapter"]["content"].as_str().unwrap();
-    assert!(first.contains("../design/nested/anchor.html#immutable-input"));
+    assert!(first.contains("href=\"../design/nested/anchor.html#immutable-input\""));
     let second = actual["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"]
         .as_str()
         .unwrap();
-    assert!(second.contains("../../authority/%C3%A9%20%26%20rules.html#preserve-input"));
+    assert!(second.contains("href=\"../../authority/%C3%A9%20%26%20rules.html#preserve-input\""));
     actual["items"][2]["Chapter"]["content"] = input[1]["items"][2]["Chapter"]["content"].clone();
     actual["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"] =
         input[1]["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"].clone();
@@ -154,7 +154,11 @@ fn protocol_failure_has_no_partial_output() {
         "../outside.md",
         "/absolute.md",
         "https://site/path.md",
+        "scheme:chapter.md",
         "a\\b.md",
+        "a\nb.md",
+        "a\rb.md",
+        "a\tb.md",
         "",
         "a/./b.md",
     ] {

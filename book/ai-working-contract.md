@@ -148,6 +148,23 @@ budget, survivor and exclusion handling, and local/CI commands. Record the setup
 in roadmaps and contributor instructions. Mutation results assess test sensitivity;
 they do not prove an anchor's property.
 
+### Iterate on test findings before merge
+
+For assigned implementation, investigate failing tests and surviving mutations.
+Use the goal design and anchor criteria to distinguish an implementation defect,
+an inadequate test, an equivalent mutation, and an inconclusive tool result.
+Correct code or strengthen tests as appropriate, then rerun ordinary tests and
+the affected mutations. Repeat the required verification scope before declaring
+the change ready. Preserve the finding and record the correction and new results.
+Do not weaken assertions, alter intended behavior, or exclude unexplained mutants
+to obtain a passing run; resolve changes outside the assignment with the engineer.
+
+Run local checks before an authorized push, then inspect the pull request's CI
+results for that revision. Agents can make corrections locally while CI executes
+independently. Repeat the correction and verification loop for CI failures.
+Pending, cancelled, stale, or failed required checks do not establish merge
+readiness. Following this loop does not itself authorize pushing or merging.
+
 ## Keep roadmaps aligned with the goal design
 
 Update affected roadmaps in the same change as goal design, requirements,

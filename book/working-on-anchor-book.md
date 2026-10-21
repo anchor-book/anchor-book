@@ -49,10 +49,12 @@ links, and affected diagrams. Engine compilation and independent tests must rema
 usable when this Book is broken.
 
 The contract's pre-PR testing policy is being developed during prototyping.
-Mutation testing has not been set up. Before adopting the Building workflow,
-agree on its tooling, scope, runtime budget, survivor and exclusion handling,
-and local/CI commands, then demonstrate and document the workflow. This work is
-tracked under [pull-request testing readiness](implementation-roadmaps/index.md#later-work-retained-from-the-design).
+Mutation testing uses pinned cargo-mutants with local commands and a pull-request
+workflow; read `CONTRIBUTING.md` for scope, runtime budgets, results, and the
+agent correction loop. The [Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md)
+records local evidence separately from the full campaign, GitHub execution,
+and required merge rules. These must be demonstrated before claiming merge
+protection; adding a workflow alone does not enable that protection.
 
 ## Public content
 

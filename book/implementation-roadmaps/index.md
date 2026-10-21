@@ -126,6 +126,9 @@ for phase-specific responsibilities.
 
 ## Current roadmaps
 
+- [Mutation Testing](mutation-testing.md): add local testing and an agent correction
+  loop before further engine implementation, then validate the full campaign,
+  pull-request execution, and required merge checks.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 complete locally.
   Milestone 3 covers authority criteria, CI integration, and remote verification.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
@@ -140,13 +143,13 @@ work remains proposed; engine automation is not needed to maintain these roadmap
 
 ## Later work retained from the design
 
-These capabilities are part of the goal system but are outside the three current
+These capabilities are part of the goal system but are outside the current
 roadmaps. They remain deferred, not omitted or assigned. Each needs a sufficiently
 clear design and outcome-based milestones before implementation.
 
 | Capability | Design basis | Work to define before implementation |
 | --- | --- | --- |
-| Pull-request testing readiness | [Testing policy](../ai-working-contract.md#test-before-opening-a-pull-request) | Before adopting the Building workflow, agree on mutation tooling, scope, runtime budget, survivor/exclusion handling, and local/CI commands alongside unit, integration, and acceptance checks. Demonstrate the workflow and document it for contributors; the initial contract section is a draft, not evidence of completed setup. |
+| Broader pull-request testing readiness | [Testing policy](../ai-working-contract.md#test-before-opening-a-pull-request) | The active [Mutation Testing roadmap](mutation-testing.md) owns mutation tooling, correction, and merge checks. Before adopting Building, review the combined unit, integration, acceptance, and mutation workflow and any remaining contribution-policy gaps. |
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
 | Deliver the working contract | [Contract delivery](../design/system-overview.md#contract-delivery) | Engine-owned reusable content, command retrieval, and agent bootstrap that separately locates project guidance and configuration. Remove the temporary Book copy when that path works; keep project-specific content in the Book. Language-specific instruction extensions remain a possible later addition requiring their own design. |

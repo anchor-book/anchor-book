@@ -1,0 +1,7 @@
+# Run independent tests against temporary source copies; keep the Book acceptance
+# test separate. No engine files or individual mutants are excluded.
+additional_cargo_args = ["--locked"]
+gitignore = true
+output = "target"
+timeout_multiplier = 5.0
+minimum_test_timeout = 30.0

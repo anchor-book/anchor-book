@@ -1,0 +1,44 @@
+name: Mutation testing
+
+# Run on every PR so a required check is never absent due to a path filter.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation:
+    name: Mutation tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal
+      - name: Ordinary tests
+        run: cargo +stable test --locked
+      - name: Install cargo-mutants
+        run: cargo +stable install cargo-mutants --version 27.1.0 --locked
+      - name: Test mutations
+        run: cargo +stable mutants --jobs 2 --build-timeout 120
+      - name: Retain mutation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-results
+          # Deliberately omit lock.json and debug.log (host/process metadata).
+          path: |
+            target/mutants.out/outcomes.json
+            target/mutants.out/mutants.json
+            target/mutants.out/*.txt
+            target/mutants.out/log/
+            target/mutants.out/diff/
+          if-no-files-found: warn
+          retention-days: 14

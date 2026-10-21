@@ -277,6 +277,28 @@ are introduced. Installation must work without this development checkout.
 Publishing metadata, license expression, packaged files, and compatibility
 policy are part of release readiness.
 
+### Mutation testing
+
+Use cargo-mutants as a development tool, separate from engine dependencies and
+Book builds. It runs the independent tests against temporary source mutations;
+current-Book acceptance remains a separate check. The pinned tool and commands
+are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
+No engine mutation exclusions are configured.
+
+Agents run tests locally, investigate findings against the goal design, correct
+test gaps or implementation defects, and repeat verification. GitHub repeats the
+campaign on pull requests. Ordinary tests precede mutation tests in both places.
+Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests
+detected a fault. Equivalent-mutation exclusions require specific reasoning and
+review; the default is to preserve findings for investigation.
+
+The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
+separates usable local support from a full reviewed campaign, demonstrated CI,
+and branch rules requiring success before merge. The initial CI budget is 45
+minutes with two mutation workers; adjust it from measured results without
+silently reducing scope. The contract retains the reusable testing policy;
+tool versions and repository integration remain project guidance.
+
 ## Choices still open
 
 Structural checking must settle configuration and navigation-reader dependencies
