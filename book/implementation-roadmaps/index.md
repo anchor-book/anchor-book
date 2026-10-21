@@ -201,6 +201,7 @@ clear design and outcome-based milestones before implementation.
 
 | Capability | Design basis | Work to define before implementation |
 | --- | --- | --- |
+| Pull-request testing readiness | [Testing policy](../ai-working-contract.md#test-before-opening-a-pull-request) | Before adopting the Building workflow, agree on mutation tooling, scope, runtime budget, survivor/exclusion handling, and local/CI commands alongside unit, integration, and acceptance checks. Demonstrate the workflow and document it for contributors; the initial contract section is a draft, not evidence of completed setup. |
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
 | Deliver the working contract | [Contract transition](../ai-working-contract.md#transition-to-engine-delivery) | Engine-owned content, configuration specialization, command retrieval, and agent bootstrap; remove the temporary Book copy when that path works. |

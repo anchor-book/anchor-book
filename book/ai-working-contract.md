@@ -134,6 +134,44 @@ updates. Roadmap work does not itself authorize pushing, merging, or changes to
 unrelated work. This process currently uses ordinary Book content; specialized
 commands or prompt templates may be added later.
 
+## Test before opening a pull request
+
+This is the initial policy to refine during Prototyping and follow for
+implementation pull requests in Building. It does not change the current phase
+or contribution workflow. During Prototyping, continue testing assigned
+experiments and recording results and gaps; do not claim this full policy is
+already implemented.
+
+Before opening an implementation pull request:
+
+- Add or update **unit tests** for changed behavior, including failure cases and
+  boundaries. For bug fixes, add a regression test that exposes the defect.
+  Derive expectations from the design and anchor criteria, not from the current
+  implementation's output.
+- Run relevant **integration and acceptance tests**, including actual CLI or
+  adapter behavior when affected. Exercise independent fixtures as well as this
+  Book; a successful self-build alone is insufficient.
+- Run **mutation testing** on the affected engine logic to assess whether tests
+  detect deliberately introduced faults. Start with passing ordinary tests.
+  Review surviving mutations and strengthen tests where they reveal gaps;
+  document equivalent mutations or exclusions with reasons. Timeouts, untested
+  mutations, and tool failures are not evidence that a fault was detected.
+- Run formatting, Clippy, and the supported-toolchain checks relevant to the
+  change. Build the Book and check affected records, links, and diagrams when
+  its content or rendering changes. Use the documented project commands.
+- Record the tested revision, commands, results, mutation scope and findings,
+  and any remaining gaps in the pull request and applicable roadmap evidence.
+  Report CI as pending until it has run; unresolved required checks must not be
+  presented as ready to merge.
+
+For changes confined to prose or presentation, use the relevant Book checks;
+do not invent unit tests or run mutation testing on unchanged engine logic.
+
+Before adopting this policy in Building, agree on the mutation tool, scope,
+runtime budget, treatment of survivors and exclusions, and local/CI commands.
+Record that setup in the roadmap and contributor instructions. Mutation results
+assess test sensitivity; they do not by themselves prove an anchor's property.
+
 ## Keep roadmaps aligned with the goal design
 
 When the goal design changes, update the affected roadmaps in the same change.
