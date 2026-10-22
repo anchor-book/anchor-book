@@ -41,6 +41,9 @@ jobs:
           mdbook --version
           mdbook build
 
+      - name: Check rendered Book
+        run: cargo test --locked --test rendered_book -- --ignored --nocapture
+
       - name: Retain rendered Book
         uses: actions/upload-artifact@v4
         with:
