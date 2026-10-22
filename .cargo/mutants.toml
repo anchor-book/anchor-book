@@ -1,7 +1,18 @@
 # Run independent tests against temporary source copies; keep the Book acceptance
-# test separate. No engine files or individual mutants are excluded.
+# test separate. No engine files are excluded.
 additional_cargo_args = ["--locked"]
 gitignore = true
 output = "target"
 timeout_multiplier = 5.0
 minimum_test_timeout = 30.0
+
+# Reviewed equivalent mutations: these three unions combine distinct flags
+# (TABLES=2, FOOTNOTES=4, STRIKETHROUGH=8, TASKLISTS=16 in pulldown-cmark 0.13.4).
+# OR and XOR are identical for disjoint bits. Flag-removal/intersection mutations
+# remain included. Exact locations stop matching when this code moves; re-review
+# these exceptions when the flag expression or parser dependency changes.
+exclude_re = [
+    '^src/records/markdown\.rs:24:9: replace \| with \^ in read$',
+    '^src/records/markdown\.rs:25:9: replace \| with \^ in read$',
+    '^src/records/markdown\.rs:26:9: replace \| with \^ in read$',
+]

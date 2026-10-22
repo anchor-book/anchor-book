@@ -36,6 +36,20 @@ fn has_problem(text: &str, problem: Problem) {
         errors.diagnostics().iter().any(|d| d.problem() == problem),
         "{text}\n{errors:?}"
     );
+    let expected = match problem {
+        Problem::InvalidInput => DiagnosticCode::InvalidInput,
+        Problem::InvalidDefinition => DiagnosticCode::InvalidDefinition,
+        Problem::DuplicateId => DiagnosticCode::DuplicateId,
+        Problem::IncompatibleStatus => DiagnosticCode::IncompatibleStatus,
+        _ => DiagnosticCode::InvalidReference,
+    };
+    for diagnostic in errors
+        .diagnostics()
+        .iter()
+        .filter(|d| d.problem() == problem)
+    {
+        assert_eq!(diagnostic.code(), expected);
+    }
 }
 fn snapshot(errors: &RecordErrors) -> Vec<String> {
     errors
@@ -50,6 +64,7 @@ fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
     let original = FIXTURE.to_owned();
     let inventory = inspect(&original).unwrap();
     assert_eq!(inventory.len(), 3);
+    assert!(!inventory.is_empty());
     assert_eq!(
         inventory.records().map(|r| r.id()).collect::<Vec<_>>(),
         ["immutable-input", "preserve-input", "pure-reader"]
@@ -358,13 +373,18 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
             .iter()
             .any(|d| d.problem() == Problem::AmbiguousTarget)
     );
-    assert!(
-        errors
-            .diagnostics()
-            .iter()
-            .filter(|d| d.problem() == Problem::DuplicateId)
-            .all(|d| !d.related_locations().is_empty())
-    );
+    let duplicates: Vec<_> = errors
+        .diagnostics()
+        .iter()
+        .filter(|d| d.problem() == Problem::DuplicateId)
+        .collect();
+    for (index, diagnostic) in duplicates.iter().enumerate() {
+        assert_eq!(diagnostic.code(), DiagnosticCode::DuplicateId);
+        assert_eq!(
+            diagnostic.related_locations(),
+            &[duplicates[1 - index].location().clone()]
+        );
+    }
     let cross_kind = FIXTURE.replacen("id = \"pure-reader\"", "id = \"preserve-input\"", 1);
     has_problem(&cross_kind, Problem::DuplicateId);
     let invalid = FIXTURE.replacen("source = \"The reader is observational.\"", "", 1);
@@ -453,6 +473,8 @@ fn chapter_order_does_not_change_records_backlinks_or_diagnostics() {
 
 #[test]
 fn chapter_identity_is_required_and_unique() {
+    let errors = read_records(&[Chapter::new(Path::new(""), "")]).unwrap_err();
+    assert_eq!(errors.diagnostics()[0].code(), DiagnosticCode::InvalidInput);
     assert_eq!(
         read_records(&[Chapter::new(Path::new(""), "")])
             .unwrap_err()
@@ -465,6 +487,87 @@ fn chapter_identity_is_required_and_unique() {
         read_records(&[chapter, chapter]).unwrap_err().diagnostics()[0].problem(),
         Problem::InvalidInput
     );
+}
+
+#[test]
+fn diagnostics_identify_unicode_columns_and_toml_error_ranges() {
+    let text = "é😀 **{anchor}**";
+    let errors = failures(text);
+    let diagnostic = &errors.diagnostics()[0];
+    assert_eq!(diagnostic.location().line(), 1);
+    assert_eq!(diagnostic.location().column(), 6);
+    assert_eq!(&text[diagnostic.location().range()], "{anchor}");
+    assert!(diagnostic.message().contains("canonical definition fence"));
+
+    let text = "# Context\n\n```anchorbook-requirement\nid = @\n```\n";
+    let errors = failures(text);
+    let diagnostic = &errors.diagnostics()[0];
+    assert_eq!(diagnostic.location().line(), 4);
+    assert_eq!(diagnostic.location().column(), 6);
+    assert_eq!(&text[diagnostic.location().range()], "@");
+    assert!(diagnostic.source().is_some());
+}
+
+#[test]
+fn accepted_authority_conflicts_have_a_distinct_diagnostic_family() {
+    let text = FIXTURE.replacen("status = \"accepted\"", "status = \"draft\"", 1);
+    has_problem(&text, Problem::IncompatibleStatus);
+}
+
+#[test]
+fn markdown_containers_and_code_boundaries_keep_their_diagnostic_meaning() {
+    let nested = format!(
+        "> ```text\n> example\n> ```\n>\n{}",
+        prefix_lines(&requirement(), "> ")
+    );
+    let errors = failures(&nested);
+    assert_eq!(errors.diagnostics().len(), 1);
+    assert!(
+        errors.diagnostics()[0]
+            .message()
+            .contains("must not be nested")
+    );
+
+    let text = "```text\n{anchor}`literal`\n```\n\n{anchor}`unsupported`\n";
+    let errors = failures(text);
+    assert_eq!(errors.diagnostics().len(), 1);
+    assert_eq!(errors.diagnostics()[0].location().line(), 5);
+    assert!(
+        errors.diagnostics()[0]
+            .message()
+            .contains("legacy {anchor}")
+    );
+}
+
+#[test]
+fn markdown_extensions_preserve_legacy_marker_locations() {
+    for text in [
+        "| One | Two |\n| --- | --- |\n| {anchor} | {anchor} |\n",
+        "[^note]: {anchor}\n",
+        "~~struck~~{anchor}\n",
+        "- [ ] {anchor}\n",
+    ] {
+        let errors = failures(text);
+        let expected: Vec<_> = text
+            .match_indices("{anchor}")
+            .map(|(start, marker)| start..start + marker.len())
+            .collect();
+        assert_eq!(
+            errors
+                .diagnostics()
+                .iter()
+                .map(|d| d.location().range())
+                .collect::<Vec<_>>(),
+            expected,
+            "{text}"
+        );
+        assert!(
+            errors
+                .diagnostics()
+                .iter()
+                .all(|d| d.message().contains("legacy {anchor}"))
+        );
+    }
 }
 
 #[test]

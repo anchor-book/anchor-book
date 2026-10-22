@@ -105,7 +105,11 @@ and a test timeout of five times the baseline duration, with a 30-second minimum
 The command limits each build to 120 seconds. It runs an unmodified baseline
 before testing mutations. Do not use `--in-place` or skip the baseline. Ordinary
 tests, including actual-process CLI tests, run for each mutation; the ignored
-current-Book acceptance test stays separate. There are no project exclusions.
+Book acceptance tests stay separate. Three exact OR-to-XOR mutations in the
+Markdown option mask are excluded because the flags are disjoint and the resulting
+mask is identical. The configuration records their locations and rationale;
+review them when the flag expression or parser dependency changes. No engine
+files are excluded, and mutations that remove flags remain in scope.
 
 For a bounded local run, select the affected file or capability. For example:
 
