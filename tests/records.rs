@@ -389,6 +389,22 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
     has_problem(&cross_kind, Problem::DuplicateId);
     let invalid = FIXTURE.replacen("source = \"The reader is observational.\"", "", 1);
     let errors = failures(&invalid);
+    for diagnostic in errors
+        .diagnostics()
+        .iter()
+        .filter(|d| d.problem() == Problem::InvalidTarget)
+    {
+        assert!(
+            diagnostic
+                .message()
+                .contains("authority definition is invalid")
+        );
+        assert_eq!(diagnostic.related_locations().len(), 1);
+        assert!(
+            invalid[diagnostic.related_locations()[0].range()]
+                .starts_with("```anchorbook-requirement")
+        );
+    }
     assert!(
         errors
             .diagnostics()
@@ -411,6 +427,19 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
     );
     let malformed = FIXTURE.replacen("source = \"The reader is observational.\"", "source = [", 1);
     has_problem(&malformed, Problem::InvalidTarget);
+    let errors = failures(&malformed);
+    for diagnostic in errors
+        .diagnostics()
+        .iter()
+        .filter(|d| d.problem() == Problem::InvalidTarget)
+    {
+        assert!(
+            diagnostic
+                .message()
+                .contains("definitions with unknown identities")
+        );
+        assert_eq!(diagnostic.related_locations().len(), 1);
+    }
 }
 
 #[test]

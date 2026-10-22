@@ -4,7 +4,8 @@
 
 **Status:** Milestone 1 complete locally; milestone 2 in progress. Local test gaps are corrected
 and the three remaining survivors are reviewed equivalent mutations with narrow
-exclusions. The PR correction workflow and required-check enforcement remain.
+exclusions. PR mutation execution has passed; merge protection and the remote
+failure/correction demonstration are deferred until the authority proofs work.
 
 ## Goal
 
@@ -13,7 +14,10 @@ investigate findings, improve tests or implementation, and repeat verification.
 GitHub independently runs the checks on the pull request; required checks protect
 the merge. Tool setup alone does not establish that the engine's tests are adequate.
 
-This work precedes further engine implementation. It applies the
+Local findings are resolved. Merge protection is deferred until the local and
+GitHub authority proofs in the [Formal Verification roadmap](formal-verification.md)
+work; it does not block the proof of concept. Existing CI results must still be
+reviewed before merging. This roadmap applies the
 [testing and correction policy](../ai-working-contract.md#test-before-opening-a-pull-request)
 to the existing Rust crate. Project choices and commands are documented in
 `CONTRIBUTING.md` at the repository root and the [Rust Engine design](../design/rust-engine.md#mutation-testing).
@@ -65,7 +69,7 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr><th scope="row">Outcome</th><td>The complete engine campaign has reviewed results, and GitHub requires passing tests before merging into main.</td></tr>
-<tr><th scope="row">Status</th><td>In progress — local findings resolved; PR workflow and merge enforcement remain</td></tr>
+<tr><th scope="row">Status</th><td>In progress — PR execution verified; merge protection and remote correction demonstration deferred until proofs work</td></tr>
 <tr><th scope="row">Identifier</th><td><code>mutation-testing-2</code></td></tr>
 <tr><th scope="row">Design basis</th><td>Working-contract testing policy and Rust Engine testing guidance.</td></tr>
 <tr><th scope="row">Dependencies</th><td>Mutation Testing milestone 1; publication of the workflow and access to repository merge rules.</td></tr>
@@ -73,7 +77,7 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 <li><label><input type="checkbox" checked disabled> Run the initial unfiltered engine campaign and record its scope, results, and limits.</label></li>
 <li><label><input type="checkbox" checked disabled> Manually run the workflow on the published prototype checkpoint; verify failure reporting and retained evidence.</label></li>
 <li><label><input type="checkbox" checked disabled> Review survivors and unviable mutations. Correct test gaps or defects, justify any equivalent mutations, and repeat affected checks and the full campaign.</label></li>
-<li><label><input type="checkbox" disabled> Exercise the workflow on a PR and record its revision, results, artifacts, and runtime. Tune or split the 45-minute budget if needed without dropping coverage.</label></li>
+<li><label><input type="checkbox" checked disabled> Exercise the workflow on a PR and record its revision, results, artifacts, and runtime. Tune or split the 45-minute budget if needed without dropping coverage.</label></li>
 <li><label><input type="checkbox" disabled> Configure the main branch rule to require Mutation tests and ordinary engine checks, with results current for the revision being merged. Verify that a failed check prevents merging under the intended contributor policy.</label></li>
 <li><label><input type="checkbox" disabled> Demonstrate an agent reading a remote failure, correcting it locally, and obtaining passing checks on an updated PR through authorized pushes.</label></li>
 </ul></td></tr>
@@ -87,7 +91,7 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 <p><strong>Baseline:</strong> The full campaign at <code>46f47c8</code> attempted 226 mutations: 154 caught, 28 missed, 44 unviable, no timeouts. Local Rust 1.90.0 and the <a href="https://github.com/anchor-book/anchor-book/actions/runs/39662175193">GitHub run</a> on Rust 1.99.1 produced the same survivors with cargo-mutants 27.1.0.</p>
 <p><strong>Current local assessment:</strong> Tests in <code>tests/errors.rs</code> and <code>tests/records.rs</code> now check error chains and presentation, diagnostic codes/messages/locations, duplicate-target locations, nonempty inventories, and Markdown boundaries and extensions. The HTML heading assertion is in <code>7ab9616</code>. No production engine behavior changed. The full unfiltered rerun on the working tree based on <code>1fa9b3e</code> completed on 2026-10-21: 230 attempted, 183 caught, 44 unviable, three equivalent survivors, no timeouts. All 25 non-equivalent survivors from the baseline now fail relevant tests; their failure logs were reviewed. Command: <code>target/mutation-tools/bin/cargo-mutants mutants --jobs 2 --build-timeout 120 --output target/mutation-findings</code>, cargo-mutants 27.1.0, Rust 1.90.0, approximately 16 minutes. Exit 2 reflects the three equivalent cases. The subsequent exclusion listing selects 227 mutations; that configured campaign was not rerun. Ordinary tests and Clippy pass on Rust 1.85 and 1.90; formatting, absent/invalid-Book independence, and current/rendered-Book acceptance pass.</p>
 <p><strong>Equivalent mutations:</strong> The three OR-to-XOR changes at <code>src/records/markdown.rs:24–26</code> produce the same option mask: the locked parser's four flags occupy distinct bits. Exact exclusions and their review conditions are recorded in <code>.cargo/mutants.toml</code>. Listing checks confirm exactly three exclusions and retain all flag-removal mutations. The previous unviable cases were reviewed: generated replacements call unavailable constructors or require missing trait implementations; they are not counted as detected faults.</p>
-<p><strong>Integration and limits:</strong> The checkpoint <code>1fa9b3e</code> passed <a href="https://github.com/anchor-book/anchor-book/actions/runs/39701832635">Engine checks</a> and <a href="https://github.com/anchor-book/anchor-book/actions/runs/39701832524">Book build and publication</a>. The test corrections and exclusions are included in this commit; remote verification remains pending. A passing local campaign does not establish the PR correction loop or required merge checks. The last GitHub inspection found no main-branch protection; no rule has been changed.</p>
+<p><strong>Integration and limits:</strong> The checkpoint <code>1fa9b3e</code> passed <a href="https://github.com/anchor-book/anchor-book/actions/runs/39701832635">Engine checks</a> and <a href="https://github.com/anchor-book/anchor-book/actions/runs/39701832524">Book build and publication</a>. The <a href="https://github.com/anchor-book/anchor-book/actions/runs/39711178677">PR mutation run</a> for <code>aaede96</code> passed with 227 attempted, 183 caught, 44 unviable, no survivors or timeouts; the job took five minutes. This verifies execution with the reviewed exclusions. Merge protection and a remote failure/correction demonstration remain deferred until the authority proofs work. A passing local campaign does not establish the PR correction loop or required merge checks. The last GitHub inspection found no main-branch protection; no rule has been changed.</p>
 </td></tr>
 <tr><th scope="row">Completion record</th><td>Pending.</td></tr>
 </tbody>

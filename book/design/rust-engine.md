@@ -40,12 +40,32 @@ statement = "Accept draft anchors citing draft or accepted authorities and accep
 [[criteria]]
 id = "formal-authority"
 verification = ["proof"]
-statement = "For the complete typed record input, authority validation succeeds exactly when all defined authority rules hold: nonempty anchor authority, unique valid targets of the declared kind, distinct references, and compatible acceptance states, including requirements cited by decisions. The domain includes invalid relationships; their absence must not be assumed."
+statement = '''
+Claim: The production authority validator reports no violations if and only if
+every successfully decoded record satisfies the authority rules: nonempty anchor
+authority, distinct references, unique valid targets of the declared kind, and
+compatible acceptance states, including requirements cited by uncited decisions.
+
+Domain: The complete typed candidate collection, including empty authority lists,
+duplicates, missing or invalid targets, unknown identities, and incompatible
+statuses. Invalid relationships must not be excluded from the domain.
+
+Boundary: Executable authority-presence checks, target lookup, and validation
+across all records and references used by the engine.
+
+Assumptions: The verifier, solver, compiler, and standard-library contracts are
+trusted. No precondition may assume valid authority relationships. Decoding and
+conversion fidelity are integration obligations outside this proof.
+
+Exclusions: Parsing, candidate conversion, global identity checks, diagnostic
+classification and locations, inventory construction, and adapter failure
+propagation are covered by production-integration through tests and review.
+'''
 
 [[criteria]]
 id = "production-integration"
 verification = ["test", "review"]
-statement = "The engine executes the verified authority-validation functions. Conversion preserves the records and references being validated, and validation failures prevent a successful inventory or rendered Book. Identify which integration boundaries are tested or reviewed rather than proved."
+statement = "The engine executes the verified authority-validation functions. Tests and review establish faithful parsing and candidate conversion, preserving identities, kinds, statuses, references, and invalid candidates. Global identity checks remain enforced; authority failures produce the expected located diagnostics and prevent a successful inventory or Book JSON. A successful inventory preserves the checked records and relationships. These integration boundaries are tested and reviewed, not formally proved; required-authority, resolved-authority, and compatible-status provide additional behavioral tests."
 ```
 
 ```anchorbook-anchor
@@ -218,6 +238,7 @@ stable; a remote run is still pending publication of this work.
 | `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
 | `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
+| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.2** preprocessor protocol and rejects
@@ -324,9 +345,10 @@ and APIs. Async runtimes and dynamic rules need concrete workflows before design
 ## Formal verification
 
 [Formal Verification](formal-verification.md) introduces Verus for the existing
-`engine-valid-authority` anchor. The planned proof covers executable validation
+`engine-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
-remain explicit integration boundaries. No Verus integration or proof exists yet.
+remain explicit integration boundaries. The proof passes locally and is awaiting
+engineer review. A GitHub proof job is implemented locally; remote results remain pending.
 The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
 and mdBook adapter do not execute verifiers.

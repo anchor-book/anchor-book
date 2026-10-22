@@ -168,7 +168,8 @@ impl Context<'_> {
                     .get("authorities")
                     .and_then(Item::as_array)
                     .is_some_and(|a| a.iter().all(|v| v.is_inline_table()));
-                if raw.authorities.is_empty() || !inline {
+                if !super::authority::has_required_authority(true, raw.authorities.len()) || !inline
+                {
                     return Err(self.invalid(
                         "authorities",
                         "authorities must be a nonempty array of inline tables",

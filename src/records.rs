@@ -4,6 +4,7 @@
 //! or located errors. Its implementation is independent of filesystem access,
 //! presentation, CLI invocation, and mdBook's protocol.
 
+mod authority;
 mod diagnostics;
 mod inventory;
 mod markdown;

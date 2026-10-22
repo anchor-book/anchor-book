@@ -200,6 +200,27 @@ project's schema to declare required verification methods for each criterion.
 Every listed method is an obligation; a selection is not evidence of completion.
 Keep tool choices and execution steps in the verification design and roadmap.
 
+An anchor requires formal verification if at least one of its criteria lists
+`"proof"`. Each such criterion requires proof of its stated scope. If all criteria
+have valid method lists and none lists proof, formal verification is not required
+for that anchor revision. Missing or invalid declarations are unresolved input,
+not permission to omit verification. Do not infer requirements from existing proof
+files or design-acceptance status.
+
+Agree on methods while designing criteria, considering failure consequences,
+input/state complexity, specification precision, the production-code boundary,
+and maintenance cost. Record the rationale in the verification design. Methods
+are minimum obligations; propose additional evidence when useful. Report gaps in
+the anchor's property even when all listed checks pass. Changes to required
+methods or scope require design and roadmap reconciliation with the engineer.
+
+Before developing a required proof, read its claim, input domain, production
+boundary, assumptions, and exclusions from the criterion. Follow the project's
+authoring format and resolve missing or ambiguous scope with the engineer.
+Every excluded part of the anchor's property must remain covered by another
+criterion or identified as an unresolved gap. An algorithm-only proof must not
+be reported as proof of its parsing, conversion, or caller integration.
+
 For criteria requiring proof, derive an explicit formal specification and maintain
 it with the production code and supporting proofs in the implementing codebase.
 Associate it with the anchor and criterion IDs. Develop the proof alongside the
@@ -213,6 +234,8 @@ its property to obtain a successful proof. Changes to intended behavior require
 design reconciliation. Record results against code and design revisions and
 reassess affected evidence when either changes. Partial evidence does not satisfy
 an entire criterion, and tests or review do not silently replace a required proof.
+Report proof results for the specific anchor and criterion, scope, and revision;
+a proof requirement or a successful partial proof does not verify the whole anchor.
 
 ## Keep the Book concise
 

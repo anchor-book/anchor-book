@@ -1,0 +1,103 @@
+name: Formal verification
+
+# No path filters: a future required check must appear on every PR.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proof-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authority:
+    name: Authority proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      VERUS_VERSION: 0.2026.10.18.7d82994
+      VERUS_SHA256: e9af03732d4bdd32b93a8fcf471706739c24c1473fa5086618d96c47237845dd
+      VERUS_RUST: 1.99.1
+      TEST_RUST: 1.85.0
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Identify evidence
+        run: |
+          mkdir -p target/proof-results
+          jq -n --arg revision "$(git rev-parse HEAD)" \
+            --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --arg version "$VERUS_VERSION" --arg checksum "$VERUS_SHA256" \
+            --arg rust "$VERUS_RUST" --arg test_rust "$TEST_RUST" \
+            '{revision: $revision, run: $run, verus: $version, archive_sha256: $checksum,
+              verifier_rust: $rust, test_rust: $test_rust,
+              anchor: "engine-valid-authority", criterion: "formal-authority",
+              scope: "Production authority validation over complete typed candidates",
+              assumptions: "Verifier, solver, compiler, and standard-library contracts are trusted",
+              exclusions: "Parsing, conversion, global identity checks, diagnostics, and caller integration are tested/reviewed, not proved"}' \
+            > target/proof-results/revision.json
+      - name: Install pinned tools
+        id: tools
+        run: |
+          archive="verus-${VERUS_VERSION}-x86-linux.zip"
+          curl --fail --location --retry 3 \
+            "https://github.com/verus-lang/verus/releases/download/release/${VERUS_VERSION}/${archive}" \
+            --output "$RUNNER_TEMP/$archive"
+          printf '%s  %s\n' "$VERUS_SHA256" "$RUNNER_TEMP/$archive" | sha256sum --check --strict
+          unzip -q "$RUNNER_TEMP/$archive" -d "$RUNNER_TEMP/verus"
+          echo "$RUNNER_TEMP/verus/verus-x86-linux" >> "$GITHUB_PATH"
+          rustup toolchain install "$VERUS_RUST" --profile minimal --component rustc-dev,llvm-tools
+          rustup toolchain install "$TEST_RUST" --profile minimal
+      - name: Independent engine and integration tests
+        run: |
+          status=0
+          cargo +"$TEST_RUST" test --locked || status=$?
+          jq -n --argjson exit_code "$status" --arg rust "$TEST_RUST" \
+            '{command: ("cargo +" + $rust + " test --locked"), exit_code: $exit_code}' \
+            > target/proof-results/tests.json
+          exit "$status"
+      - name: Verify production authority code
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        run: |
+          verus --version
+          z3 --version
+          # No build cache is restored. A separate target directory ensures the
+          # ordinary test build cannot supply a stale or absent proof report.
+          status=0
+          cargo verus verify --fwd-verus-args-to roots --locked --target-dir target/verus-ci --lib \
+            -- --no-cheating --output-json --time-expanded \
+            > target/proof-results/raw.txt || status=$?
+          jq -n --argjson exit_code "$status" \
+            '{command: "cargo verus verify --fwd-verus-args-to roots --locked --target-dir target/verus-ci --lib -- --no-cheating --output-json --time-expanded", exit_code: $exit_code}' \
+            > target/proof-results/command.json
+          # Fresh dependency verification emits a plain-text success summary.
+          # Remove only that known line; any other non-JSON output fails parsing.
+          sed '/^verification results:: [0-9][0-9]* verified, 0 errors$/d' \
+            target/proof-results/raw.txt | \
+            jq -s --arg version "$VERUS_VERSION" -f .github/verus-report.jq \
+            > target/proof-results/verification.json
+          jq . target/proof-results/verification.json
+          jq -e '.complete == true' target/proof-results/verification.json
+          exit "$status"
+      - name: Retain proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authority-proof-results
+          # Raw reports may contain source/proof-note payloads. Retain only the
+          # selected result fields; compiler/verifier diagnostics stay in job logs.
+          path: |
+            target/proof-results/revision.json
+            target/proof-results/command.json
+            target/proof-results/tests.json
+            target/proof-results/verification.json
+          if-no-files-found: warn
+          retention-days: 14

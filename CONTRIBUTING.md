@@ -88,6 +88,67 @@ parse records. Schema examples stay literal. Field strings are escaped plain
 text with paragraph breaks; inline Markdown is not interpreted.
 The package is not publishable yet; release readiness is a separate milestone.
 
+## Local authority proof
+
+The production validator in `src/records/authority.rs` has a local Verus proof.
+Use [Verus release 0.2026.10.18.7d82994](https://github.com/verus-lang/verus/releases/tag/release/0.2026.10.18.7d82994),
+its bundled Z3 4.16.0, and the exactly pinned `vstd` dependency in Cargo.toml.
+Download the release archive for your platform, check its published SHA-256,
+and add the extracted directory containing `verus` and `cargo-verus` to PATH.
+The arm64 macOS archive used for local verification has SHA-256
+`3fc56c58277b5f0999368f7b3a2b07ba4eb9ec2965454ce7a9f2769c0464d32b`.
+
+Install the verifier's toolchain alongside the normal development toolchains:
+
+```sh
+rustup toolchain install 1.99.1 --profile minimal --component rustc-dev,llvm-tools
+cargo verus verify --fwd-verus-args-to roots --locked --lib -- --no-cheating --output-json --time-expanded
+```
+
+Verification uses Rust 1.99.1; ordinary engine builds retain the Rust 1.85 minimum.
+No Book build or wrapper script is required. `--no-cheating` rejects project
+assumptions and trusted function bodies; the verifier, solver, standard-library
+specifications, and Rust compiler remain trusted dependencies.
+
+Review the report for zero errors and results for `validate_authorities`, `validate_reference`,
+`lookup`, `has_required_authority`, `matches_identity`, `matches_target_kind`, and
+`has_unknown_identity` in `records::authority`. Cargo can reuse verified artifacts;
+to force a fresh engine run after an initial build, run `cargo clean -p anchor-book`
+before verification. This retains dependency artifacts. Reverify after changes to
+code, specifications, conversion, or dependencies, and run ordinary tests for the
+unproved integration boundaries.
+
+cargo-mutants 27.1.0 does not discover executable bodies inside `verus!` blocks.
+Keep this coverage gap explicit: scoped mutation checks exercise the unannotated
+integration code, while a deliberate code defect separately tests proof rejection.
+Neither result establishes full mutation coverage of the validator.
+
+### GitHub authority proof
+
+`.github/workflows/proof.yml` defines **Formal verification / Authority proof**
+for PRs targeting `main`, pushes to `main`, and manual dispatch. It uses Ubuntu
+24.04, the pinned Linux Verus archive with a SHA-256 check, and the verifier's
+Rust toolchain. Ordinary tests run on Rust 1.85.0 against the same checkout;
+the separate Engine workflow also checks stable Rust. No Book build is required.
+
+Verification uses a fresh target directory without a restored build cache.
+The command must succeed, and `.github/verus-report.jq` requires exactly one
+report from the pinned verifier, full-crate verification, zero errors, a nonzero
+verified count, and successful executable results for all seven authority
+functions. Missing, partial, malformed, or unsuccessful reports fail the job.
+The function list must stay aligned with the agreed proof boundary when it changes.
+
+The job has a 20-minute budget and retains `authority-proof-results` for 14 days,
+including failures where evidence is available. The artifact identifies the actual
+checkout revision (the merge commit for a PR), run URL, tools, commands, exit codes,
+assumptions, and selected proof results. Raw proof-note payloads are omitted;
+compiler and verifier diagnostics remain in job logs. Cancelled or incomplete
+runs are not passing evidence. Review the anchor interpretation and unproved
+boundaries separately; a green job does not establish those review obligations.
+
+The workflow is implemented locally; passing and deliberate-failure GitHub runs
+remain to be demonstrated after publication. Merge protection is not configured.
+
 ## Mutation testing
 
 Use [cargo-mutants](https://mutants.rs/) **27.1.0** to check whether the independent
@@ -126,6 +187,14 @@ A filtered run establishes results only for that scope. Include related behavior
 when deciding scope; a changed-line-only run can miss effects elsewhere. The
 unfiltered command covers the entire crate with the tool's supported mutations,
 not every possible defect. Rust or test changes invalidate affected earlier results.
+
+Choose local mutation runs for affected ordinary Rust behavior, including parsing,
+conversion, and error propagation. For code inside `verus!`, run proofs and tests
+and retain the mutation-coverage gap. Specification changes also need review against
+the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only
+changes need their relevant checks, not a new local mutation campaign on unchanged
+engine logic. The existing GitHub mutation workflow still runs on every PR; selective
+remote execution is a separate workflow change.
 
 Results are in ignored `target/mutants.out/`; the next run rotates the previous
 results to `target/mutants.out.old/`. Preserve needed evidence before rerunning.
