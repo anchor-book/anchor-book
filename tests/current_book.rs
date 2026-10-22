@@ -1,33 +1,14 @@
 //! Separate acceptance check against the current Book, loaded only at runtime.
-use anchor_book::records::{Chapter, RecordData, RecordKind, VerificationMethod, read_records};
-use pulldown_cmark::{Event, Parser, Tag};
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use anchor_book::records::{RecordData, RecordKind, VerificationMethod, read_records};
+
+#[path = "support/book.rs"]
+mod book;
 
 #[test]
 #[ignore = "current-Book acceptance; run explicitly with --ignored after independent tests"]
 fn current_book_records() {
-    let root = std::env::var_os("ANCHORBOOK_TEST_BOOK")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("book"));
-    let summary = fs::read_to_string(root.join("SUMMARY.md")).expect("read Book summary");
-    let paths: Vec<PathBuf> = Parser::new(&summary)
-        .filter_map(|e| match e {
-            Event::Start(Tag::Link { dest_url, .. }) => Some(PathBuf::from(dest_url.as_ref())),
-            _ => None,
-        })
-        .collect();
-    let texts: Vec<String> = paths
-        .iter()
-        .map(|p| fs::read_to_string(root.join(p)).expect("read listed Book chapter"))
-        .collect();
-    let chapters: Vec<_> = paths
-        .iter()
-        .zip(&texts)
-        .map(|(path, text)| Chapter::new(path, text))
-        .collect();
+    let sources = book::load();
+    let chapters = book::chapters(&sources);
     let inventory = read_records(&chapters).unwrap_or_else(|e| {
         for d in e.diagnostics() {
             eprintln!("{d}");

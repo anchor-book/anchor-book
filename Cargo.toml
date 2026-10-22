@@ -28,3 +28,8 @@ missing_docs = "warn"
 
 [lints.clippy]
 all = "warn"
+
+[dev-dependencies]
+percent-encoding = "2.3"
+scraper = { version = "0.24", default-features = false }
+url = "2.5"

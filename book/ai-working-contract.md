@@ -109,6 +109,12 @@ whether the work is on a branch or integrated into main. Mark Complete only when
 the outcome and every criterion hold. Report gaps rather than weakening criteria.
 Milestone completion does not automatically verify linked anchors.
 
+The Book tracks progress toward the goal system; it is not a journal. Update
+existing milestone tasks, status, and evidence in place rather than adding
+session summaries or follow-up narratives. Keep only the evidence and context
+needed to assess completion, understand remaining work, and distinguish tested
+results from pending claims. Use Git history for the chronology of changes.
+
 Follow the project's contribution workflow. Roadmap work does not itself
 authorize pushing, merging, or unrelated changes.
 

@@ -58,12 +58,25 @@ build may need to download Cargo dependencies. The adapter itself does not fetch
 anything or write source files. Source edits rebuild through `mdbook serve`;
 after Rust or theme changes, rebuild or restart the preview if needed.
 
-After building, check the rendered record inventory, fields, and links (including
-combined-print links) with Python 3.11 or later:
+After `mdbook build`, check the rendered record inventory, fields, and links,
+including the combined print view:
 
 ```sh
-python3 scripts/check-rendered-book.py target/anchorbook
+cargo test --locked --test rendered_book -- --ignored --nocapture
 ```
+
+This separate acceptance test reads `book/` and `target/anchorbook/` at runtime;
+it does not build the Book. For another build destination, set
+`ANCHORBOOK_TEST_OUTPUT`. Both Book acceptance tests support `ANCHORBOOK_TEST_BOOK`
+to select another source directory. Build from those same sources before checking
+output. Missing output fails with a build reminder; ordinary `cargo test` skips
+these Book-dependent tests. No Python installation is required.
+
+The rendering check uses the engine's typed inventory and test-only HTML and URL
+parsers. It checks relative local links without network access; external and
+site-root URLs and visual accessibility still need separate review. Independent
+record and renderer fixtures remain necessary because this acceptance test shares
+the production record parser.
 
 The generated record HTML is self-contained. The local theme supplies appearance
 and a small print helper that opens decision details for printing; it does not

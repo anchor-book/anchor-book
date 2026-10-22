@@ -106,6 +106,6 @@ The schema preparation in [Formal Verification milestone 3](formal-verification.
 reproduced the HTML heading-label survivor from the baseline above. Assertions now
 check Authority on anchor records and Requirements on decisions. The local scoped
 rerun caught that mutation; its complete scope, commands, and results are recorded
-there. This correction is in the uncommitted working tree based on `5c86d1a`.
+there. This correction was committed as `7ab9616`.
 The historical full-campaign results remain unchanged; a new full campaign and
 review of the remaining findings are still required by milestone 2.

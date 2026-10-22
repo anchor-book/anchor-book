@@ -238,6 +238,15 @@ Use the current Book's complete record inventory as the main presentation case,
 supplemented by independent fixtures. The [Record Rendering roadmap](../implementation-roadmaps/record-rendering.md)
 defines the implementation and acceptance work.
 
+The explicit Rust `rendered_book` integration test compares an already-built
+Book with the shared typed record inventory. It checks chapter and print records,
+their fields and required-method labels, unique record targets, and relative local
+links. HTML and URL parsers are development dependencies only. Independent fixtures
+retain expectations for record parsing and rendering; sharing the inventory reader
+does not independently verify that reader. The acceptance test reads sources and
+output at runtime and is ignored during ordinary engine tests. It neither builds
+the Book nor checks external sites or visual accessibility.
+
 Engine compilation and fixture tests must succeed with an invalid or unrendered
 Book. The prototype CI order is compile/test, then mdBook with the record adapter.
 Structural checking will later add its separate acceptance step before rendering.
