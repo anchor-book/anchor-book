@@ -92,6 +92,56 @@ another requires tests and review of its integration. If a method covers only a
 portion, identify that portion and the remaining obligations explicitly; partial
 evidence does not satisfy the whole criterion.
 
+### Does an anchor require formal verification?
+
+Determine this from the criterion declarations, for the current anchor revision:
+
+| Declaration | Meaning |
+| --- | --- |
+| At least one criterion includes `"proof"` | Formal verification is required for every criterion that lists it, within that criterion's stated scope. |
+| Every criterion has a valid method list and none includes `"proof"` | Formal verification is not required; the listed tests and reviews remain required. |
+| A method list is missing or invalid | The definition is invalid. Do not interpret missing information as “proof not required.” |
+
+Do not add a separate anchor-level proof flag or infer proof requirements from
+the anchor's title, acceptance status, or the presence of proof code. The method
+lists are the single source of truth. Requiring proof for one criterion does not
+mean the entire anchor is formally proved, nor does it describe a completed run.
+
+Choose methods during design review. Consider the consequences of a violation,
+the combinations or states that examples would need to cover, whether the claim
+can be stated precisely over actual production code, and proof maintenance cost.
+Record the rationale in the verification design. Tests and proof can complement
+each other; extending proof across every boundary is not an automatic obligation.
+
+### Required scope of a proof criterion
+
+For each criterion listing `"proof"`, its `statement` must use labeled paragraphs
+to make the following explicit:
+
+| Label | Required content |
+| --- | --- |
+| **Claim** | The property the proof must establish, including acceptance and rejection when both are required. |
+| **Domain** | The inputs, states, conditions, and bounds covered. Include relevant invalid cases; do not assume the property being proved. |
+| **Boundary** | The production behavior covered, such as the validation algorithm or the path from typed input to the public API result. |
+| **Assumptions** | Caller obligations and trusted components or contracts. Preconditions must not assume the claim itself. |
+| **Exclusions** | Behavior outside the proof, with the criterion IDs that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
+
+Use these concrete boundaries rather than a generic proof “level.” Keep formal
+syntax, tool versions, commands, and function/file associations in the implementing
+codebase and verification design; the anchor states the required assurance.
+Exclusions must not silently remove part of the anchor's property.
+
+The [authority anchor](rust-engine.md#engine-valid-authority) demonstrates this:
+`formal-authority` requires a proof of the authority algorithm, while
+`production-integration` requires tests and review of the surrounding boundaries.
+
+These are authoring and review requirements within the existing `statement`
+string, not new TOML fields. The current engine validates method declarations and
+nonempty statements; it does not assess whether proof scope is adequately stated
+or whether evidence satisfies it.
+
+### Displaying verification requirements
+
 The renderer displays **Required verification** beside each criterion. It must
 not turn these selections into success badges or inferred results.
 

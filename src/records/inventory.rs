@@ -1,6 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{Chapter, Diagnostic, Problem, Record, RecordErrors, SourceLocation, Status, markdown};
+use super::{
+    Chapter, Diagnostic, Problem, Record, RecordErrors, SourceLocation, Status, authority, markdown,
+};
 
 /// An immutable, validated collection. Construction is all-or-nothing.
 #[derive(Clone, Debug)]
@@ -85,75 +87,111 @@ pub fn read_records(chapters: &[Chapter<'_>]) -> Result<RecordInventory, RecordE
         .filter(|c| c.id.is_none())
         .map(|c| c.location.clone())
         .collect();
-    let mut backlinks: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    for candidate in &candidates {
-        let Some(record) = &candidate.record else {
+    // This conversion preserves parser candidates, including invalid definitions
+    // and identities that could not be recovered. It is tested, not formally proved.
+    let input: Vec<_> = candidates
+        .iter()
+        .map(|candidate| {
+            let record = candidate.record.as_ref();
+            authority::Candidate {
+                id: candidate.id.clone(),
+                decoded: record.is_some(),
+                kind: match record.map(Record::kind) {
+                    Some(super::RecordKind::Anchor) => authority::Kind::Anchor,
+                    Some(super::RecordKind::Decision) => authority::Kind::Decision,
+                    _ => authority::Kind::Requirement,
+                },
+                design_accepted: record.is_some_and(|r| r.status() == Status::Accepted),
+                references: record
+                    .map(|r| {
+                        r.references()
+                            .iter()
+                            .map(|reference| authority::Reference {
+                                id: reference.id.clone(),
+                                kind: match reference.kind {
+                                    super::AuthorityKind::Requirement => {
+                                        authority::TargetKind::Requirement
+                                    }
+                                    super::AuthorityKind::Decision => {
+                                        authority::TargetKind::Decision
+                                    }
+                                },
+                            })
+                            .collect()
+                    })
+                    .unwrap_or_default(),
+            }
+        })
+        .collect();
+    // The same function bodies are executed here and verified by Verus.
+    for violation in authority::validate_authorities(&input) {
+        let candidate = &candidates[violation.record_index];
+        let record = candidate
+            .record
+            .as_ref()
+            .expect("validator reports decoded source candidates");
+        let Some(reference_index) = violation.reference_index else {
+            diagnostics.push(Diagnostic::new(
+                Problem::InvalidDefinition,
+                candidate.location.clone(),
+                "authorities must be a nonempty array of inline tables",
+            ));
             continue;
         };
-        let mut seen = BTreeSet::new();
-        for reference in record.references() {
-            let mut related = Vec::new();
-            let problem = if !seen.insert(reference.id.as_str()) {
-                Some((
-                    Problem::RepeatedReference,
-                    "authority identity is repeated in this record",
-                ))
-            } else if let Some(indices) = identities.get(reference.id.as_str()) {
-                related = indices
-                    .iter()
-                    .map(|&i| candidates[i].location.clone())
-                    .collect();
-                if indices.len() != 1 {
-                    Some((
-                        Problem::AmbiguousTarget,
-                        "authority has duplicate definitions; no target is selected",
-                    ))
-                } else if let Some(target) = &candidates[indices[0]].record {
-                    if target.kind() != reference.kind.into() {
-                        Some((
-                            Problem::WrongTargetKind,
-                            "authority exists with the wrong record kind",
-                        ))
-                    } else if record.status() == Status::Accepted
-                        && target.status() != Status::Accepted
-                    {
-                        Some((
-                            Problem::IncompatibleStatus,
-                            "accepted records must cite accepted authority",
-                        ))
-                    } else {
-                        None
-                    }
-                } else {
-                    Some((Problem::InvalidTarget, "authority definition is invalid"))
-                }
-            } else if !unknown_invalid.is_empty() {
-                related.clone_from(&unknown_invalid);
-                Some((
+        let reference = &record.references()[reference_index];
+        let (problem, explanation) = match violation.failure {
+            authority::Failure::RepeatedReference => (
+                Problem::RepeatedReference,
+                "authority identity is repeated in this record",
+            ),
+            authority::Failure::MissingTarget => (
+                Problem::MissingTarget,
+                "authority definition does not exist",
+            ),
+            authority::Failure::InvalidTarget
+                if !identities.contains_key(reference.id.as_str()) =>
+            {
+                (
                     Problem::InvalidTarget,
                     "authority cannot be resolved while definitions with unknown identities are invalid",
-                ))
-            } else {
-                Some((
-                    Problem::MissingTarget,
-                    "authority definition does not exist",
-                ))
-            };
-            if let Some((problem, explanation)) = problem {
-                let mut diagnostic = Diagnostic::new(
-                    problem,
-                    reference.location.clone(),
-                    format!("{}: {explanation}", reference.id),
-                );
-                diagnostic.related = related;
-                diagnostics.push(diagnostic);
-            } else {
-                backlinks
-                    .entry(reference.id.clone())
-                    .or_default()
-                    .push(record.id().to_owned());
+                )
             }
+            authority::Failure::InvalidTarget => {
+                (Problem::InvalidTarget, "authority definition is invalid")
+            }
+            authority::Failure::AmbiguousTarget => (
+                Problem::AmbiguousTarget,
+                "authority has duplicate definitions; no target is selected",
+            ),
+            authority::Failure::WrongTargetKind => (
+                Problem::WrongTargetKind,
+                "authority exists with the wrong record kind",
+            ),
+            authority::Failure::IncompatibleStatus => (
+                Problem::IncompatibleStatus,
+                "accepted records must cite accepted authority",
+            ),
+            authority::Failure::MissingAuthority => {
+                unreachable!("missing authority has no reference index")
+            }
+        };
+        let mut diagnostic = Diagnostic::new(
+            problem,
+            reference.location.clone(),
+            format!("{}: {explanation}", reference.id),
+        );
+        if violation.failure != authority::Failure::RepeatedReference {
+            diagnostic.related = identities
+                .get(reference.id.as_str())
+                .map(|indices| {
+                    indices
+                        .iter()
+                        .map(|&index| candidates[index].location.clone())
+                        .collect()
+                })
+                .unwrap_or_else(|| unknown_invalid.clone());
         }
+        diagnostics.push(diagnostic);
     }
     if !diagnostics.is_empty() {
         diagnostics.sort_by(|a, b| {
@@ -165,6 +203,17 @@ pub fn read_records(chapters: &[Chapter<'_>]) -> Result<RecordInventory, RecordE
                 .then(a.message.cmp(&b.message))
         });
         return Err(RecordErrors(diagnostics));
+    }
+    let mut backlinks: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for candidate in &candidates {
+        if let Some(record) = &candidate.record {
+            for reference in record.references() {
+                backlinks
+                    .entry(reference.id.clone())
+                    .or_default()
+                    .push(record.id().to_owned());
+            }
+        }
     }
     for sources in backlinks.values_mut() {
         sources.sort();

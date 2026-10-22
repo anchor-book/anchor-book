@@ -56,11 +56,12 @@ records local evidence separately from the full campaign, GitHub execution,
 and required merge rules. These must be demonstrated before claiming merge
 protection; adding a workflow alone does not enable that protection.
 
-[Formal Verification](design/formal-verification.md) plans Verus support for the
+[Formal Verification](design/formal-verification.md) implements a local Verus proof of the
 production authority-validation functions. Its [roadmap](implementation-roadmaps/formal-verification.md)
-covers local proof and integration, then GitHub verification. Verus is not yet
-configured; no authority proof has run. Existing tests and mutation findings remain
-part of the verification work. Criterion-level required methods are supported by
+covers local proof and integration, then GitHub verification. The proof passes
+locally and awaits engineer review; GitHub proof execution remains planned.
+CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.
+Criterion-level required methods are supported by
 the record parser and renderer; they declare obligations without executing any
 verification tool or consuming results.
 

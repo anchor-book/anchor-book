@@ -1,10 +1,10 @@
 # Formal Verification
 
-**Status: planned prototype.** Verus will verify selected executable engine logic,
+**Status: local proof of concept implemented; engineer review pending.** Verus verifies selected executable engine logic,
 starting with [valid authority](rust-engine.md#engine-valid-authority). Its
 authority remains [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 The anchor and its verification criteria live in Rust Engine; this chapter defines
-the proof boundary and integration. No proof or verifier workflow is implemented.
+the proof boundary and integration. GitHub proof execution remains planned.
 
 This experiment also develops a reusable way for projects to connect anchor
 criteria to proofs of their production code. The engine is the first case. The
@@ -53,27 +53,38 @@ framework are outside this first task.
 
 ## Prove the production implementation
 
-Today, `src/records/schema.rs` checks required authority fields and
-`src/records/inventory.rs` resolves references and prevents construction of an
-inventory when diagnostics exist. Refactor the relevant logic into a focused
-internal authority-validation module under `records`. `read_records` must call
-its verified executable functions in normal builds. Keep one implementation;
-do not create a proof-only copy or an unverified alternative behind a build flag.
+`src/records/authority.rs` contains the executable checks, their contracts, and
+proof annotations. `schema.rs` calls its verified presence check when decoding
+anchor authorities; `inventory.rs` passes the complete candidate collection to
+its verified `validate_authorities` function. `read_records` retains existing errors and prevents
+inventory construction whenever diagnostics exist. Ordinary builds execute these
+same function bodies; there is no proof-only implementation or alternate validator.
 
-The module should own lookup, iteration, and the authority acceptance conditions,
-not just accept a caller's precomputed “valid authority” boolean. It operates on
-explicit typed record candidates and references, including invalid candidates and
-their recoverable identities. Preserve ambiguity and invalid-input information
-when converting parser output. Exact types and signatures will be settled in the
-prototype, without making proof-specific details part of the public API.
+The module owns lookup, iteration, and authority acceptance. Its internal
+candidate contains an optional identity, kind, acceptance status, references,
+and a `decoded` flag indicating whether decoding produced a record. That flag is
+not an authority-validation result or a precondition that relationships are valid.
+Invalid candidates retain recoverable identities and participate in target lookup;
+their existing decoding errors still prevent a successful inventory.
 
-Start with `src/records/authority.rs`: executable validation functions with their
-Verus preconditions and postconditions, specification helpers, and local proof
-steps. Associate the specification with `engine-valid-authority` and its
-`formal-authority` criterion. Reusable lemmas may move to a supporting module as
-needed; they need not share a file with the implementation. `inventory.rs` calls
-the verified functions, and required-authority checks currently in `schema.rs`
-must be included in that boundary rather than assumed as caller preconditions.
+The specification names `engine-valid-authority` and `formal-authority` in the
+module. `reference_satisfies_authority_rules` combines three named predicates:
+`reference_is_not_repeated` checks duplicates within one record,
+`resolves_uniquely_to` checks identity and uniqueness across all candidates,
+and `target_is_suitable_authority` checks decoding, kind, and acceptance status.
+Undecodable candidates still count toward identity ambiguity.
+`record_satisfies_authority_rules` adds required authority;
+`records_satisfy_authority_rules` quantifies over the collection. `validate_authorities` ensures its violation list
+is empty if and only if those rules hold. Loop invariants connect each processed
+prefix to that complete specification. Supporting lemmas can move to separate
+modules when useful; file layout does not determine the proof boundary.
+
+This prototype uses string identities directly, borrowed slices, linear target
+lookup, and a scan of earlier references for duplicates. The simplicity makes the
+proof inspectable, at the cost of repeated scans. It has not been optimized or
+benchmarked for large inventories. Global duplicate-identity diagnostics,
+candidate conversion, backlinks, and diagnostic locations remain outside the
+proof and are covered by integration tests.
 
 ```mermaid
 flowchart TB
@@ -118,7 +129,8 @@ the entire parser, renderer, or engine.
 proofs for executable Rust, with limits on supported language features and libraries.
 Its [Cargo integration](https://verus-lang.github.io/verus/guide/cargo_verus.html)
 supports verification through `cargo verus verify` and ordinary Cargo builds of
-annotated code. These are tool capabilities, not configured project commands yet.
+annotated code. The pinned setup and native verification command are documented
+in CONTRIBUTING.
 
 Pin a compatible Verus release, its required Rust toolchain, and `vstd` during the
 prototype. Check the engine's Rust 1.85 minimum and stable builds before adopting
@@ -139,9 +151,10 @@ Demonstrate that a deliberate behavioral defect fails verification, then restore
 the implementation and rerun. Retain failure evidence; a timeout or tool failure
 is inconclusive. Do not weaken specifications or add assumptions to hide defects.
 
-The prototype must assess whether cargo-mutants reaches the new annotated code.
-Record any unsupported coverage; Verus success does not silently discharge mutation
-findings or justify removing tests. Existing mutation survivors remain tracked in
+cargo-mutants 27.1.0 discovers no mutations inside this module's `verus!` block.
+Integration code is mutation-tested separately; a deliberate status-check defect
+was rejected by the proof. This is a recorded coverage gap, not full mutation
+coverage of annotated code. Tests remain required, and mutation findings stay in
 their [own roadmap](../implementation-roadmaps/mutation-testing.md).
 
 ## Evidence and later integration

@@ -289,3 +289,24 @@ fn invalid_verification_fails_preprocessing_without_success_json() {
         assert!(diagnostics.contains("a.md"), "{diagnostics}");
     }
 }
+
+#[test]
+fn uncited_decision_authority_failure_reaches_the_real_adapter() {
+    let source = RECORDS
+        .split("```anchorbook-anchor")
+        .next()
+        .unwrap()
+        .replace(
+            "requirements = [\"preserve-input\"]",
+            "requirements = [\"missing\"]",
+        );
+    let result = run(
+        &["md"],
+        &request(vec![chapter("a.md", "a.md", &source)]).to_string(),
+    );
+    assert!(!result.status.success());
+    assert!(result.stdout.is_empty());
+    let diagnostics = String::from_utf8_lossy(&result.stderr);
+    assert!(diagnostics.contains("record.invalid-reference"));
+    assert!(diagnostics.contains("missing: authority definition does not exist"));
+}

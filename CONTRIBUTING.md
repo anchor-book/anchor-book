@@ -88,6 +88,41 @@ parse records. Schema examples stay literal. Field strings are escaped plain
 text with paragraph breaks; inline Markdown is not interpreted.
 The package is not publishable yet; release readiness is a separate milestone.
 
+## Local authority proof
+
+The production validator in `src/records/authority.rs` has a local Verus proof.
+Use [Verus release 0.2026.10.18.7d82994](https://github.com/verus-lang/verus/releases/tag/release/0.2026.10.18.7d82994),
+its bundled Z3 4.16.0, and the exactly pinned `vstd` dependency in Cargo.toml.
+Download the release archive for your platform, check its published SHA-256,
+and add the extracted directory containing `verus` and `cargo-verus` to PATH.
+The arm64 macOS archive used for local verification has SHA-256
+`3fc56c58277b5f0999368f7b3a2b07ba4eb9ec2965454ce7a9f2769c0464d32b`.
+
+Install the verifier's toolchain alongside the normal development toolchains:
+
+```sh
+rustup toolchain install 1.99.1 --profile minimal --component rustc-dev,llvm-tools
+cargo verus verify --fwd-verus-args-to roots --locked --lib -- --no-cheating --output-json --time-expanded
+```
+
+Verification uses Rust 1.99.1; ordinary engine builds retain the Rust 1.85 minimum.
+No Book build or wrapper script is required. `--no-cheating` rejects project
+assumptions and trusted function bodies; the verifier, solver, standard-library
+specifications, and Rust compiler remain trusted dependencies.
+
+Review the report for zero errors and results for `validate_authorities`, `validate_reference`,
+`lookup`, `has_required_authority`, `matches_identity`, `matches_target_kind`, and
+`has_unknown_identity` in `records::authority`. Cargo can reuse verified artifacts;
+to force a fresh engine run after an initial build, run `cargo clean -p anchor-book`
+before verification. This retains dependency artifacts. Reverify after changes to
+code, specifications, conversion, or dependencies, and run ordinary tests for the
+unproved integration boundaries. GitHub proof execution is not configured yet.
+
+cargo-mutants 27.1.0 does not discover executable bodies inside `verus!` blocks.
+Keep this coverage gap explicit: scoped mutation checks exercise the unannotated
+integration code, while a deliberate code defect separately tests proof rejection.
+Neither result establishes full mutation coverage of the validator.
+
 ## Mutation testing
 
 Use [cargo-mutants](https://mutants.rs/) **27.1.0** to check whether the independent

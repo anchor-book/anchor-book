@@ -2,8 +2,8 @@
 
 **Roadmap identifier:** `formal-verification`
 
-**Status:** Milestone 1 is the next planned proof of concept; implementation has not
-started. Milestone 2 follows with GitHub verification and merge protection.
+**Status:** Milestone 1 has a passing local proof and tested integration; engineer
+review is pending. Milestone 2 follows with GitHub verification and merge protection.
 Milestone 3 completed criterion-method schema preparation in `7ab9616`.
 
 ## Goal
@@ -18,6 +18,12 @@ specification, production integration, trusted boundaries, and evidence.
 The roadmap uses the engine as the first experiment in associating anchor
 criteria with formal specifications, production functions, and proof evidence.
 A general source-association syntax remains to be designed from that experience.
+
+The [proof-requirement convention](../design/anchor-definitions.md#does-an-anchor-require-formal-verification)
+determines which criteria require proof. This roadmap's `formal-authority` criterion
+now states its claim, domain, boundary, assumptions, and exclusions explicitly;
+`production-integration` retains tests and review for those excluded boundaries.
+The declaration is not evidence that either criterion is complete.
 
 This roadmap adds `formal-authority` and `production-integration` coverage to the
 anchor. [Record Rendering milestone 3](record-rendering.md#record-rendering-3-authority-coverage)
@@ -40,41 +46,45 @@ permit unexplained mutation findings.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr><th scope="row">Outcome</th><td>Authority validation has a reproducible local proof over the executable functions used by the record API, with tested integration and explicit limits.</td></tr>
-<tr><th scope="row">Status</th><td>Proposed — local proof of concept; implementation not started</td></tr>
+<tr><th scope="row">Status</th><td>In progress — local proof and integration verified; engineer review pending</td></tr>
 <tr><th scope="row">Identifier</th><td><code>formal-verification-1</code></td></tr>
 <tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html">Formal Verification</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#engine-valid-authority">engine-valid-authority</a>.</td></tr>
 <tr><th scope="row">Dependencies</th><td>The implemented record reader and renderer, existing independent tests, and reviewed mutation findings. Merge protection is deferred. Review the specification against the anchor before proving the extracted implementation.</td></tr>
 <tr><th scope="row">Scope</th><td>One local proof of the authority validator used by <code>read_records</code>, covering every anchor authority and decision requirement. Parser correctness, diagnostic presentation proofs, GitHub proof jobs, merge protection, and generalized evidence tooling are outside this task.</td></tr>
 <tr><th scope="row">Tasks</th><td><ol class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Check feasibility: pin compatible Verus, its Rust toolchain, and vstd; verify and compile a small representative validator slice using the required types and collection operations. Preserve Rust 1.85 and stable builds. Review any necessary package or minimum-version change before the full refactor.</label></li>
-<li><label><input type="checkbox" disabled> Define the formal acceptance predicate from the authority rules and review it against the design's input matrix. Include invalid relationships in the domain; prove both acceptance and rejection. State assumptions and associate the specification with the anchor and criterion IDs.</label></li>
-<li><label><input type="checkbox" disabled> Extract lookup and authority checks into <code>src/records/authority.rs</code> and develop the proof alongside the executable functions. Include required-authority checks currently in <code>schema.rs</code>. Keep function contracts beside the implementation; place reusable lemmas in supporting modules only when useful.</label></li>
-<li><label><input type="checkbox" disabled> Connect <code>inventory.rs</code> to those same functions. Test faithful candidate conversion and failure propagation through the library and actual mdBook adapter, preserving identities, ambiguity, invalid candidates, status, references, and located diagnostics.</label></li>
-<li><label><input type="checkbox" disabled> Verify the complete selected proof scope. Introduce one deliberate rule violation in a disposable copy and confirm a proof obligation fails; restore the code and verify again. Run focused integration and mutation checks, explicitly checking whether cargo-mutants reaches the annotated executable bodies.</label></li>
-<li><label><input type="checkbox" disabled> Document the pinned local command and the proved claim, assumptions, tested boundaries, revision, and result. Reconcile the design and milestone evidence without claiming the entire engine or anchor is proved.</label></li>
+<li><label><input type="checkbox" checked disabled> Check feasibility: pin compatible Verus, its Rust toolchain, and vstd; verify and compile a small representative validator slice using the required types and collection operations. Preserve Rust 1.85 and stable builds. Review any necessary package or minimum-version change before the full refactor.</label></li>
+<li><label><input type="checkbox" checked disabled> Define the formal acceptance predicate from the authority rules and review it against the design's input matrix. Include invalid relationships in the domain; prove both acceptance and rejection. State assumptions and associate the specification with the anchor and criterion IDs.</label></li>
+<li><label><input type="checkbox" checked disabled> Extract lookup and authority checks into <code>src/records/authority.rs</code> and develop the proof alongside the executable functions. Include required-authority checks currently in <code>schema.rs</code>. Keep function contracts beside the implementation; place reusable lemmas in supporting modules only when useful.</label></li>
+<li><label><input type="checkbox" checked disabled> Connect <code>inventory.rs</code> to those same functions. Test faithful candidate conversion and failure propagation through the library and actual mdBook adapter, preserving identities, ambiguity, invalid candidates, status, references, and located diagnostics.</label></li>
+<li><label><input type="checkbox" checked disabled> Verify the complete selected proof scope. Introduce one deliberate rule violation in a disposable copy and confirm a proof obligation fails; restore the code and verify again. Run focused integration and mutation checks, explicitly checking whether cargo-mutants reaches the annotated executable bodies.</label></li>
+<li><label><input type="checkbox" checked disabled> Document the pinned local command and the proved claim, assumptions, tested boundaries, revision, and result. Reconcile the design and milestone evidence without claiming the entire engine or anchor is proved.</label></li>
+<li><label><input type="checkbox" disabled> Review the explicit proof scope against the formal specification and map production-integration tests and review to every excluded boundary. Record any remaining coverage gaps before accepting the milestone.</label></li>
 </ol></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr id="formal-verification-1-authority-proof" class="roadmap-criterion-summary"><th scope="row">Authority proof</th><td><p class="roadmap-condition">The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-1-authority-proof-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="formal-verification-1-authority-proof-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>authority-proof</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#engine-valid-authority">engine-valid-authority</a> · <code>formal-authority</code> — Full. The claim is limited to the specified authority logic and recorded assumptions.</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Passed locally; see milestone evidence. Engineer review pending.</p>
 </td></tr>
 <tr id="formal-verification-1-production-path" class="roadmap-criterion-summary"><th scope="row">Production path</th><td><p class="roadmap-condition">Review identifies the same verified functions on the normal read_records call path. Independent fixtures exercise conversion, empty and invalid authority, all resolution/status cases, and rejection through the real adapter. State which boundaries are tested rather than proved.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-1-production-path-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="formal-verification-1-production-path-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>production-path</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#engine-valid-authority">engine-valid-authority</a> · <code>production-integration</code> — Full. Behavioral test coverage also contributes to <code>required-authority</code>, <code>resolved-authority</code>, and <code>compatible-status</code>; reconcile with Record Rendering milestone 3.</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Passed locally; see milestone evidence. Engineer review pending.</p>
 </td></tr>
 <tr id="formal-verification-1-tooling" class="roadmap-criterion-summary"><th scope="row">Compatible tooling</th><td><p class="roadmap-condition">Pinned tools reproduce verification without rendering the Book. Ordinary builds, tests, formatting, and Clippy pass on supported toolchains. Record whether mutation testing reaches the annotated executable bodies and any gaps; a skipped or empty mutation scope is not coverage.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-1-tooling-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="formal-verification-1-tooling-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>tooling</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — developer tooling and compatibility; proof success alone does not complete the mutation roadmap.</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Passed locally; see milestone evidence. Engineer review pending.</p>
 </td></tr>
 <tr><th scope="row">Evidence</th><td><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence</button></td></tr>
-<tr id="formal-verification-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending. Use the <a href="index.html#evidence-records">evidence fields</a> and include the <a href="../design/formal-verification.html#evidence-and-later-integration">proof scope and assumptions</a>.</td></tr>
-<tr><th scope="row">Completion record</th><td>Pending; no proof or implementation is claimed.</td></tr>
+<tr id="formal-verification-1-evidence" class="roadmap-criterion-details"><td colspan="2"><p><strong>Local result:</strong> Working tree based on <code>45125f6</code>, tested 2026-10-21. Verus <code>0.2026.10.18.7d82994</code>, verifier Rust 1.99.1, and bundled Z3 4.16.0 report 15 verification units passed, zero errors. All seven executable authority functions appear in the report. The native command and exactly pinned library are documented in CONTRIBUTING; no verification wrapper script is required.</p>
+<p><strong>Scope and assumptions:</strong> The production <code>validate_authorities</code> function satisfies its acceptance biconditional over complete typed candidates. Project assumptions and trusted function bodies are prohibited by <code>--no-cheating</code>; standard-library specifications, verifier/solver, and compiler remain trusted. Parsing, conversion, diagnostics, and backlinks are tested boundaries. Review the specification's interpretation of the anchor before accepting the milestone.</p>
+<p><strong>Failure demonstration:</strong> Reversing the accepted-target status condition in a disposable source copy caused a postcondition failure: 14 verification units passed, one failed. The original source was unchanged and its proof passed again. Independent tests cover all authority outcomes and an uncited decision failing through the real adapter. Tests and Clippy pass on Rust 1.85 and local stable 1.90.</p>
+<p><strong>Mutation assessment:</strong> cargo-mutants 27.1.0 discovers no mutations inside <code>verus!</code>, so automatic mutation coverage of the validator is unavailable. The focused inventory integration run initially found four diagnostic assertion gaps; after strengthening message and related-location assertions, all 24 selected mutations were attempted: 22 caught, two unviable, no survivors or timeouts. Command: <code>target/mutation-tools/bin/cargo-mutants mutants --jobs 2 --build-timeout 120 --file src/records/inventory.rs --output target/verus-mutations-fixed</code>. This is scoped evidence, not a new whole-engine campaign. Raw reports remain ignored under target; no remote proof result is claimed.</p></td></tr>
+<tr><th scope="row">Completion record</th><td>Local proof and integration checks pass; engineer review and acceptance remain pending.</td></tr>
 </tbody>
 </table>
 </div>
