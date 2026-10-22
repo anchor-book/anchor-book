@@ -29,6 +29,28 @@ The domain must include empty lists, duplicate identities, missing or invalid
 targets, wrong kinds, repeated references, and incompatible statuses. Preconditions
 must not assume away these cases or assume the property being proved.
 
+The first proof of concept is local and limited to this authority validator. Its
+claim is `validator accepts ⇔ authority rules hold` for the complete typed input.
+This does not imply that parsing succeeded or that the whole Book is valid;
+existing parse errors must still prevent a successful inventory.
+
+Use a small input matrix to review the specification and integration tests:
+
+| Input | Authority result |
+| --- | --- |
+| Draft anchor with a nonempty list of distinct, valid requirement or decision targets | Accept; targets may be draft or accepted. |
+| Accepted anchor with a nonempty list of distinct, valid, accepted authorities | Accept. |
+| Anchor with no authorities | Reject, including in Prototyping. |
+| Missing, invalid, ambiguous, wrong-kind, or repeated authority target | Reject. |
+| Accepted anchor or decision citing a draft authority | Reject. |
+| Decision with no requirements | Accept; requirements are optional for decisions. |
+| Decision citing requirements, even if no anchor cites the decision | Check every reference under the same resolution and status rules. |
+
+These cases guide human review and tests; the proof must quantify over the input
+collections rather than establish only these examples. Parser correctness,
+diagnostic wording and locations, remote verification, and a general proof-evidence
+framework are outside this first task.
+
 ## Prove the production implementation
 
 Today, `src/records/schema.rs` checks required authority fields and
@@ -44,6 +66,14 @@ explicit typed record candidates and references, including invalid candidates an
 their recoverable identities. Preserve ambiguity and invalid-input information
 when converting parser output. Exact types and signatures will be settled in the
 prototype, without making proof-specific details part of the public API.
+
+Start with `src/records/authority.rs`: executable validation functions with their
+Verus preconditions and postconditions, specification helpers, and local proof
+steps. Associate the specification with `engine-valid-authority` and its
+`formal-authority` criterion. Reusable lemmas may move to a supporting module as
+needed; they need not share a file with the implementation. `inventory.rs` calls
+the verified functions, and required-authority checks currently in `schema.rs`
+must be included in that boundary rather than assumed as caller preconditions.
 
 ```mermaid
 flowchart TB
@@ -95,6 +125,12 @@ prototype. Check the engine's Rust 1.85 minimum and stable builds before adoptin
 the dependency. Start within the current package; split out a crate only if the
 experiment establishes a dependency/toolchain need, keeping that crate on the
 production call path. Resolve any minimum-version change explicitly.
+
+Treat compatibility as the first implementation checkpoint: confirm that a small
+representative validator using the required types and collection operations both
+verifies and builds normally before undertaking the full extraction. If that
+requires a different package boundary or minimum Rust version, bring that concrete
+constraint back for design review before expanding the refactor.
 
 Run full verification for the selected proof scope locally and in a separate
 GitHub job, alongside ordinary tests and mutation testing. Check that the intended

@@ -126,13 +126,13 @@ for phase-specific responsibilities.
 
 ## Current roadmaps
 
-- [Mutation Testing](mutation-testing.md): add local testing and an agent correction
-  loop before further engine implementation, then validate the full campaign,
-  pull-request execution, and required merge checks.
-- [Formal Verification](formal-verification.md): planned Verus proof of authority
-  validation using the actual engine functions, followed by GitHub verification
-  and revision-specific evidence. Milestone 3 adds criterion-method declarations
-  as schema preparation; no proof is implemented yet.
+- [Mutation Testing](mutation-testing.md): local findings are resolved and PR
+  execution passes. Merge protection and the remote correction demonstration are
+  deferred until authority proofs work; the milestone remains incomplete.
+- [Formal Verification](formal-verification.md): milestone 1 is the next task—a
+  local Verus proof of production authority validation with tested integration.
+  GitHub proof execution and merge protection follow. Milestone 3 completed the
+  criterion-method schema preparation; no proof is implemented yet.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 complete locally.
   Milestone 3 covers authority criteria, CI integration, and remote verification.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
