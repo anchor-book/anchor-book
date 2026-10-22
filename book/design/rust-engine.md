@@ -348,7 +348,7 @@ and APIs. Async runtimes and dynamic rules need concrete workflows before design
 `engine-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
 remain explicit integration boundaries. The proof passes locally and is awaiting
-engineer review; no GitHub proof job is configured yet.
+engineer review. A GitHub proof job is implemented locally; remote results remain pending.
 The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
 and mdBook adapter do not execute verifiers.

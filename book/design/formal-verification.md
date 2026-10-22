@@ -4,7 +4,8 @@
 starting with [valid authority](rust-engine.md#engine-valid-authority). Its
 authority remains [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 The anchor and its verification criteria live in Rust Engine; this chapter defines
-the proof boundary and integration. GitHub proof execution remains planned.
+the proof boundary and integration. A GitHub proof job is implemented locally;
+its remote execution remains to be demonstrated.
 
 This experiment also develops a reusable way for projects to connect anchor
 criteria to proofs of their production code. The engine is the first case. The
@@ -147,6 +148,13 @@ constraint back for design review before expanding the refactor.
 Run full verification for the selected proof scope locally and in a separate
 GitHub job, alongside ordinary tests and mutation testing. Check that the intended
 functions were verified: an empty or skipped verification run is not success.
+The GitHub job uses a fresh build directory and checks the verifier's JSON report
+for full-crate verification, successful results for the seven production authority
+functions, and zero errors. It also runs independent engine and integration tests
+on the same checkout. Selected results and revision metadata are retained on
+success and failure; no generated Book is needed. CONTRIBUTING documents the job
+and its limits. Passing and deliberate-failure remote runs remain pending.
+
 Demonstrate that a deliberate behavioral defect fails verification, then restore
 the implementation and rerun. Retain failure evidence; a timeout or tool failure
 is inconclusive. Do not weaken specifications or add assumptions to hide defects.

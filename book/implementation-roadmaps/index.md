@@ -131,7 +131,8 @@ for phase-specific responsibilities.
   deferred until authority proofs work; the milestone remains incomplete.
 - [Formal Verification](formal-verification.md): milestone 1 has a passing local
   production authority proof and integration tests, awaiting engineer review.
-  GitHub proof execution and merge protection follow. Milestone 3 completed the
+  Milestone 2 has a local GitHub proof workflow; remote execution and merge protection
+  remain pending. Milestone 3 completed the
   criterion-method schema preparation.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 complete locally.
   Milestone 3 covers authority criteria, CI integration, and remote verification.

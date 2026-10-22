@@ -3,7 +3,8 @@
 **Roadmap identifier:** `formal-verification`
 
 **Status:** Milestone 1 has a passing local proof and tested integration; engineer
-review is pending. Milestone 2 follows with GitHub verification and merge protection.
+review is pending. Milestone 2 has a locally validated GitHub proof workflow; remote
+runs and merge protection remain pending.
 Milestone 3 completed criterion-method schema preparation in `7ab9616`.
 
 ## Goal
@@ -98,12 +99,12 @@ permit unexplained mutation findings.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr><th scope="row">Outcome</th><td>Changes receive repeatable remote verification with revision-specific proof and integration evidence, and the required check protects implementation merges.</td></tr>
-<tr><th scope="row">Status</th><td>Proposed</td></tr>
+<tr><th scope="row">Status</th><td>In progress — workflow implemented locally; GitHub runs pending</td></tr>
 <tr><th scope="row">Identifier</th><td><code>formal-verification-2</code></td></tr>
 <tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html">Formal Verification</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#engine-valid-authority">engine-valid-authority</a>.</td></tr>
 <tr><th scope="row">Dependencies</th><td>Formal Verification milestone 1 and the existing PR workflows. Establish passing and failing proof runs first, then complete merge protection together with Mutation Testing milestone 2. Remote execution follows an authorized push.</td></tr>
 <tr><th scope="row">Tasks</th><td><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Add a separate GitHub verification job using the pinned tools and full selected proof scope, alongside ordinary engine tests. Verify actual function coverage and retain public-safe results on failure.</label></li>
+<li><label><input type="checkbox" checked disabled> Add a separate GitHub verification job using the pinned tools and full selected proof scope, alongside ordinary engine tests. Verify actual function coverage and retain public-safe results on failure.</label></li>
 <li><label><input type="checkbox" disabled> Exercise a passing revision and a deliberate verification failure through a PR; confirm that failed, skipped, or incomplete verification cannot count as success.</label></li>
 <li><label><input type="checkbox" disabled> Record proof and production integration results for the same revision, including assumptions, tool versions, commands, function coverage, and evidence links.</label></li>
 <li><label><input type="checkbox" disabled> Add the observed verification check to the intended merge rules and demonstrate that failure blocks merging; preserve existing required tests.</label></li>
@@ -129,8 +130,10 @@ permit unexplained mutation findings.
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr><th scope="row">Evidence</th><td><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-2-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence</button></td></tr>
-<tr id="formal-verification-2-evidence" class="roadmap-criterion-details"><td colspan="2">Pending. Use the <a href="index.html#evidence-records">evidence fields</a> and include the <a href="../design/formal-verification.html#evidence-and-later-integration">proof scope and assumptions</a>.</td></tr>
-<tr><th scope="row">Completion record</th><td>Pending; no proof or implementation is claimed.</td></tr>
+<tr id="formal-verification-2-evidence" class="roadmap-criterion-details"><td colspan="2"><p><strong>Local checks:</strong> Working tree based on <code>95fa70b</code>, checked 2026-10-21. actionlint 1.7.12 accepts the workflow. The official Linux archive checksum and tool paths are confirmed. A fresh macOS verification using the same command options passes 15 verification units with zero errors; the report check confirms all seven required executable functions.</p>
+<p><strong>Report rejection:</strong> Local experiments reject empty or malformed output, duplicate reports, a different verifier version, zero verified units, verification errors, partial-crate verification, and missing, failed, or non-executable required function results. Fresh dependency success summaries are handled without accepting arbitrary non-JSON output.</p>
+<p><strong>Remote evidence:</strong> Pending an authorized push. The job records the checkout revision, commands, tool versions, assumptions, function results, and ordinary test exit status. Local checks do not establish Linux execution, passing/failing GitHub runs, or merge enforcement. Milestone 1 scope review remains pending; this task adds the workflow without declaring that review complete.</p></td></tr>
+<tr><th scope="row">Completion record</th><td>Pending remote proof and correction runs, evidence review, and merge protection.</td></tr>
 </tbody>
 </table>
 </div>

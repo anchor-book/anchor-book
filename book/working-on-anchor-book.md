@@ -59,7 +59,8 @@ protection; adding a workflow alone does not enable that protection.
 [Formal Verification](design/formal-verification.md) implements a local Verus proof of the
 production authority-validation functions. Its [roadmap](implementation-roadmaps/formal-verification.md)
 covers local proof and integration, then GitHub verification. The proof passes
-locally and awaits engineer review; GitHub proof execution remains planned.
+locally and awaits engineer review. The GitHub proof workflow is implemented locally;
+remote passing/failing runs and merge protection remain pending.
 CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.
 Criterion-level required methods are supported by
 the record parser and renderer; they declare obligations without executing any
