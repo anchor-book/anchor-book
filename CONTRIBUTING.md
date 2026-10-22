@@ -72,6 +72,10 @@ to select another source directory. Build from those same sources before checkin
 output. Missing output fails with a build reminder; ordinary `cargo test` skips
 these Book-dependent tests. No Python installation is required.
 
+The Book workflow runs rendered acceptance after `mdbook build`, before uploading
+artifacts. A failure fails **Build mdBook** and prevents Pages publication. Pull
+requests run the same acceptance check without deploying Pages.
+
 The rendering check uses the engine's typed inventory and test-only HTML and URL
 parsers. It checks relative local links without network access; external and
 site-root URLs and visual accessibility still need separate review. Independent
