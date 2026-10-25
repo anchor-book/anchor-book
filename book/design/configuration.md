@@ -12,13 +12,14 @@ choices. Role names describe responsibilities, independently of page titles.
 ```anchorbook-anchor
 schema-version = 1
 id = "check-book-selection"
-title = "The explicit configuration selects the Book"
+title = "Check the intended Book wherever the caller starts"
 status = "draft"
 property = '''
-For the same explicit configuration file and filesystem state, checking selects
-the same Book and resolves the same source, output, and section roles regardless
-of the caller's working directory. Directory names and display titles do not
-determine section roles.
+An engineer or agent can select the intended Book explicitly and check its
+configured format without relying on conventional directory names or page titles.
+For the same configuration file and filesystem state, the selected Book, source,
+output, and section roles are the same regardless of the caller's working
+directory. Directory names and titles do not determine section roles.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-configured-structure" },
@@ -39,15 +40,18 @@ statement = "Check equivalent fixtures under book, docs, and md with different d
 ```anchorbook-anchor
 schema-version = 1
 id = "check-configuration-validity"
-title = "Only valid configuration reaches structural evaluation"
+title = "Configuration problems cannot produce a misleading format check"
 status = "draft"
 property = '''
-Structural evaluation uses validated configuration with the required schema
-fields and distinct section mappings. Paths remain within their declared roots,
-and source and output neither coincide nor contain each other, including through
-symlink aliases. Invalid or unresolvable configuration cannot produce a pass.
+The checker reports invalid or unresolvable configuration so an engineer or
+agent can correct the intended layout before relying on structural findings.
+It never reports a pass from such input. Evaluation requires valid schema fields
+and distinct section mappings, paths within their declared roots, and separate
+source and output locations that neither coincide nor contain one another,
+including through symlink aliases.
 '''
 authorities = [
+  { kind = "requirement", id = "requirement-repair-feedback" },
   { kind = "requirement", id = "requirement-configured-structure" },
   { kind = "decision", id = "decision-explicit-configuration" },
 ]
@@ -55,7 +59,7 @@ authorities = [
 [[criteria]]
 id = "schema-rejection"
 verification = ["test"]
-statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce specific configuration errors."
+statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce configuration errors identifying the affected field and expected form. Correcting the seeded errors permits structural evaluation; invalid configuration never produces a pass."
 
 [[criteria]]
 id = "path-boundaries"

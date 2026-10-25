@@ -71,14 +71,16 @@ statement = "The engine executes the verified authority-validation functions. Te
 ```anchorbook-anchor
 schema-version = 1
 id = "check-shared-typed-results"
-title = "All callers use shared rules and typed results"
+title = "Agents and Rust callers receive consistent format findings"
 status = "draft"
 property = '''
-The Rust library owns checking behavior and exposes findings, locations, scope,
-and errors as typed data. The CLI obtains its results through that library and
-only handles invocation and presentation. Library callers can distinguish
-structural failure from incomplete evaluation without parsing display text;
-malformed user input does not cause the library to print, exit, or panic.
+Engineers, agents, CI, and Rust integrations receive equivalent structural
+findings for the same Book inputs, so choosing an interface does not change the
+required repairs or whether the check passes. The library owns checking behavior
+and exposes findings, locations, scope, and errors as typed data; callers can
+distinguish structural failure from incomplete evaluation without parsing display
+text. The CLI handles invocation and presentation through that library. Malformed
+user input does not cause the library to print, exit, or panic.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-shared-checker" },

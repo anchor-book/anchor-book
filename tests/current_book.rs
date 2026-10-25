@@ -31,7 +31,7 @@ fn current_book_records() {
             .records()
             .map(|r| r.references().len())
             .sum::<usize>(),
-        32
+        35
     );
     let expected = [
         "check-actionable-diagnostics",

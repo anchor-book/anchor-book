@@ -141,8 +141,11 @@ for phase-specific responsibilities.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): proposed, not implemented. Delivers
-  the agent's check, repair, and recheck loop with independent tests and CI.
+- [Structural Checking](structural-checker.md): the prototype design direction is
+  agreed and the four-milestone plan reflects its repair-focused anchors.
+  Configuration comes first, then a usable local checker, followed by CI and an
+  agent repair demonstration. Implementation has not started; Bootstrap
+  prerequisites remain open.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned
