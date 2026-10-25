@@ -146,8 +146,10 @@ compiler and verifier diagnostics remain in job logs. Cancelled or incomplete
 runs are not passing evidence. Review the anchor interpretation and unproved
 boundaries separately; a green job does not establish those review obligations.
 
-The workflow is implemented locally; passing and deliberate-failure GitHub runs
-remain to be demonstrated after publication. Merge protection is not configured.
+The workflow is merged and passes on PRs and main; the
+[Formal Verification roadmap](book/implementation-roadmaps/formal-verification.md#formal-verification-2)
+records tested revisions and results. The deliberate-failure/correction GitHub
+run and merge enforcement remain to be demonstrated.
 
 ## Mutation testing
 

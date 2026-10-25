@@ -230,7 +230,8 @@ identities never select an arbitrary winner.
 
 The package uses **Rust 2024**, with **Rust 1.85** as its declared minimum.
 Local verification covers 1.85 and 1.90. The engine workflow targets 1.85 and
-stable; a remote run is still pending publication of this work.
+stable; both passed on merged revision `03fb981` in the
+[Engine workflow](https://github.com/anchor-book/anchor-book/actions/runs/39737287093).
 
 | Dependency | Purpose |
 | --- | --- |
@@ -347,8 +348,9 @@ and APIs. Async runtimes and dynamic rules need concrete workflows before design
 [Formal Verification](formal-verification.md) introduces Verus for the existing
 `engine-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
-remain explicit integration boundaries. The proof passes locally and is awaiting
-engineer review. A GitHub proof job is implemented locally; remote results remain pending.
+remain explicit integration boundaries. The proof passes locally and on GitHub;
+the implementation and workflow are merged in `03fb981`. Scope and integration-coverage review,
+the remote failure/correction demonstration, and merge protection remain open.
 The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
 and mdBook adapter do not execute verifiers.

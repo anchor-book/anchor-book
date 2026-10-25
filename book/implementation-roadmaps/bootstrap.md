@@ -18,8 +18,9 @@ the outcome of the [Structural Checking roadmap](structural-checker.md);
 materialization and engine-generated contracts are later work.
 
 [Record Rendering](record-rendering.md) proceeds alongside this preparation under
-its own scoped design and roadmap. Its first two milestones are complete locally;
-authority-criterion coverage and CI integration remain in milestone 3.
+its own scoped design and roadmap. Its first two milestones are implemented and
+merged; rendered acceptance and Pages deployment pass. Authority-coverage review,
+preview evidence, and engine-check gating remain in milestone 3.
 
 The [System Overview](../design/system-overview.md) provides system context;
 the [AI Working Contract](../ai-working-contract.md) defines how agents work.
@@ -52,7 +53,7 @@ the [AI Working Contract](../ai-working-contract.md) defines how agents work.
 <p><strong>Anchor criteria and planned coverage:</strong> None — work agreement</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The current design baseline is <code>b9df14a</code>. Record parsing and rendering are implemented locally. The new authority traceability requirement and Rust Engine anchor are covered by the <a href="record-rendering.html#record-rendering-3-authority-coverage">rendering follow-up</a>; they do not expand the first structural check. Local Book builds and record/link checks have passed. These checks do not establish checker implementation or acceptance of the governing records. Completed rendering evidence remains in its own roadmap.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The checker design was established at <code>b9df14a</code>. Record parsing, rendering, authority validation, and the proof workflow are merged in <code>03fb981</code>. The new authority traceability requirement and Rust Engine anchor are covered by the <a href="record-rendering.html#record-rendering-3-authority-coverage">rendering follow-up</a>; they do not expand the first structural check. Local Book builds and record/link checks have passed. These checks do not establish checker implementation or acceptance of the governing records. Completed rendering evidence remains in its own roadmap.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
 <tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending review and scope agreement. The rendering prototype has established the initial crate and parser choices; checker-specific choices remain open.</td></tr>
