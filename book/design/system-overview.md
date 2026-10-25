@@ -1,8 +1,9 @@
 # System Overview
 
 **Status: draft for review.** This describes the intended system. The repository
-currently has a shared Rust record library and an mdBook adapter that renders
-anchors and authorities. Other engine operations remain to be implemented.
+currently has a shared Rust record library, a configuration loader, and an mdBook
+adapter that renders anchors and authorities. Structural checking and other
+engine operations remain to be implemented.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.

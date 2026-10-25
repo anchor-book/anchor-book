@@ -1,8 +1,8 @@
 # Configuration
 
-**Status: draft for review.** The example is a proposed schema; no configuration
-reader or `anchorbook check` command exists yet. The separate `anchorbook md`
-rendering command is implemented.
+**Status: prototype configuration reader implemented.** The library loads and
+validates the real repository configuration. `anchorbook check` remains planned;
+loading configuration does not check navigation or establish structural conformance.
 
 `anchorbook.toml` maps a project into the Book model. Directory names are project
 choices. Role names describe responsibilities, independently of page titles.
@@ -74,7 +74,7 @@ statement = "Accept a resolvable separate output that does not exist without cre
 
 ## Initial schema
 
-The proposed configuration for this repository is:
+The repository now uses this `anchorbook.toml`:
 
 ```toml
 schema-version = 1
@@ -94,7 +94,7 @@ implementation-roadmaps = "implementation-roadmaps/index.md"
 
 All shown fields are required in the first schema. Reject unknown fields and
 unsupported schema versions so a typo cannot silently change behavior.
-Do not add this configuration to the repository until the reader exists.
+The library rejects invalid input without creating or repairing configuration.
 
 The three section roles are the initial required set. Each maps to a distinct
 chapter at the top level of `SUMMARY.md`. The display title can differ.
@@ -117,10 +117,10 @@ The field is required and accepts exactly one of these strings:
 | `"complete"` | Declare the defined goal system complete for a recorded scope and revision, supported by completion and verification evidence. |
 
 Reject missing, unknown, or non-string values; do not silently choose a phase.
-Until the reader exists and this configuration is added,
-[Working on Anchor Book](../working-on-anchor-book.md#current-phase) records this
-repository's phase. The contract defines phase behavior without declaring a
-project's current value.
+The repository's `anchorbook.toml` is the authoritative phase setting.
+[Working on Anchor Book](../working-on-anchor-book.md#current-phase) directs agents
+to that field. The contract defines phase behavior without declaring a project's
+current value.
 
 The initial configuration reader validates and exposes the phase as data. All
 three phases use the same initial structural rules: prototyping does not disable
@@ -138,7 +138,9 @@ its roadmap and assignment; no per-capability override syntax is introduced here
 Resolve source and output relative to the directory containing
 `anchorbook.toml`. Resolve section paths relative to the source directory.
 The CLI resolves its explicit configuration argument relative to the caller's
-working directory once; no other paths depend on that directory.
+working directory once; no other paths depend on that directory. The loader
+canonicalizes the configuration filename first, so a symlink to a configuration
+uses the actual file's parent as its layout root.
 
 For the first schema, require nonempty relative paths within the configuration
 directory; section paths must stay within the source directory. Reject absolute
@@ -154,6 +156,33 @@ finding when its intended location can be resolved.
 
 This check describes the observed filesystem. A future writing operation must
 revalidate paths and ownership immediately before applying changes.
+
+## Library interface
+
+`anchor_book::configuration::load(&Path)` reads an explicit configuration and
+returns `Result<Configuration, Error>`. It reuses `toml_edit` and Serde; no new
+dependency or CLI command is introduced. Private schema, path-resolution, and
+error modules keep this capability separate from record parsing and rendering.
+
+The validated configuration exposes its canonical file path, phase, resolved
+source/output, and section paths selected by `SectionRole`. Private fields prevent
+callers constructing unchecked values. Existing symlinks are resolved before
+comparing paths; missing suffixes are retained without creating directories.
+Dangling links, loops, inaccessible ancestors, and traversal through a file are
+resolution errors. Distinct section mappings are checked after resolution.
+
+`SourceState` distinguishes a directory, a missing source, and an existing
+non-directory source. The latter two are known structural defects for the future
+checker, not configuration-load failures. Their section paths are retained as
+intended locations without inspecting nonexistent descendants. Loading does not
+check chapter existence, navigation placement, or mdBook settings. These are
+milestone 2 responsibilities; successful loading is not a structural pass.
+
+Errors expose a stable category/code, configuration argument, field and UTF-8 byte
+range when available, and an explanation of the expected input. Parser and I/O
+causes remain available through `std::error::Error`. No library operation prints,
+exits, repairs files, or invokes project tools. Observations are a snapshot;
+future writing operations must revalidate them.
 
 ## Relationship to mdBook
 

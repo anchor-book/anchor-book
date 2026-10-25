@@ -10,6 +10,7 @@ cp -R "$project_dir/src" "$project_dir/tests" "$fixture_dir/"
 export CARGO_TARGET_DIR="$project_dir/target/independence"
 cargo test --manifest-path "$fixture_dir/Cargo.toml" --locked --offline
 cp -R "$project_dir/book" "$fixture_dir/book"
+cp "$project_dir/anchorbook.toml" "$fixture_dir/"
 cat >> "$fixture_dir/book/introduction.md" <<'RECORD'
 
 ```anchorbook-requirement

@@ -128,3 +128,25 @@ fn current_book_records() {
         assert!(source[record.location().range()].starts_with("```anchorbook-"));
     }
 }
+
+#[test]
+#[ignore = "current-project configuration acceptance; independent tests use disposable fixtures"]
+fn current_book_configuration() {
+    use anchor_book::configuration::{Phase, SectionRole, SourceState, load};
+    let root = std::fs::canonicalize(env!("CARGO_MANIFEST_DIR")).unwrap();
+    let config = load(&root.join("anchorbook.toml")).unwrap();
+    assert_eq!(config.phase(), Phase::Prototyping);
+    assert_eq!(config.source(), root.join("book"));
+    assert_eq!(config.output(), root.join("target/anchorbook"));
+    assert_eq!(config.source_state(), SourceState::Directory);
+    for (role, path) in [
+        (SectionRole::Design, "design/index.md"),
+        (SectionRole::Authority, "authority/index.md"),
+        (
+            SectionRole::ImplementationRoadmaps,
+            "implementation-roadmaps/index.md",
+        ),
+    ] {
+        assert_eq!(config.section(role), root.join("book").join(path));
+    }
+}

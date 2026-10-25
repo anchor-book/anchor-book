@@ -141,11 +141,11 @@ for phase-specific responsibilities.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): the prototype design direction is
-  agreed and the four-milestone plan reflects its repair-focused anchors.
-  Configuration comes first, then a usable local checker, followed by CI and an
-  agent repair demonstration. Implementation has not started; Bootstrap
-  prerequisites remain open.
+- [Structural Checking](structural-checker.md): milestone 1 is complete locally: the
+  configuration reader and its verification are implemented. The real
+  `anchorbook.toml` now owns project configuration and phase. The remaining work
+  delivers the local checker, CI integration, and an agent repair demonstration;
+  loading configuration does not establish Book conformance.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned

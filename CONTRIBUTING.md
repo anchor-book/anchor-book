@@ -88,6 +88,23 @@ parse records. Schema examples stay literal. Field strings are escaped plain
 text with paragraph breaks; inline Markdown is not interpreted.
 The package is not publishable yet; release readiness is a separate milestone.
 
+## Configuration loading
+
+`anchor_book::configuration::load(&Path)` reads and resolves an explicit
+`anchorbook.toml`. It is a library operation; there is no `anchorbook check`
+command yet. See [Configuration](book/design/configuration.md#library-interface)
+for the API, error and path behavior, and boundaries.
+
+```sh
+cargo test --locked --lib --test configuration
+cargo test --locked --test current_book -- --ignored
+```
+
+Independent tests use disposable filesystem fixtures and subprocesses with different
+working directories. They require neither this repository's configuration nor its
+Book. The ignored current-Book suite separately reads the real configuration and
+Book. The existing Engine workflow runs both suites on supported Rust toolchains.
+
 ## Local authority proof
 
 The production validator in `src/records/authority.rs` has a local Verus proof.

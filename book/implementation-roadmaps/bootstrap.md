@@ -3,8 +3,9 @@
 **Roadmap identifier:** `engine-bootstrap`
 
 **Status:** In progress. The engineer has agreed the checker design is a good
-starting point for prototyping. Detailed scope/API review and agent-readiness
-checks remain.
+starting point for prototyping. The configuration prototype is explicitly assigned with API/dependency choices
+recorded in its design; remaining checker review and agent-readiness exercises
+continue separately.
 
 ## Goal
 
@@ -57,7 +58,7 @@ the [AI Working Contract](../ai-working-contract.md) defines how agents work.
 <tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The checker design was established at <code>b9df14a</code>. Record parsing, rendering, authority validation, and the proof workflow are merged in <code>03fb981</code>. The new authority traceability requirement and Rust Engine anchor are covered by the <a href="record-rendering.html#record-rendering-3-authority-coverage">rendering follow-up</a>; they do not expand the first structural check. Local Book builds and record/link checks have passed. These checks do not establish checker implementation or acceptance of the governing records. Completed rendering evidence remains in its own roadmap.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
 <tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">The design direction is agreed as a prototype starting point. Detailed scope and API/dependency choices still need reconciliation with the checker milestones before this preparation milestone is complete.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">The design direction is agreed as a prototype starting point. The assigned configuration prototype now has a documented library API using the existing dependencies. Remaining checker scope, navigation-parser choices, and readiness review still need reconciliation before this preparation milestone is complete.</td></tr>
 </tbody>
 </table>
 </div>
@@ -112,7 +113,11 @@ the [AI Working Contract](../ai-working-contract.md) defines how agents work.
 
 ## Handoff to Structural Checking
 
-After both milestones complete, the engineer can assign
+The engineer has explicitly assigned Structural Checking milestone 1 as a scoped
+prototype while Bootstrap review and fresh-session exercises remain open. This
+assignment does not complete Bootstrap or the later checker milestones.
+
+For the full readiness handoff, after both milestones complete the engineer can assign
 [Structural Checking](structural-checker.md) work. Bootstrap completion does not
 itself assign that work. Review the drafted anchors and their criteria with the
 [canonical format](../design/anchor-definitions.md); cross-Book authority is not

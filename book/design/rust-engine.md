@@ -2,7 +2,7 @@
 
 **Status: prototype implementation in progress.** The record library described
 below is implemented, along with record rendering and the mdBook adapter.
-Configuration and structural checking remain design drafts.
+The configuration loader is also implemented; structural checking remains planned.
 
 ## Anchors
 
@@ -111,7 +111,8 @@ A project integration test calls the library directly. The initial mdBook adapte
 translates between mdBook's protocol and the shared record model.
 
 [Record Rendering](record-rendering.md) establishes parsing, authority resolution,
-and `anchorbook md`. Configuration and `anchorbook check` follow. Compiling the
+and `anchorbook md`. The [configuration loader](configuration.md#library-interface)
+now resolves explicit project configuration; `anchorbook check` follows. Compiling the
 crate requires neither a valid Book nor rendered output.
 
 Cargo supports [library and binary targets in one package](https://doc.rust-lang.org/cargo/reference/cargo-targets.html);
@@ -143,6 +144,8 @@ The implemented layout is:
 src/
   lib.rs                  Library entry point and initial API re-exports
   main.rs                 CLI entry point
+  configuration.rs        Public configuration loader and validated layout
+  configuration/          Private schema, path resolution, and errors
   adapters.rs             External protocol interfaces
   adapters/mdbook.rs       JSON input, validation, and Book transformation
   rendering.rs            Record rendering operation and typed errors
@@ -156,8 +159,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-Add `configuration`, `checking`, `materialization`, and `contract` as they are
-implemented. Do not create empty modules or fold new capabilities into `records`.
+Add `checking`, `materialization`, and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
