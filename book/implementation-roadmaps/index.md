@@ -141,12 +141,10 @@ for phase-specific responsibilities.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): milestone 1 is complete and merged in
-  `7d795bb`, with passing CI for configuration loading. The real
-  `anchorbook.toml` now owns project configuration and phase. Milestone 2 will use mdbook-summary 0.5.2 with the agreed Rust 1.88 minimum
-  and current stable development toolchain. The remaining work delivers the local
-  checker, CI integration, and an agent repair demonstration;
-  loading configuration does not establish Book conformance.
+- [Structural Checking](structural-checker.md): milestone 1 is merged. Milestone 2
+  implements the local checker and actionable reports using mdBook 0.5.2, with
+  initial tests passing. Final mutation verification will run on GitHub; milestone 2
+  remains in progress. CI gating and the real agent repair demonstration follow.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned

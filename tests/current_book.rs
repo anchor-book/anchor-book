@@ -150,3 +150,30 @@ fn current_book_configuration() {
         assert_eq!(config.section(role), root.join("book").join(path));
     }
 }
+
+#[test]
+#[ignore = "current-Book structural acceptance; independent checker tests use disposable fixtures"]
+fn current_book_structure() {
+    use anchor_book::checking::{Outcome, State, check};
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let report = check(&root.join("anchorbook.toml")).unwrap_or_else(|error| {
+        panic!(
+            "{}",
+            anchor_book::adapters::check::format_report(error.report())
+        )
+    });
+    assert_eq!(
+        report.outcome(),
+        Outcome::Passed,
+        "{}",
+        anchor_book::adapters::check::format_report(&report)
+    );
+    assert!(report.findings().is_empty());
+    assert_eq!(report.groups().len(), 6);
+    assert!(
+        report
+            .groups()
+            .iter()
+            .all(|group| group.state == State::Passed)
+    );
+}

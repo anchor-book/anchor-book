@@ -1,8 +1,9 @@
 # Configuration
 
 **Status: prototype configuration reader implemented.** The library loads and
-validates the real repository configuration. `anchorbook check` remains planned;
-loading configuration does not check navigation or establish structural conformance.
+validates the real repository configuration. `anchorbook check` now uses that
+configuration to evaluate Book structure; configuration loading alone does not
+check navigation or establish structural conformance.
 
 `anchorbook.toml` maps a project into the Book model. Directory names are project
 choices. Role names describe responsibilities, independently of page titles.
@@ -175,8 +176,8 @@ resolution errors. Distinct section mappings are checked after resolution.
 non-directory source. The latter two are known structural defects for the future
 checker, not configuration-load failures. Their section paths are retained as
 intended locations without inspecting nonexistent descendants. Loading does not
-check chapter existence, navigation placement, or mdBook settings. These are
-milestone 2 responsibilities; successful loading is not a structural pass.
+check chapter existence, navigation placement, or mdBook settings. The structural
+checker performs those operations; successful loading is not a structural pass.
 
 Errors expose a stable category/code, configuration argument, field and UTF-8 byte
 range when available, and an explanation of the expected input. Parser and I/O

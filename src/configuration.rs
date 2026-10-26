@@ -8,6 +8,7 @@ mod paths;
 mod schema;
 
 pub use error::{Error, ErrorKind};
+pub(crate) use paths::resolve as resolve_within;
 use std::{
     fs,
     path::{Path, PathBuf},
