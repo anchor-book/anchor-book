@@ -195,3 +195,168 @@ fn display_path(path: &Path, base: &Path) -> String {
         .display()
         .to_string()
 }
+
+#[cfg(test)]
+#[path = "../../tests/support/checking.rs"]
+mod fixture;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::checking::{Outcome, State};
+
+    fn observed_roles(config: &Configuration) -> Vec<Chapter> {
+        [
+            SectionRole::Design,
+            SectionRole::Authority,
+            SectionRole::ImplementationRoadmaps,
+        ]
+        .into_iter()
+        .map(|role| Chapter {
+            location: Location::file(config.source().join("SUMMARY.md")),
+            depth: 0,
+            target: Target::Local {
+                path: config.section(role).to_owned(),
+                metadata: std::fs::metadata(config.section(role)),
+            },
+        })
+        .collect()
+    }
+
+    fn evaluate(config: &Configuration, chapters: Vec<Chapter>) -> CheckReport {
+        let mut report = CheckReport::new(config.path());
+        for group in Group::ALL {
+            report.pass(group);
+        }
+        navigation(
+            config,
+            Input {
+                path: config.source().join("SUMMARY.md"),
+                value: Ok(Some(chapters)),
+            },
+            &mut report,
+        );
+        report
+    }
+
+    fn group_state(report: &CheckReport, group: Group) -> State {
+        report
+            .groups()
+            .iter()
+            .find(|g| g.group == group)
+            .unwrap()
+            .state
+    }
+
+    #[test]
+    fn metadata_failures_after_resolution_are_not_conflated_with_missing_files() {
+        let book = fixture::Book::new();
+        let config = crate::configuration::load(&book.config()).unwrap();
+        let before = book.snapshot();
+        // Supply observations directly: a target can become inaccessible after
+        // resolution. No filesystem race or privileged permission test is needed.
+        for (kind, expected_code, outcome, state) in [
+            (
+                io::ErrorKind::NotFound,
+                "structure.chapter-missing",
+                Outcome::Failed,
+                State::Failed,
+            ),
+            (
+                io::ErrorKind::PermissionDenied,
+                "operation.read-failed",
+                Outcome::Incomplete,
+                State::Error,
+            ),
+            (
+                io::ErrorKind::Interrupted,
+                "operation.read-failed",
+                Outcome::Incomplete,
+                State::Error,
+            ),
+        ] {
+            let mut chapters = observed_roles(&config);
+            chapters[1].target = Target::Local {
+                path: config.section(SectionRole::Authority).to_owned(),
+                metadata: Err(io::Error::new(kind, "metadata inspection failed")),
+            };
+            let report = evaluate(&config, chapters);
+            assert_eq!(report.outcome(), outcome);
+            assert_eq!(group_state(&report, Group::Chapters), state);
+            assert_eq!(group_state(&report, Group::Roles), State::Passed);
+            assert_eq!(report.findings().len(), 1);
+            let finding = &report.findings()[0];
+            assert_eq!(finding.code, expected_code);
+            assert_eq!(
+                finding.location.path,
+                config.section(SectionRole::Authority)
+            );
+            if kind != io::ErrorKind::NotFound {
+                assert_eq!(finding.kind, Kind::Operation);
+                assert_eq!(
+                    finding
+                        .cause()
+                        .unwrap()
+                        .downcast_ref::<io::Error>()
+                        .unwrap()
+                        .kind(),
+                    kind
+                );
+                assert_eq!(finding.found, "metadata inspection failed");
+            }
+        }
+        assert_eq!(book.snapshot(), before);
+    }
+
+    #[test]
+    fn unknown_targets_only_block_role_conclusions_that_are_not_already_established() {
+        let book = fixture::Book::new();
+        let config = crate::configuration::load(&book.config()).unwrap();
+        // A role present only below the top level is also unresolved here: the
+        // unknown target could supply its top-level entry.
+        for (missing_authority, nested_authority, expected) in [
+            (false, false, State::Passed),
+            (true, false, State::Blocked),
+            (false, true, State::Blocked),
+        ] {
+            let mut chapters = observed_roles(&config);
+            if missing_authority {
+                chapters.remove(1);
+            } else if nested_authority {
+                chapters[1].depth = 1;
+            }
+            chapters.push(Chapter {
+                location: Location::file(config.source().join("SUMMARY.md")),
+                depth: 0,
+                target: Target::Unresolved {
+                    path: config.source().join("unknown.md"),
+                    error: io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "target identity unavailable",
+                    ),
+                },
+            });
+            let report = evaluate(&config, chapters);
+            assert_eq!(report.outcome(), Outcome::Incomplete);
+            assert_eq!(group_state(&report, Group::Chapters), State::Error);
+            assert_eq!(group_state(&report, Group::Roles), expected);
+            assert_eq!(
+                report.findings().iter().map(|f| f.code).collect::<Vec<_>>(),
+                ["operation.read-failed"]
+            );
+            let role_result = report
+                .groups()
+                .iter()
+                .find(|g| g.group == Group::Roles)
+                .unwrap();
+            assert_eq!(
+                role_result.blocked_by,
+                if expected == State::Blocked {
+                    Some("operation.read-failed")
+                } else {
+                    None
+                }
+            );
+        }
+    }
+}

@@ -227,6 +227,7 @@ mod tests {
     fn unsupported_content_never_disappears_into_a_successful_summary() {
         for source in [
             "ordinary prose",
+            "`standalone code`",
             "## Heading\n[Link](x.md)",
             "```md\n- [Hidden](x.md)\n```",
             "<script>bad</script>",

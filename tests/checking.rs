@@ -482,6 +482,8 @@ fn chapter_escapes_symlinks_and_summary_aliases_cannot_hide_invalid_structure() 
         let r = report(&book);
         assert_eq!(r.outcome(), outcome);
         assert_eq!(codes(&r), [code]);
+        // An unrelated unknown target does not invalidate already observed roles.
+        assert_eq!(state(&r, Group::Roles), State::Passed);
     }
     book.write(
         "docs/SUMMARY.md",
@@ -569,4 +571,29 @@ fn phase_changes_do_not_skip_structural_rules_or_imply_anchor_verification() {
         );
         assert_eq!(codes(&report(&book)), ["structure.role-missing"]);
     }
+}
+
+#[test]
+fn inline_code_outside_navigation_is_incomplete_but_link_label_code_is_supported() {
+    let book = Book::new();
+    book.write(
+        "docs/SUMMARY.md",
+        &SUMMARY.replace("[Design]", "[`Design`]"),
+    );
+    assert_eq!(report(&book).outcome(), Outcome::Passed);
+    book.write(
+        "docs/SUMMARY.md",
+        &format!("{SUMMARY}\n`ignored by mdBook`\n"),
+    );
+    let r = report(&book);
+    assert_eq!(r.outcome(), Outcome::Incomplete);
+    assert_eq!(codes(&r), ["input.unsupported"]);
+    assert_eq!(state(&r, Group::Summary), State::Error);
+    assert_eq!(state(&r, Group::Chapters), State::Blocked);
+    assert_eq!(state(&r, Group::Roles), State::Blocked);
+    assert_eq!(r.findings()[0].location.position, Some((7, 1)));
+    let output = run(&book);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("input.unsupported"));
 }
