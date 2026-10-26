@@ -135,7 +135,7 @@ annotated code. The pinned setup and native verification command are documented
 in CONTRIBUTING.
 
 Pin a compatible Verus release, its required Rust toolchain, and `vstd` during the
-prototype. Check the engine's Rust 1.85 minimum and stable builds before adopting
+prototype. Check the engine's Rust 1.88 minimum and current stable builds before adopting
 the dependency. Start within the current package; split out a crate only if the
 experiment establishes a dependency/toolchain need, keeping that crate on the
 production call path. Resolve any minimum-version change explicitly.

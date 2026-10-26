@@ -178,6 +178,54 @@ this first scope.
 Document the parser's supported syntax and mdBook version. Unrecognized
 navigation cannot be interpreted as an empty, valid Book.
 
+## Navigation parser
+
+Use the standalone [`mdbook-summary` 0.5.2 parser](https://github.com/rust-lang/mdBook/blob/v0.5.2/crates/mdbook-summary/src/lib.rs)
+for the chapter hierarchy. Call `parse_summary(&str)` with text already read by
+the checking operation. Its output includes prefix, numbered, and suffix chapters,
+nesting, targetless drafts, part titles, and separators. This does not load chapter
+files, create missing files, render, or run preprocessors. Keep it behind a private
+adapter that returns the engine's own observed-navigation model.
+
+Pin `mdbook-summary = "=0.5.2"` when implementing milestone 2 and retain tested
+transitive versions in Cargo.lock. The parser and its mdbook-core dependency
+[require Rust 1.88](https://github.com/rust-lang/mdBook/blob/v0.5.2/Cargo.toml),
+now the engine's minimum; development uses current stable. The dependency
+chain adds core data/configuration support, including another TOML library, but
+not mdBook's driver or HTML/server runtime. The parser dependency is selected;
+production integration is not implemented yet.
+
+Parsing and conformance are separate. The parser can ignore prose, code blocks,
+and unsupported headings, even returning an empty summary. Use pulldown-cmark
+Markdown events and offsets to validate the supported summary syntax before a
+successful structural result. Preserve ordinary chapter-label formatting, valid
+comments, parts, separators, and targetless drafts. Non-navigation prose, code
+blocks, and unsupported headings produce a located unsupported-input result;
+malformed input that prevents evaluation is incomplete. An otherwise supported
+empty or title-only summary still fails the required-role rules. Do not treat
+an ignored construct as evidence that an expected chapter or role does not exist.
+
+Parsed links lack source spans. Retain source ranges from the Markdown event
+stream and associate them with the observed entries, including reference-style
+links. Do not scrape positions from the parser's human-readable error strings.
+Where a reliable position is unavailable, identify the summary file and affected
+target without inventing a line number. Preserve the underlying parser error as
+a cause while exposing the engine's stable diagnostic vocabulary.
+
+Destinations arrive as path values, even for external URLs. Classify external
+links before filesystem inspection and never fetch them. Preserve the supported
+parser's destination interpretation when mapping local targets; it decodes `%20`
+and retains fragments in the path. Do not silently strip fragments or apply
+additional URL decoding that changes which file mdBook would select. Filesystem
+containment, existence, required-role placement, and renderer alignment remain
+checker responsibilities.
+
+Verification must cover the current Book and independent fixtures for hierarchy,
+drafts, part titles, separators, reference links, external destinations, encoded
+spaces, duplicate targets, malformed links, and input the parser silently ignores.
+Check source locations and typed errors through the real checker API and CLI;
+the parser feasibility experiment is not implementation evidence for those rules.
+
 ## Findings and incomplete checks
 
 The [Checking Diagnostics](check-diagnostics.md) design specifies the report

@@ -232,10 +232,11 @@ identities never select an arbitrary winner.
 
 ### Toolchain and dependencies
 
-The package uses **Rust 2024**, with **Rust 1.85** as its declared minimum.
-Local verification covers 1.85 and 1.90. The engine workflow targets 1.85 and
-stable; both passed on merged revision `03fb981` in the
-[Engine workflow](https://github.com/anchor-book/anchor-book/actions/runs/39737287093).
+The package uses **Rust 2024** with **Rust 1.88** as its minimum. Development uses
+current stable Rust, selected by `rust-toolchain.toml`; CI checks the minimum and
+current stable. The minimum accommodates the selected mdBook 0.5.2 summary parser.
+The pinned Verus toolchain remains independent. Earlier roadmap evidence retains
+the Rust versions used for those revisions.
 
 | Dependency | Purpose |
 | --- | --- |
@@ -247,8 +248,11 @@ stable; both passed on merged revision `03fb981` in the
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.2** preprocessor protocol and rejects
-other versions explicitly. No mdBook dependency or rendered Book is needed to
-compile or test the library. The CLI handles `md`, renderer capability probes,
+other versions explicitly. The planned checker will add the standalone
+`mdbook-summary = "=0.5.2"` parser, without the mdBook driver, renderer, or server.
+This dependency is selected but not yet added; rendered Book output remains
+unnecessary for engine compilation and independent tests. The CLI handles `md`,
+renderer capability probes,
 help, and version with a small explicit argument dispatch. Argument-parsing
 dependencies can be reconsidered as more commands are implemented.
 
@@ -310,10 +314,12 @@ For each implementation increment:
 - Test rule behavior with independent expected results, and test CLI status and
   file preservation through its actual process boundary.
 
-The navigation reader should reuse mdBook's summary semantics where practical.
-Compare the supported mdBook parser API and dependency cost before choosing its
-implementation; regex matching is not a substitute for a navigation parser.
-Using a parser must not invoke preprocessors or mdBook's file-creating loader.
+The navigation reader will use `mdbook-summary = "=0.5.2"` through a private
+adapter, as defined in [Structural Checking](structural-checking.md#navigation-parser).
+Use its chapter hierarchy and the existing pulldown-cmark offset events for
+supported-input validation and source locations. Keep parser types out of the
+public checking API. No parser call may invoke preprocessors or mdBook's
+file-creating loader; parser success alone does not establish conformance.
 
 Package the required public core resources with the crate when those resources
 are introduced. Installation must work without this development checkout.
@@ -344,8 +350,10 @@ tool versions and repository integration remain project guidance.
 
 ## Choices still open
 
-Structural checking must settle configuration and navigation-reader dependencies
-and APIs. Async runtimes and dynamic rules need concrete workflows before design.
+The configuration API is implemented and the navigation parser is selected.
+Milestone 2 still implements the private parser adapter, supported-input checks,
+source-location mapping, and public checking/report APIs. Async runtimes and
+dynamic rules need concrete workflows before design.
 
 ## Formal verification
 

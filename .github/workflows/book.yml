@@ -21,6 +21,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Install current stable Rust
+        run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
+
       - name: Install mdBook
         shell: bash
         run: |

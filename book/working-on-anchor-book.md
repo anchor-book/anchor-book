@@ -41,6 +41,9 @@ named tools in their place. Loading configuration alone does not check Book form
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
 versions and exact commands for tests, formatting, Clippy, builds, and previews.
 The [Rust Engine design](design/rust-engine.md) describes package and API boundaries.
+Use current stable Rust for development; `rust-toolchain.toml` selects that
+channel. Rust 1.88 is the minimum tested in CI. The verifier continues to use
+its separately pinned toolchain.
 
 Engine verification uses independent fixtures and a separate acceptance test
 against this Book. For engine changes, exercise the supported Rust toolchains and
