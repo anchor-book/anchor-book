@@ -24,11 +24,15 @@ when upgrading the pinned diagram preprocessor.
 
 ## Working on the engine
 
-The crate uses Rust 2024 with a minimum supported Rust version of **1.85**.
-Keep `Cargo.lock` checked in. The engine workflow checks the minimum version and
-stable Rust; local development also uses formatting and Clippy.
+The crate uses Rust 2024 with a minimum supported Rust version of **1.88**.
+Develop with current stable Rust, selected by `rust-toolchain.toml`; update it
+with `rustup update stable`. The stable channel can advance independently of the
+minimum version. Keep `Cargo.lock` checked in. CI tests Rust 1.88.0 and current
+stable, with formatting on stable and Clippy on both. The pinned Verus toolchain
+remains separate from this development policy.
 
 ```sh
+rustup update stable
 cargo fmt --all -- --check
 cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
@@ -122,7 +126,7 @@ rustup toolchain install 1.99.1 --profile minimal --component rustc-dev,llvm-too
 cargo verus verify --fwd-verus-args-to roots --locked --lib -- --no-cheating --output-json --time-expanded
 ```
 
-Verification uses Rust 1.99.1; ordinary engine builds retain the Rust 1.85 minimum.
+Verification uses Rust 1.99.1; ordinary engine builds require Rust 1.88 or later.
 No Book build or wrapper script is required. `--no-cheating` rejects project
 assumptions and trusted function bodies; the verifier, solver, standard-library
 specifications, and Rust compiler remain trusted dependencies.
@@ -145,7 +149,7 @@ Neither result establishes full mutation coverage of the validator.
 `.github/workflows/proof.yml` defines **Formal verification / Authority proof**
 for PRs targeting `main`, pushes to `main`, and manual dispatch. It uses Ubuntu
 24.04, the pinned Linux Verus archive with a SHA-256 check, and the verifier's
-Rust toolchain. Ordinary tests run on Rust 1.85.0 against the same checkout;
+Rust toolchain. Ordinary tests run on Rust 1.88.0 against the same checkout;
 the separate Engine workflow also checks stable Rust. No Book build is required.
 
 Verification uses a fresh target directory without a restored build cache.
@@ -172,7 +176,7 @@ run and merge enforcement remain to be demonstrated.
 
 Use [cargo-mutants](https://mutants.rs/) **27.1.0** to check whether the independent
 tests detect changes to engine behavior. Install it with the development stable
-toolchain; this developer tool does not change the engine's Rust 1.85 minimum.
+toolchain; this developer tool does not change the engine's Rust 1.88 minimum.
 
 ```sh
 cargo +stable install cargo-mutants --version 27.1.0 --locked
@@ -239,7 +243,7 @@ for 14 days. Missed mutants and timeouts
 fail the job; the result is not suppressed. Budget exhaustion leaves the campaign
 incomplete. CI artifacts omit the tool's host/process metadata files.
 The workflow must be pushed before it can run. To enforce it before merging,
-configure the GitHub rule for `main` to require **Mutation tests**, **Rust 1.85.0**,
+configure the GitHub rule for `main` to require **Mutation tests**, **Rust 1.88.0**,
 **Rust stable**, and **Build mdBook**, after confirming the new mutation check name
 in a real PR. Require a pull request and results up to date with the target branch;
 do not require **Publish Book**, which only runs after a main-branch push.
