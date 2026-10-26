@@ -10,7 +10,7 @@ fn invalid(message: &str) -> io::Error {
 /// Resolve existing prefixes, preserving a nonexistent suffix without writes.
 /// A dangling link is an error, not a nonexistent suffix. Never normalize '..'
 /// before following an existing symlink: that would change filesystem meaning.
-pub(super) fn resolve(root: &Path, raw: &str, inspect: bool) -> io::Result<PathBuf> {
+pub(crate) fn resolve(root: &Path, raw: &str, inspect: bool) -> io::Result<PathBuf> {
     if raw.trim().is_empty() {
         return Err(invalid("path must not be empty"));
     }

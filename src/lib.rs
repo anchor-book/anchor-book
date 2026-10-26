@@ -1,7 +1,7 @@
-//! Resolve Book configuration and read, validate, and render canonical design records.
+//! Configure and check Book structure, and read, validate, and render design records.
 //!
 //! Record and rendering operations use supplied Markdown without filesystem access.
-//! The configuration loader reads explicit files and resolves paths without writes.
+//! Configuration and structural checking inspect explicit files without writes.
 //! No operation executes subprocesses or verifies the system being described.
 //! A successful inventory establishes schema and authority-reference consistency.
 //!
@@ -16,6 +16,7 @@
 //! ```
 
 pub mod adapters;
+pub mod checking;
 pub mod configuration;
 pub mod records;
 pub mod rendering;

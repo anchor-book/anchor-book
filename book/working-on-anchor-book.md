@@ -32,11 +32,12 @@ design acceptance, implementation progress, or completion.
 
 ## Available tools and checks
 
-The record library, configuration loader, and `anchorbook md` preprocessor are
-implemented. The binary also supports `anchorbook md supports html`, help, and
-version. Configuration is currently a Rust library API; the `check` and `contract`
-commands remain planned. Do not run those proposed commands or install similarly
-named tools in their place. Loading configuration alone does not check Book format.
+The record library, configuration loader, structural checker, and `anchorbook md`
+preprocessor are implemented. Run `anchorbook check --config anchorbook.toml` to
+inspect this Book's format; the checker reports findings without repairing files.
+The binary also supports `anchorbook md supports html`, help, and version.
+Materialization and contract generation remain planned. Loading configuration
+alone does not check Book format.
 
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
 versions and exact commands for tests, formatting, Clippy, builds, and previews.

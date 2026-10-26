@@ -1,8 +1,8 @@
 # Structural Checking
 
-**Status: draft for review.** This is the first layout/navigation checking
-capability, planned after the [rendering prototype](record-rendering.md). The
-command and library operation are not implemented.
+**Status: prototype implemented; verification in progress.** The library and
+`anchorbook check` implement this layout/navigation scope. Local tests cover
+passing, failing, and incomplete results; the roadmap records remaining evidence.
 
 `check` answers whether the current Book conforms to its configured layout and
 navigation rules. These rules will also support initialization, adoption of existing
@@ -109,7 +109,7 @@ statement = "A missing book.toml is a structural violation; malformed or unreada
 
 ## Invocation and flow
 
-Proposed invocation:
+Invocation:
 
 ```sh
 anchorbook check --config path/to/anchorbook.toml
@@ -187,13 +187,14 @@ nesting, targetless drafts, part titles, and separators. This does not load chap
 files, create missing files, render, or run preprocessors. Keep it behind a private
 adapter that returns the engine's own observed-navigation model.
 
-Pin `mdbook-summary = "=0.5.2"` when implementing milestone 2 and retain tested
-transitive versions in Cargo.lock. The parser and its mdbook-core dependency
+The implementation pins `mdbook-summary = "=0.5.2"` and `mdbook-core = "=0.5.2"`,
+with tested transitive versions in Cargo.lock. The core crate also supplies pure
+`book.toml` deserialization and mdBook defaults; environment overrides are not applied. The parser and its mdbook-core dependency
 [require Rust 1.88](https://github.com/rust-lang/mdBook/blob/v0.5.2/Cargo.toml),
 now the engine's minimum; development uses current stable. The dependency
 chain adds core data/configuration support, including another TOML library, but
-not mdBook's driver or HTML/server runtime. The parser dependency is selected;
-production integration is not implemented yet.
+not mdBook's driver or HTML/server runtime. The parser is integrated through the private navigation adapter; its types do
+not appear in the public checking API.
 
 Parsing and conformance are separate. The parser can ignore prose, code blocks,
 and unsupported headings, even returning an empty summary. Use pulldown-cmark
@@ -201,7 +202,10 @@ Markdown events and offsets to validate the supported summary syntax before a
 successful structural result. Preserve ordinary chapter-label formatting, valid
 comments, parts, separators, and targetless drafts. Non-navigation prose, code
 blocks, and unsupported headings produce a located unsupported-input result;
-malformed input that prevents evaluation is incomplete. An otherwise supported
+malformed input that prevents evaluation is incomplete. Chapter lists use the
+mdBook bullet forms (`-` or `*`); numeric Markdown lists are unsupported. Nesting
+is bounded to 128 list levels before invoking the recursive summary parser;
+deeper input yields incomplete evaluation. An otherwise supported
 empty or title-only summary still fails the required-role rules. Do not treat
 an ignored construct as evidence that an expected chapter or role does not exist.
 
@@ -225,6 +229,26 @@ drafts, part titles, separators, reference links, external destinations, encoded
 spaces, duplicate targets, malformed links, and input the parser silently ignores.
 Check source locations and typed errors through the real checker API and CLI;
 the parser feasibility experiment is not implementation evidence for those rules.
+
+## Implemented boundaries
+
+`anchor_book::checking::check(&Path)` returns a completed `CheckReport` or a
+`CheckError` retaining a partial report. Check the report's `outcome()`; an `Ok`
+report can contain structural violations. Inputs and observed targets are collected
+by the private inspection module; rules evaluate those observations without
+filesystem access. The navigation module validates supported input and maps
+mdBook's hierarchy to source locations. Typed findings carry codes, kinds, severity,
+locations, expected/found conditions, guidance, and underlying causes.
+
+`adapters::check::format_report` returns plain text without process I/O. The CLI
+chooses the stream and exit status. No logging subscriber, mdBook loader, project
+tool, or network fetch is invoked. Control characters in displayed input are
+escaped. Filesystem observations are a snapshot, not permission for later writes.
+
+Role checks establish placement of configured local navigation entries; chapter
+checks establish that their targets are files. Both must pass. Unresolvable target
+identities block role conclusions that depend on them rather than inventing missing
+roles. Independent findings remain available when another group cannot complete.
 
 ## Findings and incomplete checks
 

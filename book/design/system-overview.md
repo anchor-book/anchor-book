@@ -2,8 +2,9 @@
 
 **Status: draft for review.** This describes the intended system. The repository
 currently has a shared Rust record library, a configuration loader, and an mdBook
-adapter that renders anchors and authorities. Structural checking and other
-engine operations remain to be implemented.
+adapter that renders anchors and authorities. Structural checking now reports
+format defects through the library and CLI; managed writes, contract delivery,
+and evidence aggregation remain later work.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
@@ -64,7 +65,7 @@ and managed Book files and supplies their chapter content to the preprocessor.
 
 The [record-rendering adapter](record-rendering.md) is implemented. It uses shared
 records to present anchors and authorities within files read by mdBook. Structural
-checking is planned and will not depend on the renderer or its output.
+checking operates independently of the renderer and its output.
 
 ## What a Book describes
 
@@ -99,8 +100,8 @@ The general evidence adapter remains later work.
 ## Operations
 
 Operations share engine models and rules. The first rendering prototype obtains
-its chapter inventory from mdBook; it does not yet require the planned project
-configuration reader.
+its chapter inventory from mdBook; it does not require project
+configuration for record rendering.
 
 | Operation | Purpose | Writes |
 | --- | --- | --- |

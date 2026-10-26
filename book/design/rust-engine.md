@@ -2,7 +2,8 @@
 
 **Status: prototype implementation in progress.** The record library described
 below is implemented, along with record rendering and the mdBook adapter.
-The configuration loader is also implemented; structural checking remains planned.
+Configuration loading and structural checking are also implemented; verification
+progress and remaining work are recorded in their roadmaps.
 
 ## Anchors
 
@@ -112,7 +113,8 @@ translates between mdBook's protocol and the shared record model.
 
 [Record Rendering](record-rendering.md) establishes parsing, authority resolution,
 and `anchorbook md`. The [configuration loader](configuration.md#library-interface)
-now resolves explicit project configuration; `anchorbook check` follows. Compiling the
+resolves explicit project configuration; `anchorbook check` evaluates the
+configured structure through the same library used by Rust callers. Compiling the
 crate requires neither a valid Book nor rendered output.
 
 Cargo supports [library and binary targets in one package](https://doc.rust-lang.org/cargo/reference/cargo-targets.html);
@@ -146,6 +148,9 @@ src/
   main.rs                 CLI entry point
   configuration.rs        Public configuration loader and validated layout
   configuration/          Private schema, path resolution, and errors
+  checking.rs             Read-only check operation and public report API
+  checking/               Private observations, navigation, rules, and report model
+  adapters/check.rs       Plain-text report formatting without process I/O
   adapters.rs             External protocol interfaces
   adapters/mdbook.rs       JSON input, validation, and Book transformation
   rendering.rs            Record rendering operation and typed errors
@@ -159,7 +164,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-Add `checking`, `materialization`, and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
+Add `materialization` and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -244,15 +249,16 @@ the Rust versions used for those revisions.
 | `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
 | `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
+| `mdbook-summary` =0.5.2 | Parse mdBook navigation behind the private checking adapter |
+| `mdbook-core` =0.5.2 | Read file-based renderer settings and defaults without running tools |
 | `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.2** preprocessor protocol and rejects
-other versions explicitly. The planned checker will add the standalone
-`mdbook-summary = "=0.5.2"` parser, without the mdBook driver, renderer, or server.
-This dependency is selected but not yet added; rendered Book output remains
-unnecessary for engine compilation and independent tests. The CLI handles `md`,
-renderer capability probes,
+other versions explicitly. The checker uses the standalone summary/core crates,
+without the mdBook driver, renderer, or server. Rendered Book output remains
+unnecessary for engine compilation and independent tests. The CLI handles `check`,
+`md`, renderer capability probes,
 help, and version with a small explicit argument dispatch. Argument-parsing
 dependencies can be reconsidered as more commands are implemented.
 
@@ -267,16 +273,18 @@ Record operations accept supplied chapter text and locations and return a
 validated inventory or diagnostics with source locations. Rendering uses that
 inventory without reparsing definitions or independently resolving relationships.
 The mdBook adapter handles protocol serialization; the CLI handles process streams
-and exit statuses. The following checking interface remains a design draft.
+and exit statuses. The checking interface follows the same separation.
 
 A successfully completed check returns a report, even if that report contains
 structural violations. Missing required files follow the structural rules;
 unexpected read failures and inputs that cannot be interpreted are operational
 errors. A caller must distinguish these cases without parsing prose.
 
-The conceptual interface is an explicit configuration path producing
-`Result<CheckReport, CheckError>`. Exact signatures and type names will be
-settled during implementation. A report includes the findings and evaluated
+`checking::check(&Path)` accepts an explicit configuration path and returns
+`Result<CheckReport, CheckError>`. Reports expose the outcome, scoped group states,
+findings, configuration argument, and display path base. `CheckError::report`
+provides partial results; underlying causes remain available per finding and
+through the error source chain. A report includes the findings and evaluated
 scope. An error identifies the failed operation and location and can retain
 findings collected before the failure; these are partial, not a complete report.
 
@@ -314,7 +322,7 @@ For each implementation increment:
 - Test rule behavior with independent expected results, and test CLI status and
   file preservation through its actual process boundary.
 
-The navigation reader will use `mdbook-summary = "=0.5.2"` through a private
+The navigation reader uses `mdbook-summary = "=0.5.2"` through a private
 adapter, as defined in [Structural Checking](structural-checking.md#navigation-parser).
 Use its chapter hierarchy and the existing pulldown-cmark offset events for
 supported-input validation and source locations. Keep parser types out of the
@@ -350,9 +358,9 @@ tool versions and repository integration remain project guidance.
 
 ## Choices still open
 
-The configuration API is implemented and the navigation parser is selected.
-Milestone 2 still implements the private parser adapter, supported-input checks,
-source-location mapping, and public checking/report APIs. Async runtimes and
+The configuration and checking APIs, parser adapter, supported-input checks,
+source-location mapping, and report presentation are implemented. Verification
+and later CI/agent demonstrations remain in the Structural Checking roadmap. Async runtimes and
 dynamic rules need concrete workflows before design.
 
 ## Formal verification

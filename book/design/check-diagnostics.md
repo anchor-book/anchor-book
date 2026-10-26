@@ -1,7 +1,8 @@
 # Checking Diagnostics
 
-**Status: draft for review.** These examples define proposed output, not output
-from an implemented command. Paths and configuration values are illustrative.
+**Status: prototype implemented.** The library returns typed reports and the CLI
+renders them. Examples use illustrative paths and wording; diagnostic codes,
+field meanings, result states, and stream/exit behavior define the contract.
 
 Diagnostics support the check, repair, and recheck loop by identifying the
 observed problem, expected structure, location, and useful next action.

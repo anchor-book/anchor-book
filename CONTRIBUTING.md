@@ -95,8 +95,8 @@ The package is not publishable yet; release readiness is a separate milestone.
 ## Configuration loading
 
 `anchor_book::configuration::load(&Path)` reads and resolves an explicit
-`anchorbook.toml`. It is a library operation; there is no `anchorbook check`
-command yet. See [Configuration](book/design/configuration.md#library-interface)
+`anchorbook.toml`. It is also the first step of `anchorbook check`; loading alone
+does not establish structural conformance. See [Configuration](book/design/configuration.md#library-interface)
 for the API, error and path behavior, and boundaries.
 
 ```sh
@@ -108,6 +108,26 @@ Independent tests use disposable filesystem fixtures and subprocesses with diffe
 working directories. They require neither this repository's configuration nor its
 Book. The ignored current-Book suite separately reads the real configuration and
 Book. The existing Engine workflow runs both suites on supported Rust toolchains.
+
+## Structural checking
+
+```sh
+cargo run --locked --bin anchorbook -- check --config anchorbook.toml
+cargo test --locked --lib --test checking
+cargo test --locked --test current_book -- --ignored
+```
+
+The CLI uses `anchor_book::checking::check` and reports structural findings without
+changing files. Exit 0 means the declared scope passed, 1 means structural defects,
+and 2 means invalid invocation or incomplete evaluation. Completed reports go to
+stdout; incomplete reports and partial findings go together to stderr.
+The current-Book acceptance suite includes a separate structural check. Independent
+fixtures cover the actual process, broken Books, and correction/recheck cases.
+
+Full mutation campaigns run on GitHub by default. Local development uses focused
+ordinary tests; a local mutation run should have an explicitly chosen scope and
+resource budget. Use one worker for an agreed local run. Do not launch parallel
+local mutation campaigns or repeat a full campaign while remote validation is available.
 
 ## Local authority proof
 
@@ -181,7 +201,8 @@ toolchain; this developer tool does not change the engine's Rust 1.88 minimum.
 ```sh
 cargo +stable install cargo-mutants --version 27.1.0 --locked
 cargo +stable test --locked
-cargo +stable mutants --jobs 2 --build-timeout 120
+# Optional local campaign, only with an agreed scope and resource budget:
+cargo +stable mutants --jobs 1 --build-timeout 120 --file 'src/checking/rules.rs'
 ```
 
 For an installation confined to this checkout, add `--root target/mutation-tools`
@@ -203,7 +224,7 @@ For a bounded local run, select the affected file or capability. For example:
 
 ```sh
 cargo +stable mutants --list --file 'src/rendering/links.rs'
-cargo +stable mutants --jobs 2 --build-timeout 120 --file 'src/rendering/links.rs'
+cargo +stable mutants --jobs 1 --build-timeout 120 --file 'src/rendering/links.rs'
 ```
 
 A filtered run establishes results only for that scope. Include related behavior
@@ -250,9 +271,9 @@ do not require **Publish Book**, which only runs after a main-branch push.
 A workflow definition alone does not enforce branch protection. The roadmap
 records the verified remote state; this workflow does not gate Pages publication.
 
-Agents work locally: run the checks, inspect failures, make scoped corrections,
-rerun ordinary tests and the affected mutations, then repeat the full campaign
-before declaring readiness. Fix test gaps with assertions derived from the Book;
+Agents make corrections locally and run relevant ordinary tests. GitHub runs
+the full mutation campaign on the PR; inspect that result before declaring
+readiness. Use local mutation reruns only for an explicitly agreed bounded scope. Fix test gaps with assertions derived from the Book;
 correct implementation when the investigation reveals a behavior defect. Do not
 assume every survivor means production code is wrong. Preserve the original finding
 and record how the correction addresses it. After an authorized push, inspect the

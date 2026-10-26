@@ -25,12 +25,7 @@ fn help_and_version_describe_the_actual_scope() {
 
 #[test]
 fn unavailable_operations_never_report_success() {
-    for args in [
-        vec![],
-        vec!["check"],
-        vec!["materialize"],
-        vec!["--help", "check"],
-    ] {
+    for args in [vec![], vec!["materialize"], vec!["--help", "check"]] {
         let output = Command::new(env!("CARGO_BIN_EXE_anchorbook"))
             .args(args)
             .output()
