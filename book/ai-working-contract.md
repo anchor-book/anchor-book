@@ -259,6 +259,12 @@ local details in design and work sequencing in roadmaps. Do not repeat requireme
 as decisions or invent decisions to give anchors authority; a requirement can
 ground an anchor directly.
 
+State each anchor as a property that serves the functionality's purpose: what
+engineers, agents, or other callers must be able to rely on, with precise scope
+and limits. Put concrete verification cases in criteria and implementation
+mechanics in the supporting design. Preserve essential constraints when reframing
+a property; a general statement of usefulness is not a verifiable guarantee.
+
 Place anchors at the top of a design chapter, after its brief introduction and
 before the detailed design. Keep general anchor-authoring guidance here, not
 repeated on design pages.

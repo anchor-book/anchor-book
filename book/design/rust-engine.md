@@ -2,7 +2,7 @@
 
 **Status: prototype implementation in progress.** The record library described
 below is implemented, along with record rendering and the mdBook adapter.
-Configuration and structural checking remain design drafts.
+The configuration loader is also implemented; structural checking remains planned.
 
 ## Anchors
 
@@ -71,14 +71,16 @@ statement = "The engine executes the verified authority-validation functions. Te
 ```anchorbook-anchor
 schema-version = 1
 id = "check-shared-typed-results"
-title = "All callers use shared rules and typed results"
+title = "Agents and Rust callers receive consistent format findings"
 status = "draft"
 property = '''
-The Rust library owns checking behavior and exposes findings, locations, scope,
-and errors as typed data. The CLI obtains its results through that library and
-only handles invocation and presentation. Library callers can distinguish
-structural failure from incomplete evaluation without parsing display text;
-malformed user input does not cause the library to print, exit, or panic.
+Engineers, agents, CI, and Rust integrations receive equivalent structural
+findings for the same Book inputs, so choosing an interface does not change the
+required repairs or whether the check passes. The library owns checking behavior
+and exposes findings, locations, scope, and errors as typed data; callers can
+distinguish structural failure from incomplete evaluation without parsing display
+text. The CLI handles invocation and presentation through that library. Malformed
+user input does not cause the library to print, exit, or panic.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-shared-checker" },
@@ -109,7 +111,8 @@ A project integration test calls the library directly. The initial mdBook adapte
 translates between mdBook's protocol and the shared record model.
 
 [Record Rendering](record-rendering.md) establishes parsing, authority resolution,
-and `anchorbook md`. Configuration and `anchorbook check` follow. Compiling the
+and `anchorbook md`. The [configuration loader](configuration.md#library-interface)
+now resolves explicit project configuration; `anchorbook check` follows. Compiling the
 crate requires neither a valid Book nor rendered output.
 
 Cargo supports [library and binary targets in one package](https://doc.rust-lang.org/cargo/reference/cargo-targets.html);
@@ -141,6 +144,8 @@ The implemented layout is:
 src/
   lib.rs                  Library entry point and initial API re-exports
   main.rs                 CLI entry point
+  configuration.rs        Public configuration loader and validated layout
+  configuration/          Private schema, path resolution, and errors
   adapters.rs             External protocol interfaces
   adapters/mdbook.rs       JSON input, validation, and Book transformation
   rendering.rs            Record rendering operation and typed errors
@@ -154,8 +159,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-Add `configuration`, `checking`, `materialization`, and `contract` as they are
-implemented. Do not create empty modules or fold new capabilities into `records`.
+Add `checking`, `materialization`, and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -230,7 +234,8 @@ identities never select an arbitrary winner.
 
 The package uses **Rust 2024**, with **Rust 1.85** as its declared minimum.
 Local verification covers 1.85 and 1.90. The engine workflow targets 1.85 and
-stable; a remote run is still pending publication of this work.
+stable; both passed on merged revision `03fb981` in the
+[Engine workflow](https://github.com/anchor-book/anchor-book/actions/runs/39737287093).
 
 | Dependency | Purpose |
 | --- | --- |
@@ -347,8 +352,9 @@ and APIs. Async runtimes and dynamic rules need concrete workflows before design
 [Formal Verification](formal-verification.md) introduces Verus for the existing
 `engine-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
-remain explicit integration boundaries. The proof passes locally and is awaiting
-engineer review. A GitHub proof job is implemented locally; remote results remain pending.
+remain explicit integration boundaries. The proof passes locally and on GitHub;
+the implementation and workflow are merged in `03fb981`. Scope and integration-coverage review,
+the remote failure/correction demonstration, and merge protection remain open.
 The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
 and mdBook adapter do not execute verifiers.

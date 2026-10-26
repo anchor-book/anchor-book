@@ -11,15 +11,16 @@ observed problem, expected structure, location, and useful next action.
 ```anchorbook-anchor
 schema-version = 1
 id = "check-truthful-results"
-title = "Results distinguish conformance, failure, and incomplete evaluation"
+title = "Results tell the agent whether format repairs are complete"
 status = "draft"
 property = '''
+An engineer or agent can distinguish a Book that conforms to the checked format,
+a Book with known structural defects to repair, and a check that could not finish.
 A pass requires every required check in the declared scope to have passed.
-Known structural violations produce failure, with dependent checks explicitly
-blocked. Invalid input or operational errors produce incomplete evaluation,
-even when structural findings have already been collected; those findings
-remain available as partial results. The report identifies evaluated scope
-without claiming anchor verification, implementation, or roadmap completion.
+Reports identify evaluated and blocked checks; operational or invalid-input
+failures remain incomplete even when partial structural findings are available.
+Structural success does not claim anchor verification, implementation, or roadmap
+completion.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-truthful-results" },
@@ -45,14 +46,16 @@ statement = "Assert evaluated and blocked groups and limits of the passing claim
 ```anchorbook-anchor
 schema-version = 1
 id = "check-actionable-diagnostics"
-title = "Diagnostics support scoped repairs"
+title = "Findings give agents enough information to repair the format"
 status = "draft"
 property = '''
-Each diagnostic supplies a stable code, kind, severity, relevant locations,
-expected and observed conditions, and useful next-action guidance as defined
-in this chapter. Reports have deterministic ordering and remain understandable
-without color or interactive prompts. Guidance preserves uncertainty about
-project intent and does not authorize edits or recommend weakening obligations.
+An engineer or agent can use each finding to locate a format problem, understand
+what was expected and observed, and choose an appropriate repair within the
+assignment before rechecking. Findings include stable codes, kind, severity,
+relevant locations, and useful next actions. Reports have deterministic order and
+remain readable without color or interactive prompts. Guidance makes uncertainty
+about project intent explicit; it does not authorize edits or suggest weakening
+the intended rules to obtain a pass.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-repair-feedback" },

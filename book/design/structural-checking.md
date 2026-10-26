@@ -17,13 +17,14 @@ passes. The agent performs those edits; the checker remains read-only.
 ```anchorbook-anchor
 schema-version = 1
 id = "check-observation-only"
-title = "Checking only observes the project"
+title = "Checking preserves the Book for deliberate repair"
 status = "draft"
 property = '''
-A check leaves project content and directory entries unchanged on success,
-structural failure, and incomplete evaluation. It does not execute subprocesses,
-configured preprocessors, project tests, or verifiers, fetch dependencies, or
-render the Book. An agent's repair is a separate action.
+Engineers and agents can inspect a Book's format without changing the project
+or triggering its tools. Passing, failing, and incomplete checks leave project
+content and directory entries unchanged. Checking does not render, fetch
+dependencies, or execute subprocesses, preprocessors, tests, or verifiers.
+Repairs remain separate actions so the engineer or agent controls what changes.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-observation-only" },
@@ -44,17 +45,18 @@ statement = "Use fixtures with configured execution traps and run with subproces
 ```anchorbook-anchor
 schema-version = 1
 id = "check-navigation-conformance"
-title = "Navigation determines chapter and role conformance"
+title = "Navigation findings guide repairs to the configured Book format"
 status = "draft"
 property = '''
-A structural pass requires an existing source directory, supported readable
-SUMMARY.md navigation, existing local chapter files contained in the source,
-and distinct top-level linked chapters for all configured required roles.
-Numbered, unnumbered, and nested chapter targets are checked. Part headings,
-separators, draft entries without targets, and external destinations do not
-satisfy required local roles. Unsupported navigation cannot be treated as valid.
+The checker identifies where the Book's chapters and required sections differ
+from its configured structure, and reports the location and expected structure
+so an engineer or agent can correct the format and recheck. Navigation passes
+only when the source, chapter targets, and required sections satisfy all defined
+navigation rules. Unreadable, malformed, or unsupported navigation prevents a
+pass and is reported as incomplete evaluation, not as an empty valid Book.
 '''
 authorities = [
+  { kind = "requirement", id = "requirement-repair-feedback" },
   { kind = "requirement", id = "requirement-configured-structure" },
   { kind = "decision", id = "decision-mdbook-structure" },
 ]
@@ -62,32 +64,34 @@ authorities = [
 [[criteria]]
 id = "chapter-inventory"
 verification = ["test"]
-statement = "Independently enumerate expected targets in supported summary fixtures; detect missing files, non-file targets, and source escapes at numbered, unnumbered, and nested locations."
+statement = "Use independently specified fixtures for missing source or SUMMARY.md and missing, non-file, or escaping chapter targets at numbered, unnumbered, and nested locations. Assert findings identify the affected location and expected structure, with dependent checks blocked when prerequisites are absent. Correct each seeded defect and recheck; valid navigation passes."
 
 [[criteria]]
 id = "required-roles"
 verification = ["test"]
-statement = "Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link; only distinct configured top-level local chapters satisfy the roles."
+statement = "Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link. Only distinct configured top-level local chapters satisfy the roles. Assert failures identify the role, relevant declaration, and expected placement; restoring that structure makes the role check pass."
 
 [[criteria]]
 id = "grammar-boundary"
-verification = ["test", "review"]
-statement = "Document the supported mdBook grammar and version; supported targetless drafts outside required roles remain valid, external links are not fetched, and malformed or unsupported navigation yields incomplete evaluation."
+verification = ["test"]
+statement = "Against the documented supported mdBook grammar and version, test valid numbered, unnumbered, and nested navigation, part headings, separators, and targetless drafts outside required roles. Classify external links without fetching them. Malformed, unreadable, or unsupported navigation produces a located incomplete result identifying the input problem and blocked checks, never an empty successful inventory."
 ```
 
 ```anchorbook-anchor
 schema-version = 1
 id = "check-renderer-alignment"
-title = "Renderer paths agree with the intended Book layout"
+title = "The checked Book and rendered Book use the intended layout"
 status = "draft"
 property = '''
-A structural pass requires adjacent book.toml settings, including the supported
-mdBook version's defaults, to resolve to the configured source and output.
-Comparison uses resolved locations rather than literal path spelling.
-Drift is reported without changing either configuration. The claim covers
-file-based settings, not environment or command-line overrides.
+The checker detects when mdBook's file-based source or output settings differ
+from the intended Anchor Book layout, so an engineer or agent can align them
+before rendering. Findings identify the differing settings and expected locations
+without changing either configuration. Equivalent resolved locations, including
+mdBook defaults, agree even when spelled differently. This guarantee covers the
+adjacent book.toml, not environment or command-line overrides.
 '''
 authorities = [
+  { kind = "requirement", id = "requirement-repair-feedback" },
   { kind = "requirement", id = "requirement-configured-structure" },
   { kind = "decision", id = "decision-mdbook-structure" },
 ]
@@ -95,7 +99,7 @@ authorities = [
 [[criteria]]
 id = "resolved-comparison"
 verification = ["test"]
-statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations; source or output drift yields a specific finding."
+statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations. Drift findings identify the relevant settings and expected locations; aligning those settings makes the check pass without the checker editing either file."
 
 [[criteria]]
 id = "renderer-input"

@@ -127,20 +127,25 @@ for phase-specific responsibilities.
 ## Current roadmaps
 
 - [Mutation Testing](mutation-testing.md): local findings are resolved and PR
-  execution passes. Merge protection and the remote correction demonstration are
-  deferred until authority proofs work; the milestone remains incomplete.
-- [Formal Verification](formal-verification.md): milestone 1 has a passing local
-  production authority proof and integration tests, awaiting engineer review.
-  Milestone 2 has a local GitHub proof workflow; remote execution and merge protection
-  remain pending. Milestone 3 completed the
+  execution passes. Merge protection and the remote correction demonstration
+  remain open; passing authority proofs now satisfy their earlier prerequisite.
+- [Formal Verification](formal-verification.md): production authority validation
+  and its GitHub workflow are merged in `03fb981`, with passing PR and main runs.
+  Milestone 1 retains scope/integration review; milestone 2 retains the remote
+  failure/correction demonstration and merge protection. Milestone 3 completed
   criterion-method schema preparation.
-- [Record Rendering](record-rendering.md): milestones 1 and 2 complete locally.
-  Milestone 3 covers authority criteria, CI integration, and remote verification.
+- [Record Rendering](record-rendering.md): milestones 1 and 2 are implemented and
+  merged. Milestone 3 has passing rendered acceptance and Pages deployment;
+  authority-coverage review, local/published preview evidence, and engine-check
+  gating remain open.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): proposed, not implemented. Delivers
-  the agent's check, repair, and recheck loop with independent tests and CI.
+- [Structural Checking](structural-checker.md): milestone 1 is complete locally: the
+  configuration reader and its verification are implemented. The real
+  `anchorbook.toml` now owns project configuration and phase. The remaining work
+  delivers the local checker, CI integration, and an agent repair demonstration;
+  loading configuration does not establish Book conformance.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned

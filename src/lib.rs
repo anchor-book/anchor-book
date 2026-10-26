@@ -1,7 +1,8 @@
-//! Read, validate, and render the canonical design records in an Anchor Book.
+//! Resolve Book configuration and read, validate, and render canonical design records.
 //!
-//! Callers supply Markdown chapters. This library performs no filesystem access,
-//! subprocess execution, or verification of the system being described.
+//! Record and rendering operations use supplied Markdown without filesystem access.
+//! The configuration loader reads explicit files and resolves paths without writes.
+//! No operation executes subprocesses or verifies the system being described.
 //! A successful inventory establishes schema and authority-reference consistency.
 //!
 //! ```
@@ -15,6 +16,7 @@
 //! ```
 
 pub mod adapters;
+pub mod configuration;
 pub mod records;
 pub mod rendering;
 

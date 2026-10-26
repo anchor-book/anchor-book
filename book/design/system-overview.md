@@ -1,8 +1,9 @@
 # System Overview
 
 **Status: draft for review.** This describes the intended system. The repository
-currently has a shared Rust record library and an mdBook adapter that renders
-anchors and authorities. Other engine operations remain to be implemented.
+currently has a shared Rust record library, a configuration loader, and an mdBook
+adapter that renders anchors and authorities. Structural checking and other
+engine operations remain to be implemented.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
@@ -14,12 +15,15 @@ mdBook supplies the underlying Book structure and rendering.
 ```anchorbook-anchor
 schema-version = 1
 id = "check-independent-build"
-title = "A broken Book does not prevent building its checker"
+title = "A broken Book remains diagnosable by its own engine"
 status = "draft"
 property = '''
-Engine compilation and independent fixture tests do not require a valid or
-rendered repository Book. Checking the current Book is a separate acceptance
-step before rendering, so the engine remains usable to diagnose a broken Book.
+Engineers and agents can still build and use the checker to diagnose a broken
+Book while developing Anchor Book with that Book. Engine compilation and
+independent fixture tests do not require a valid or rendered repository Book.
+Checking the current Book is a separate acceptance step before rendering, so
+format defects can be reported without first repairing the Book to build its
+checker.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-independent-engine" },

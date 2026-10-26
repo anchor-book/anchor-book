@@ -25,18 +25,18 @@ currently defined.
 
 ## Current phase
 
-The project is **Prototyping**. This is the authoritative phase declaration until
-the configuration reader is implemented and `anchorbook.toml` is added.
-[Structural Checking — Milestone 1](implementation-roadmaps/structural-checker.md#structural-checking-1-phase-handoff)
-will move the value into configuration and replace this declaration with a pointer
-to it. Do not maintain two independent phase settings.
+Read `[project].phase` in the repository-root `anchorbook.toml` for the current
+phase. That file is the single authoritative setting; this chapter does not
+repeat its value. The configuration reader validates the field without inferring
+design acceptance, implementation progress, or completion.
 
 ## Available tools and checks
 
-The record library and `anchorbook md` preprocessor are implemented. The binary
-also supports `anchorbook md supports html`, help, and version. Configuration,
-structural checking, and contract generation remain planned. Do not run proposed
-`check` or `contract` commands, or install similarly named tools in their place.
+The record library, configuration loader, and `anchorbook md` preprocessor are
+implemented. The binary also supports `anchorbook md supports html`, help, and
+version. Configuration is currently a Rust library API; the `check` and `contract`
+commands remain planned. Do not run those proposed commands or install similarly
+named tools in their place. Loading configuration alone does not check Book format.
 
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
 versions and exact commands for tests, formatting, Clippy, builds, and previews.
@@ -56,11 +56,12 @@ records local evidence separately from the full campaign, GitHub execution,
 and required merge rules. These must be demonstrated before claiming merge
 protection; adding a workflow alone does not enable that protection.
 
-[Formal Verification](design/formal-verification.md) implements a local Verus proof of the
-production authority-validation functions. Its [roadmap](implementation-roadmaps/formal-verification.md)
-covers local proof and integration, then GitHub verification. The proof passes
-locally and awaits engineer review. The GitHub proof workflow is implemented locally;
-remote passing/failing runs and merge protection remain pending.
+[Formal Verification](design/formal-verification.md) implements a Verus proof of the
+production authority-validation functions. The proof and GitHub workflow are merged
+in `03fb981`; PR and main-branch verification and integration tests pass. Its
+[roadmap](implementation-roadmaps/formal-verification.md) records the evidence and
+remaining scope/integration review, remote failure/correction demonstration, and
+merge protection. These milestones are not yet complete.
 CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.
 Criterion-level required methods are supported by
 the record parser and renderer; they declare obligations without executing any

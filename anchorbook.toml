@@ -1,0 +1,13 @@
+schema-version = 1
+
+[project]
+phase = "prototyping"
+
+[book]
+source = "book"
+output = "target/anchorbook"
+
+[book.sections]
+design = "design/index.md"
+authority = "authority/index.md"
+implementation-roadmaps = "implementation-roadmaps/index.md"
