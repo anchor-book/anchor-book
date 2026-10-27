@@ -21,6 +21,6 @@ phase, source locations, authoring references, and development instructions.
 
 ## Current state
 
-Record parsing, authority validation, and mdBook
-record rendering are implemented; other operations remain planned. See the
+Record parsing, authority validation, mdBook record rendering, configuration
+loading, and structural checking are implemented; other operations remain planned. See the
 [roadmaps](implementation-roadmaps/index.md#current-roadmaps) for progress and evidence.
