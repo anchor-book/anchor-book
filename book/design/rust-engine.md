@@ -344,7 +344,7 @@ No engine mutation exclusions are configured.
 
 Agents run tests locally, investigate findings against the goal design, correct
 test gaps or implementation defects, and repeat verification. GitHub repeats the
-campaign on pull requests. Ordinary tests precede mutation tests in both places.
+campaign on pull requests that change engine code, tests, or mutation settings. Ordinary tests precede mutation tests in both places.
 Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests
 detected a fault. Equivalent-mutation exclusions require specific reasoning and
 review; the default is to preserve findings for investigation.

@@ -1,6 +1,7 @@
 name: Mutation testing
 
 # Run on every PR so a required check is never absent due to a path filter.
+# PRs that change no code, tests, or mutation settings pass without a campaign.
 on:
   pull_request:
     branches: [main]
@@ -20,16 +21,35 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Detect code changes
+        id: scope
+        run: |
+          # A PR checkout is a merge commit; its first parent is the target branch.
+          if [ "${{ github.event_name }}" != pull_request ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only HEAD^1 HEAD |
+              grep -Eq '^(src/|tests/|Cargo\.(toml|lock)$|rust-toolchain\.toml$|\.cargo/|\.github/workflows/mutation\.yml$)'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No engine code, tests, or mutation settings changed; mutation campaign skipped."
+          fi
       - name: Install Rust
+        if: steps.scope.outputs.code == 'true'
         run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
       - name: Ordinary tests
+        if: steps.scope.outputs.code == 'true'
         run: cargo +stable test --locked
       - name: Install cargo-mutants
+        if: steps.scope.outputs.code == 'true'
         run: cargo +stable install cargo-mutants --version 27.1.0 --locked
       - name: Test mutations
+        if: steps.scope.outputs.code == 'true'
         run: cargo +stable mutants --jobs 2 --build-timeout 120
       - name: Retain mutation evidence
-        if: always()
+        if: always() && steps.scope.outputs.code == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: mutation-results

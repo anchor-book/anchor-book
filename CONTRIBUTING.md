@@ -262,8 +262,10 @@ conversion, and error propagation. For code inside `verus!`, run proofs and test
 and retain the mutation-coverage gap. Specification changes also need review against
 the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only
 changes need their relevant checks, not a new local mutation campaign on unchanged
-engine logic. The existing GitHub mutation workflow still runs on every PR; selective
-remote execution is a separate workflow change.
+engine logic. The GitHub mutation workflow still reports on every PR, but runs the
+campaign only when the PR changes `src/`, `tests/`, Cargo manifests, the toolchain
+file, `.cargo/`, or the workflow itself; otherwise the check passes with a notice.
+Manual dispatch always runs the full campaign.
 
 Results are in ignored `target/mutants.out/`; the next run rotates the previous
 results to `target/mutants.out.old/`. Preserve needed evidence before rerunning.
