@@ -4,8 +4,9 @@ This section describes the system anchor-book is intended to become, from the
 system overview to component responsibilities, interfaces, and detailed behavior.
 It represents the goal as currently understood, rather than only what is implemented.
 
-Chapters remain **drafts for review**. The record library and mdBook rendering
-are implemented; other capabilities remain planned. See the
+Chapters remain **drafts for review**. The record library, mdBook rendering,
+configuration loading, and structural checking are implemented; other
+capabilities remain planned. See the
 [roadmaps](../implementation-roadmaps/index.md) for progress and evidence.
 
 | Chapter | Scope |

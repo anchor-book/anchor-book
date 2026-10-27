@@ -141,10 +141,10 @@ for phase-specific responsibilities.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): milestone 1 is merged. Milestone 2
-  implements the local checker and actionable reports using mdBook 0.5.4, with
-  initial tests passing. Final mutation verification will run on GitHub; milestone 2
-  remains in progress. CI gating and the real agent repair demonstration follow.
+- [Structural Checking](structural-checker.md): milestones 1 and 2 are merged.
+  The checker uses mdBook 0.5.4, and its full GitHub mutation campaign has no
+  survivors; unviable-mutation review remains before milestone 2 is complete.
+  CI gating and the real agent repair demonstration follow.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned
