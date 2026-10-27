@@ -27,4 +27,4 @@
   - [Formal Verification](implementation-roadmaps/formal-verification.md)
   - [Structural Checking](implementation-roadmaps/structural-checker.md)
 
-- [Deliberately missing chapter](deliberately-missing.md)
+Unsupported prose outside navigation.
