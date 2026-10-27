@@ -178,7 +178,7 @@ parser, remote badge service, or external script is required to read the records
 
 Implemented command: `anchorbook md`. The local `book.toml` invokes
 `cargo run --quiet --locked --bin anchorbook -- md`, after mdBook's `links`
-preprocessor and before Mermaid. The prototype requires mdBook **0.5.2** and
+preprocessor and before Mermaid. The prototype requires mdBook **0.5.4** and
 supports HTML only. The adapter uses `serde_json` to validate the needed protocol
 fields while preserving navigation and unknown metadata. It does not depend on
 the mdBook crate or launch a nested Book build.
@@ -190,7 +190,7 @@ control characters, or colon-based schemes. Their HTML destinations must be
 unique. Every supplied chapter needs source and output paths, including unnumbered
 chapters; draft chapters without paths are currently rejected.
 
-Generated links are relative and percent-encode path components. mdBook 0.5.2
+Generated links are relative and percent-encode path components. mdBook 0.5.4
 rewrites these HTML links into fragment links in its combined print view. The
 local theme opens decision details in that view and during browser printing.
 No record parsing runs in the browser. Formatting, source wrapping, and repeated

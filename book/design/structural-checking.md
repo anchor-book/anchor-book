@@ -180,17 +180,17 @@ navigation cannot be interpreted as an empty, valid Book.
 
 ## Navigation parser
 
-Use the standalone [`mdbook-summary` 0.5.2 parser](https://github.com/rust-lang/mdBook/blob/v0.5.2/crates/mdbook-summary/src/lib.rs)
+Use the standalone [`mdbook-summary` 0.5.4 parser](https://github.com/rust-lang/mdBook/blob/v0.5.4/crates/mdbook-summary/src/lib.rs)
 for the chapter hierarchy. Call `parse_summary(&str)` with text already read by
 the checking operation. Its output includes prefix, numbered, and suffix chapters,
 nesting, targetless drafts, part titles, and separators. This does not load chapter
 files, create missing files, render, or run preprocessors. Keep it behind a private
 adapter that returns the engine's own observed-navigation model.
 
-The implementation pins `mdbook-summary = "=0.5.2"` and `mdbook-core = "=0.5.2"`,
+The implementation pins `mdbook-summary = "=0.5.4"` and `mdbook-core = "=0.5.4"`,
 with tested transitive versions in Cargo.lock. The core crate also supplies pure
 `book.toml` deserialization and mdBook defaults; environment overrides are not applied. The parser and its mdbook-core dependency
-[require Rust 1.88](https://github.com/rust-lang/mdBook/blob/v0.5.2/Cargo.toml),
+[require Rust 1.88](https://github.com/rust-lang/mdBook/blob/v0.5.4/Cargo.toml),
 now the engine's minimum; development uses current stable. The dependency
 chain adds core data/configuration support, including another TOML library, but
 not mdBook's driver or HTML/server runtime. The parser is integrated through the private navigation adapter; its types do
