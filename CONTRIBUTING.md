@@ -90,8 +90,8 @@ these Book-dependent tests. No Python installation is required.
 
 The Book workflow owns push, pull-request, and manual build triggers. Its
 **Engine checks** job calls the local reusable Engine workflow, which checks
-Rust 1.88.0 and stable, independent tests, the failure experiments, and current-Book
-acceptance. **Build mdBook** depends on that entire job succeeding, runs
+Rust 1.88.0 and stable, independent tests, current-Book acceptance, and then the failure
+experiments, which assume a valid Book. **Build mdBook** depends on that entire job succeeding, runs
 `mdbook build` (which applies the structural check), and checks rendered output
 before uploading artifacts.
 **Publish Book** depends on Build mdBook and only deploys from main outside a
