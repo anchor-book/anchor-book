@@ -14,8 +14,13 @@ env:
   MDBOOK_MERMAID_VERSION: "0.17.1"
 
 jobs:
+  engine:
+    name: Engine checks
+    uses: ./.github/workflows/engine.yml
+
   build:
     name: Build mdBook
+    needs: engine
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
@@ -39,7 +44,7 @@ jobs:
           cargo install mdbook-mermaid --version "$MDBOOK_MERMAID_VERSION" --locked
           mdbook-mermaid install .
 
-      - name: Build Book
+      - name: Check structure, then build Book
         run: |
           mdbook --version
           mdbook build

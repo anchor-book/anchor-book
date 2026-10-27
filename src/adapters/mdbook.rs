@@ -102,6 +102,40 @@ fn replace(items: &mut Value, rendered: &mut impl Iterator<Item = String>) {
         }
     }
 }
+/// Locate the Book configuration named by `[preprocessor.anchorbook] config`.
+///
+/// The value is resolved against the Book root that mdBook reports, so callers
+/// can run the structural check before [`preprocess`] renders anything.
+///
+/// # Errors
+/// Returns `render.invalid-input` for malformed JSON, unsupported mdBook
+/// versions/renderers, or a missing root or `config` setting.
+pub fn configuration_path(request: &str) -> Result<PathBuf, PreprocessError> {
+    let (context, _): (Value, Value) =
+        serde_json::from_str(request).map_err(PreprocessError::Json)?;
+    supported(&context)?;
+    let root = context
+        .get("root")
+        .and_then(Value::as_str)
+        .ok_or_else(|| input("context must contain the Book root"))?;
+    let config = context
+        .pointer("/config/preprocessor/anchorbook/config")
+        .and_then(Value::as_str)
+        .filter(|path| !path.is_empty())
+        .ok_or_else(|| {
+            input("[preprocessor.anchorbook] config must name the Book configuration")
+        })?;
+    Ok(Path::new(root).join(config))
+}
+fn supported(context: &Value) -> Result<(), PreprocessError> {
+    if context.get("renderer").and_then(Value::as_str) != Some("html") {
+        return Err(input("only the HTML renderer is supported"));
+    }
+    if context.get("mdbook_version").and_then(Value::as_str) != Some("0.5.4") {
+        return Err(input("this prototype requires mdBook 0.5.4"));
+    }
+    Ok(())
+}
 /// Transform `[context, book]` JSON into complete Book JSON for the HTML renderer.
 ///
 /// Preserves unknown metadata and navigation fields. Validates all chapter input
@@ -113,12 +147,7 @@ fn replace(items: &mut Value, rendered: &mut impl Iterator<Item = String>) {
 pub fn preprocess(request: &str) -> Result<String, PreprocessError> {
     let (context, mut book): (Value, Value) =
         serde_json::from_str(request).map_err(PreprocessError::Json)?;
-    if context.get("renderer").and_then(Value::as_str) != Some("html") {
-        return Err(input("only the HTML renderer is supported"));
-    }
-    if context.get("mdbook_version").and_then(Value::as_str) != Some("0.5.4") {
-        return Err(input("this prototype requires mdBook 0.5.4"));
-    }
+    supported(&context)?;
     let items = book
         .get("items")
         .ok_or_else(|| input("Book must contain items"))?;

@@ -52,6 +52,11 @@ checks relevant to the work. For Book changes, build it and check rendered recor
 links, and affected diagrams. Engine compilation and independent tests must remain
 usable when this Book is broken.
 
+The Book workflow calls the reusable Engine workflow before its build job.
+`mdbook build` runs the structural check in the Anchor Book preprocessor before
+rendering; rendered-output acceptance then gates publication. Structural Checking
+milestone 3 records the local failure experiments and pending GitHub demonstration.
+
 The contract's pre-PR testing policy is being developed during prototyping.
 Mutation testing uses pinned cargo-mutants with local commands and a pull-request
 workflow; read `CONTRIBUTING.md` for scope, runtime budgets, results, and the

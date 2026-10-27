@@ -17,6 +17,13 @@ mdbook build
 mdbook serve --hostname 127.0.0.1 --port 3000
 ```
 
+The Anchor Book preprocessor runs the structural checker on the configuration
+named by `[preprocessor.anchorbook] config` before rendering any chapter. A failed
+or incomplete check prints the `anchorbook check` report and stops `mdbook build`.
+`mdbook serve` applies the same check on each rebuild and keeps serving the last
+good output until the Book passes again. Record validation also runs during
+preprocessing. Current-Book acceptance is a separate test; see below.
+
 Edit sources under `book/`. Rendered output is in `target/anchorbook/`.
 The Mermaid installer supplies `mermaid.min.js` and `mermaid-init.js`; these
 reproducible assets are ignored by Git and generated in CI. Rerun the installer
@@ -36,30 +43,35 @@ rustup update stable
 cargo fmt --all -- --check
 cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
-cargo test --locked --test current_book -- --ignored
 scripts/check-engine-independence.sh
+cargo test --locked --test current_book -- --ignored
 ```
 
 The ordinary test suite uses independent fixtures and does not need the Book.
 The explicit `current_book` test reads this checkout's Book and checks its expected
 records and relationships. It is ignored in the ordinary suite so a broken Book
 cannot prevent engine development. The independence script tests a temporary
-copy with the Book absent, then with an invalid definition, and confirms that
-only the separate Book acceptance check fails. It leaves the checkout untouched.
+copy with the Book absent, an invalid definition, a missing chapter, and unsupported
+navigation. Independent tests pass in each case; the appropriate acceptance check
+rejects the seeded defects. It leaves the checkout untouched. The ordinary
+`build_gate` test runs `anchorbook md` against fixture Books: a valid Book is
+rendered, while structural failures (exit 1) and invalid or incomplete input
+(exit 2) produce the check report, no rendered JSON, and no file changes.
 Run the ordinary tests first to populate the dependency cache; the script is offline.
 
 `anchor_book::read_records` accepts chapter text and returns a validated inventory
 or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
-The binary supports `anchorbook md`, `anchorbook md supports html`, help, and
-version. The adapter targets **mdBook 0.5.4** and its HTML renderer. Configuration,
-structural checking, and contract generation remain future work.
+The binary supports `anchorbook check --config PATH`, `anchorbook md`,
+`anchorbook md supports html`, help, and version. The adapter targets **mdBook
+0.5.4** and its HTML renderer. Materialization and contract generation remain
+future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
 dependencies, after mdBook's include/link processing and before Mermaid. A first
-build may need to download Cargo dependencies. The adapter itself does not fetch
-anything or write source files. Source edits rebuild through `mdbook serve`;
+build may need to download Cargo dependencies. The preprocessor reads the Book
+for its structural check but does not fetch anything or write source files. Source edits rebuild through `mdbook serve`;
 after Rust or theme changes, rebuild or restart the preview if needed.
 
 After `mdbook build`, check the rendered record inventory, fields, and links,
@@ -76,9 +88,22 @@ to select another source directory. Build from those same sources before checkin
 output. Missing output fails with a build reminder; ordinary `cargo test` skips
 these Book-dependent tests. No Python installation is required.
 
-The Book workflow runs rendered acceptance after `mdbook build`, before uploading
-artifacts. A failure fails **Build mdBook** and prevents Pages publication. Pull
-requests run the same acceptance check without deploying Pages.
+The Book workflow owns push, pull-request, and manual build triggers. Its
+**Engine checks** job calls the local reusable Engine workflow, which checks
+Rust 1.88.0 and stable, independent tests, the failure experiments, and current-Book
+acceptance. **Build mdBook** depends on that entire job succeeding, runs
+`mdbook build` (which applies the structural check), and checks rendered output
+before uploading artifacts.
+**Publish Book** depends on Build mdBook and only deploys from main outside a
+pull request. Validation and build jobs check out the triggering revision; no
+separate workflow's latest success is used as evidence. Engine also retains
+manual standalone execution.
+
+Failed, skipped, or cancelled prerequisites cannot authorize rendering or
+publication. Proof and mutation workflows remain separate; this change does not
+add merge protection or make their results prerequisites for Pages. Remote
+demonstration of the new dependency chain remains recorded as pending in
+Structural Checking milestone 3 until GitHub runs it.
 
 The rendering check uses the engine's typed inventory and test-only HTML and URL
 parsers. It checks relative local links without network access; external and

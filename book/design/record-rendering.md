@@ -1,8 +1,9 @@
 # Record Rendering
 
-**Status: prototype implemented locally.** The record library, mdBook adapter,
-and readable HTML presentation are implemented. Local rendering and acceptance
-checks pass; remote workflow verification remains in milestone 3.
+**Status: prototype implemented and merged.** The record library, mdBook adapter,
+and readable HTML presentation have local and recorded GitHub acceptance results.
+The shared engine-check gate is implemented locally; its remote demonstration
+remains in Structural Checking milestone 3.
 
 Anchors, requirements, and decisions stay in their canonical TOML blocks in the
 source. In the rendered Book, they become readable sections with permalinks,
@@ -107,7 +108,7 @@ documents the implemented API.
 
 The input inventory is the chapters supplied by mdBook, including nested and
 unnumbered chapters with source paths. Record validation does not require the
-not-yet-implemented `anchorbook.toml` reader. File paths identify source locations
+`anchorbook.toml` reader. File paths identify source locations
 and output routes, not record identity. Reject a definition in a chapter without
 a usable source/output location rather than inventing a destination.
 
@@ -196,8 +197,11 @@ local theme opens decision details in that view and during browser printing.
 No record parsing runs in the browser. Formatting, source wrapping, and repeated
 blank lines within prose are normalized for readable paragraphs.
 
-The existing engine workflow tests the crate separately. Milestone 3 will reconcile
-and verify the complete CI rendering path; no remote result is claimed here.
+The Book workflow calls the reusable Engine workflow and waits for its checks
+before the build job. The preprocessor checks structure before rendering, and
+record validation fails the same build. Structural Checking milestone 3 records
+the shared gate's local evidence and pending remote demonstration; earlier
+rendering results do not establish that the new gate has run on GitHub.
 
 ```mermaid
 sequenceDiagram
@@ -248,7 +252,11 @@ output at runtime and is ignored during ordinary engine tests. It neither builds
 the Book nor checks external sites or visual accessibility.
 
 Engine compilation and fixture tests must succeed with an invalid or unrendered
-Book. The prototype CI order is compile/test, then mdBook with the record adapter.
-Structural checking will later add its separate acceptance step before rendering.
-This prototype does not implement `anchorbook check`, materialization, contract
-generation, cross-Book authorities, or evidence aggregation.
+Book. The CI order is engine checks, current-Book acceptance, mdBook with the
+record adapter, then rendered-output acceptance. Before rendering, `anchorbook md`
+runs the structural checker on the configuration named by
+`[preprocessor.anchorbook] config` and stops on a failed or incomplete report.
+The adapter module itself still reads no files and handles only supplied chapter
+records; the command runs the check.
+Materialization, contract generation, cross-Book authorities, and evidence
+aggregation remain future work.

@@ -1,0 +1,10 @@
+schema-version = 1
+[project]
+phase = "prototyping"
+[book]
+source = "docs"
+output = "generated/site"
+[book.sections]
+design = "design.md"
+authority = "authority.md"
+implementation-roadmaps = "roadmap.md"

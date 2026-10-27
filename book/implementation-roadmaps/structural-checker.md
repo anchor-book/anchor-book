@@ -2,7 +2,8 @@
 
 **Roadmap identifier:** `structural-checking`
 
-**Status:** Milestones 1 and 2 are complete and merged. Milestones 3–4 remain
+**Status:** Milestones 1 and 2 are complete and merged. Milestone 3 is implemented
+and under review; GitHub evidence for its current revision remains pending. Milestone 4 remains
 proposed.
 
 This roadmap follows [Engine Bootstrap](bootstrap.md), which prepares the Book's
@@ -191,45 +192,63 @@ retains review of the resulting edits and preserved obligations.
 
 ## Milestone 3. Continuous checks protect the current Book
 
+The engineer assigned this milestone after accepting milestone 2. The work is
+under review in [PR #8](https://github.com/anchor-book/anchor-book/pull/8).
+Shared rendering/publication gating also addresses Record Rendering milestone 3;
+its other criteria remain separate.
+
 <div class="roadmap-table-wrap">
 <table class="roadmap-criteria roadmap-milestone">
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Changes to this repository receive independent engine validation and an acceptance check against its current Book before rendering.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">In progress — local implementation; GitHub verification pending</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Structural Checking — Milestone 2.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/structural-checking.html">Checker design</a>, <a href="../design/configuration.html">Configuration</a>, <a href="../design/rust-engine.html">Rust Engine</a>, and <a href="../design/check-diagnostics.html">Diagnostics</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>structural-checking-3</code></td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks"><li><label><input type="checkbox" disabled> Extend the independent engine and supported-toolchain checks introduced by rendering with configuration and structural-rule tests.</label></li><li><label><input type="checkbox" disabled> Add a separate current-Book structural check and make rendering depend on successful engine checks and structural acceptance for the same revision. Reuse the existing rendered-output acceptance step and reconcile shared workflow gating with <a href="record-rendering.html#record-rendering-3">Record Rendering milestone 3</a>.</label></li><li><label><input type="checkbox" disabled> Exercise valid, structurally broken, and incomplete-input Book cases; failed or incomplete structural acceptance must prevent rendering while independent engine tests remain runnable.</label></li><li><label><input type="checkbox" disabled> Document local commands and record CI evidence for the implemented revision.</label></li></ul></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
+<li><label><input type="checkbox" checked disabled> Retain configuration and structural-rule tests in the independent engine and supported-toolchain checks introduced by rendering.</label></li>
+<li><label><input type="checkbox" checked disabled> Run the structural check inside the Anchor Book preprocessor so every <code>mdbook build</code> refuses a failed or incomplete check, and make rendering depend on successful engine checks and current-Book acceptance for the same revision. Reuse rendered-output acceptance and reconcile shared workflow gating with <a href="record-rendering.html#record-rendering-3">Record Rendering milestone 3</a>.</label></li>
+<li><label><input type="checkbox" disabled> Exercise valid, structurally broken, and incomplete-input Book cases locally and on GitHub; failed or incomplete acceptance must prevent rendering while independent engine tests remain runnable. Local experiments pass; remote execution remains pending.</label></li>
+<li><label><input type="checkbox" checked disabled> Document the preprocessor check and the shared workflow dependency chain.</label></li>
+<li><label><input type="checkbox" disabled> Record actual CI results and job ordering for the implemented revision, including failure cases.</label></li>
+</ul></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
 <tr id="structural-checking-3-independent-acceptance" class="roadmap-criterion-summary"><th scope="row">Independent acceptance</th><td><p class="roadmap-condition">With deliberately broken navigation and no rendered output, engine compilation and fixture tests pass while current-Book acceptance reports the known failure.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for independent acceptance" aria-expanded="true" aria-controls="structural-checking-3-independent-acceptance-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-independent-acceptance-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>independent-acceptance</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/system-overview.html#check-independent-build">check-independent-build</a> · <code>broken-book</code> — Full</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Passed locally in <code>scripts/check-engine-independence.sh</code>. A disposable checkout has no rendered output. Independent tests pass with no Book, an invalid record, a missing navigation target, and unsupported summary prose. Separate structural acceptance rejects the missing target and unsupported input with the expected diagnostics. See milestone evidence for revision and limits.</p>
 </td></tr>
 <tr id="structural-checking-3-ci-order" class="roadmap-criterion-summary"><th scope="row">CI order</th><td><p class="roadmap-condition">Record actual CI showing engine checks, structural Book acceptance, then rendering for a valid revision. Broken or unprocessable Book input produces useful findings and prevents rendering; independent engine tests remain runnable.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for ci order" aria-expanded="true" aria-controls="structural-checking-3-ci-order-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-ci-order-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>ci-order</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/system-overview.html#check-independent-build">check-independent-build</a> · <code>ci-order</code> — Full</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Implemented locally: Book calls the reusable Engine workflow from the same revision; its build job requires Engine success, and publication requires the build job. <code>anchorbook md</code> checks structure before rendering. Local <code>mdbook build</code> runs reject a structural failure (exit 1) and incomplete input (exit 2) with the check report and write no output. Actual GitHub job-order and failure evidence for this revision remain pending; local results do not establish remote execution.</p>
 </td></tr>
 <tr id="structural-checking-3-no-repair" class="roadmap-criterion-summary"><th scope="row">No repair</th><td><p class="roadmap-condition">The acceptance check performs no source repair; a valid Book renders after acceptance.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for no repair" aria-expanded="true" aria-controls="structural-checking-3-no-repair-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-no-repair-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>no-repair</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/structural-checking.html#check-observation-only">check-observation-only</a> · <code>file-preservation</code> — Partial: CI acceptance invocation</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Local experiments compare the complete disposable source tree before and after each passing, failing, and incomplete invocation. Files and directory entries are unchanged and no rendered output is created by acceptance. The <code>build_gate</code> test confirms that a valid fixture Book is rendered and that rejected fixtures produce no rendered JSON. Remote reproduction remains pending.</p>
 </td></tr>
 <tr id="structural-checking-3-ci-evidence" class="roadmap-criterion-summary"><th scope="row">CI evidence</th><td><p class="roadmap-condition">Record the tested revision, actual workflow results, and local commands; local success alone is not CI evidence.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for ci evidence" aria-expanded="true" aria-controls="structural-checking-3-ci-evidence-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="structural-checking-3-ci-evidence-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>ci-evidence</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — integration evidence</p>
-<p><strong>Evidence:</strong> Pending.</p>
+<p><strong>Evidence:</strong> Pending CI for the revised PR #8 commit. The superseded first revision is described in the milestone evidence; no GitHub result is claimed for the current implementation.</p>
 </td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-3-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
-<tr id="structural-checking-3-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="structural-checking-3-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — local experiments passed; CI pending</button></td></tr>
+<tr id="structural-checking-3-evidence" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Revision and integration:</strong> Revised PR #8 commit based on <code>4f7aeaf</code>, checked locally on 2026-10-27; not integrated into main. The first pushed revision, <code>8689979</code>, gated rendering through a <code>scripts/build-book.sh</code> wrapper. Its PR #8 CI passed, with Build mdBook starting after both Engine jobs finished. The engineer replaced the wrapper with the preprocessor check so ordinary mdBook commands are gated, and so that run is not evidence for this revision.</p>
+<p><strong>Implementation:</strong> <code>book.yml</code> calls <code>engine.yml</code> as a local reusable workflow. Both supported Rust jobs must succeed before Build mdBook can run. <code>[preprocessor.anchorbook] config</code> names <code>anchorbook.toml</code>; <code>anchorbook md</code> runs the structural checker on it and stops on a failed or incomplete report before any chapter is rendered. Record validation continues to fail the same preprocessing step. Current-Book acceptance runs in the Engine job rather than in the build. The new <a href="../authority/design-decisions.html#decision-native-tool-integration">native tool integration decision</a> records why the check lives in the preprocessor rather than a wrapper. Rendered-output acceptance still precedes artifact upload and publication. Engine remains manually runnable. The change adds no engine rules and does not modify the separate proof or mutation workflows or repository merge rules.</p>
+<p><strong>Failure experiments:</strong> <code>scripts/check-engine-independence.sh</code> runs independent tests in disposable source copies with absent, invalid-record, broken-navigation, and unsupported-input Books; current-Book acceptance rejects each seeded defect with its expected diagnostic. The ordinary <code>build_gate</code> test runs <code>anchorbook md</code> on fixture Books: valid input is rendered, while broken navigation (exit 1) and unsupported navigation, invalid configuration, or a missing configuration (exit 2) produce the check report, no rendered JSON, and unchanged snapshots. Real <code>mdbook build</code> runs on disposable copies of this Book reject unsupported summary prose (<code>input.unsupported</code>) and a renderer path mismatch (<code>structure.renderer-path-mismatch</code>) through the preprocessor and render nothing. mdBook rejects a missing chapter itself, before preprocessing, because <code>create-missing</code> is false.</p>
+<p><strong>Local checks:</strong> Formatting passes. Ordinary tests (including <code>build_gate</code>), Clippy, current-Book acceptance, and the independence experiments pass on Rust 1.88.0 and stable 1.99.1. Plain <code>mdbook build</code> passes with mdBook 0.5.4 and mdbook-mermaid 0.17.1; rendered acceptance checks 26 records, unique print targets, and 1,066 local links. Source-file hashes and directory entries are unchanged by that build. During <code>mdbook watch</code> on a disposable copy, a rebuild after adding unsupported summary prose failed with the check report and left the previous output unchanged; restoring the summary rebuilt successfully. <code>mdbook serve</code> uses the same rebuild path. The existing Mermaid preprocessor version warning remains non-fatal. GitHub scheduling has not been executed locally.</p>
+<p><strong>Mutation scope:</strong> cargo-mutants 27.1.0 with one job on the changed <code>src/adapters/mdbook.rs</code> and <code>src/main.rs</code>: 45 mutants, 42 caught, 3 unviable, none missed or timed out. The unviable cases substitute <code>Default</code> for types without it.</p>
+<p><strong>Supporting records and limits:</strong> Reproduction commands are in CONTRIBUTING. <code>build_gate</code> tests the preprocessor process boundary, not mdBook itself; the real mdBook experiments above were run locally only. Actual remote success/failure results, job ordering, and publication evidence remain pending.</p>
+</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">In progress. Local implementation and failure experiments are available for review; the required GitHub evidence has not run.</td></tr>
 </tbody>
 </table>
 </div>

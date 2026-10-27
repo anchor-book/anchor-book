@@ -1,0 +1,5 @@
+[book]
+src = "docs"
+[build]
+build-dir = "generated/site"
+create-missing = true

@@ -1,9 +1,7 @@
 name: Engine
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -14,6 +12,7 @@ jobs:
     name: Rust ${{ matrix.toolchain }}
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         toolchain: ["1.88.0", stable]
     env:
@@ -29,7 +28,7 @@ jobs:
         run: cargo clippy --all-targets --locked -- -D warnings
       - name: Independent engine tests
         run: cargo test --locked
+      - name: Absent, invalid, and incomplete Book experiments
+        run: scripts/check-engine-independence.sh
       - name: Current Book acceptance
         run: cargo test --locked --test current_book -- --ignored
-      - name: Absent and invalid Book experiments
-        run: scripts/check-engine-independence.sh
