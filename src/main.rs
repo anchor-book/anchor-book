@@ -25,7 +25,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.2 HTML adapter is available through md.\nStructural checking and configuration loading are available.\nMaterialization and contract generation are not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md.\nStructural checking and configuration loading are available.\nMaterialization and contract generation are not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS

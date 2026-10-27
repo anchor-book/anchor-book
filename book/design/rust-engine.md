@@ -239,7 +239,7 @@ identities never select an arbitrary winner.
 
 The package uses **Rust 2024** with **Rust 1.88** as its minimum. Development uses
 current stable Rust, selected by `rust-toolchain.toml`; CI checks the minimum and
-current stable. The minimum accommodates the selected mdBook 0.5.2 summary parser.
+current stable. The minimum accommodates the selected mdBook 0.5.4 summary parser.
 The pinned Verus toolchain remains independent. Earlier roadmap evidence retains
 the Rust versions used for those revisions.
 
@@ -249,12 +249,12 @@ the Rust versions used for those revisions.
 | `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
 | `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
-| `mdbook-summary` =0.5.2 | Parse mdBook navigation behind the private checking adapter |
-| `mdbook-core` =0.5.2 | Read file-based renderer settings and defaults without running tools |
+| `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
+| `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
 | `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
-only the repository's pinned **mdBook 0.5.2** preprocessor protocol and rejects
+only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects
 other versions explicitly. The checker uses the standalone summary/core crates,
 without the mdBook driver, renderer, or server. Rendered Book output remains
 unnecessary for engine compilation and independent tests. The CLI handles `check`,
@@ -322,7 +322,7 @@ For each implementation increment:
 - Test rule behavior with independent expected results, and test CLI status and
   file preservation through its actual process boundary.
 
-The navigation reader uses `mdbook-summary = "=0.5.2"` through a private
+The navigation reader uses `mdbook-summary = "=0.5.4"` through a private
 adapter, as defined in [Structural Checking](structural-checking.md#navigation-parser).
 Use its chapter hierarchy and the existing pulldown-cmark offset events for
 supported-input validation and source locations. Keep parser types out of the

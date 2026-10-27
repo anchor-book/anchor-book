@@ -16,7 +16,7 @@ fn chapter(source: &str, path: &str, content: &str) -> Value {
         "path":path,"source_path":source,"sub_items":[],"parent_names":[],"extra":"preserved"}})
 }
 fn request(items: Vec<Value>) -> Value {
-    json!([{"renderer":"html","mdbook_version":"0.5.2"}, {"items":items,"custom":{"preserve":true}}])
+    json!([{"renderer":"html","mdbook_version":"0.5.4"}, {"items":items,"custom":{"preserve":true}}])
 }
 fn run(args: &[&str], input: &str) -> Output {
     let mut process = Command::new(env!("CARGO_BIN_EXE_anchorbook"))
@@ -160,9 +160,11 @@ fn protocol_failure_has_no_partial_output() {
         *input.pointer_mut(pointer).unwrap() = Value::Null;
         cases.push(input.to_string());
     }
-    let mut wrong_version = valid.clone();
-    wrong_version[0]["mdbook_version"] = json!("0.4.52");
-    cases.push(wrong_version.to_string());
+    for version in ["0.4.52", "0.5.2"] {
+        let mut wrong_version = valid.clone();
+        wrong_version[0]["mdbook_version"] = json!(version);
+        cases.push(wrong_version.to_string());
+    }
     for route in [
         "../outside.md",
         "/absolute.md",

@@ -142,7 +142,7 @@ for phase-specific responsibilities.
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
 - [Structural Checking](structural-checker.md): milestone 1 is merged. Milestone 2
-  implements the local checker and actionable reports using mdBook 0.5.2, with
+  implements the local checker and actionable reports using mdBook 0.5.4, with
   initial tests passing. Final mutation verification will run on GitHub; milestone 2
   remains in progress. CI gating and the real agent repair demonstration follow.
 

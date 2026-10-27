@@ -57,7 +57,7 @@ fn adapter_preserves_json_and_record_parser_causes() {
     assert!(json.is_eof());
 
     let request = json!([
-        {"renderer":"html", "mdbook_version":"0.5.2"},
+        {"renderer":"html", "mdbook_version":"0.5.4"},
         {"items":[{"Chapter":{
             "source_path":"a.md", "path":"a.md", "sub_items":[],
             "content":"```anchorbook-requirement\nid = @\n```\n"

@@ -1,4 +1,4 @@
-//! mdBook 0.5.2 JSON protocol adapter. Does not read files or invoke mdBook.
+//! mdBook 0.5.4 JSON protocol adapter. Does not read files or invoke mdBook.
 use crate::{
     records::Chapter,
     rendering::{RenderChapter, RenderError, render_chapters},
@@ -116,8 +116,8 @@ pub fn preprocess(request: &str) -> Result<String, PreprocessError> {
     if context.get("renderer").and_then(Value::as_str) != Some("html") {
         return Err(input("only the HTML renderer is supported"));
     }
-    if context.get("mdbook_version").and_then(Value::as_str) != Some("0.5.2") {
-        return Err(input("this prototype requires mdBook 0.5.2"));
+    if context.get("mdbook_version").and_then(Value::as_str) != Some("0.5.4") {
+        return Err(input("this prototype requires mdBook 0.5.4"));
     }
     let items = book
         .get("items")

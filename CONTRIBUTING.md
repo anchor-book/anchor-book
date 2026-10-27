@@ -5,8 +5,8 @@
 Install the versions used by the Book workflow:
 
 ```sh
-cargo install mdbook --version 0.5.2 --locked
-cargo install mdbook-mermaid --version 0.17.0 --locked
+cargo install mdbook --version 0.5.4 --locked
+cargo install mdbook-mermaid --version 0.17.1 --locked
 ```
 
 From the repository root, prepare diagram assets and build or preview:
@@ -53,7 +53,7 @@ or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
 The binary supports `anchorbook md`, `anchorbook md supports html`, help, and
-version. The adapter targets **mdBook 0.5.2** and its HTML renderer. Configuration,
+version. The adapter targets **mdBook 0.5.4** and its HTML renderer. Configuration,
 structural checking, and contract generation remain future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
