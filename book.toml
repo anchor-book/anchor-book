@@ -25,5 +25,6 @@ command = "mdbook-mermaid"
 
 [preprocessor.anchorbook]
 command = "cargo run --quiet --locked --bin anchorbook -- md"
+config = "anchorbook.toml"
 after = ["links"]
 before = ["mermaid"]

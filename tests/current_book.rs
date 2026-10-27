@@ -15,11 +15,11 @@ fn current_book_records() {
         }
         panic!("current Book failed record acceptance")
     });
-    assert_eq!(inventory.len(), 25);
+    assert_eq!(inventory.len(), 26);
     for (kind, expected) in [
         (RecordKind::Anchor, 12),
         (RecordKind::Requirement, 8),
-        (RecordKind::Decision, 5),
+        (RecordKind::Decision, 6),
     ] {
         assert_eq!(
             inventory.records().filter(|r| r.kind() == kind).count(),
@@ -45,6 +45,7 @@ fn current_book_records() {
         "check-truthful-results",
         "decision-explicit-configuration",
         "decision-mdbook-structure",
+        "decision-native-tool-integration",
         "decision-separate-check-and-repair",
         "decision-shared-record-rendering",
         "decision-typed-check-results",

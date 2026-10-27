@@ -150,8 +150,11 @@ library from integration tests. Neither Git nor GitHub is required to evaluate
 a local Book.
 
 The [mdBook preprocessor](https://rust-lang.github.io/mdBook/for_developers/preprocessors.html)
-calls shared engine logic on mdBook's input. It does not repair files, run tests,
-or recursively build the Book. Diagram preprocessors run alongside it.
+calls shared engine logic on mdBook's input. It runs the read-only structural
+check first and renders nothing if that check fails or is incomplete, so ordinary
+`mdbook build` and `mdbook serve` apply it without a wrapper command; see the
+[native tool integration decision](../authority/design-decisions.md#decision-native-tool-integration).
+It does not repair files, run tests, or recursively build the Book. Diagram preprocessors run alongside it.
 [Record Rendering](record-rendering.md) defines the shared-model integration;
 indexes, evidence pages, and progress reporting follow later.
 
@@ -168,16 +171,21 @@ flowchart TB
     render --> pages["Published Book"]
 ```
 
-The diagram shows the intended CI order once structural checking is available:
+The diagram shows the CI order:
 compile and test the engine, check this repository's Book, then render and publish
 it. Engine compilation and independent fixture tests must not require a valid
 or rendered Book. Current-Book acceptance is a separate step, so the engine remains
 usable to diagnose and repair its own Book when that Book is broken.
 
-The rendering prototype has no placeholder structural-check step. Its remaining
-[CI integration work](../implementation-roadmaps/record-rendering.md#record-rendering-3)
-will make rendering and publication depend on engine checks and record acceptance
-for the same revision.
+The Book workflow calls the reusable Engine workflow from the same revision and
+makes its build job depend on successful engine checks and current-Book acceptance.
+The Anchor Book preprocessor runs the structural checker before rendering, so
+every `mdbook build` refuses a structurally invalid Book; rendered-output
+acceptance precedes publication.
+[Structural Checking milestone 3](../implementation-roadmaps/structural-checker.md#structural-checking-3)
+owns this shared integration with Record Rendering. The dependency chain and
+failure experiments are implemented locally; actual GitHub execution remains
+pending.
 
 Later, project verification runs independently and supplies completed evidence
 to Book build. A structural integration test may run inside a project test suite;

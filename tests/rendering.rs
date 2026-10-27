@@ -15,8 +15,11 @@ fn chapter(source: &str, path: &str, content: &str) -> Value {
     json!({"Chapter":{"name":"Fixture", "content":content, "number":null,
         "path":path,"source_path":source,"sub_items":[],"parent_names":[],"extra":"preserved"}})
 }
+// A structurally valid Book, so the process boundary reaches rendering.
 fn request(items: Vec<Value>) -> Value {
-    json!([{"renderer":"html","mdbook_version":"0.5.4"}, {"items":items,"custom":{"preserve":true}}])
+    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/valid-book");
+    json!([{"root":root,"config":{"preprocessor":{"anchorbook":{"config":"anchorbook.toml"}}},
+        "renderer":"html","mdbook_version":"0.5.4"}, {"items":items,"custom":{"preserve":true}}])
 }
 fn run(args: &[&str], input: &str) -> Output {
     let mut process = Command::new(env!("CARGO_BIN_EXE_anchorbook"))
@@ -150,6 +153,8 @@ fn protocol_failure_has_no_partial_output() {
     for pointer in [
         "/0/renderer",
         "/0/mdbook_version",
+        "/0/root",
+        "/0/config/preprocessor/anchorbook/config",
         "/1/items",
         "/1/items/0/Chapter/content",
         "/1/items/0/Chapter/path",

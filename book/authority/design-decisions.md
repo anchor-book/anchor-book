@@ -61,3 +61,15 @@ rationale = "Authority resolution, backlinks, future progress views, and additio
 alternatives = ["Separate presentation models permit independent evolution but require synchronization with validation."]
 reconsider-when = "Another output format needs its own view; derive that view from the shared inventory rather than redefine record semantics."
 ```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-native-tool-integration"
+title = "Anchor Book works through the project's existing tools"
+status = "draft"
+choice = "Integrate through the extension points of tools a project already uses, such as mdBook preprocessors, Cargo, and CI steps, so their ordinary commands apply Anchor Book checks and rendering. Do not require wrapper scripts or replacement commands."
+requirements = []
+rationale = "No recorded requirement covers adoption into other repositories, so this rests on that goal directly. Adopting projects keep their existing commands, editors, and CI. A check enforced only by a wrapper is skipped whenever someone runs the underlying tool directly, so the check must run where the tool runs."
+alternatives = ["A wrapper command can sequence checks and rendering without changing tool configuration, but it is easy to bypass and every repository must adopt and maintain it."]
+reconsider-when = "A tool offers no suitable extension point or its protocol cannot express a required check; record the gap and keep any wrapper minimal."
+```

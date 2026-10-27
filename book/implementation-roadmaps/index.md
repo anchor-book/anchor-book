@@ -136,14 +136,16 @@ for phase-specific responsibilities.
   criterion-method schema preparation.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 are implemented and
   merged. Milestone 3 has passing rendered acceptance and Pages deployment;
-  authority-coverage review, local/published preview evidence, and engine-check
-  gating remain open.
+  authority-coverage review and local/published preview evidence remain open.
+  Shared engine-check gating is implemented locally under Structural Checking
+  milestone 3; remote demonstration remains pending.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
-- [Structural Checking](structural-checker.md): milestones 1 and 2 are complete;
-  the checker uses mdBook 0.5.4. CI gating and the real agent repair demonstration
-  follow.
+- [Structural Checking](structural-checker.md): milestones 1 and 2 are complete.
+  Milestone 3 has a local implementation of CI gating and failure experiments,
+  awaiting GitHub evidence. Milestone 4's real agent repair demonstration remains
+  proposed.
 
 Rendering establishes the crate; structural checking extends it without depending
 on rendered output. Drafting is preparation, not milestone completion. Unassigned

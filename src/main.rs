@@ -25,7 +25,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md.\nStructural checking and configuration loading are available.\nMaterialization and contract generation are not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\nMaterialization and contract generation are not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS
@@ -49,19 +49,35 @@ fn md(args: &[std::ffi::OsString]) -> ExitCode {
         let _ = writeln!(io::stderr().lock(), "Usage: anchorbook md [supports html]");
         return ExitCode::from(2);
     }
-    let result = (|| -> Result<(), Box<dyn std::error::Error>> {
+    // stdout carries only Book JSON; mdBook stops the build on any failure status.
+    let result = (|| -> Result<ExitCode, Box<dyn std::error::Error>> {
         let mut request = String::new();
         io::stdin().read_to_string(&mut request)?;
+        let config = anchor_book::adapters::mdbook::configuration_path(&request)?;
+        let report = structural_report(&config);
+        let outcome = report.outcome();
+        if outcome != anchor_book::checking::Outcome::Passed {
+            let text = anchor_book::adapters::check::format_report(&report);
+            io::stderr().lock().write_all(text.as_bytes())?;
+            return Ok(ExitCode::from(outcome.exit_code()));
+        }
         let output = anchor_book::adapters::mdbook::preprocess(&request)?;
         writeln!(io::stdout().lock(), "{output}")?;
-        Ok(())
+        Ok(ExitCode::SUCCESS)
     })();
     match result {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(code) => code,
         Err(error) => {
             let _ = writeln!(io::stderr().lock(), "{error}");
             ExitCode::FAILURE
         }
+    }
+}
+
+fn structural_report(config: &std::path::Path) -> anchor_book::checking::CheckReport {
+    match anchor_book::checking::check(config) {
+        Ok(report) => report,
+        Err(error) => error.into_report(),
     }
 }
 
@@ -70,10 +86,7 @@ fn check(args: &[std::ffi::OsString]) -> ExitCode {
         let _ = writeln!(io::stderr().lock(), "Usage: anchorbook check --config PATH");
         return ExitCode::from(2);
     }
-    let report = match anchor_book::checking::check(std::path::Path::new(&args[1])) {
-        Ok(report) => report,
-        Err(error) => error.into_report(),
-    };
+    let report = structural_report(std::path::Path::new(&args[1]));
     let outcome = report.outcome();
     let text = anchor_book::adapters::check::format_report(&report);
     let written = if outcome == anchor_book::checking::Outcome::Incomplete {
