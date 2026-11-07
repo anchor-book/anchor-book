@@ -111,6 +111,12 @@ established and its limits under the relevant criterion using these fields:
 | Limitations | Missing cases, partial coverage, assistance, or other limits; state none when appropriate |
 | Integration context | Branch work or integrated into main |
 
+Record the latest applicable result for each criterion. Leave superseded
+revisions and the chronology of changes to Git history, unless the criterion
+concerns the correction itself, such as a mutation survivor and its fix. Status
+belongs in each milestone's Status and Completion record; design pages and other
+roadmaps link to it rather than restating it.
+
 Keep failed and inconclusive results visible. Complete requires evidence for the
 outcome and every completion criterion; task checkmarks, anchor references, and
 structural passes are insufficient. Linked anchors may span several milestones
@@ -126,30 +132,16 @@ for phase-specific responsibilities.
 
 ## Current roadmaps
 
-- [Mutation Testing](mutation-testing.md): local findings are resolved and PR
-  execution passes. Merge protection and the remote correction demonstration
-  remain open; passing authority proofs now satisfy their earlier prerequisite.
-- [Formal Verification](formal-verification.md): production authority validation
-  and its GitHub workflow are merged in `03fb981`, with passing PR and main runs.
-  Milestone 1 retains scope/integration review; milestone 2 retains the remote
-  failure/correction demonstration and merge protection. Milestone 3 completed
-  criterion-method schema preparation.
-- [Record Rendering](record-rendering.md): milestones 1 and 2 are implemented and
-  merged. Milestone 3 has passing rendered acceptance and Pages deployment;
-  authority-coverage review and local/published preview evidence remain open.
-  Shared engine-check gating is merged with GitHub evidence under Structural
-  Checking milestone 3.
-- [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
-  technical choices, and fresh-agent readiness remain. This can proceed alongside
-  rendering.
-- [Structural Checking](structural-checker.md): milestones 1 and 2 are complete.
-  Milestone 3's CI gating is merged with local and GitHub evidence and awaits
-  engineer acceptance. Milestone 4's real agent repair demonstration remains
-  proposed.
+Each roadmap's milestones record their own status and evidence.
 
-Rendering establishes the crate; structural checking extends it without depending
-on rendered output. Drafting is preparation, not milestone completion. Unassigned
-work remains proposed; engine automation is not needed to maintain these roadmaps.
+- [Engine Bootstrap](bootstrap.md): preparing the Book so agents can take up checker work.
+- [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
+- [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
+- [Formal Verification](formal-verification.md): proving the production authority-validation logic.
+- [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
+
+Drafting is preparation, not milestone completion. Unassigned work remains
+proposed; engine automation is not needed to maintain these roadmaps.
 
 ## Later work retained from the design
 

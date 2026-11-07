@@ -54,24 +54,19 @@ usable when this Book is broken.
 
 The Book workflow calls the reusable Engine workflow before its build job.
 `mdbook build` runs the structural check in the Anchor Book preprocessor before
-rendering; rendered-output acceptance then gates publication. Structural Checking
-milestone 3 records the local and GitHub failure demonstrations.
+rendering; rendered-output acceptance then gates publication.
 
 The contract's pre-PR testing policy is being developed during prototyping.
 Mutation testing uses pinned cargo-mutants with local commands and a pull-request
 workflow; read `CONTRIBUTING.md` for scope, runtime budgets, results, and the
-agent correction loop. The [Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md)
-records local evidence separately from the full campaign, GitHub execution,
-and required merge rules. These must be demonstrated before claiming merge
-protection; adding a workflow alone does not enable that protection.
+agent correction loop. Merge protection is not established until the
+[Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md) demonstrates
+it; adding a workflow alone does not enable that protection.
 
 [Formal Verification](design/formal-verification.md) implements a Verus proof of the
-production authority-validation functions. The proof and GitHub workflow are merged
-in `03fb981`; PR and main-branch verification and integration tests pass. Its
-[roadmap](implementation-roadmaps/formal-verification.md) records the evidence and
-remaining scope/integration review, remote failure/correction demonstration, and
-merge protection. These milestones are not yet complete.
-CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.
+production authority-validation functions, run locally and in a GitHub workflow.
+Its [roadmap](implementation-roadmaps/formal-verification.md) records evidence and
+remaining work. CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.
 Criterion-level required methods are supported by
 the record parser and renderer; they declare obligations without executing any
 verification tool or consuming results.

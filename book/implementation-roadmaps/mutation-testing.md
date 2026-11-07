@@ -2,12 +2,6 @@
 
 **Roadmap identifier:** `mutation-testing`
 
-**Status:** Milestone 1 complete locally; milestone 2 in progress. Local test gaps are corrected
-and three reviewed equivalent mutations have narrow exclusions. PR mutation
-execution has passed; merge protection and the remote
-failure/correction demonstration remain open. The local and GitHub authority
-proofs now pass, satisfying the earlier prerequisite for that follow-up.
-
 ## Goal
 
 Before merging implementation into `main`, agents can run mutation tests,
@@ -15,11 +9,9 @@ investigate findings, improve tests or implementation, and repeat verification.
 GitHub independently runs the checks on the pull request; required checks protect
 the merge. Tool setup alone does not establish that the engine's tests are adequate.
 
-Local findings are resolved. Local and GitHub authority proofs in the
-[Formal Verification roadmap](formal-verification.md) now pass. The earlier
-deferral of merge protection has reached its prerequisite; enforcement and the
-remote correction demonstration remain unfinished. Existing CI results must still be
-reviewed before merging. This roadmap applies the
+Merge protection is completed together with the
+[Formal Verification roadmap](formal-verification.md#formal-verification-2); until it
+is enforced, review existing CI results before merging. This roadmap applies the
 [testing and correction policy](../ai-working-contract.md#test-before-opening-a-pull-request)
 to the existing Rust crate. Project choices and commands are documented in
 `CONTRIBUTING.md` at the repository root and the [Rust Engine design](../design/rust-engine.md#mutation-testing).

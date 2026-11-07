@@ -1,12 +1,10 @@
 # Formal Verification
 
-**Status: proof of concept implemented and passing locally and on GitHub; scope review pending.** Verus verifies selected executable engine logic,
+**Status: proof of concept implemented; see the [roadmap](../implementation-roadmaps/formal-verification.md) for evidence.** Verus verifies selected executable engine logic,
 starting with [valid authority](rust-engine.md#engine-valid-authority). Its
 authority remains [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 The anchor and its verification criteria live in Rust Engine; this chapter defines
-the proof boundary and integration. The proof and workflow are merged;
-[roadmap evidence](../implementation-roadmaps/formal-verification.md#formal-verification-2)
-records passing PR and main runs and the remaining review and enforcement work.
+the proof boundary and integration.
 
 This experiment also develops a reusable way for projects to connect anchor
 criteria to proofs of their production code. The engine is the first case. The
@@ -154,8 +152,7 @@ for full-crate verification, successful results for the seven production authori
 functions, and zero errors. It also runs independent engine and integration tests
 on the same checkout. Selected results and revision metadata are retained on
 success and failure; no generated Book is needed. CONTRIBUTING documents the job
-and its limits. Passing remote runs are recorded in the roadmap; the
-deliberate-failure and correction demonstration remains pending.
+and its limits.
 
 Demonstrate that a deliberate behavioral defect fails verification, then restore
 the implementation and rerun. Retain failure evidence; a timeout or tool failure

@@ -2,12 +2,6 @@
 
 **Roadmap identifier:** `formal-verification`
 
-**Status:** Milestone 1 has a passing local proof and tested integration; engineer
-review is pending. Milestone 2 has passing GitHub proof and integration results,
-merged in `03fb981`; the remote failure/correction demonstration and merge
-protection remain open.
-Milestone 3 completed criterion-method schema preparation in `7ab9616`.
-
 ## Goal
 
 Prove the authority-validation logic actually executed by the engine, and make
@@ -27,18 +21,15 @@ now states its claim, domain, boundary, assumptions, and exclusions explicitly;
 `production-integration` retains tests and review for those excluded boundaries.
 The declaration is not evidence that either criterion is complete.
 
-This roadmap adds `formal-authority` and `production-integration` coverage to the
-anchor. [Record Rendering milestone 3](record-rendering.md#record-rendering-3-authority-coverage)
-retains the three existing behavioral test criteria. Earlier rendering completion
-does not establish these new proof criteria. Draft status remains design status.
+This roadmap owns the anchor's `formal-authority` and `production-integration`
+criteria; [Record Rendering milestone 3](record-rendering.md#record-rendering-3-authority-coverage)
+owns its three behavioral test criteria.
 
 The sequence is **local production-code proof, GitHub proof execution, then merge
-protection**. [Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2)
-remains incomplete. Its merge-protection and remote correction-loop work was
-deferred until the proofs worked. Passing local and GitHub proofs now satisfy
-that prerequisite; failure demonstrations and enforcement are still open.
-Existing CI results must be reviewed before merging; unfinished enforcement
-does not waive tests or permit unexplained mutation findings.
+protection**. Merge protection is completed together with
+[Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2). Until it is
+enforced, review existing CI results before merging; unfinished enforcement does
+not waive tests or permit unexplained mutation findings.
 
 <a id="formal-verification-1"></a>
 

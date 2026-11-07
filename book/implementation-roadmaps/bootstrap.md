@@ -2,11 +2,6 @@
 
 **Roadmap identifier:** `engine-bootstrap`
 
-**Status:** In progress. The engineer has agreed the checker design is a good
-starting point for prototyping. The configuration prototype is explicitly assigned with API/dependency choices
-recorded in its design; remaining checker review and agent-readiness exercises
-continue separately.
-
 ## Goal
 
 Prepare this Book so an engineer can assign structural-checker implementation
@@ -20,9 +15,7 @@ the outcome of the [Structural Checking roadmap](structural-checker.md);
 materialization and engine-generated contracts are later work.
 
 [Record Rendering](record-rendering.md) proceeds alongside this preparation under
-its own scoped design and roadmap. Its first two milestones are implemented and
-merged; rendered acceptance and Pages deployment pass. Authority-coverage review,
-preview evidence, and published-page review remain in milestone 3.
+its own scoped design and roadmap.
 
 The [System Overview](../design/system-overview.md) provides system context;
 the [AI Working Contract](../ai-working-contract.md) defines how agents work.
@@ -55,10 +48,10 @@ the [AI Working Contract](../ai-working-contract.md) defines how agents work.
 <p><strong>Anchor criteria and planned coverage:</strong> None — work agreement</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. The checker design was established at <code>b9df14a</code>. Record parsing, rendering, authority validation, and the proof workflow are merged in <code>03fb981</code>. The new authority traceability requirement and Rust Engine anchor are covered by the <a href="record-rendering.html#record-rendering-3-authority-coverage">rendering follow-up</a>; they do not expand the first structural check. Local Book builds and record/link checks have passed. These checks do not establish checker implementation or acceptance of the governing records. Completed rendering evidence remains in its own roadmap.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Progress</th><td colspan="1">The Book contains the design drafts, six checker requirements, four governing engine decisions, and nine checker anchors <a href="structural-checker.html#authority-and-anchors">mapped to implementation work</a>. Book builds and record and link checks pass; they do not establish acceptance of the governing records.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Evidence</th><td colspan="1"><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="engine-bootstrap-1-evidence"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Milestone evidence — pending</button></td></tr>
 <tr id="engine-bootstrap-1-evidence" class="roadmap-criterion-details"><td colspan="2">Pending; use the <a href="index.html#evidence-records">evidence format</a>.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">The design direction is agreed as a prototype starting point. The assigned configuration prototype now has a documented library API using the existing dependencies. The navigation parser is now selected as mdbook-summary, pinned to 0.5.4, with Rust 1.88 minimum and current stable development. Remaining checker API/scope and readiness review still need reconciliation before this preparation milestone is complete.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. The engineer agreed the checker design as a prototyping starting point and assigned Structural Checking milestones as scoped prototypes. Review of the checker anchors and scope, and agreement on the full roadmap, remain.</td></tr>
 </tbody>
 </table>
 </div>

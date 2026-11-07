@@ -1,9 +1,8 @@
 # Record Rendering
 
-**Status: prototype implemented and merged.** The record library, mdBook adapter,
-and readable HTML presentation have local and recorded GitHub acceptance results.
-The shared engine-check gate is merged and has GitHub evidence in Structural
-Checking milestone 3.
+**Status: prototype implemented.** The record library, mdBook adapter, and readable
+HTML presentation are in use; the [roadmap](../implementation-roadmaps/record-rendering.md)
+records evidence.
 
 Anchors, requirements, and decisions stay in their canonical TOML blocks in the
 source. In the rendered Book, they become readable sections with permalinks,
@@ -199,9 +198,8 @@ blank lines within prose are normalized for readable paragraphs.
 
 The Book workflow calls the reusable Engine workflow and waits for its checks
 before the build job. The preprocessor checks structure before rendering, and
-record validation fails the same build. Structural Checking milestone 3 records
-the shared gate's local and GitHub evidence; earlier rendering results predate
-the gate and do not establish it.
+record validation fails the same build. Structural Checking milestone 3 owns the
+gate's evidence.
 
 ```mermaid
 sequenceDiagram
