@@ -177,6 +177,7 @@ Initially, maintain this evidence in the [Formal Verification roadmap](../implem
 Keep generated proof output out of authored Book sources and review artifacts
 for public-safe content. Required verification methods do not create an automatic
 verified badge; proof results remain separate from the authored anchor.
-Later evidence ingestion can associate Verus results with anchors alongside tests
-and other verifiers. That adapter and its schema remain deferred; proof development
-does not depend on building them first.
+[Verification Evidence](verification-evidence.md) defines how `verify` runs the
+proof and associates its results with criteria alongside tests. Until it
+is implemented, the roadmap records proof evidence manually; proof development
+does not depend on it.

@@ -19,6 +19,7 @@ capabilities remain planned. See the
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
 | [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
+| [Verification Evidence](verification-evidence.md) | The verify operation: links from code to criteria, tool reports, and per-criterion evidence states |
 
 Changes to the goal are made directly in these chapters through the project's
 review workflow. Git history keeps superseded designs.

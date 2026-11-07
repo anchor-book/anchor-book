@@ -15,11 +15,11 @@ fn current_book_records() {
         }
         panic!("current Book failed record acceptance")
     });
-    assert_eq!(inventory.len(), 29);
+    assert_eq!(inventory.len(), 36);
     for (kind, expected) in [
-        (RecordKind::Anchor, 14),
-        (RecordKind::Requirement, 9),
-        (RecordKind::Decision, 6),
+        (RecordKind::Anchor, 18),
+        (RecordKind::Requirement, 10),
+        (RecordKind::Decision, 8),
     ] {
         assert_eq!(
             inventory.records().filter(|r| r.kind() == kind).count(),
@@ -31,7 +31,7 @@ fn current_book_records() {
             .records()
             .map(|r| r.references().len())
             .sum::<usize>(),
-        37
+        44
     );
     let expected = [
         "check-actionable-diagnostics",
@@ -43,18 +43,21 @@ fn current_book_records() {
         "check-renderer-alignment",
         "check-shared-typed-results",
         "check-truthful-results",
+        "decision-evidence-links-in-code",
         "decision-explicit-configuration",
         "decision-mdbook-structure",
         "decision-native-tool-integration",
         "decision-separate-check-and-repair",
         "decision-shared-record-rendering",
         "decision-typed-check-results",
+        "decision-verify-runs-linked-checks",
         "engine-valid-authority",
         "records-every-line",
         "records-searchable-lines",
         "render-records-in-context",
         "render-validated-records",
         "requirement-configured-structure",
+        "requirement-criterion-evidence",
         "requirement-independent-engine",
         "requirement-observation-only",
         "requirement-readable-records",
@@ -63,6 +66,10 @@ fn current_book_records() {
         "requirement-shared-checker",
         "requirement-traceable-properties",
         "requirement-truthful-results",
+        "verify-criterion-states",
+        "verify-links-resolve",
+        "verify-progress-report",
+        "verify-runs-linked-checks",
     ];
     assert_eq!(
         inventory.records().map(|r| r.id()).collect::<Vec<_>>(),

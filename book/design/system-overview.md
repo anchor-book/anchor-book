@@ -108,6 +108,7 @@ configuration for record rendering.
 | Adopt | Map an existing project into Book roles, expose gaps, and apply reviewed changes through materialization | Agreed configuration and managed structure |
 | Materialize | Reconcile required structure, core content, and selected integration settings | Declared managed content |
 | Check | Evaluate the current Book against an explicit rule scope | None |
+| Verify | Run the tests and proofs linked to anchor criteria and report progress by chapter, anchor, and criterion | Runner output only |
 | Contract | Return the effective AI Working Contract through a command into agent context | None |
 | Build | Assemble anchor, verification, and roadmap progress and render it using mdBook | Derived reports and rendered output |
 
@@ -118,8 +119,8 @@ checks detect drift and CI can gate it.
 
 Build keeps three views distinct: anchor development, verification evidence,
 and agreed roadmap completion. Missing, failed, stale, or incomplete evidence
-cannot count as successful verification. Concrete evidence adapters follow the
-initial structural checker.
+cannot count as successful verification. [Verification Evidence](verification-evidence.md)
+defines the verify operation that evaluates evidence; Build can later present its results.
 
 ## Contract delivery
 
