@@ -340,7 +340,7 @@ Use cargo-mutants as a development tool, separate from engine dependencies and
 Book builds. It runs the independent tests against temporary source mutations;
 current-Book acceptance remains a separate check. The pinned tool and commands
 are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
-No engine mutation exclusions are configured.
+Three reviewed equivalent mutations have exact exclusions; no engine files are excluded.
 
 Agents run tests locally, investigate findings against the goal design, correct
 test gaps or implementation defects, and repeat verification. GitHub repeats the
@@ -368,9 +368,6 @@ dynamic rules need concrete workflows before design.
 [Formal Verification](formal-verification.md) introduces Verus for the existing
 `engine-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
-remain explicit integration boundaries. The proof passes locally and on GitHub;
-the implementation and workflow are merged in `03fb981`. Scope and integration-coverage review,
-the remote failure/correction demonstration, and merge protection remain open.
-The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
+remain explicit integration boundaries. The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
 and mdBook adapter do not execute verifiers.
