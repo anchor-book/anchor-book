@@ -16,7 +16,6 @@
   - [Record Rendering](design/record-rendering.md)
   - [Structural Checking](design/structural-checking.md)
     - [Checking Diagnostics](design/check-diagnostics.md)
-  - [Design Proposals](design/proposals/index.md)
 - [Authority](authority/index.md)
   - [Design Decisions](authority/design-decisions.md)
   - [Requirements](authority/requirements.md)

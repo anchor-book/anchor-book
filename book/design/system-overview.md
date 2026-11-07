@@ -74,13 +74,12 @@ checking operates independently of the renderer and its output.
 | Design | The intended system as a whole, as well as it is currently understood |
 | Authority | Requirements and design decisions that govern the system |
 | Anchors | Named properties grounded in at least one authority, with criteria for verification |
-| Design Proposals | Changes under discussion, identifying affected design, authorities, and anchors, including proposed additions |
 | Implementation Roadmaps | AI-proposed work reviewed and agreed with people, including dependencies and completion evidence |
 | Evidence and progress | What has been built, which verification mechanisms exist, what they establish, and which agreed work is complete |
 
-An approved proposal must be reconciled with the affected design and authority.
-Approval does not establish that its implementation is complete. A roadmap
-defines agreed implementation work; evidence establishes its completion.
+A design change updates the goal; it does not establish that the change is
+implemented. A roadmap defines agreed implementation work; evidence establishes
+its completion.
 
 A Book can provide authorities for another Book to consume. Consumers need an
 explicit identity and revision for those authorities so changes can be reviewed.

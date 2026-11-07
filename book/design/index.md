@@ -20,5 +20,5 @@ capabilities remain planned. See the
 | [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
 
-[Design Proposals](proposals/index.md) provides a place to discuss changes to
-that goal state. Proposed content is distinguished from the accepted design.
+Changes to the goal are made directly in these chapters through the project's
+review workflow. Git history keeps superseded designs.
