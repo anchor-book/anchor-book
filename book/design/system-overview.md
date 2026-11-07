@@ -183,9 +183,9 @@ The Anchor Book preprocessor runs the structural checker before rendering, so
 every `mdbook build` refuses a structurally invalid Book; rendered-output
 acceptance precedes publication.
 [Structural Checking milestone 3](../implementation-roadmaps/structural-checker.md#structural-checking-3)
-owns this shared integration with Record Rendering. The dependency chain and
-failure experiments are implemented locally; actual GitHub execution remains
-pending.
+owns this shared integration with Record Rendering. The dependency chain is merged.
+GitHub runs show engine checks preceding rendering for valid revisions and broken
+Books stopping before rendering; the milestone records that evidence.
 
 Later, project verification runs independently and supplies completed evidence
 to Book build. A structural integration test may run inside a project test suite;

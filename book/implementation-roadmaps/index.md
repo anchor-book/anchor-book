@@ -137,14 +137,14 @@ for phase-specific responsibilities.
 - [Record Rendering](record-rendering.md): milestones 1 and 2 are implemented and
   merged. Milestone 3 has passing rendered acceptance and Pages deployment;
   authority-coverage review and local/published preview evidence remain open.
-  Shared engine-check gating is implemented locally under Structural Checking
-  milestone 3; remote demonstration remains pending.
+  Shared engine-check gating is merged with GitHub evidence under Structural
+  Checking milestone 3.
 - [Engine Bootstrap](bootstrap.md): drafts are in place; review, checker-specific
   technical choices, and fresh-agent readiness remain. This can proceed alongside
   rendering.
 - [Structural Checking](structural-checker.md): milestones 1 and 2 are complete.
-  Milestone 3 has a local implementation of CI gating and failure experiments,
-  awaiting GitHub evidence. Milestone 4's real agent repair demonstration remains
+  Milestone 3's CI gating is merged with local and GitHub evidence and awaits
+  engineer acceptance. Milestone 4's real agent repair demonstration remains
   proposed.
 
 Rendering establishes the crate; structural checking extends it without depending

@@ -22,7 +22,7 @@ materialization and engine-generated contracts are later work.
 [Record Rendering](record-rendering.md) proceeds alongside this preparation under
 its own scoped design and roadmap. Its first two milestones are implemented and
 merged; rendered acceptance and Pages deployment pass. Authority-coverage review,
-preview evidence, and engine-check gating remain in milestone 3.
+preview evidence, and published-page review remain in milestone 3.
 
 The [System Overview](../design/system-overview.md) provides system context;
 the [AI Working Contract](../ai-working-contract.md) defines how agents work.

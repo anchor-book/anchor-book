@@ -101,9 +101,9 @@ manual standalone execution.
 
 Failed, skipped, or cancelled prerequisites cannot authorize rendering or
 publication. Proof and mutation workflows remain separate; this change does not
-add merge protection or make their results prerequisites for Pages. Remote
-demonstration of the new dependency chain remains recorded as pending in
-Structural Checking milestone 3 until GitHub runs it.
+add merge protection or make their results prerequisites for Pages. Structural
+Checking milestone 3 records the GitHub runs that demonstrate this dependency
+chain for valid and deliberately broken Books.
 
 The rendering check uses the engine's typed inventory and test-only HTML and URL
 parsers. It checks relative local links without network access; external and

@@ -340,7 +340,7 @@ Use cargo-mutants as a development tool, separate from engine dependencies and
 Book builds. It runs the independent tests against temporary source mutations;
 current-Book acceptance remains a separate check. The pinned tool and commands
 are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
-No engine mutation exclusions are configured.
+Three reviewed equivalent mutations have exact exclusions; no engine files are excluded.
 
 Agents run tests locally, investigate findings against the goal design, correct
 test gaps or implementation defects, and repeat verification. GitHub repeats the
