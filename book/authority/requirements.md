@@ -143,3 +143,18 @@ that a property has been implemented or verified.
 '''
 source = "The prototyping goal of reviewing the Book's structured design and authority as readable, connected content while refining the model."
 ```
+
+## Record syntax requirement
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-searchable-records"
+title = "Agents can find records and references with one text search"
+status = "draft"
+statement = '''
+An agent working from Book sources must be able to locate every record of a kind,
+with its identity, status, and title, and every reference to a given record, with
+one line-oriented text search and without running a parser.
+'''
+source = "Agents read and search Book sources rather than the rendered Book; record structure that needs block-level reading multiplies their reads and wrong matches."
+```

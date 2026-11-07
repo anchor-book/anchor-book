@@ -1,86 +1,158 @@
 # Anchor Definitions
 
-**Status: draft schema for review; parsing and rendering implemented.**
+**Status: draft for review.** This chapter defines the goal record syntax, a
+strict line grammar. The engine currently reads an earlier TOML form; see
+[Current implementation](#current-implementation). The
+[Record Line Grammar roadmap](../implementation-roadmaps/record-line-grammar.md)
+measures the syntax with agents and migrates the engine and this Book.
 
-An anchor defines a property of the goal system, its authority, and verification criteria.
-Surrounding prose explains it but is not part of the definition. The
-[record library and renderer](record-rendering.md) implement this format separately
-from layout/navigation checking.
+An anchor defines a property of the goal system, its authority, and verification
+criteria. Surrounding prose explains it but is not part of the definition. Agents
+search, read, and edit Book sources rather than the rendered Book, so the syntax
+puts each record's identifying facts on one line and spells every reference one
+way. The [record library and renderer](record-rendering.md) present the same
+records readably.
 
-## One canonical format
+## Anchors
 
-An anchor is a top-level fenced Markdown code block. Its opening line is exactly
-three backticks followed by `anchorbook-anchor`; its closing line is exactly
-three backticks. Its body is TOML matching schema version 1 below.
-
-There are no inline or heading-based definitions, alternate formats, inferred
-fields, or aliases. Enclose literal examples in a different outer code block:
-
-````text
 ```anchorbook-anchor
 schema-version = 1
-id = "check-observation-only"
-title = "Checking preserves project files"
+id = "records-searchable-lines"
+title = "A record's identifying facts are on one line"
 status = "draft"
 property = '''
-A check leaves project content and directory entries unchanged,
-whether it passes, fails, or cannot complete.
+Every record's heading line states its kind, identity, status, and title, and
+every reference to a record uses one form that names the target kind and
+identity. A text search for a record's identifier returns its definition and
+every reference to it, and the matched line alone distinguishes the definition
+from a reference.
 '''
 authorities = [
-  { kind = "requirement", id = "requirement-observation-only" },
-  { kind = "decision", id = "decision-separate-check-and-repair" },
+  { kind = "requirement", id = "requirement-searchable-records" },
 ]
 
 [[criteria]]
-id = "file-preservation"
+id = "heading-search"
 verification = ["test"]
-statement = "Compare project file contents and directory entries before and after passing, failing, and incomplete checks; they are unchanged."
+statement = "For an independent fixture Book, a search for record headings returns exactly the authored records with their kind, identity, status, and title."
+
+[[criteria]]
+id = "reference-search"
+verification = ["test"]
+statement = "For each fixture record, a search for its identifier returns its definition and exactly its authored references, and each matched line is classified correctly from its own text."
 ```
-````
 
-### Required fields
+```anchorbook-anchor
+schema-version = 1
+id = "records-every-line"
+title = "No line in a record is silently ignored"
+status = "draft"
+property = '''
+Each line of a record is read as its heading, a field, a continuation paragraph,
+a list item, a proof-scope item, or a blank quoted line. Any other line, and any
+missing, repeated, unknown, or misordered field, is an invalid definition reported
+at its source line, so a mistyped record cannot pass as valid.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-readable-records" },
+]
 
-Every field below is required. Unknown fields and duplicate fields are errors.
-There are no defaults. TOML whitespace and comments do not change meaning;
-they do not provide alternate field names, record shapes, or definitions.
+[[criteria]]
+id = "line-accounting"
+verification = ["test"]
+statement = "Fixtures with stray, misordered, repeated, unknown, and missing lines each produce the expected located diagnostic and no inventory; the corrected fixture produces the expected record."
+```
 
-| Field | Type and constraint |
+## Record syntax
+
+A record is one Markdown blockquote: consecutive lines beginning with `>`. Its
+first line is the heading; labeled field lines follow. One blockquote holds
+exactly one record and nothing else, so the record's source range is the whole
+blockquote. There are no inline or heading-based definitions, alternate forms,
+inferred fields, or aliases. Literal examples go in code blocks, which are never
+records:
+
+```markdown
+> **Anchor `check-observation-only`** (draft): **Checking preserves the Book for deliberate repair**
+> Property: Engineers and agents can inspect a Book's format without changing the project or triggering its tools.
+> Repairs remain separate actions so the engineer or agent controls what changes.
+> Authority: requirement `requirement-observation-only`; decision `decision-separate-check-and-repair`
+> - Criterion `file-preservation` [test]: Compare project file contents and directory entries before and after passing, failing, and incomplete checks; they remain unchanged.
+```
+
+### Heading
+
+``**<Kind> `<id>`** (<status>): **<Title>**``
+
+| Part | Constraint |
 | --- | --- |
-| `schema-version` | Integer, exactly `1` |
-| `id` | Nonempty identifier, unique across this Book's anchor and authority records |
-| `title` | Nonempty string, for display |
-| `status` | Exactly `"draft"` or `"accepted"`; this is design acceptance only |
-| `property` | Nonempty string containing the complete property, including any qualifications |
-| `authorities` | Nonempty array of inline tables, each with exactly `kind` and `id` |
-| `criteria` | Nonempty sequence of `[[criteria]]` tables, each with exactly `id`, `statement`, and `verification` |
+| Kind | Exactly `Anchor`, `Requirement`, or `Decision` |
+| Identifier | Nonempty identifier, unique across this Book's anchor and authority records |
+| Status | Exactly `draft` or `accepted`; this is design acceptance only |
+| Title | Nonempty, for display |
 
 Identifiers consist of lowercase ASCII letters and digits separated by single
 hyphens, start with a letter, and have no trailing hyphen. Anchor identifiers
 are explicit and do not change when a chapter moves. Titles can change without
 changing identity. Do not reuse an identifier for a different property.
 
-An authority's `kind` is exactly `"requirement"` or `"decision"`. Its `id` must
-resolve to a record of that kind in the same Book. Duplicate authority references
-are errors. At least one authority is required; both kinds are allowed but not
-required. Cross-Book references are outside this schema.
+A blockquote whose first line starts like a heading but does not match this form
+is an invalid definition, not prose.
 
-Each criterion has an identifier unique within its anchor and a nonempty
-statement of what verification must establish. Evidence can later reference
+### Anchor fields
+
+Each field line begins with its label and a colon. Every field is required, in
+this order, with no defaults:
+
+| Field | Constraint |
+| --- | --- |
+| `Property:` | Nonempty; the complete property, including any qualifications |
+| `Authority:` | One or more references, separated by `;` |
+| Criteria | One or more criterion items |
+
+**Paragraphs.** Each paragraph is one source line. An unlabeled line continues the
+field above as a new paragraph. Blank quoted lines (`>`) are allowed and carry no
+meaning.
+
+**References.** A reference is a kind word and a code-spanned identifier:
+``requirement `<id>` `` or ``decision `<id>` ``. Its identifier must resolve to a
+record of that kind in the same Book. Duplicate references are errors. Both kinds
+are allowed but not required. Cross-Book references are outside this syntax.
+
+**Criteria.** A criterion is a list item ``- Criterion `<id>` [<methods>]: <statement>``.
+Its identifier is unique within its anchor, and its statement is a nonempty
+description of what verification must establish. Evidence can later reference
 the anchor identifier and criterion identifier together.
+
+**Every line accounted for.** Each line is the heading, a field, a continuation, a
+criterion, a proof-scope item, or a blank quoted line. Any other line, and any
+missing, repeated, unknown, or misordered field, is an invalid definition at its
+source line.
+
+### What one search answers
+
+| Question | Search |
+| --- | --- |
+| Every record, with kind, identity, status, and title | `^> \*\*(Anchor\|Requirement\|Decision) ` |
+| Draft anchors | `^> \*\*Anchor .*\(draft\)` |
+| A record's definition and every reference to it | `` `requirement-observation-only` ``; the definition is the line beginning `> **Requirement` |
+| Criteria requiring proof | `Criterion .*\[[^]]*proof` |
+
+Literal examples in code blocks also match text searches; they are not records.
 
 ### Verification methods
 
-Every criterion requires a nonempty `verification` array of distinct strings.
-The only values are `"proof"`, `"test"`, and `"review"`, with exactly that spelling.
-Every listed method is required; the list is not a choice between alternatives.
-Order has no semantic significance and is preserved for presentation. Missing,
-empty, repeated, unknown, or incorrectly typed methods are invalid definitions.
+Every criterion names a nonempty, comma-separated list of distinct methods in
+brackets. The only values are `proof`, `test`, and `review`, with exactly that
+spelling. Every listed method is required; the list is not a choice between
+alternatives. Order has no semantic significance and is preserved for
+presentation. Missing, empty, repeated, or unknown methods are invalid definitions.
 
 | Value | Required evidence |
 | --- | --- |
-| `"proof"` | Formal verification of the relevant production code against an explicit specification expressing the criterion, with assumptions and coverage stated. |
-| `"test"` | Executed tests whose assertions derive from the criterion, with inputs, results, and coverage recorded. |
-| `"review"` | A recorded assessment against the criterion, identifying what was examined, the conclusion, and limits. |
+| `proof` | Formal verification of the relevant production code against an explicit specification expressing the criterion, with assumptions and coverage stated. |
+| `test` | Executed tests whose assertions derive from the criterion, with inputs, results, and coverage recorded. |
+| `review` | A recorded assessment against the criterion, identifying what was examined, the conclusion, and limits. |
 
 Different criteria within an anchor may require different methods. Listing proof
 does not make an anchor accepted or verified. Methods declare obligations; parsing
@@ -98,8 +170,8 @@ Determine this from the criterion declarations, for the current anchor revision:
 
 | Declaration | Meaning |
 | --- | --- |
-| At least one criterion includes `"proof"` | Formal verification is required for every criterion that lists it, within that criterion's stated scope. |
-| Every criterion has a valid method list and none includes `"proof"` | Formal verification is not required; the listed tests and reviews remain required. |
+| At least one criterion lists `proof` | Formal verification is required for every criterion that lists it, within that criterion's stated scope. |
+| Every criterion has a valid method list and none lists `proof` | Formal verification is not required; the listed tests and reviews remain required. |
 | A method list is missing or invalid | The definition is invalid. Do not interpret missing information as “proof not required.” |
 
 Do not add a separate anchor-level proof flag or infer proof requirements from
@@ -115,30 +187,32 @@ each other; extending proof across every boundary is not an automatic obligation
 
 ### Required scope of a proof criterion
 
-For each criterion listing `"proof"`, its `statement` must use labeled paragraphs
-to make the following explicit:
+A criterion listing `proof` states its claim as the statement and carries exactly
+four nested items, in order:
 
-| Label | Required content |
+```markdown
+> - Criterion `formal-authority` [proof]: The production authority validator reports no violations if and only if every decoded record satisfies the authority rules.
+>   - Domain: The complete typed candidate collection, including empty lists, duplicates, and missing, invalid, or incompatible targets.
+>   - Boundary: Executable authority-presence checks, target lookup, and validation across all records.
+>   - Assumptions: The verifier, solver, compiler, and standard-library contracts are trusted.
+>   - Exclusions: Parsing and candidate conversion, covered by `production-integration`.
+```
+
+| Item | Required content |
 | --- | --- |
-| **Claim** | The property the proof must establish, including acceptance and rejection when both are required. |
-| **Domain** | The inputs, states, conditions, and bounds covered. Include relevant invalid cases; do not assume the property being proved. |
-| **Boundary** | The production behavior covered, such as the validation algorithm or the path from typed input to the public API result. |
-| **Assumptions** | Caller obligations and trusted components or contracts. Preconditions must not assume the claim itself. |
-| **Exclusions** | Behavior outside the proof, with the criterion IDs that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
+| Statement (Claim) | The property the proof must establish, including acceptance and rejection when both are required. |
+| `Domain:` | The inputs, states, conditions, and bounds covered. Include relevant invalid cases; do not assume the property being proved. |
+| `Boundary:` | The production behavior covered, such as the validation algorithm or the path from typed input to the public API result. |
+| `Assumptions:` | Caller obligations and trusted components or contracts. Preconditions must not assume the claim itself. |
+| `Exclusions:` | Behavior outside the proof, with the criterion IDs that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
 
-Use these concrete boundaries rather than a generic proof “level.” Keep formal
-syntax, tool versions, commands, and function/file associations in the implementing
-codebase and verification design; the anchor states the required assurance.
-Exclusions must not silently remove part of the anchor's property.
-
-The [authority anchor](rust-engine.md#engine-valid-authority) demonstrates this:
-`formal-authority` requires a proof of the authority algorithm, while
-`production-integration` requires tests and review of the surrounding boundaries.
-
-These are authoring and review requirements within the existing `statement`
-string, not new TOML fields. The current engine validates method declarations and
-nonempty statements; it does not assess whether proof scope is adequately stated
-or whether evidence satisfies it.
+The engine checks that the four items are present and nonempty; it does not assess
+whether the scope is adequate or whether evidence satisfies it. Keep formal syntax,
+tool versions, commands, and function/file associations in the implementing
+codebase and verification design. Exclusions must not silently remove part of the
+anchor's property. The [authority anchor](rust-engine.md#engine-valid-authority)
+demonstrates this: `formal-authority` requires a proof of the authority algorithm,
+while `production-integration` requires tests and review of the surrounding boundaries.
 
 ### Displaying verification requirements
 
@@ -147,8 +221,8 @@ not turn these selections into success badges or inferred results.
 
 ### Writing properties for verification
 
-State the behavior, relevant conditions, and required outcome precisely in
-`property`; define terms in the surrounding design. Criteria state what evidence
+State the behavior, relevant conditions, and required outcome precisely in the
+property; define terms in the surrounding design. Criteria state what evidence
 must establish. Keep implementation steps, tool commands, and proof mechanics in
 their owning design and roadmap. The working contract defines the agent's
 [verification responsibilities](../ai-working-contract.md#develop-verification-with-the-code).
@@ -160,36 +234,28 @@ do not invent new anchor fields for file paths, proof text, results, or timestam
 Assumptions that narrow the intended property require design review; assumptions
 about unverified implementation boundaries must remain visible in evidence.
 
-### Value validation and schema evolution
+### Value validation and syntax evolution
 
-Whitespace-only strings are empty. Do not coerce strings to numbers, infer
-missing values from surrounding prose, or accept misspelled status values.
-Unknown schema versions are errors. Changes to these rules require an explicit
-schema revision rather than parser leniency. During bootstrap, an unpublished
-draft can be revised in place with its records; this does not require a new
-version number for every design iteration. The [authority schemas](authority-definitions.md#evolving-the-authority-model)
-remain provisional and will evolve through use.
-
-This unpublished schema-1 revision adds required criterion methods. Existing
-records must supply them explicitly; there is no default, legacy fallback, or
-inference from the statement. The Book, parser, renderer, and fixtures migrate
-together. This is not a published-schema compatibility promise.
+Whitespace-only text is empty. Do not infer missing values from surrounding prose
+or accept misspelled kinds, statuses, labels, or methods. Changes to these rules
+require an explicit revision of the syntax rather than reader leniency. The syntax
+is an unpublished draft that can be revised in place with this Book's records;
+before publication, a compatibility and migration policy must define how consuming
+Books identify the syntax version they use. The [authority syntax](authority-definitions.md#evolving-the-authority-model)
+remains provisional and will evolve through use.
 
 ## Parsing and validation
 
-The shared engine library parses Markdown to locate definition blocks, retaining
-source offsets. It then parses their TOML into strict Rust data types and
-validates the model. It does not extract definitions with regular expressions.
+The shared engine library reads records with a line scanner over chapter text,
+retaining source lines and byte ranges. Markdown parsing is used only to identify
+code regions, so text inside fenced or indented code blocks is never a record.
+The library does not extract definitions with regular expressions over whole
+chapters or infer structure from headings.
 
-Reject an unclosed definition fence, a noncanonical definition fence, a nested
-definition, malformed TOML, invalid fields, duplicate identity, or unresolved
-authority with a diagnostic at the source location. A literal example inside
-another code block is not a definition. Ordinary code blocks are not anchors.
-Never silently discard an invalid recognized definition.
-
-The canonical language label is reserved. Once this schema is adopted, legacy
-`{anchor}` definitions are rejected as unsupported authoring syntax rather than
-supported as a second format. They may appear as literal examples.
+Reject a malformed heading, an unknown kind, status, label, or method, a missing,
+repeated, or misordered field, a stray line, duplicate identity, or unresolved
+authority with a diagnostic at the source location. Never silently discard an
+invalid recognized definition.
 
 Resolve references after collecting the Book inventory, so chapter order does
 not affect validity. An accepted anchor must cite accepted authority; draft
@@ -201,16 +267,37 @@ that relationship still needs review.
 headings and HTML targets do not. Accepted decisions must also cite only accepted
 requirements. The shared index checks all these relationships.
 
-The library owns these rules. The mdBook preprocessor consumes the same
-validated model to render anchors and links. Rendering must not define a second
+The library owns these rules. The mdBook preprocessor consumes the same validated
+model to render anchors and links. Rendering must not define a second
 interpretation of the source.
+
+## Current implementation
+
+The engine and this Book's records still use the schema-1 TOML form: a top-level
+fenced block labeled `anchorbook-anchor`, `anchorbook-requirement`, or
+`anchorbook-decision`, whose TOML body carries `schema-version = 1`, `id`, `title`,
+`status`, and the kind's fields (`property`, inline-table `authorities`, and
+`[[criteria]]` with `id`, `statement`, and `verification` for anchors). Proof scope
+is written as labeled paragraphs inside the statement and is not checked. Author
+records in this form, following the existing records, until
+[Record Line Grammar milestone 2](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2)
+migrates the reader, fixtures, and records together. After migration, TOML record
+blocks are rejected as unsupported syntax rather than kept as a second format.
 
 ## Design, implementation, and evidence
 
-`status = "accepted"` means the property has been accepted into the goal design.
+`accepted` status means the property has been accepted into the goal design.
 It does not mean implemented, tested, or proven. Keep implementation associations,
 executed results, and roadmap completion outside the authored definition.
 Reports can derive progress from those records as the engine gains that support.
 
-The initial checker anchors remain drafts with planned verification criteria.
-The renderer derives navigation targets from record identities.
+## Open questions
+
+1. **Inline Markdown in fields.** Whether field text renders a defined subset
+   (code spans, emphasis, links) with raw HTML kept inert, or stays escaped text.
+2. **Property label.** Whether `Property:` is required or the first unlabeled line
+   after the heading is the property.
+3. **Proof-scope shape.** Whether the statement as Claim and four nested items fit
+   real proof criteria.
+4. **Example matches.** Whether literal examples matching record searches mislead
+   agents, and if so whether examples need a visibly distinct form.

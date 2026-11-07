@@ -139,6 +139,7 @@ Each roadmap's milestones record their own status and evidence.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Formal Verification](formal-verification.md): proving the production authority-validation logic.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
+- [Record Line Grammar](record-line-grammar.md): measuring whether a line-oriented record syntax serves agents better than TOML.
 
 Drafting is preparation, not milestone completion. Unassigned work remains
 proposed; engine automation is not needed to maintain these roadmaps.
