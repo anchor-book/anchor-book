@@ -12,14 +12,21 @@ Edit sources under `book/`; generated output belongs in `target/anchorbook/`.
 
 Use these definitions and conventions while authoring this Book:
 
-- [Anchor Definitions](design/anchor-definitions.md) defines the canonical anchor schema.
+- [Anchor Definitions](design/anchor-definitions.md) defines the goal record syntax
+  and anchor fields.
 - [Authority Definitions](design/authority-definitions.md) defines requirements,
   decisions, and authority-reference rules.
+
+The engine still reads the earlier TOML record form, so write this Book's records
+in that form, following the existing records, until the
+[Record Line Grammar](implementation-roadmaps/record-line-grammar.md) migration;
+[Current implementation](design/anchor-definitions.md#current-implementation)
+summarizes it.
 - [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
   structure, identifiers, planned coverage, statuses, and evidence records.
 
-The record schemas are unpublished drafts that we are refining through use.
-Follow their documented evolution policy and update schemas, affected records,
+The record syntax and fields are unpublished drafts that we are refining through use.
+Follow their documented evolution policy and update the syntax, affected records,
 and validation expectations together. Per-capability phase configuration is not
 currently defined.
 

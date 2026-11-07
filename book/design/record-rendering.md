@@ -4,8 +4,8 @@
 HTML presentation are in use; the [roadmap](../implementation-roadmaps/record-rendering.md)
 records evidence.
 
-Anchors, requirements, and decisions stay in their canonical TOML blocks in the
-source. In the rendered Book, they become readable sections with permalinks,
+Anchors, requirements, and decisions stay in their canonical
+[record syntax](anchor-definitions.md#record-syntax) in the source. In the rendered Book, they become readable sections with permalinks,
 status labels, authority links, and derived backlinks. Schema examples remain
 literal code examples. Rendering does not establish implementation or verification.
 
@@ -74,8 +74,8 @@ statement = "Exercise the actual adapter process with valid and malformed mdBook
 
 ## Approach
 
-Record parsing and validation are separate from presentation. Canonical TOML
-blocks define record identities, authority relationships, and verification criteria.
+Record parsing and validation are separate from presentation. Canonical record
+definitions define record identities, authority relationships, and verification criteria.
 The shared library collects and validates that inventory before it can be rendered.
 
 mdBook invokes `anchorbook md` with chapter input. The adapter calls the library's
@@ -113,9 +113,12 @@ a usable source/output location rather than inventing a destination.
 
 ## Reading and validation
 
-Use a Markdown parser with source offsets to locate top-level definition blocks.
-Validate their canonical fences as well as their TOML contents, following
+Read records with the line scanner defined in
+[Anchor Definitions](anchor-definitions.md#parsing-and-validation), retaining each
+record's source range, and validate them against
 [Anchor Definitions](anchor-definitions.md) and [Authority Definitions](authority-definitions.md).
+The current implementation reads the earlier TOML form until the
+[migration](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2).
 Keep ordinary examples, code literals, and surrounding prose outside the record
 inventory. Invalid recognized blocks must not disappear silently.
 
@@ -165,9 +168,10 @@ record in that view. Preserve existing public record fragment names when replaci
 the temporary HTML targets.
 
 The prototype treats record text as escaped text with paragraph breaks, not raw
-HTML. Text resembling tags or scripts must stay inert. Inline Markdown formatting
-inside field strings is outside this first presentation scope. The authoring
-schema still permits ordinary strings; richer formatting can be designed later.
+HTML. Text resembling tags or scripts must stay inert. Whether field text
+renders an inline Markdown subset is an
+[open question](anchor-definitions.md#open-questions); until it is decided, field
+text stays escaped.
 
 Use mdBook theme variables for light and dark themes, visible keyboard focus,
 wrapping identifiers, and narrow layouts. Expandable details use keyboard-accessible

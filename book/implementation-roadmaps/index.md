@@ -139,6 +139,7 @@ Each roadmap's milestones record their own status and evidence.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Formal Verification](formal-verification.md): proving the production authority-validation logic.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
+- [Record Line Grammar](record-line-grammar.md): measuring whether a line-oriented record syntax serves agents better than TOML.
 
 Drafting is preparation, not milestone completion. Unassigned work remains
 proposed; engine automation is not needed to maintain these roadmaps.
@@ -155,7 +156,7 @@ clear design and outcome-based milestones before implementation.
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
 | Deliver the working contract | [Contract delivery](../design/system-overview.md#contract-delivery) | Engine-owned reusable content, command retrieval, and agent bootstrap that separately locates project guidance and configuration. Remove the temporary Book copy when that path works; keep project-specific content in the Book. Language-specific instruction extensions remain a possible later addition requiring their own design. |
-| Structured roadmaps and proposal support | [Roadmap model](#defining-the-work), [Design Proposals](../design/proposals/index.md) | Define roadmap/milestone schemas and criterion references before parsing or rendering them. Define any proposal tooling beyond the manual workflow; preserve the distinction between approval, design reconciliation, and implementation. |
+| Structured roadmaps | [Roadmap model](#defining-the-work) | Define roadmap/milestone schemas and criterion references before parsing or rendering them. |
 | Anchor progress and verification evidence | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Source/test associations, provided test surfaces, evidence ingestion, and progress views. The active [Formal Verification roadmap](formal-verification.md) starts with a production authority proof and manual evidence; automated Verus ingestion remains here. Include assumptions, bounds, and inconclusive results; distinguish existing mechanisms from successful executions and keep verification independent of its consuming Book build. |
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |
 | Automated phase and readiness checks | [Project phase](../design/configuration.md#project-phase) | Define what can establish design readiness or completion and how further iterations preserve a completed baseline. The first configuration reader only exposes the phase. |

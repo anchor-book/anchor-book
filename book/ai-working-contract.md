@@ -66,7 +66,7 @@ evidence describe different things; one does not automatically establish another
 | Phase | Working expectations |
 | --- | --- |
 | **Prototyping** | Draft designs can guide assigned experiments. Evolve design, schemas, roadmaps, and implementation together. Even a provisional roadmap states the experiment's scope, intended learning or outcome, and assessment. Record results, changes, and unresolved questions. |
-| **Building** | Before assigned implementation starts, its governing design, requirements, decisions, and anchors must be accepted. Later proposals may remain drafts. Agree on changes to governing design before implementing them. |
+| **Building** | Before assigned implementation starts, its governing design, requirements, decisions, and anchors must be accepted. Later design changes may remain drafts. Agree on changes to governing design before implementing them. |
 | **Complete** | The defined goal is implemented for a recorded scope and revision, with evidence satisfying its verification criteria. Preserve that baseline; further development starts another Prototyping or Building iteration. |
 
 Prototyping does not waive record formats, valid references, assigned scope, or
@@ -284,9 +284,11 @@ through the schema's compatibility and migration policy; reconcile the schema,
 affected records, and validation expectations together. An unpublished draft may
 evolve under its documented policy. Accepting a record does not freeze its schema.
 
-Design proposals identify affected design, requirements, decisions, and anchors,
-including proposed additions and changes. After approval, reconcile the Book and
-roadmap. Approval, incorporation, and implementation completion are separate steps.
+Change the goal design directly through the project's review workflow, updating
+affected design, requirements, decisions, anchors, and roadmaps together. Keep
+unresolved alternatives in the experiment that resolves them or outside the Book;
+Git history keeps superseded designs. Agreeing on a design change and completing
+its implementation are separate steps.
 
 Distinguish implementation associations, verification mechanisms, executed results,
 and roadmap completion. Report which checks ran, their scope, and results.
