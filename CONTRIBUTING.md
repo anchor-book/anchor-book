@@ -48,8 +48,11 @@ cargo test --locked --test current_book -- --ignored
 ```
 
 The ordinary test suite uses independent fixtures and does not need the Book.
-The explicit `current_book` test reads this checkout's Book and checks its expected
-records and relationships. It is ignored in the ordinary suite so a broken Book
+The explicit `current_book` test reads this checkout's Book and checks properties
+that hold for any valid Book: records read without diagnostics, every reference
+resolves to its kind and matches the derived backlinks, chapter order changes
+nothing, the configuration resolves, and the structural check passes. It does not
+pin the Book's contents, so design changes need no test edits. It is ignored in the ordinary suite so a broken Book
 cannot prevent engine development. The independence script tests a temporary
 copy with the Book absent, an invalid definition, a missing chapter, and unsupported
 navigation. Independent tests pass in each case; the appropriate acceptance check

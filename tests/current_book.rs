@@ -1,5 +1,5 @@
 //! Separate acceptance check against the current Book, loaded only at runtime.
-use anchor_book::records::{RecordData, RecordKind, VerificationMethod, read_records};
+use anchor_book::records::{RecordKind, read_records};
 
 #[path = "support/book.rs"]
 mod book;
@@ -7,6 +7,8 @@ mod book;
 #[test]
 #[ignore = "current-Book acceptance; run explicitly with --ignored after independent tests"]
 fn current_book_records() {
+    // Properties that hold for any valid Book; the Book's contents are not pinned here.
+    // Independent fixtures specify parsing, methods, and backlinks against expected values.
     let sources = book::load();
     let chapters = book::chapters(&sources);
     let inventory = read_records(&chapters).unwrap_or_else(|e| {
@@ -15,112 +17,39 @@ fn current_book_records() {
         }
         panic!("current Book failed record acceptance")
     });
-    assert_eq!(inventory.len(), 36);
-    for (kind, expected) in [
-        (RecordKind::Anchor, 18),
-        (RecordKind::Requirement, 10),
-        (RecordKind::Decision, 8),
-    ] {
-        assert_eq!(
-            inventory.records().filter(|r| r.kind() == kind).count(),
-            expected
-        );
+    assert!(!inventory.is_empty(), "the current Book defines records");
+
+    // Every reference resolves to a record of its kind and appears in that record's backlinks.
+    for record in inventory.records() {
+        for reference in record.references() {
+            let target = inventory
+                .get(&reference.id)
+                .unwrap_or_else(|| panic!("{} cites missing {}", record.id(), reference.id));
+            assert_eq!(target.kind(), RecordKind::from(reference.kind));
+            assert!(
+                inventory
+                    .backlinks(&reference.id)
+                    .iter()
+                    .any(|b| b == record.id()),
+                "{} is missing from the backlinks of {}",
+                record.id(),
+                reference.id
+            );
+        }
     }
-    assert_eq!(
-        inventory
-            .records()
-            .map(|r| r.references().len())
-            .sum::<usize>(),
-        44
-    );
-    let expected = [
-        "check-actionable-diagnostics",
-        "check-book-selection",
-        "check-configuration-validity",
-        "check-independent-build",
-        "check-navigation-conformance",
-        "check-observation-only",
-        "check-renderer-alignment",
-        "check-shared-typed-results",
-        "check-truthful-results",
-        "decision-evidence-links-in-code",
-        "decision-explicit-configuration",
-        "decision-mdbook-structure",
-        "decision-native-tool-integration",
-        "decision-separate-check-and-repair",
-        "decision-shared-record-rendering",
-        "decision-typed-check-results",
-        "decision-verify-runs-linked-checks",
-        "engine-valid-authority",
-        "records-every-line",
-        "records-searchable-lines",
-        "render-records-in-context",
-        "render-validated-records",
-        "requirement-configured-structure",
-        "requirement-criterion-evidence",
-        "requirement-independent-engine",
-        "requirement-observation-only",
-        "requirement-readable-records",
-        "requirement-repair-feedback",
-        "requirement-searchable-records",
-        "requirement-shared-checker",
-        "requirement-traceable-properties",
-        "requirement-truthful-results",
-        "verify-criterion-states",
-        "verify-links-resolve",
-        "verify-progress-report",
-        "verify-runs-linked-checks",
-    ];
-    assert_eq!(
-        inventory.records().map(|r| r.id()).collect::<Vec<_>>(),
-        expected
-    );
-    assert_eq!(
-        inventory.backlinks("requirement-traceable-properties"),
-        ["engine-valid-authority"]
-    );
-    assert_eq!(
-        inventory.backlinks("requirement-readable-records"),
-        [
-            "decision-shared-record-rendering",
-            "records-every-line",
-            "render-records-in-context",
-            "render-validated-records"
-        ]
-    );
-    let RecordData::Anchor(anchor) = inventory.get("render-validated-records").unwrap().data()
-    else {
-        panic!()
-    };
-    assert_eq!(
-        anchor
-            .criteria
-            .iter()
-            .map(|c| c.id.as_str())
-            .collect::<Vec<_>>(),
-        ["invalid-inventory", "protocol-and-independence"]
-    );
-    let RecordData::Anchor(authority) = inventory.get("engine-valid-authority").unwrap().data()
-    else {
-        panic!()
-    };
-    assert_eq!(
-        authority
-            .criteria
-            .iter()
-            .map(|c| (c.id.as_str(), c.verification.as_slice()))
-            .collect::<Vec<_>>(),
-        [
-            ("required-authority", &[VerificationMethod::Test][..]),
-            ("resolved-authority", &[VerificationMethod::Test][..]),
-            ("compatible-status", &[VerificationMethod::Test][..]),
-            ("formal-authority", &[VerificationMethod::Proof][..]),
-            (
-                "production-integration",
-                &[VerificationMethod::Test, VerificationMethod::Review][..]
-            ),
-        ]
-    );
+    // Every backlink comes from an authored reference.
+    for record in inventory.records() {
+        for source in inventory.backlinks(record.id()) {
+            let citing = inventory.get(source).unwrap();
+            assert!(
+                citing.references().iter().any(|r| r.id == record.id()),
+                "backlink {source} -> {} has no authored reference",
+                record.id()
+            );
+        }
+    }
+
+    // Chapter order affects neither the inventory nor its backlinks.
     let reversed: Vec<_> = chapters.iter().rev().copied().collect();
     let again = read_records(&reversed).unwrap();
     assert_eq!(
@@ -132,6 +61,7 @@ fn current_book_records() {
             inventory.backlinks(record.id()),
             again.backlinks(record.id())
         );
+        // Each record's source range is exactly its authored definition.
         let source = chapters
             .iter()
             .find(|c| c.path == record.location().path())
@@ -144,22 +74,21 @@ fn current_book_records() {
 #[test]
 #[ignore = "current-project configuration acceptance; independent tests use disposable fixtures"]
 fn current_book_configuration() {
-    use anchor_book::configuration::{Phase, SectionRole, SourceState, load};
+    // The real configuration loads and resolves within the checkout; its values
+    // (phase, paths, roles) are project choices and are not pinned here.
+    use anchor_book::configuration::{SectionRole, SourceState, load};
     let root = std::fs::canonicalize(env!("CARGO_MANIFEST_DIR")).unwrap();
     let config = load(&root.join("anchorbook.toml")).unwrap();
-    assert_eq!(config.phase(), Phase::Prototyping);
-    assert_eq!(config.source(), root.join("book"));
-    assert_eq!(config.output(), root.join("target/anchorbook"));
     assert_eq!(config.source_state(), SourceState::Directory);
-    for (role, path) in [
-        (SectionRole::Design, "design/index.md"),
-        (SectionRole::Authority, "authority/index.md"),
-        (
-            SectionRole::ImplementationRoadmaps,
-            "implementation-roadmaps/index.md",
-        ),
+    assert!(config.source().starts_with(&root));
+    assert!(config.output().starts_with(&root));
+    for role in [
+        SectionRole::Design,
+        SectionRole::Authority,
+        SectionRole::ImplementationRoadmaps,
     ] {
-        assert_eq!(config.section(role), root.join("book").join(path));
+        assert!(config.section(role).starts_with(config.source()));
+        assert!(config.section(role).is_file(), "{role:?} chapter exists");
     }
 }
 
