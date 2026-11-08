@@ -164,7 +164,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `materialization` and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
+The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `verification`, `materialization`, and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or

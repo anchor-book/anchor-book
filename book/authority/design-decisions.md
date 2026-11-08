@@ -73,3 +73,27 @@ rationale = "No recorded requirement covers adoption into other repositories, so
 alternatives = ["A wrapper command can sequence checks and rendering without changing tool configuration, but it is easy to bypass and every repository must adopt and maintain it."]
 reconsider-when = "A tool offers no suitable extension point or its protocol cannot express a required check; record the gap and keep any wrapper minimal."
 ```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-verify-runs-linked-checks"
+title = "Verify runs the linked checks through the project's tools"
+status = "draft"
+choice = "The verify operation selects the tests and proofs linked to the criteria in scope and runs exactly those through supported runners of the project's own tools, then reads that run's reports. It does not replace the project's test commands or CI jobs."
+requirements = ["requirement-criterion-evidence"]
+rationale = "Agents in the build loop need one command that gives current results for the anchor they are changing. Only Anchor Book knows which tests address which criteria, so selecting and running them is the step it adds; running them itself also makes results current by construction, with no revision bookkeeping for reports produced elsewhere."
+alternatives = ["Verify reads reports produced by separate runs, which avoids invoking tools but needs several steps in the build loop and recorded revisions to tell current results from old ones.", "Agents run the whole suite and read its output, which loses the link from results to criteria."]
+reconsider-when = "A project needs evidence from runs verify cannot invoke, such as tests on other platforms; add reading of supplied reports as a separate input rather than removing selected runs."
+```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-evidence-links-in-code"
+title = "Evidence links live beside the code they describe"
+status = "draft"
+choice = "A test or proof links to the anchor criteria it addresses with a comment next to the function; the engine derives each criterion's linked functions rather than listing them in the Book."
+requirements = ["requirement-criterion-evidence"]
+rationale = "Links move with renamed or relocated tests, the Book holds only criteria and stays small, and the existing proof module already names its anchor and criterion beside the code."
+alternatives = ["Criteria list their tests in the Book, which is visible to readers without the engine but grows the Book and drifts whenever tests are renamed."]
+reconsider-when = "A supported language or tool cannot carry comments next to its tests or proofs; define its link form without moving links into the Book."
+```

@@ -16,6 +16,7 @@
   - [Record Rendering](design/record-rendering.md)
   - [Structural Checking](design/structural-checking.md)
     - [Checking Diagnostics](design/check-diagnostics.md)
+  - [Verification Evidence](design/verification-evidence.md)
 - [Authority](authority/index.md)
   - [Design Decisions](authority/design-decisions.md)
   - [Requirements](authority/requirements.md)
@@ -26,3 +27,4 @@
   - [Formal Verification](implementation-roadmaps/formal-verification.md)
   - [Structural Checking](implementation-roadmaps/structural-checker.md)
   - [Record Line Grammar](implementation-roadmaps/record-line-grammar.md)
+  - [Verification Evidence](implementation-roadmaps/verification-evidence.md)
