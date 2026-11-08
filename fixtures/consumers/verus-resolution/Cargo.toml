@@ -1,0 +1,12 @@
+[package]
+name = "anchorbook-verus-isolation-review"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+
+[workspace]
+
+[dependencies]
+anchor-book = { path = "../../../" }
+vstd = "=0.0.0-2026-10-11-0230"

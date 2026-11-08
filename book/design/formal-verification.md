@@ -177,8 +177,18 @@ The published engine must meet the
 [dependency-isolation property](project-integration.md#project-no-imposed-dependencies):
 consuming builds do not compile the engine's verification libraries or inherit
 its `vstd` choice. The current normal, exactly pinned dependency does not meet
-that goal. Moving it into a crate still required by ordinary engine builds would
-retain the constraint.
+that goal. On 2026-11-08, Cargo 1.99.1 rejected a consumer depending on the engine
+and `vstd = "=0.0.0-2026-10-11-0230"`: the engine requires
+`=0.0.0-2026-10-18-0147`, and resolution ended with
+``failed to select a version for `vstd` which could resolve this conflict``.
+Cargo's [compatible-version unification](https://doc.rust-lang.org/cargo/reference/resolver.html#semver-compatibility)
+applies to these prereleases of the same `0.0.0` version, but their exact
+requirements do not overlap. Both explicitly select a prerelease; this is not
+implicit prerelease exclusion or a native-library `links` conflict.
+The [consumer-resolution criterion](../implementation-roadmaps/formal-verification.md#formal-verification-4-consumer-resolution)
+retains the failing baseline and requires the same consumer pin to pass after
+isolation. Moving `vstd` into a crate still required by ordinary engine builds
+would retain the constraint.
 
 Keep one maintained authority implementation and demonstrate how the code
 verified corresponds to the functions ordinary builds execute. A development
@@ -188,7 +198,10 @@ The source arrangement and any generation mechanism remain to be established by
 a small feasibility experiment before changing the package boundary. Record
 generation or conversion assumptions and detect drift between verified and
 compiled code. A separately maintained proof-only validator cannot establish
-production-code correspondence.
+production-code correspondence. Making `vstd` optional alone does not provide a
+runtime build: the maintained validator is inside `verus!` and still needs that
+macro to compile. The source arrangement must establish how ordinary builds
+compile the same implementation without the verification dependency.
 
 Accept the arrangement only after ordinary consumer builds work without Verus,
 a consumer can choose a different `vstd`, and the authority proof and integration

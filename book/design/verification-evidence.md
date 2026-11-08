@@ -190,6 +190,13 @@ inspection for supported forms; report unsupported macro-generated or ambiguous
 identities rather than guessing. The first implementation supports simple module
 functions and declares its limits before extending to other forms.
 
+Select and record the source parser under the
+[Rust dependency conventions](rust-engine.md#rust-development-conventions).
+An ordinary Rust parser such as `syn` leaves a `verus!` body's contents as macro
+tokens; recognizing Verus modes and function identities needs additional parsing.
+Establish that support with source fixtures and review any parser dependencies
+against the engine's [proof-isolation goal](formal-verification.md#proof-packaging-for-consumers).
+
 Links stay beside the code they describe so that renaming or moving a test moves
 its link, and the Book records only criteria. The engine derives the reverse
 view, from each criterion to its linked functions.
@@ -238,15 +245,15 @@ typed evidence model used for tests. The engine's
 functions, not the consumer function inventory. Expected consumer functions come
 from resolved links, including executable and proof modes.
 
-A proof method is satisfied only when every required target has a successful
-command, a supported complete report, nonzero verification coverage, zero
-verification errors, and exactly one successful result of the expected mode for
-each linked function. Missing, duplicate, skipped, partial, or malformed evidence
-cannot satisfy the method. A supported report identifying verification failures
-makes the affected target's proof method failed, even if a linked function passed
-while another obligation in that target failed. A tool/build failure without
-usable results is inconclusive; a completed successful target with a missing or
-ambiguous linked function has no evidence.
+Classify results using the [evidence states](#evidence-states). Verus checks
+functions independently, using called functions'
+[contracts](https://verus-lang.github.io/verus/guide/requires_ensures.html).
+A linked caller can pass while a supporting lemma's own proof fails. Until all
+obligations in its target pass, a criterion linked only to that caller is
+inconclusive; the report lists the failing obligations and their locations.
+A linked function's own verification failure or a trust-policy violation is
+failed. This distinction directs repair without treating a passing caller as
+established evidence.
 
 Use the engine proof's `--no-cheating` policy initially. For each supported
 version, demonstrate rejection of deliberate assumptions and trusted project
@@ -282,14 +289,17 @@ and raw source/proof-note payloads.
 
 For each criterion in scope, each required method gets one state:
 
-| State | Meaning |
-| --- | --- |
-| `satisfied` | Every link for the method passed for the current inputs; proof targets also meet completeness and trust requirements |
-| `failed` | A linked test failed, or a selected complete proof target reports a verification or trust-policy failure |
-| `inconclusive` | Results cannot establish evidence, for example a build error, unsupported report, or inputs changed during execution |
-| `no-evidence` | Linked, but a linked function was absent, ambiguous, or skipped in this run's results |
-| `unlinked` | No link names the criterion for this method |
-| `not-evaluated` | The method is outside the requested scope, or its runner is unavailable or not yet supported |
+All results must come from the current run with unchanged inputs. Changed inputs
+make affected evidence inconclusive, regardless of the runner's result.
+
+| State | Test method | Proof method |
+| --- | --- | --- |
+| `satisfied` | Every linked test passed once | Every required target has a successful command and supported complete report with nonzero coverage, zero verification errors, and exactly one verified result in the expected mode for each linked function; the trust policy holds |
+| `failed` | A linked test failed | A linked function fails verification, or a target violates the trust policy |
+| `inconclusive` | Build/tool failure without usable results, or malformed results | An unsuccessful command without a linked verification or trust-policy failure; unusable, unsupported, malformed, empty, partial, or zero-coverage reports; or target failures outside the criterion's links, with the failing obligations listed |
+| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in otherwise successful target results |
+| `unlinked` | No test link names the criterion | No proof link names the criterion |
+| `not-evaluated` | Outside the requested scope, or runner unavailable or unsupported | Outside the requested scope, or runner unavailable or not yet supported |
 
 Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
