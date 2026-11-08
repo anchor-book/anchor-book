@@ -272,7 +272,7 @@ The engine checks that the four items are present and nonempty; it does not asse
 whether the scope is adequate or whether evidence satisfies it. Keep formal syntax,
 tool versions, commands, and function/file associations in the implementing
 codebase and verification design. Exclusions must not silently remove part of the
-anchor's property. The [authority anchor](rust-engine.md#engine-valid-authority)
+anchor's property. The [authority anchor](rust-engine.md#records-valid-authority)
 demonstrates this: `formal-authority` requires a proof of the authority algorithm,
 while `production-integration` requires tests and review of the surrounding boundaries.
 

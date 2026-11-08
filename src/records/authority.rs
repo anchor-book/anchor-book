@@ -1,6 +1,6 @@
 //! Production authority checks and their Verus specification.
 //!
-//! Anchor: engine-valid-authority; criterion: formal-authority.
+//! Anchor: records-valid-authority; criterion: formal-authority.
 //!
 //! Read the rule specifications first, then `validate_authorities` and its helpers.
 //! `spec fn` defines what must hold; ordinary `fn` contains executable Rust.

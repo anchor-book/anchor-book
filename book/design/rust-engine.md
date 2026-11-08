@@ -9,7 +9,7 @@ progress and remaining work are recorded in their roadmaps.
 
 ```anchorbook-anchor
 schema-version = 1
-id = "engine-valid-authority"
+id = "records-valid-authority"
 title = "Every anchor resolves to valid authority"
 status = "draft"
 property = '''
@@ -366,7 +366,7 @@ dynamic rules need concrete workflows before design.
 ## Formal verification
 
 [Formal Verification](formal-verification.md) introduces Verus for the existing
-`engine-valid-authority` anchor. The local proof covers executable validation
+`records-valid-authority` anchor. The local proof covers executable validation
 logic used by `read_records`; parsing, input conversion, and diagnostic delivery
 remain explicit integration boundaries. The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
 and production integration, then CI and evidence. The first structural checker
