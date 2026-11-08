@@ -100,14 +100,14 @@ reconsider-when = "A supported language or tool cannot carry comments next to it
 
 ```anchorbook-decision
 schema-version = 1
-id = "decision-descriptive-identifiers"
-title = "Record identifiers are descriptive names with a kind prefix"
+id = "decision-identifier-kind-codes"
+title = "Identifiers carry a kind code and a descriptive name"
 status = "draft"
-choice = "Name every anchor, requirement, decision, and criterion for what it means, never with a sequence number. Requirements and decisions carry requirement- and decision- prefixes; anchors start with a capability word. The engine enforces the prefixes and rejects number-only names; review judges whether a name describes its record."
+choice = "Every anchor, requirement, and decision identifier is a kind code (A, R, or D), a hyphen, and a name that starts with a letter and states the record's meaning. The identifier is the only place the kind is stated: headings and references consist of the code-spanned identifier, with no kind word. Criteria have names without a code, unique within their anchor. The engine enforces the form and the codes each reference field accepts; review judges whether a name describes its record."
 requirements = ["requirement-searchable-records"]
-rationale = "Identifiers appear without their records in references, evidence links, fragments, diagnostics, and search results, so an agent should recognize a record from its identifier without opening it. A number says nothing about its record and invites gaps and renumbering. The kind prefix keeps the kind visible where only the identifier appears, such as fragments and evidence links."
-alternatives = ["Sequential identifiers such as decision-12 are short and easy to allocate, but they carry no meaning and require reading the record to understand any reference.", "Names without a kind prefix are shorter, and references already state the kind, but fragments, evidence links, and prose mentions would lose it."]
-reconsider-when = "Books become large enough that descriptive names collide often, or a consuming tool requires a different identifier form; keep names descriptive whatever the form."
+rationale = "Identifiers appear without their records in references, evidence links, fragments, diagnostics, and search results, so an agent must recognize a record and its kind from the identifier alone. A two-character code keeps the kind visible everywhere at little length and makes every mention of a kind findable with one search, such as a code span starting with D-. Requiring the name to start with a letter rules out sequence numbers, which say nothing about their records. Stating the kind once, in the identifier, gives every reference one spelling."
+alternatives = ["Full-word prefixes such as decision-, which are self-describing but add nine to twelve characters and, with a kind word in references, state the kind twice.", "Names with no kind marker, which are shortest but leave the kind invisible in fragments, evidence links, and prose.", "Sequential identifiers such as D-12, which are short and easy to allocate but carry no meaning, so every reference must be looked up."]
+reconsider-when = "A new record kind needs a code that would be ambiguous with an existing one, or descriptive names collide often enough to need a different scheme; keep names descriptive whatever the form."
 ```
 
 ```anchorbook-decision

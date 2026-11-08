@@ -21,11 +21,11 @@ id = "records-searchable-lines"
 title = "A record's identifying facts are on one line"
 status = "draft"
 property = '''
-Every record's heading line states its kind, identity, status, and title, and
-every reference to a record uses one form that names the target kind and
-identity. A text search for a record's identifier returns its definition and
-every reference to it, and the matched line alone distinguishes the definition
-from a reference.
+Every record's heading line states its identifier, status, and title; the
+identifier's kind code states its kind; and every reference to a record is its
+code-spanned identifier. A text search for a record's identifier returns its
+definition and every reference to it, and the matched line alone distinguishes
+the definition from a reference.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-searchable-records" },
@@ -66,25 +66,30 @@ statement = "Fixtures with stray, misordered, repeated, unknown, and missing lin
 ```anchorbook-anchor
 schema-version = 1
 id = "records-named-identifiers"
-title = "Record identifiers name their kind and meaning"
+title = "Record identifiers state their kind and name their meaning"
 status = "draft"
 property = '''
-Every requirement and decision identifier carries its kind prefix, no anchor
-identifier uses either prefix, and no identifier's name consists only of
-numbers, so an identifier seen alone in a reference, evidence link, fragment,
-or search result identifies its record's kind and names its meaning rather than
-a position in a sequence. An identifier violating these forms is an invalid
-definition reported at its source line.
+Every anchor, requirement, and decision identifier is its kind code, a hyphen,
+and a name that starts with a letter, so an identifier seen alone in a
+reference, evidence link, fragment, diagnostic, or search result states its
+record's kind and cannot be a sequence number. Each reference field accepts only
+the codes of the kinds it may cite. An identifier or reference violating these
+forms is an invalid definition reported at its source line.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-searchable-records" },
-  { kind = "decision", id = "decision-descriptive-identifiers" },
+  { kind = "decision", id = "decision-identifier-kind-codes" },
 ]
 
 [[criteria]]
 id = "identifier-forms"
 verification = ["test"]
-statement = "Fixtures with a requirement or decision missing its prefix, an anchor using either prefix, and number-only names such as decision-12 or requirement-2026-01 each produce a located invalid-definition diagnostic and no inventory; names containing digits as part of a word, such as utf8, are accepted."
+statement = "Fixtures with a missing, unknown, or lowercase kind code, a code that does not match the record's kind, and names starting with a digit, such as D-12 or R-2026-01, each produce a located invalid-definition diagnostic and no inventory; names with digits inside a word, such as D-utf8-paths, are accepted."
+
+[[criteria]]
+id = "reference-codes"
+verification = ["test"]
+statement = "An Authority field citing an anchor identifier and a Requirements field citing a decision identifier each produce a located invalid-definition diagnostic, even when the cited record exists."
 ```
 
 ## Record syntax
@@ -97,57 +102,66 @@ inferred fields, or aliases. Literal examples go in code blocks, which are never
 records:
 
 ```markdown
-> **Anchor `check-observation-only`** (draft): **Checking preserves the Book for deliberate repair**
+> **`A-check-observation-only`** (draft): **Checking preserves the Book for deliberate repair**
 > Property: Engineers and agents can inspect a Book's format without changing the project or triggering its tools.
 > Repairs remain separate actions so the engineer or agent controls what changes.
-> Authority: requirement `requirement-observation-only`; decision `decision-separate-check-and-repair`
+> Authority: `R-observation-only`; `D-separate-check-and-repair`
 > - Criterion `file-preservation` [test]: Compare project file contents and directory entries before and after passing, failing, and incomplete checks; they remain unchanged.
 ```
 
 ### Heading
 
-``**<Kind> `<id>`** (<status>): **<Title>**``
+``**`<id>`** (<status>): **<Title>**``
 
 | Part | Constraint |
 | --- | --- |
-| Kind | Exactly `Anchor`, `Requirement`, or `Decision` |
-| Identifier | An [identifier](#identifiers) of the form required for the kind, unique across this Book's anchor and authority records |
+| Identifier | An [identifier](#identifiers), unique across this Book's records; its kind code states the record's kind |
 | Status | Exactly `draft` or `accepted`; this is design acceptance only |
 | Title | Nonempty, for display |
 
-A blockquote whose first line starts like a heading but does not match this form
+A blockquote whose first line starts with `` **` `` but does not match this form
 is an invalid definition, not prose.
 
 ### Identifiers
 
-An identifier names what its record means: the property an anchor guarantees,
-the outcome a requirement demands, or the choice a decision makes. It appears
-without the record in references, evidence links, link fragments, diagnostics,
-and search results, so it must let an engineer or agent recognize the record
-from the identifier alone. Identifiers are never sequence numbers.
+An identifier states its record's kind and names what the record means: the
+property an anchor guarantees, the outcome a requirement demands, or the choice
+a decision makes. It appears without the record in references, evidence links,
+link fragments, diagnostics, and search results, so an engineer or agent must be
+able to recognize the record from the identifier alone. The identifier is the
+only place a record's kind is stated.
 
-Identifiers consist of lowercase ASCII letters and digits separated by single
-hyphens, start with a letter, and have no trailing hyphen. Each kind has a form:
+An identifier is a kind code, a hyphen, and a name:
 
-| Kind | Form | Names | Example |
+| Kind | Code | Name states | Example |
 | --- | --- | --- | --- |
-| Requirement | `requirement-<outcome>` | The required outcome or constraint | `requirement-observation-only` |
-| Decision | `decision-<choice>` | The selected approach, not the problem it addresses | `decision-separate-check-and-repair` |
-| Anchor | `<capability>-<property>` | The guaranteed property, not its test or implementation | `check-observation-only` |
-| Criterion | `<evidence>`, unique within its anchor | What the verification establishes | `file-preservation` |
+| Anchor | `A` | The guaranteed property, led by its capability word; not its test or implementation | `A-check-observation-only` |
+| Requirement | `R` | The required outcome or constraint | `R-observation-only` |
+| Decision | `D` | The selected approach, not the problem it addresses | `D-separate-check-and-repair` |
 
-The capability is one short word shared by the anchors that constrain the same
-engine or system capability, such as `check`, `records`, `render`, or `verify`.
-The project's design chapters establish its capability words; it is not the
-chapter path, so moving a chapter does not rename its anchors. A capability is
-never `requirement` or `decision`. A criterion identifier does not repeat its
-anchor's capability, because evidence links already join them as
+The name consists of lowercase ASCII letters and digits in hyphen-separated
+words, starts with a letter, and has no trailing hyphen; the whole identifier
+matches `^[ARD]-[a-z][a-z0-9]*(-[a-z0-9]+)*$`. Because the name starts with a
+letter, an identifier cannot be a sequence number: `D-12` and `R-2026-01` are
+invalid, while digits inside a word, as in `D-utf8-paths`, are allowed.
+
+The capability word is shared by the anchors that constrain the same engine or
+system capability, such as `check`, `records`, `render`, or `verify`. The
+project's design chapters establish its capability words. It is not the chapter
+path, so moving a chapter does not rename its anchors.
+
+A criterion identifier has no kind code: it is a name, unique within its anchor,
+stating what the verification establishes, such as `file-preservation`. It does
+not repeat its anchor's capability word, because evidence links join them as
 `<anchor-id>#<criterion-id>`.
 
-Keep names as short as they can be while staying unambiguous; most need two to
-five words after the prefix. Do not encode sequence numbers, dates, version
-numbers, statuses, owners, or chapter locations. Digits are allowed where they
-are part of a name, such as `utf8`.
+Keep names precise and concise: as short as they can be while unambiguous, most
+of them two to five words. Do not encode dates, version numbers, statuses,
+owners, or chapter locations.
+
+**Writing identifiers.** Write an identifier in a code span wherever it appears,
+in records and prose alike, so that a search for `` `D- `` finds every intended
+mention and ordinary words such as "R-squared" never match.
 
 **Stability.** Identity does not depend on a record's title, file, or position.
 Retitling or moving a record keeps its identifier. A draft identifier that
@@ -156,10 +170,9 @@ link, and link to its fragment. When a record's meaning changes, it becomes a
 new record with a new identifier rather than a reworded old one. An identifier
 is never reused for a different property, outcome, or choice.
 
-**What the engine checks.** The reader rejects a requirement or decision without
-its kind prefix, an anchor using either prefix, and an identifier whose name
-after the prefix consists only of digit segments, such as `decision-12`. Whether
-a name accurately describes its record remains a review responsibility.
+**What the engine checks.** The reader rejects an identifier that does not match
+the form above, and a reference whose kind code its field does not accept.
+Whether a name accurately describes its record remains a review responsibility.
 
 ### Anchor fields
 
@@ -176,10 +189,11 @@ this order, with no defaults:
 field above as a new paragraph. Blank quoted lines (`>`) are allowed and carry no
 meaning.
 
-**References.** A reference is a kind word and a code-spanned identifier:
-``requirement `<id>` `` or ``decision `<id>` ``. Its identifier must resolve to a
-record of that kind in the same Book. Duplicate references are errors. Both kinds
-are allowed but not required. Cross-Book references are outside this syntax.
+**References.** A reference is a code-spanned identifier, such as
+`` `R-observation-only` ``. `Authority:` accepts `R-` and `D-` identifiers, each of
+which must resolve to a record of that kind in the same Book. Duplicate
+references are errors. Both kinds are allowed but not required. Cross-Book
+references are outside this syntax.
 
 **Criteria.** A criterion is a list item ``- Criterion `<id>` [<methods>]: <statement>``.
 Its identifier is unique within its anchor, and its statement is a nonempty
@@ -195,9 +209,11 @@ source line.
 
 | Question | Search |
 | --- | --- |
-| Every record, with kind, identity, status, and title | `^> \*\*(Anchor\|Requirement\|Decision) ` |
-| Draft anchors | `^> \*\*Anchor .*\(draft\)` |
-| A record's definition and every reference to it | `` `requirement-observation-only` ``; the definition is the line beginning `> **Requirement` |
+| Every record, with identity, status, and title | ``^> \*\*`[ARD]-`` |
+| Every decision, with status and title | ``^> \*\*`D-`` |
+| Draft anchors | ``^> \*\*`A-.*\(draft\)`` |
+| Every mention of any decision | `` `D-[a-z] `` |
+| A record's definition and every reference to it | `` `R-observation-only` ``; the definition is the match on a line beginning `` > **` `` |
 | Criteria requiring proof | `Criterion .*\[[^]]*proof` |
 
 Literal examples in code blocks also match text searches; they are not records.
@@ -340,14 +356,20 @@ fenced block labeled `anchorbook-anchor`, `anchorbook-requirement`, or
 `anchorbook-decision`, whose TOML body carries `schema-version = 1`, `id`, `title`,
 `status`, and the kind's fields (`property`, inline-table `authorities`, and
 `[[criteria]]` with `id`, `statement`, and `verification` for anchors). Proof scope
-is written as labeled paragraphs inside the statement and is not checked. The
-current reader checks identifier syntax but not the kind prefixes or number-only
-names; follow the [identifier rules](#identifiers) by review until the new reader
-enforces them. Author
-records in this form, following the existing records, until
+is written as labeled paragraphs inside the statement and is not checked.
+
+Current identifiers are lowercase, because the current reader accepts no kind
+code: requirements and decisions carry `requirement-` and `decision-` prefixes
+and anchors have none. Give new records names that follow the
+[identifier rules](#identifiers) in that form; the migration then only replaces
+the prefix with the kind code, such as `decision-separate-check-and-repair`
+becoming `D-separate-check-and-repair`, and adds `A-` to each anchor.
+
+Author records in this form, following the existing records, until
 [Record Line Grammar milestone 2](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2)
-migrates the reader, fixtures, and records together. After migration, TOML record
-blocks are rejected as unsupported syntax rather than kept as a second format.
+migrates the reader, fixtures, records, and identifiers together. After
+migration, TOML record blocks are rejected as unsupported syntax rather than
+kept as a second format.
 
 ## Design, implementation, and evidence
 

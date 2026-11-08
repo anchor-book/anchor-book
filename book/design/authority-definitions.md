@@ -23,8 +23,8 @@ anchors identify or interpret authority references.
 
 ## One form for each record kind
 
-A requirement or decision is one blockquote whose heading names its kind,
-`Requirement` or `Decision`; there is no separate kind field. The
+A requirement or decision is one blockquote whose identifier's kind code, `R` or
+`D`, states its kind; there is no separate kind field. The
 [heading, identifier, status, paragraph, reference, and line-accounting rules](anchor-definitions.md#record-syntax)
 apply to all three kinds. Headings, links, prose, aliases, and alternate forms do
 not define records. Examples inside code blocks are excluded from the inventory.
@@ -37,8 +37,7 @@ Identity does not depend on a record's file, heading position, or title. Moving 
 record must preserve its identifier; changing a title does not require updating
 authority references. Do not reuse an identifier for a different obligation or choice.
 Requirement and decision identifiers follow the [identifier rules](anchor-definitions.md#identifiers):
-`requirement-<outcome>` and `decision-<choice>`, named for their meaning and
-never numbered.
+`R-<outcome>` and `D-<choice>`, named for their meaning and never numbered.
 
 ## Requirement fields
 
@@ -48,7 +47,7 @@ never numbered.
 | `Source:` | Nonempty; where the requirement comes from |
 
 ```markdown
-> **Requirement `requirement-observation-only`** (draft): **Preserve the project during checking**
+> **`R-observation-only`** (draft): **Preserve the project during checking**
 > Statement: Checking must leave project content and directory entries unchanged.
 > Source: The product separates inspection from operations that create or manage Book content.
 ```
@@ -62,15 +61,15 @@ accurate or whether the requirement is appropriate.
 | Field | Constraint |
 | --- | --- |
 | `Choice:` | Nonempty; the selected approach |
-| `Requirements:` | Distinct requirement references separated by `;`, each resolving to a requirement in this Book, or exactly `none` |
+| `Requirements:` | Distinct `R-` references separated by `;`, each resolving to a requirement in this Book, or exactly `none` |
 | `Rationale:` | Nonempty; why the choice was made |
 | `Alternatives:` | Followed by one or more list items, each a nonempty alternative and its tradeoffs |
 | `Reconsider when:` | Nonempty; the conditions for revisiting the choice |
 
 ```markdown
-> **Decision `decision-separate-check-and-repair`** (draft): **Keep checking separate from repair**
+> **`D-separate-check-and-repair`** (draft): **Keep checking separate from repair**
 > Choice: The checker observes and reports; repairs are separate actions.
-> Requirements: requirement `requirement-observation-only`
+> Requirements: `R-observation-only`
 > Rationale: A caller can inspect defects without changing the inputs being diagnosed.
 > Alternatives:
 > - Automatic repair inside check mixes diagnosis with changes.
@@ -93,9 +92,9 @@ The defined relationships are:
 
 | Source | Reference field | Required target |
 | --- | --- | --- |
-| Anchor | `Authority:` reference with kind `requirement` | Requirement with the given identifier |
-| Anchor | `Authority:` reference with kind `decision` | Decision with the given identifier |
-| Decision | `Requirements:` reference | Requirement with the given identifier |
+| Anchor | `Authority:` reference with code `R` | Requirement with the given identifier |
+| Anchor | `Authority:` reference with code `D` | Decision with the given identifier |
+| Decision | `Requirements:` reference with code `R` | Requirement with the given identifier |
 
 Requirements have no outgoing authority-reference field. Anchors still need at
 least one direct authority reference. A decision's referenced requirements are
