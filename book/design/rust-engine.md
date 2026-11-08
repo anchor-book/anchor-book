@@ -14,7 +14,7 @@ title = "Every anchor resolves to valid authority"
 status = "draft"
 property = '''
 The engine validates an anchor only when it cites at least one requirement or
-design decision and every authority reference resolves unambiguously to a valid
+decision and every authority reference resolves unambiguously to a valid
 record of the declared kind. An accepted anchor may cite only accepted
 authorities. Invalid authority relationships produce diagnostics rather than a
 successfully validated inventory.
@@ -26,7 +26,7 @@ authorities = [
 [[criteria]]
 id = "required-authority"
 verification = ["test"]
-statement = "Accept anchors with a valid requirement or design decision reference; reject missing or empty authority lists with an invalid-definition diagnostic."
+statement = "Accept anchors with a valid requirement or decision reference; reject missing or empty authority lists with an invalid-definition diagnostic."
 
 [[criteria]]
 id = "resolved-authority"
@@ -251,7 +251,7 @@ the Rust versions used for those revisions.
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 | `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
-| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds. Currently a normal dependency; the [isolation decision](../authority/design-decisions.md#decision-isolate-engine-verification) removes it from what consuming projects build |
+| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds. Currently a normal dependency; the [isolation decision](../authority/decisions.md#decision-isolate-engine-verification) removes it from what consuming projects build |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects

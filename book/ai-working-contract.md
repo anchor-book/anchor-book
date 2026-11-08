@@ -3,7 +3,7 @@
 An Anchor Book defines the goal system: the system the engineer and AI agents
 are working together to build. The design describes that system as a whole.
 Its anchors define properties that must hold once the system is built, grounded
-in requirements or design decisions and linked to verification criteria.
+in requirements or decisions and linked to verification criteria.
 
 Use the Book to understand the intended system and code and verification evidence
 to understand its current state. When they differ, identify the gap; do not
@@ -254,9 +254,11 @@ compare the revised text with the original to ensure important meaning is retain
 
 ## Maintain the Book's relationships
 
-Record a design decision only when it constrains other parts of the design.
-State the choice and which later parts of the design must account for it. Keep
-local details in design and work sequencing in roadmaps. Do not repeat requirements
+Record a decision when it governs the system being built: its definition, scope,
+design, interfaces, verification, or supported environments. State the choice
+and what else in the Book must account for it. Keep a choice affecting only one
+local detail in its design text, work sequencing in roadmaps, and how the
+project works in project guidance. Do not repeat requirements
 as decisions or invent decisions to give anchors authority; a requirement can
 ground an anchor directly.
 

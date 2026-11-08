@@ -69,7 +69,7 @@ record's source range with HTML from the typed inventory and never reads TOML.
 <tr id="record-line-grammar-1-assessment" class="roadmap-criterion-summary"><th scope="row">Assessment</th><td><p class="roadmap-condition">A written assessment compares the variants on searches, reads, wrong matches, and edit validity, states its limits, and recommends confirming or revising the goal syntax. Any revision is made in the design chapters, not here.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for assessment" aria-expanded="true" aria-controls="record-line-grammar-1-assessment-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-line-grammar-1-assessment-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>assessment</code></p>
-<p><strong>Anchor criteria and planned coverage:</strong> None — design decision input</p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — decision input</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>

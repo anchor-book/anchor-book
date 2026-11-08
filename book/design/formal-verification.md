@@ -139,7 +139,7 @@ experiment establishes a dependency/toolchain need, keeping that crate on the
 production call path. Resolve any minimum-version change explicitly.
 
 The prototype adds `vstd` as a normal dependency. Before release, the
-[isolation decision](../authority/design-decisions.md#decision-isolate-engine-verification)
+[isolation decision](../authority/decisions.md#decision-isolate-engine-verification)
 removes it, and the Verus toolchain, from what consuming projects build, so that
 projects verifying their own code choose their own versions; see
 [Project Integration](project-integration.md#what-the-crate-must-not-impose).

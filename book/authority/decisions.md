@@ -1,6 +1,6 @@
-# Design Decisions
+# Decisions
 
-**Status: draft for review.** These choices constrain other parts of the design.
+**Status: draft for review.** These choices govern the system being built; other parts of the Book must account for them.
 
 ```anchorbook-decision
 schema-version = 1

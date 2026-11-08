@@ -19,7 +19,7 @@ schemas. This work can proceed alongside [Engine Bootstrap](bootstrap.md).
   in [traceable properties](../authority/requirements.md#requirement-traceable-properties),
   defines the authority checks to exercise explicitly in milestone 3.
 - [Readable records requirement](../authority/requirements.md#requirement-readable-records)
-  and [shared rendering decision](../authority/design-decisions.md#decision-shared-record-rendering)
+  and [shared rendering decision](../authority/decisions.md#decision-shared-record-rendering)
   govern [rendered records](../design/record-rendering.md#render-records-in-context)
   and [validated inventory](../design/record-rendering.md#render-validated-records).
 

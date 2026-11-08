@@ -28,3 +28,6 @@ command = "cargo run --quiet --locked --bin anchorbook -- md"
 config = "anchorbook.toml"
 after = ["links"]
 before = ["mermaid"]
+
+[output.html.redirect]
+"/authority/design-decisions.html" = "decisions.html"

@@ -121,7 +121,7 @@ title = "Every binding system property has a traceable justification"
 status = "draft"
 statement = '''
 Every binding system property expressed by an anchor must be grounded in at least
-one requirement or design decision. Engineers and agents must be able to follow
+one requirement or decision. Engineers and agents must be able to follow
 those references to understand why the property must hold.
 '''
 source = "The Anchor Book method makes the reasons for system properties explicit so engineers and agents can review and evolve the design together."
@@ -135,7 +135,7 @@ id = "requirement-readable-records"
 title = "Read structured records naturally in the Book"
 status = "draft"
 statement = '''
-Readers must be able to understand anchors, requirements, and design decisions
+Readers must be able to understand anchors, requirements, and decisions
 as formatted content in their Book chapters and navigate their declared authority
 relationships. Structured definitions remain the source. Invalid records or
 relationships must not be hidden by rendering, and presentation must not claim
