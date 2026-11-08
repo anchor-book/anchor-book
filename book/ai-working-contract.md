@@ -36,7 +36,9 @@ do not guess project paths or claim to have read unavailable content.
 Run the project's structural check, as described in
 [Check the Book's structure](#check-the-books-structure), and include its result
 in your readiness report. A Book that fails or cannot be checked is still read,
-but its findings qualify what you report about it.
+but its findings qualify what you report about it. When the request is only to
+read the Book, report the findings and the repairs you would make rather than
+making them.
 
 Follow the engineer's request, briefly stating scope and constraints before
 changes. A request only to read the Book calls for a readiness report, not
@@ -55,16 +57,20 @@ Act on the result:
 | Result | Meaning | Next step |
 | --- | --- | --- |
 | Passed | Every check in the declared scope holds | Proceed. It establishes nothing outside that scope, such as record meaning, implementation, verification, or completion. |
-| Failed | Evaluation completed and found structural violations | Repair the reported structure within the assignment, then rerun. |
+| Failed | Evaluation completed and found structural violations | Repair the findings whose intended structure is clear, then rerun. Do not stop at reporting them. |
 | Incomplete | Invalid input or an operational problem prevented evaluation | Resolve the reported input or access problem first. Findings are partial; this is never a pass. |
 
-Repair from the findings. Each finding gives a location, the expected and found
+Structural repairs are part of any request to run the check or to work on the
+Book. Repair from the findings: each gives a location, the expected and found
 conditions, and guidance; use them to make the intended structure hold. Never
 remove required sections, weaken configuration, or otherwise change what is
-checked to obtain a pass. When the intended structure is unclear or the repair
-falls outside the assignment, report the finding and resolve it with the
-engineer. Rerun the same check after each repair or set of repairs until it
-passes or the remaining findings are reported.
+checked to obtain a pass. Ask the engineer before repairing when the intended
+structure is unclear, such as a navigation entry for a chapter that does not
+exist, or when the repair would change chapter content or the Anchor Book
+configuration, which defines the intended structure. Aligning other tool
+configuration, such as renderer settings, with it is an ordinary repair. Rerun
+the same check after each repair or set of repairs until it passes or the
+remaining findings are reported.
 
 Report the command, its result, and any remaining findings. Report a failed or
 incomplete check as failed or incomplete.
