@@ -151,7 +151,7 @@ authorities = [
 ]
 
 [[criteria]]
-id = "project-toolchain"
+id = "separate-toolchain"
 verification = ["test"]
 statement = "A fixture workspace with its own Verus version and a verification toolchain different from its build toolchain reports satisfied, failed, and inconclusive proof states from that installation."
 

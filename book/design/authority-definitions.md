@@ -36,6 +36,9 @@ infer data from surrounding prose.
 Identity does not depend on a record's file, heading position, or title. Moving a
 record must preserve its identifier; changing a title does not require updating
 authority references. Do not reuse an identifier for a different obligation or choice.
+Requirement and decision identifiers follow the [identifier rules](anchor-definitions.md#identifiers):
+`requirement-<outcome>` and `decision-<choice>`, named for their meaning and
+never numbered.
 
 ## Requirement fields
 

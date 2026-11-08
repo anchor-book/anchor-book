@@ -100,6 +100,18 @@ reconsider-when = "A supported language or tool cannot carry comments next to it
 
 ```anchorbook-decision
 schema-version = 1
+id = "decision-descriptive-identifiers"
+title = "Record identifiers are descriptive names with a kind prefix"
+status = "draft"
+choice = "Name every anchor, requirement, decision, and criterion for what it means, never with a sequence number. Requirements and decisions carry requirement- and decision- prefixes; anchors start with a capability word. The engine enforces the prefixes and rejects number-only names; review judges whether a name describes its record."
+requirements = ["requirement-searchable-records"]
+rationale = "Identifiers appear without their records in references, evidence links, fragments, diagnostics, and search results, so an agent should recognize a record from its identifier without opening it. A number says nothing about its record and invites gaps and renumbering. The kind prefix keeps the kind visible where only the identifier appears, such as fragments and evidence links."
+alternatives = ["Sequential identifiers such as decision-12 are short and easy to allocate, but they carry no meaning and require reading the record to understand any reference.", "Names without a kind prefix are shorter, and references already state the kind, but fragments, evidence links, and prose mentions would lose it."]
+reconsider-when = "Books become large enough that descriptive names collide often, or a consuming tool requires a different identifier form; keep names descriptive whatever the form."
+```
+
+```anchorbook-decision
+schema-version = 1
 id = "decision-library-cli-entry"
 title = "The library provides the CLI entry point and projects declare the engine version"
 status = "draft"

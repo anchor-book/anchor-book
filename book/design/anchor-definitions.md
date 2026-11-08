@@ -63,6 +63,30 @@ verification = ["test"]
 statement = "Fixtures with stray, misordered, repeated, unknown, and missing lines each produce the expected located diagnostic and no inventory; the corrected fixture produces the expected record."
 ```
 
+```anchorbook-anchor
+schema-version = 1
+id = "records-named-identifiers"
+title = "Record identifiers name their kind and meaning"
+status = "draft"
+property = '''
+Every requirement and decision identifier carries its kind prefix, no anchor
+identifier uses either prefix, and no identifier's name consists only of
+numbers, so an identifier seen alone in a reference, evidence link, fragment,
+or search result identifies its record's kind and names its meaning rather than
+a position in a sequence. An identifier violating these forms is an invalid
+definition reported at its source line.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-searchable-records" },
+  { kind = "decision", id = "decision-descriptive-identifiers" },
+]
+
+[[criteria]]
+id = "identifier-forms"
+verification = ["test"]
+statement = "Fixtures with a requirement or decision missing its prefix, an anchor using either prefix, and number-only names such as decision-12 or requirement-2026-01 each produce a located invalid-definition diagnostic and no inventory; names containing digits as part of a word, such as utf8, are accepted."
+```
+
 ## Record syntax
 
 A record is one Markdown blockquote: consecutive lines beginning with `>`. Its
@@ -87,17 +111,55 @@ records:
 | Part | Constraint |
 | --- | --- |
 | Kind | Exactly `Anchor`, `Requirement`, or `Decision` |
-| Identifier | Nonempty identifier, unique across this Book's anchor and authority records |
+| Identifier | An [identifier](#identifiers) of the form required for the kind, unique across this Book's anchor and authority records |
 | Status | Exactly `draft` or `accepted`; this is design acceptance only |
 | Title | Nonempty, for display |
 
-Identifiers consist of lowercase ASCII letters and digits separated by single
-hyphens, start with a letter, and have no trailing hyphen. Anchor identifiers
-are explicit and do not change when a chapter moves. Titles can change without
-changing identity. Do not reuse an identifier for a different property.
-
 A blockquote whose first line starts like a heading but does not match this form
 is an invalid definition, not prose.
+
+### Identifiers
+
+An identifier names what its record means: the property an anchor guarantees,
+the outcome a requirement demands, or the choice a decision makes. It appears
+without the record in references, evidence links, link fragments, diagnostics,
+and search results, so it must let an engineer or agent recognize the record
+from the identifier alone. Identifiers are never sequence numbers.
+
+Identifiers consist of lowercase ASCII letters and digits separated by single
+hyphens, start with a letter, and have no trailing hyphen. Each kind has a form:
+
+| Kind | Form | Names | Example |
+| --- | --- | --- | --- |
+| Requirement | `requirement-<outcome>` | The required outcome or constraint | `requirement-observation-only` |
+| Decision | `decision-<choice>` | The selected approach, not the problem it addresses | `decision-separate-check-and-repair` |
+| Anchor | `<capability>-<property>` | The guaranteed property, not its test or implementation | `check-observation-only` |
+| Criterion | `<evidence>`, unique within its anchor | What the verification establishes | `file-preservation` |
+
+The capability is one short word shared by the anchors that constrain the same
+engine or system capability, such as `check`, `records`, `render`, or `verify`.
+The project's design chapters establish its capability words; it is not the
+chapter path, so moving a chapter does not rename its anchors. A capability is
+never `requirement` or `decision`. A criterion identifier does not repeat its
+anchor's capability, because evidence links already join them as
+`<anchor-id>#<criterion-id>`.
+
+Keep names as short as they can be while staying unambiguous; most need two to
+five words after the prefix. Do not encode sequence numbers, dates, version
+numbers, statuses, owners, or chapter locations. Digits are allowed where they
+are part of a name, such as `utf8`.
+
+**Stability.** Identity does not depend on a record's title, file, or position.
+Retitling or moving a record keeps its identifier. A draft identifier that
+misdescribes its record can be corrected together with every reference, evidence
+link, and link to its fragment. When a record's meaning changes, it becomes a
+new record with a new identifier rather than a reworded old one. An identifier
+is never reused for a different property, outcome, or choice.
+
+**What the engine checks.** The reader rejects a requirement or decision without
+its kind prefix, an anchor using either prefix, and an identifier whose name
+after the prefix consists only of digit segments, such as `decision-12`. Whether
+a name accurately describes its record remains a review responsibility.
 
 ### Anchor fields
 
@@ -278,7 +340,10 @@ fenced block labeled `anchorbook-anchor`, `anchorbook-requirement`, or
 `anchorbook-decision`, whose TOML body carries `schema-version = 1`, `id`, `title`,
 `status`, and the kind's fields (`property`, inline-table `authorities`, and
 `[[criteria]]` with `id`, `statement`, and `verification` for anchors). Proof scope
-is written as labeled paragraphs inside the statement and is not checked. Author
+is written as labeled paragraphs inside the statement and is not checked. The
+current reader checks identifier syntax but not the kind prefixes or number-only
+names; follow the [identifier rules](#identifiers) by review until the new reader
+enforces them. Author
 records in this form, following the existing records, until
 [Record Line Grammar milestone 2](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2)
 migrates the reader, fixtures, and records together. After migration, TOML record

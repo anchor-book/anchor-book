@@ -237,9 +237,10 @@ an entire criterion, and tests or review do not silently replace a required proo
 Report proof results for the specific anchor and criterion, scope, and revision;
 a proof requirement or a successful partial proof does not verify the whole anchor.
 
-## Keep the Book concise
+## Keep the Book precise and concise
 
-Clarity and precision take priority over brevity. Include enough context to make
+Write Book chapters, records, identifiers, and this contract precisely and
+concisely. Clarity and precision take priority over brevity. Include enough context to make
 the intended meaning unambiguous: what a rule applies to, why it matters, and
 any conditions or limits. Remove repetition and words that add no understanding;
 do not shorten away requirements, rationale, distinctions, criteria, or evidence.
@@ -264,6 +265,13 @@ engineers, agents, or other callers must be able to rely on, with precise scope
 and limits. Put concrete verification cases in criteria and implementation
 mechanics in the supporting design. Preserve essential constraints when reframing
 a property; a general statement of usefulness is not a verifiable guarantee.
+
+Give every anchor, requirement, decision, and criterion a precise, concise
+identifier that names its meaning, following the identifier rules in the
+project's authoring references. Identifiers appear without their records in
+references, evidence links, and search results, so the name alone must identify
+the record. Never number records. Retitling or moving a record keeps its
+identifier, and an identifier is never reused.
 
 Place anchors at the top of a design chapter, after its brief introduction and
 before the detailed design. Keep general anchor-authoring guidance here, not
