@@ -33,10 +33,41 @@ Read the content, not just headings or filenames, and continue beyond truncated
 tool output. Report missing or unreadable guidance and the resulting context gap;
 do not guess project paths or claim to have read unavailable content.
 
+Run the project's structural check, as described in
+[Check the Book's structure](#check-the-books-structure), and include its result
+in your readiness report. A Book that fails or cannot be checked is still read,
+but its findings qualify what you report about it.
+
 Follow the engineer's request, briefly stating scope and constraints before
 changes. A request only to read the Book calls for a readiness report, not
 self-selected implementation. Do not ask again for direction or agreement already
 given in the session.
+
+## Check the Book's structure
+
+The structural check evaluates whether the Book conforms to its configured
+structure. Project guidance identifies the command. Run it at the start of a
+session, after every change to Book sources or configuration, and before
+reporting Book work complete.
+
+Act on the result:
+
+| Result | Meaning | Next step |
+| --- | --- | --- |
+| Passed | Every check in the declared scope holds | Proceed. It establishes nothing outside that scope, such as record meaning, implementation, verification, or completion. |
+| Failed | Evaluation completed and found structural violations | Repair the reported structure within the assignment, then rerun. |
+| Incomplete | Invalid input or an operational problem prevented evaluation | Resolve the reported input or access problem first. Findings are partial; this is never a pass. |
+
+Repair from the findings. Each finding gives a location, the expected and found
+conditions, and guidance; use them to make the intended structure hold. Never
+remove required sections, weaken configuration, or otherwise change what is
+checked to obtain a pass. When the intended structure is unclear or the repair
+falls outside the assignment, report the finding and resolve it with the
+engineer. Rerun the same check after each repair or set of repairs until it
+passes or the remaining findings are reported.
+
+Report the command, its result, and any remaining findings. Report a failed or
+incomplete check as failed or incomplete.
 
 ## Work with the engineer
 
@@ -308,8 +339,9 @@ Missing, skipped, stale, or inconclusive evidence is not a pass.
 
 Read the project's Book for its supported commands, source and output locations,
 toolchain, contribution workflow, and publication boundaries. Distinguish
-implemented tools from planned commands. For Book changes, build the Book and
-check affected records, links, and diagrams. For implementation changes, use
+implemented tools from planned commands. For Book changes, run the
+[structural check](#check-the-books-structure), build the Book, and check
+affected records, links, and diagrams. For implementation changes, use
 checks appropriate to the behavior and agreed completion criteria. Report limits
 explicitly.
 
