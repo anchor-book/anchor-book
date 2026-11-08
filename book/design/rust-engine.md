@@ -128,7 +128,7 @@ flowchart TB
     md["mdBook adapter"] --> records["Read and validate typed records"]
     api --> records
     records --> render["Record presentation and links"]
-    api --> load["Later: read and resolve configuration"]
+    api --> load["Read and resolve configuration"]
     load --> inspect["Inspect Book files and navigation"]
     inspect --> evaluate["Evaluate rules on observed data"]
     evaluate --> report["Typed findings and evaluation scope"]

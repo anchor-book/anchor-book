@@ -91,10 +91,10 @@ test ran or that its assertions are sufficient. Evidence must preserve execution
 scope, relevant inputs, and outcomes. The model must also accommodate formal
 verification, including statements, assumptions, bounds, and inconclusive results.
 
-[Formal Verification](formal-verification.md) plans the first Verus proof of the
-engine's own authority-validation logic. This starts before automated evidence
-ingestion: record the proof and its production integration manually in its roadmap.
-The general evidence adapter remains later work.
+[Formal Verification](formal-verification.md) describes the implemented Verus
+proof of the engine's authority-validation logic. Its roadmap records proof and
+production-integration evidence manually; automated evidence evaluation remains
+later work.
 
 ## Operations
 

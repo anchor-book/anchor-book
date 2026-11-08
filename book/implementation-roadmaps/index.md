@@ -135,10 +135,10 @@ for phase-specific responsibilities.
 Each roadmap's milestones record their own status and evidence.
 
 - [Engine Bootstrap](bootstrap.md): preparing the Book so agents can take up checker work.
-- [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
-- [Formal Verification](formal-verification.md): proving the production authority-validation logic.
+- [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
+- [Formal Verification](formal-verification.md): proving the production authority-validation logic.
 - [Record Line Grammar](record-line-grammar.md): measuring whether a line-oriented record syntax serves agents better than TOML.
 - [Verification Evidence](verification-evidence.md): the verify command, reporting evidence for each anchor criterion.
 
@@ -163,7 +163,7 @@ clear design and outcome-based milestones before implementation.
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |
 | Automated phase and readiness checks | [Project phase](../design/configuration.md#project-phase) | Define what can establish design readiness or completion and how further iterations preserve a completed baseline. The first configuration reader only exposes the phase. |
 | Crate release | [Rust Engine](../design/rust-engine.md#rust-development-conventions), [Project Integration](../design/project-integration.md) | Registry naming, package contents including the contract, public API and schema compatibility, the declared engine, configuration, and record-syntax versions, and release verification. Publishing is separate from local prototyping. |
-| Project integration | [Project Integration](../design/project-integration.md) | The library CLI entry point and engine-version declaration, isolation of the engine's proofs and exact pins from consuming builds, declared mdBook versions, the agent bootstrap template, fixture consumer workspaces, and Verus verification of project code. Depends on crate release, contract delivery, and verify. |
+| Project integration | [Project Integration](../design/project-integration.md) | The library CLI entry point and exact engine-version declaration, including validation of exact requirements and rejection of mismatched entry points; isolation of the engine's proofs and exact dependency pins from consuming builds; declared mdBook versions; the agent bootstrap template; fixture consumer workspaces; and Verus verification of project code. Depends on crate release, contract delivery, and verify. |
 
 The prototype's mdBook-version, output-format, and plain-text-field limits remain
 documented constraints. Expanding them needs its own design and roadmap change;
