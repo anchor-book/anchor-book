@@ -271,6 +271,11 @@ the existing [path rules](configuration.md#paths), and `output` must be separate
 from the Book source. The section is required for `verify` and ignored by `check`;
 its absence makes `verify` incomplete.
 
+A project that verifies its own code also identifies its Verus installation and
+verification toolchain here, separately from its build toolchain; [Project
+Integration](project-integration.md#formal-verification-in-a-project) defines
+that use. The exact fields are defined with the proof runner.
+
 ## Boundaries
 
 - `verify` adds selection by criterion to the project's existing tools; it does

@@ -68,8 +68,8 @@ id = "decision-native-tool-integration"
 title = "Anchor Book works through the project's existing tools"
 status = "draft"
 choice = "Integrate through the extension points of tools a project already uses, such as mdBook preprocessors, Cargo, and CI steps, so their ordinary commands apply Anchor Book checks and rendering. Do not require wrapper scripts or replacement commands."
-requirements = []
-rationale = "No recorded requirement covers adoption into other repositories, so this rests on that goal directly. Adopting projects keep their existing commands, editors, and CI. A check enforced only by a wrapper is skipped whenever someone runs the underlying tool directly, so the check must run where the tool runs."
+requirements = ["requirement-project-adoption"]
+rationale = "Adopting projects keep their existing commands, editors, and CI. A check enforced only by a wrapper is skipped whenever someone runs the underlying tool directly, so the check must run where the tool runs."
 alternatives = ["A wrapper command can sequence checks and rendering without changing tool configuration, but it is easy to bypass and every repository must adopt and maintain it."]
 reconsider-when = "A tool offers no suitable extension point or its protocol cannot express a required check; record the gap and keep any wrapper minimal."
 ```
@@ -96,4 +96,28 @@ requirements = ["requirement-criterion-evidence"]
 rationale = "Links move with renamed or relocated tests, the Book holds only criteria and stays small, and the existing proof module already names its anchor and criterion beside the code."
 alternatives = ["Criteria list their tests in the Book, which is visible to readers without the engine but grows the Book and drifts whenever tests are renamed."]
 reconsider-when = "A supported language or tool cannot carry comments next to its tests or proofs; define its link form without moving links into the Book."
+```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-library-cli-entry"
+title = "The library provides the CLI entry point and projects declare the engine version"
+status = "draft"
+choice = "The library exposes the command-line entry point, and the published anchorbook binary is a thin wrapper around it. A project runs the engine either through a small binary in its own workspace or through an installed binary. It declares the engine version in anchorbook.toml, and every entry point stops before evaluating when its version does not satisfy that declaration."
+requirements = ["requirement-project-adoption"]
+rationale = "A dependency provides only the library, while mdBook, CI, and agents invoke a binary, and Cargo does not run binaries belonging to dependencies. A workspace binary makes the project's Cargo.lock the single version source for tests and commands; an installed binary suits projects that prefer no extra workspace member. The declared version keeps either from silently running different rules than the project's tests."
+alternatives = ["Installed binary only, which keeps the project unchanged but leaves the installed version and the locked library version free to diverge.", "Workspace binary only, which gives one version source but requires every project to add and maintain a workspace member."]
+reconsider-when = "Cargo can run binaries provided by dependencies, which would make a project-local wrapper unnecessary."
+```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-isolate-engine-verification"
+title = "Engine proofs stay inside the engine; projects verify with their own Verus"
+status = "draft"
+choice = "The engine's own proofs, vstd, and Verus toolchain are excluded from what consuming projects build. Verifying a project's code runs the Verus installation and verification toolchain that the project configures."
+requirements = ["requirement-project-adoption", "requirement-project-verification"]
+rationale = "Projects verifying their own code choose their own Verus and vstd versions, which are pinned exactly and change frequently. An exact vstd requirement in the engine's dependency graph would conflict with them or force the engine's choice, and a verification toolchain must not replace a project's build toolchain."
+alternatives = ["Projects use the engine's pinned Verus and vstd, which avoids version handling in the engine but forces every project onto the engine's release cadence.", "The engine bundles a Verus installation, which simplifies setup but still dictates the version and adds a large download to every installation."]
+reconsider-when = "Verus and vstd provide compatible version ranges across releases, so a shared requirement no longer forces a single version."
 ```

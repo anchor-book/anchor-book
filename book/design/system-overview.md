@@ -147,7 +147,9 @@ not place it in the agent's working context.
 The [Rust library](rust-engine.md) owns the shared behavior. Its CLI supports
 ordinary local commands and GitHub Actions. Rust projects can call the same
 library from integration tests. Neither Git nor GitHub is required to evaluate
-a local Book.
+a local Book. [Project Integration](project-integration.md) defines how other
+Rust projects adopt the crate, run the engine, bootstrap agents, and verify
+their own code.
 
 The [mdBook preprocessor](https://rust-lang.github.io/mdBook/for_developers/preprocessors.html)
 calls shared engine logic on mdBook's input. It runs the read-only structural

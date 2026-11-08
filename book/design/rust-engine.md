@@ -251,7 +251,7 @@ the Rust versions used for those revisions.
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 | `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
-| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds |
+| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds. Currently a normal dependency; the [isolation decision](../authority/design-decisions.md#decision-isolate-engine-verification) removes it from what consuming projects build |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects

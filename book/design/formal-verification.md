@@ -138,6 +138,12 @@ the dependency. Start within the current package; split out a crate only if the
 experiment establishes a dependency/toolchain need, keeping that crate on the
 production call path. Resolve any minimum-version change explicitly.
 
+The prototype adds `vstd` as a normal dependency. Before release, the
+[isolation decision](../authority/design-decisions.md#decision-isolate-engine-verification)
+removes it, and the Verus toolchain, from what consuming projects build, so that
+projects verifying their own code choose their own versions; see
+[Project Integration](project-integration.md#what-the-crate-must-not-impose).
+
 Treat compatibility as the first implementation checkpoint: confirm that a small
 representative validator using the required types and collection operations both
 verifies and builds normally before undertaking the full extraction. If that

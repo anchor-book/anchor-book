@@ -176,3 +176,33 @@ evidence must never appear as support.
 '''
 source = "Anchors declare required verification methods, but completion and verification are otherwise recorded by hand in roadmaps, so nothing shows which anchor criteria are actually supported."
 ```
+
+## Project integration requirements
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-project-adoption"
+title = "Rust projects adopt Anchor Book through the crate"
+status = "draft"
+statement = '''
+A Rust project must be able to adopt Anchor Book by depending on the published
+crate and adding configuration, while keeping its existing commands, Book layout,
+toolchains, and dependency choices. Adoption must not require the engine's
+development checkout, wrapper commands, or changes to the versions of unrelated
+dependencies.
+'''
+source = "The goal of distributing the engine as a crate for other Rust projects, including projects with existing mdBook Books, multi-crate workspaces, and pinned toolchains."
+```
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-project-verification"
+title = "Projects formally verify their own code against their Book"
+status = "draft"
+statement = '''
+A project must be able to formally verify its own production code with Verus
+against the proof criteria in its Book, and see which of those criteria its
+proofs establish, using its own Verus version and verification toolchain.
+'''
+source = "The goal of integrating formal verification into the development of projects that use Anchor Book, not only of the engine itself."
+```

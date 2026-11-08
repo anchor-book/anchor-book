@@ -17,6 +17,7 @@
   - [Structural Checking](design/structural-checking.md)
     - [Checking Diagnostics](design/check-diagnostics.md)
   - [Verification Evidence](design/verification-evidence.md)
+  - [Project Integration](design/project-integration.md)
 - [Authority](authority/index.md)
   - [Design Decisions](authority/design-decisions.md)
   - [Requirements](authority/requirements.md)
