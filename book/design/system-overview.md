@@ -72,7 +72,7 @@ checking operates independently of the renderer and its output.
 | Concept | Responsibility |
 | --- | --- |
 | Design | The intended system as a whole, as well as it is currently understood |
-| Authority | Requirements and design decisions that govern the system |
+| Authority | Requirements and decisions that govern the system |
 | Anchors | Named properties grounded in at least one authority, with criteria for verification |
 | Implementation Roadmaps | AI-proposed work reviewed and agreed with people, including dependencies and completion evidence |
 | Evidence and progress | What has been built, which verification mechanisms exist, what they establish, and which agreed work is complete |
@@ -147,13 +147,15 @@ not place it in the agent's working context.
 The [Rust library](rust-engine.md) owns the shared behavior. Its CLI supports
 ordinary local commands and GitHub Actions. Rust projects can call the same
 library from integration tests. Neither Git nor GitHub is required to evaluate
-a local Book.
+a local Book. [Project Integration](project-integration.md) defines how other
+Rust projects adopt the crate, run the engine, bootstrap agents, and verify
+their own code.
 
 The [mdBook preprocessor](https://rust-lang.github.io/mdBook/for_developers/preprocessors.html)
 calls shared engine logic on mdBook's input. It runs the read-only structural
 check first and renders nothing if that check fails or is incomplete, so ordinary
 `mdbook build` and `mdbook serve` apply it without a wrapper command; see the
-[native tool integration decision](../authority/design-decisions.md#decision-native-tool-integration).
+[native tool integration decision](../authority/decisions.md#decision-native-tool-integration).
 It does not repair files, run tests, or recursively build the Book. Diagram preprocessors run alongside it.
 [Record Rendering](record-rendering.md) defines the shared-model integration;
 indexes, evidence pages, and progress reporting follow later.

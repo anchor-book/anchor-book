@@ -69,7 +69,7 @@ record's source range with HTML from the typed inventory and never reads TOML.
 <tr id="record-line-grammar-1-assessment" class="roadmap-criterion-summary"><th scope="row">Assessment</th><td><p class="roadmap-condition">A written assessment compares the variants on searches, reads, wrong matches, and edit validity, states its limits, and recommends confirming or revising the goal syntax. Any revision is made in the design chapters, not here.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for assessment" aria-expanded="true" aria-controls="record-line-grammar-1-assessment-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="record-line-grammar-1-assessment-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>assessment</code></p>
-<p><strong>Anchor criteria and planned coverage:</strong> None — design decision input</p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — decision input</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
@@ -91,10 +91,10 @@ record's source range with HTML from the typed inventory and never reads TOML.
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/anchor-definitions.html">Anchor Definitions</a>, <a href="../design/authority-definitions.html">Authority Definitions</a>, <a href="../design/record-rendering.html">Record Rendering</a>, and <a href="../design/rust-engine.html">Rust Engine</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>record-line-grammar-2</code></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Replace the TOML record reader with the line scanner, keeping record types and diagnostic codes; decide and implement inline-field presentation.</label></li>
+<li><label><input type="checkbox" disabled> Replace the TOML record reader with the line scanner, keeping record types and diagnostic codes; decide and implement inline-field presentation.</label></li><li><label><input type="checkbox" disabled> Enforce the <a href="../design/anchor-definitions.html#identifiers">identifier forms</a> and the kind codes each reference field accepts. Rename every identifier to its kind-coded form in the same change, updating references, link fragments, evidence links, code comments, and workflow metadata that name them.</label></li>
 <li><label><input type="checkbox" disabled> Migrate this Book's records, literal examples, and test fixtures in the same change, and reject TOML record blocks as unsupported syntax.</label></li>
 <li><label><input type="checkbox" disabled> Repeat the authority proof's production-integration tests and review for the new conversion, and run mutation testing on the reader.</label></li>
-<li><label><input type="checkbox" disabled> Define completion criteria against <a href="../design/anchor-definitions.html#records-searchable-lines">records-searchable-lines</a>, <a href="../design/anchor-definitions.html#records-every-line">records-every-line</a>, and the existing record anchors before the milestone is assigned.</label></li>
+<li><label><input type="checkbox" disabled> Define completion criteria against <a href="../design/anchor-definitions.html#records-searchable-lines">records-searchable-lines</a>, <a href="../design/anchor-definitions.html#records-every-line">records-every-line</a>, <a href="../design/anchor-definitions.html#records-named-identifiers">records-named-identifiers</a>, and the existing record anchors before the milestone is assigned.</label></li>
 </ul></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
 </tbody>

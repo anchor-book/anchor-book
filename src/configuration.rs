@@ -30,7 +30,7 @@ pub enum Phase {
 pub enum SectionRole {
     /// Goal-system design.
     Design,
-    /// Requirements and design decisions.
+    /// Requirements and decisions.
     Authority,
     /// Agreed implementation work.
     ImplementationRoadmaps,

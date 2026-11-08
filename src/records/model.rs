@@ -148,7 +148,7 @@ pub enum RecordData {
     Anchor(Anchor),
     /// A requirement definition.
     Requirement(Requirement),
-    /// A design decision definition.
+    /// A decision definition.
     Decision(Decision),
 }
 

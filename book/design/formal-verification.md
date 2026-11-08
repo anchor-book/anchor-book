@@ -1,7 +1,7 @@
 # Formal Verification
 
 **Status: proof of concept implemented; see the [roadmap](../implementation-roadmaps/formal-verification.md) for evidence.** Verus verifies selected executable engine logic,
-starting with [valid authority](rust-engine.md#engine-valid-authority). Its
+starting with [valid authority](rust-engine.md#records-valid-authority). Its
 authority remains [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 The anchor and its verification criteria live in Rust Engine; this chapter defines
 the proof boundary and integration.
@@ -67,7 +67,7 @@ not an authority-validation result or a precondition that relationships are vali
 Invalid candidates retain recoverable identities and participate in target lookup;
 their existing decoding errors still prevent a successful inventory.
 
-The specification names `engine-valid-authority` and `formal-authority` in the
+The specification names `records-valid-authority` and `formal-authority` in the
 module. `reference_satisfies_authority_rules` combines three named predicates:
 `reference_is_not_repeated` checks duplicates within one record,
 `resolves_uniquely_to` checks identity and uniqueness across all candidates,
@@ -137,6 +137,12 @@ prototype. Check the engine's Rust 1.88 minimum and current stable builds before
 the dependency. Start within the current package; split out a crate only if the
 experiment establishes a dependency/toolchain need, keeping that crate on the
 production call path. Resolve any minimum-version change explicitly.
+
+The prototype adds `vstd` as a normal dependency. Before release, the
+[isolation decision](../authority/decisions.md#decision-isolate-engine-verification)
+removes it, and the Verus toolchain, from what consuming projects build, so that
+projects verifying their own code choose their own versions; see
+[Project Integration](project-integration.md#what-the-crate-must-not-impose).
 
 Treat compatibility as the first implementation checkpoint: confirm that a small
 representative validator using the required types and collection operations both

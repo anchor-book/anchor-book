@@ -94,7 +94,7 @@ implementation-roadmaps = "implementation-roadmaps/index.md"
 ```
 
 All shown fields are required in the first schema. The `[verification]` section,
-used only by `verify`, is defined in [Verification Evidence](verification-evidence.md#configuration). Reject unknown fields and
+used only by `verify`, is defined in [Verification Evidence](verification-evidence.md#configuration); the planned `[engine]` version declaration is defined in [Project Integration](project-integration.md#running-the-engine). Reject unknown fields and
 unsupported schema versions so a typo cannot silently change behavior.
 The library rejects invalid input without creating or repairing configuration.
 

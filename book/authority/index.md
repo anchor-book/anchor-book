@@ -1,10 +1,11 @@
 # Authority
 
 Authority establishes why an anchor's property must hold. An anchor can be based
-on a requirement, a design decision, or both:
+on a requirement, a decision, or both:
 
 - [Requirements](requirements.md) state required outcomes and constraints.
-- [Design Decisions](design-decisions.md) record choices that constrain later design,
+- [Decisions](decisions.md) record choices that govern the system being built,
+  such as its scope, design, interfaces, verification, or supported environments,
   including their rationale, alternatives, and conditions for reconsideration.
 
 Design explains the intended system; authority explains the obligations and choices

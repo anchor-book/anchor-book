@@ -148,7 +148,7 @@ Book and keeps the printed report.
 A link is a comment line in source code naming one anchor criterion:
 
 ```rust
-// anchorbook: check-observation-only#file-preservation
+// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn checks_preserve_files_and_directory_entries() { /* ... */ }
 ```
@@ -229,10 +229,10 @@ anchorbook verify: progress
 scope: all anchors; methods test, proof; review not evaluated
 
 Structural Checking (design/structural-checking.md)
-  check-observation-only (draft) — partial, 1 of 2 criteria
+  A-check-observation-only (draft) — partial, 1 of 2 criteria
     file-preservation [test]: satisfied — 3 linked tests passed
     no-execution [test]: unlinked
-  check-navigation-conformance (draft) — unlinked
+  A-check-navigation-conformance (draft) — unlinked
 
 summary: 18 anchors: 1 satisfied, 2 partial, 0 failing, 15 unlinked
          41 criteria: 5 satisfied, 1 failed, 35 unlinked
@@ -270,6 +270,11 @@ are written; `runners` lists the supported runners the project uses. Paths follo
 the existing [path rules](configuration.md#paths), and `output` must be separate
 from the Book source. The section is required for `verify` and ignored by `check`;
 its absence makes `verify` incomplete.
+
+A project that verifies its own code also identifies its Verus installation and
+verification toolchain here, separately from its build toolchain; [Project
+Integration](project-integration.md#formal-verification-in-a-project) defines
+that use. The exact fields are defined with the proof runner.
 
 ## Boundaries
 
