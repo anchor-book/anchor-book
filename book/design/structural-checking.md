@@ -196,18 +196,24 @@ chain adds core data/configuration support, including another TOML library, but
 not mdBook's driver or HTML/server runtime. The parser is integrated through the private navigation adapter; its types do
 not appear in the public checking API.
 
-Parsing and conformance are separate. The parser can ignore prose, code blocks,
-and unsupported headings, even returning an empty summary. Use pulldown-cmark
-Markdown events and offsets to validate the supported summary syntax before a
-successful structural result. Preserve ordinary chapter-label formatting, valid
-comments, parts, separators, and targetless drafts. Non-navigation prose, code
-blocks, and unsupported headings produce a located unsupported-input result;
-malformed input that prevents evaluation is incomplete. Chapter lists use the
-mdBook bullet forms (`-` or `*`); numeric Markdown lists are unsupported. Nesting
-is bounded to 128 list levels before invoking the recursive summary parser;
-deeper input yields incomplete evaluation. An otherwise supported
-empty or title-only summary still fails the required-role rules. Do not treat
-an ignored construct as evidence that an expected chapter or role does not exist.
+Parsing and conformance are separate. The checker accepts every summary that
+the supported mdBook version parses; it reports structural rules, not parse
+errors, for such input. mdBook ignores prose, code blocks, and other headings,
+even returning an empty summary, so the checker uses pulldown-cmark Markdown
+events and offsets to locate entries and to find a link mdBook would drop, which
+is a structural finding rather than a silently missing chapter. Malformed input
+that mdBook cannot parse is incomplete. Nesting is bounded to 128 list levels
+before invoking the recursive summary parser; deeper input yields incomplete
+evaluation. An empty or title-only summary still fails the required-role rules.
+Do not treat an ignored construct as evidence that an expected chapter or role
+does not exist.
+
+The current checker handles a subset of that input: chapter-label formatting,
+comments, parts, separators, targetless drafts, and `-` or `*` chapter lists. It
+still reports ordered lists, HTML or images in link labels, and prose, code
+blocks, other headings, and blockquotes as unsupported input. Support for each
+is added when a Book needs it; until then such a summary yields incomplete
+evaluation.
 
 Parsed links lack source spans. Retain source ranges from the Markdown event
 stream and associate them with the observed entries, including reference-style
