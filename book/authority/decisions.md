@@ -115,10 +115,10 @@ schema-version = 1
 id = "decision-library-cli-entry"
 title = "The library provides the CLI entry point and projects declare the engine version"
 status = "draft"
-choice = "The library exposes the command-line entry point, and the published anchorbook binary is a thin wrapper around it. A project runs the engine either through a small binary in its own workspace or through an installed binary. It declares the engine version in anchorbook.toml, and every entry point stops before evaluating when its version does not satisfy that declaration."
+choice = "The library exposes the command-line entry point, and the published anchorbook binary is a thin wrapper around it. A project runs the engine either through a small binary in its own workspace or through an installed binary. It declares one exact engine version in anchorbook.toml using an exact Cargo version requirement, and every entry point stops before evaluating when its version differs. Missing, malformed, or non-exact declarations make evaluation incomplete."
 requirements = ["requirement-project-adoption"]
-rationale = "A dependency provides only the library, while mdBook, CI, and agents invoke a binary, and Cargo does not run binaries belonging to dependencies. A workspace binary makes the project's Cargo.lock the single version source for tests and commands; an installed binary suits projects that prefer no extra workspace member. The declared version keeps either from silently running different rules than the project's tests."
-alternatives = ["Installed binary only, which keeps the project unchanged but leaves the installed version and the locked library version free to diverge.", "Workspace binary only, which gives one version source but requires every project to add and maintain a workspace member."]
+rationale = "A dependency provides only the library, while mdBook, CI, and agents invoke a binary, and Cargo does not run binaries belonging to dependencies. A workspace binary makes the project's Cargo.lock the single version source for tests and commands; an installed binary suits projects that prefer no extra workspace member. An exact declaration keeps either from silently running different rules than the project's tests."
+alternatives = ["Installed binary only, which keeps the project unchanged but leaves the installed version and the locked library version free to diverge.", "Workspace binary only, which gives one version source but requires every project to add and maintain a workspace member.", "A compatible version range allows entry points to run different engine versions and therefore cannot guarantee identical rules."]
 reconsider-when = "Cargo can run binaries provided by dependencies, which would make a project-local wrapper unnecessary."
 ```
 

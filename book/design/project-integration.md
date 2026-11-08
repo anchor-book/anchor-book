@@ -48,11 +48,12 @@ id = "project-one-engine-version"
 title = "Every entry point in a project runs the declared engine version"
 status = "draft"
 property = '''
-A project's library calls, CLI invocations, and mdBook preprocessor run the
-engine version the project declares, or stop before evaluating with a diagnostic
-stating the declared and running versions. A Book or configuration declaring a
-schema or record-syntax version the running engine does not support produces an
-incomplete result, never a pass or a partial interpretation.
+A project declares one exact engine version. Its library calls, CLI invocations,
+and mdBook preprocessor run that version, or stop before evaluating with a
+diagnostic stating the declared and running versions. A missing, malformed, or
+non-exact engine declaration, or a Book or configuration declaring an unsupported
+schema or record-syntax version, produces an incomplete result, never a pass or
+a partial interpretation.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-project-adoption" },
@@ -63,6 +64,11 @@ authorities = [
 id = "same-version-entry-points"
 verification = ["test"]
 statement = "In a fixture workspace, a project-local binary built from the library and an installed binary of the same version produce identical reports; an installed binary of a different version stops with the declared and running versions."
+
+[[criteria]]
+id = "exact-version-declaration"
+verification = ["test"]
+statement = "Every entry point accepts an exact Cargo version requirement such as =0.2.0 and rejects missing, malformed, or non-exact declarations before evaluation. A different version is rejected even when it would satisfy a broader compatible range."
 
 [[criteria]]
 id = "unsupported-versions"
@@ -226,21 +232,26 @@ wrapper around it. A project runs the engine in either of two ways:
 | A small binary in the project's workspace that calls the library entry point, with a Cargo alias | The project's `Cargo.lock`, shared with its tests | Workspaces that already run internal tools through Cargo |
 | An installed `anchorbook` binary | The version installed by the project's setup and CI | Projects that prefer not to add a workspace member |
 
-The project declares the engine version it uses in `anchorbook.toml`. Every
-entry point compares its own version with that declaration and stops before
-evaluating when they differ, so a stale installation cannot silently check or
-render with different rules than the project's tests.
+The project declares one exact engine version in `anchorbook.toml`. Every entry
+point compares its own version with that declaration and stops before evaluating
+when they differ, so a stale installation cannot silently check or render with
+different rules than the project's tests.
 
 ```toml
 [engine]
-version = "0.2"
+version = "=0.2.0"
 ```
 
-The value is a Cargo version requirement. Configuration, record syntax, and
-the contract are versioned with the engine; a Book declares the configuration
-schema and record syntax it uses, and an engine that does not support them
-reports incomplete evaluation. Compatibility and migration rules for those
-versions are part of [release readiness](rust-engine.md#rust-development-conventions).
+The value must be an exact Cargo version requirement: `=` followed by a full
+version. Missing, malformed, or non-exact declarations make evaluation incomplete.
+This keeps all entry points on one version; upgrades update the declaration,
+locked dependency, and installed binary together as applicable.
+
+Configuration, record syntax, and the contract are versioned with the engine;
+a Book declares the configuration schema and record syntax it uses, and an engine
+that does not support them reports incomplete evaluation. Compatibility and
+migration rules for those versions are part of
+[release readiness](rust-engine.md#rust-development-conventions).
 
 ## What the crate must not impose
 

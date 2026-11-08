@@ -5,20 +5,26 @@ system overview to component responsibilities, interfaces, and detailed behavior
 It represents the goal as currently understood, rather than only what is implemented.
 
 Chapters remain **drafts for review**. The record library, mdBook rendering,
-configuration loading, and structural checking are implemented; other
+configuration loading, structural checking, and local authority proof are in use; other
 capabilities remain planned. See the
 [roadmaps](../implementation-roadmaps/index.md) for progress and evidence.
+
+Read from the system overview through record definitions and configuration,
+then the engine and its operations. Formal verification establishes the proof
+boundary; verification evidence describes how results are reported; project
+integration brings those capabilities into other projects.
 
 | Chapter | Scope |
 | --- | --- |
 | [System Overview](system-overview.md) | Components, Book concepts, operations, and how the engine will develop using its own Book |
-| [Rust Engine](rust-engine.md) | Library and CLI boundaries, data and errors, and Rust development conventions |
-| [Formal Verification](formal-verification.md) | Verus proof of production authority-validation logic, integration boundaries, and evidence |
-| [Configuration](configuration.md) | Mapping a project's layout into Book roles |
 | [Anchor Definitions](anchor-definitions.md) | One structured authoring format, authority references, and verification criteria |
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
+| [Configuration](configuration.md) | Mapping a project's layout into Book roles |
+| [Rust Engine](rust-engine.md) | Library and CLI boundaries, data and errors, and Rust development conventions |
 | [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
+| [Checking Diagnostics](check-diagnostics.md) | Typed findings, result states, repair guidance, and CLI reports |
+| [Formal Verification](formal-verification.md) | Verus proof of production authority-validation logic, integration boundaries, and evidence |
 | [Verification Evidence](verification-evidence.md) | The verify operation: links from code to criteria, tool reports, and per-criterion evidence states |
 | [Project Integration](project-integration.md) | How other Rust projects adopt the crate, run the engine, bootstrap agents, and verify their own code with Verus |
 
