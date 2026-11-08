@@ -94,8 +94,32 @@ fn origins(text: &str) -> Result<Vec<(Option<PathBuf>, usize)>, Failure> {
     let mut heading = false;
     let mut link_depth = 0usize;
     let mut list_depth = 0usize;
+    // pulldown-cmark emits one `Html` event per line of an HTML block, so a
+    // multi-line comment is only recognizable once the whole block is read.
+    let mut html_block: Option<(String, usize)> = None;
     for (event, range) in Parser::new(text).into_offset_iter() {
         let allowed = match event {
+            Event::Start(Tag::HtmlBlock) => {
+                html_block = Some((String::new(), range.start));
+                true
+            }
+            // pulldown-cmark emits `Html` only inside an HTML block.
+            Event::Html(html) => match &mut html_block {
+                Some((block, _)) => {
+                    block.push_str(&html);
+                    true
+                }
+                None => false,
+            },
+            Event::End(TagEnd::HtmlBlock) => match html_block.take() {
+                Some((block, start)) if !comments_only(&block) => {
+                    return Err(Failure::unsupported(
+                        start,
+                        "expected summary chapter links, H1 titles/parts, separators, or comments; this HTML block is not only comments",
+                    ));
+                }
+                _ => true,
+            },
             Event::Start(Tag::Heading {
                 level: HeadingLevel::H1,
                 ..
@@ -142,15 +166,9 @@ fn origins(text: &str) -> Result<Vec<(Option<PathBuf>, usize)>, Failure> {
             }
             Event::Start(Tag::Emphasis | Tag::Strong) | Event::Code(_) => heading || link_depth > 0,
             Event::Text(text) => heading || link_depth > 0 || text.trim().is_empty(),
-            Event::Html(html) | Event::InlineHtml(html) => comments_only(&html),
-            Event::Start(Tag::Paragraph | Tag::Item | Tag::HtmlBlock)
-            | Event::End(
-                TagEnd::Paragraph
-                | TagEnd::Item
-                | TagEnd::HtmlBlock
-                | TagEnd::Emphasis
-                | TagEnd::Strong,
-            )
+            Event::InlineHtml(html) => comments_only(&html),
+            Event::Start(Tag::Paragraph | Tag::Item)
+            | Event::End(TagEnd::Paragraph | TagEnd::Item | TagEnd::Emphasis | TagEnd::Strong)
             | Event::Rule
             | Event::SoftBreak
             | Event::HardBreak => true,
@@ -254,6 +272,59 @@ mod tests {
         );
         assert!(comments_only("<!-- a -->\n<!-- b -->"));
         assert!(!comments_only("<!-- a --><script></script><!-- b -->"));
+    }
+    #[test]
+    fn multi_line_comments_are_accepted_wherever_mdbook_accepts_them() {
+        // Each source parses successfully with mdBook 0.5.4; the expected
+        // targets are the chapters mdBook reports, excluding commented text.
+        for (source, expected) in [
+            (
+                "<!--\n    Guidelines:\n\n    - [Not a chapter](no.md)\n-->\n\n# Summary\n\n- [One](one.md)\n",
+                vec!["one.md"],
+            ),
+            (
+                "# Summary\n\n- [One](one.md)\n<!--\n- [Old](old.md)\n-->\n- [Two](two.md)\n",
+                vec!["one.md", "two.md"],
+            ),
+            (
+                "# Summary\n\n[Intro](intro.md)\n\n<!--\n# Part - En\n-->\n# Part\n\n- [One](one.md)\n",
+                vec!["intro.md", "one.md"],
+            ),
+            (
+                "<!-- one -->\n<!--\ntwo\n-->\n\n- [One](one.md)\n",
+                vec!["one.md"],
+            ),
+            (
+                "- [One](one.md) <!-- trailing note -->\n  - [Two](two.md) <!-- note -->\n",
+                vec!["one.md", "two.md"],
+            ),
+        ] {
+            let mdbook = parse_summary(source).expect(source);
+            assert!(!mdbook.numbered_chapters.is_empty(), "{source}");
+            let targets = parse(source)
+                .unwrap_or_else(|error| panic!("{source}: {}", error.message))
+                .into_iter()
+                .map(|entry| entry.target.unwrap())
+                .collect::<Vec<_>>();
+            assert_eq!(
+                targets,
+                expected.iter().map(PathBuf::from).collect::<Vec<_>>(),
+                "{source}"
+            );
+        }
+    }
+    #[test]
+    fn multi_line_html_blocks_with_other_content_remain_unsupported_at_their_start() {
+        for source in [
+            "- [One](one.md)\n\n<!--\nnote\n--><script>bad</script>\n",
+            "- [One](one.md)\n\n<div>\n<!-- note -->\n</div>\n",
+            "- [One](one.md)\n\n<!--\nunclosed\n",
+        ] {
+            let error = parse(source).unwrap_err();
+            assert_eq!(error.code, "input.unsupported", "{source}");
+            let offset = error.offset.expect(source);
+            assert_eq!(offset, source.find('<').unwrap(), "{source}");
+        }
     }
     #[test]
     fn parser_errors_preserve_causes_and_destinations_keep_mdbook_semantics() {
