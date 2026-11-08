@@ -8,10 +8,27 @@
 criterion, running the linked tests and proofs, as defined in
 [Verification Evidence](../design/verification-evidence.md). It serves agents in
 the build loop and CI with the same command. This Book's own anchors are the first
-acceptance case, starting with tests, then proofs, then CI.
+pilot; independent consumers establish that their own tools and code can supply
+evidence for their criteria.
 
 None of this Book's criteria are linked to tests or proofs yet, so `verify` will
 initially report them as unlinked. Linking criteria is part of the work.
+
+## Sequence and scope
+
+Start with the shared foundation in milestone 4. Milestones 1 and 2 then provide
+test and proof runners independently. Milestone 5 exercises consumer proofs after
+[engine proof isolation](formal-verification.md#formal-verification-4); milestone 3
+adds CI and versioned retained reports. Existing milestone and criterion IDs stay
+stable. All work here remains Proposed until its scope is agreed and assigned.
+
+The Formal Verification roadmap owns engine proof correctness, its existing
+evidence, and packaging isolation. This roadmap owns tool execution, report
+interpretation, and criterion states. General CLI version alignment, contract
+delivery, and registry publication retain their separate
+[integration and release scope](index.md#later-work-retained-from-the-design).
+Record syntax migration is not a prerequisite: links resolve the identifiers in
+the current inventory and migrate with them when that work is assigned.
 
 <a id="verification-evidence-1"></a>
 
@@ -23,13 +40,12 @@ initially report them as unlinked. Linking criteria is part of the work.
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">An agent or engineer runs <code>anchorbook verify --anchor &lt;id&gt; --method test</code> after a change and sees that anchor's test criteria for the current files, with links resolved and drift reported; a whole-Book run reports progress by chapter.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">The record library, configuration loader, and navigation reader.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1"><a href="#verification-evidence-4">Milestone 4</a> and agreement on nextest support.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification-evidence.html">Verification Evidence</a>, <a href="../design/configuration.html">Configuration</a>, <a href="../design/check-diagnostics.html">Diagnostics</a>, and <a href="../design/rust-engine.html">Rust Engine</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-1</code></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Add the <code>[verification]</code> configuration section, accepted by the loader and ignored by <code>check</code>.</label></li>
-<li><label><input type="checkbox" disabled> Implement a <code>verification</code> capability: link scanning in configured sources, test selection, nextest invocation with an exact filter and JUnit output, test-name mapping, and per-method, per-criterion, and per-anchor states, returned as typed data.</label></li>
-<li><label><input type="checkbox" disabled> Add <code>anchorbook verify</code> with scope options, the progress report, and exit statuses as designed.</label></li>
+<li><label><input type="checkbox" disabled> Use milestone 4's configuration, link inventory, states, and report API; implement nextest selection, an exact filter with ignored tests included, JUnit interpretation, and test-name mapping.</label></li>
+<li><label><input type="checkbox" disabled> Connect the runner to <code>anchorbook verify --config</code>, preserving the shared scope, exit statuses, and input identities.</label></li>
 <li><label><input type="checkbox" disabled> Pin nextest and document installing it in CONTRIBUTING; ordinary <code>cargo test</code> and CI test jobs are unchanged.</label></li>
 <li><label><input type="checkbox" disabled> Link the test criteria of the <code>verify-*</code> anchors and at least one existing checker anchor, and record a build-loop run.</label></li>
 </ul></td></tr>
@@ -38,13 +54,13 @@ initially report them as unlinked. Linking criteria is part of the work.
 <tr id="verification-evidence-1-test-states" class="roadmap-criterion-summary"><th scope="row">Test states</th><td><p class="roadmap-condition">Independent fixtures produce every state for the test method; criteria requiring several methods report partial or not evaluated correctly; scoped runs name what they exclude.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for test states" aria-expanded="true" aria-controls="verification-evidence-1-test-states-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="verification-evidence-1-test-states-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>test-states</code></p>
-<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code> — Partial: test method; <code>scope-and-limits</code> — Full</p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code>, <code>scope-and-limits</code> — Partial: test method and its execution scope; proof scope is in milestone 2.</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="verification-evidence-1-progress-report" class="roadmap-criterion-summary"><th scope="row">Progress report</th><td><p class="roadmap-condition">For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor by chapter with states, links, and summary counts and exit 0; invalid inputs make the run incomplete; an unbuildable or missing runner affects only its method.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for progress report" aria-expanded="true" aria-controls="verification-evidence-1-progress-report-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="verification-evidence-1-progress-report-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>progress-report</code></p>
-<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-progress-report">verify-progress-report</a> · <code>progress-output</code>, <code>incomplete-runs</code> — Full</p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-progress-report">verify-progress-report</a> · <code>progress-output</code>, <code>incomplete-runs</code> — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and retained CI reports in milestone 3.</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="verification-evidence-1-links" class="roadmap-criterion-summary"><th scope="row">Links</th><td><p class="roadmap-condition">Fixtures with dangling, mismatched, misplaced, and duplicate links and unlinked criteria produce located findings; corrected fixtures resolve.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for links" aria-expanded="true" aria-controls="verification-evidence-1-links-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
@@ -56,7 +72,7 @@ initially report them as unlinked. Linking criteria is part of the work.
 <tr id="verification-evidence-1-selected-runs" class="roadmap-criterion-summary"><th scope="row">Selected runs</th><td><p class="roadmap-condition">Recording fixture runners show that a scoped run invokes only nextest with exactly the linked tests in scope and reads no earlier reports; linked tests not executed, skipped, or missing have no evidence; Book and source files are unchanged.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for selected runs" aria-expanded="true" aria-controls="verification-evidence-1-selected-runs-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="verification-evidence-1-selected-runs-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>selected-runs</code></p>
-<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-runs-linked-checks">verify-runs-linked-checks</a> · <code>selected-run</code> — Partial: test runner; <code>source-preservation</code> — Full</p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-runs-linked-checks">verify-runs-linked-checks</a> · <code>selected-run</code>, <code>source-preservation</code> — Partial: native test selection, current inputs, and preservation; proof execution is in milestone 2.</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr id="verification-evidence-1-build-loop" class="roadmap-criterion-summary"><th scope="row">Build loop</th><td><p class="roadmap-condition">In this repository, <code>anchorbook verify --anchor</code> for a linked anchor reports its criteria after a passing change, a deliberately failing change, and the restored code, and a whole-Book run reports the remaining unlinked criteria; record the commands and output.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for build loop" aria-expanded="true" aria-controls="verification-evidence-1-build-loop-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
@@ -78,23 +94,44 @@ initially report them as unlinked. Linking criteria is part of the work.
 <table class="roadmap-criteria roadmap-milestone">
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
-<tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1"><code>verify</code> runs the Verus proof when a linked proof criterion is in scope, and <code>formal-authority</code> reports its state from links on the verified functions.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1"><code>verify</code> runs the configured project's Verus over complete linked targets and returns criterion evidence from a supported, mode-aware report adapter. The engine's <code>formal-authority</code> criterion is the first pilot.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Verification Evidence — Milestone 1; the pinned Verus toolchain.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification-evidence.html">Verification Evidence</a> and <a href="../design/formal-verification.html">Formal Verification</a></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1"><a href="#verification-evidence-4">Milestone 4</a>, the existing engine proof, and a scoped native compatibility experiment that settles configuration fields and supported function/target forms before the complete runner is assigned. Nextest completion is not required.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification-evidence.html#verus-runner">Verus runner</a>, <a href="../design/formal-verification.html">Formal Verification</a>, and <a href="../design/project-integration.html#project-verus-evidence">project-verus-evidence</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-2</code></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Invoke Verus with JSON output and interpret full-crate verification, errors, and per-function results.</label></li>
-<li><label><input type="checkbox" disabled> Link the verified authority functions to <code>formal-authority</code>.</label></li>
-<li><label><input type="checkbox" disabled> Exercise passing, failing, and unbuildable proofs, a missing Verus installation, and a deliberate proof defect in a disposable copy.</label></li>
+<li><label><input type="checkbox" disabled> Use the pinned native verifier to settle installation/version/toolchain and manifest/package/target/feature fields; capture real reports for executable and proof functions and declare unsupported forms.</label></li>
+<li><label><input type="checkbox" disabled> Implement one private Verus report adapter over the shared evidence model. Derive expected functions from links rather than the engine's hard-coded seven-function list.</label></li>
+<li><label><input type="checkbox" disabled> Run each required complete target once with locked dependencies, the agreed trust policy, and fresh target/report directories under output; record actual inputs, tools, invocation, and executed scope.</label></li>
+<li><label><input type="checkbox" disabled> Link the authority validator to <code>formal-authority</code> and exercise it through the real CLI. Keep its existing proof-scope review and excluded integration obligations visible.</label></li>
+<li><label><input type="checkbox" disabled> Test missing/duplicate/skipped functions, wrong modes or versions, empty/malformed/partial reports, zero coverage, cached runs with no new report, changed inputs, absent tools, build failures, deliberate proof defects, and prohibited assumptions or trusted project bodies.</label></li>
+<li><label><input type="checkbox" disabled> Record native failure/correction results and supported report fixtures, commands, runtime, scope, assumptions, and limits before claiming runner acceptance.</label></li>
 </ul></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
-<tr id="verification-evidence-2-proof-states" class="roadmap-criterion-summary"><th scope="row">Proof states</th><td><p class="roadmap-condition">Fixture and real Verus runs produce satisfied, failed, inconclusive, and not-evaluated proof states as specified, and <code>formal-authority</code> is satisfied for the current code.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for proof states" aria-expanded="true" aria-controls="verification-evidence-2-proof-states-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-2-proof-states" class="roadmap-criterion-summary"><th scope="row">Proof states</th><td><p class="roadmap-condition">Fixtures cover every proof-method state, and native runs demonstrate success, a deliberate verification failure and correction, build failure, and unavailable tools. The engine's <code>formal-authority</code> proof method is satisfied for the tested inputs; test and review obligations retain their own states.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for proof states" aria-expanded="true" aria-controls="verification-evidence-2-proof-states-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
 <tr id="verification-evidence-2-proof-states-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>proof-states</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code> — Partial: proof method; <a href="../design/verification-evidence.html#verify-runs-linked-checks">verify-runs-linked-checks</a> · <code>selected-run</code> — Partial: proof runner; <a href="../design/verification-evidence.html#verify-links-resolve">verify-links-resolve</a> · <code>link-findings</code> — Partial: proof links</p>
 <p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-2-report-integrity" class="roadmap-criterion-summary"><th scope="row">Report integrity</th><td><p class="roadmap-condition">Real and independent fixture reports establish mode-aware, unique function matching and complete-target success. Missing, duplicate, skipped, partial, malformed, zero-coverage, or unsupported-version evidence never satisfies a method; unrelated failures in the selected target remain visible.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for report integrity" aria-expanded="true" aria-controls="verification-evidence-2-report-integrity-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-2-report-integrity-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>report-integrity</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-links-resolve">verify-links-resolve</a> · <code>link-findings</code> — Partial: proof modes and result identities; <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code> — Partial: proof report interpretation.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-2-current-runs" class="roadmap-criterion-summary"><th scope="row">Current runs</th><td><p class="roadmap-condition">Recording runners and native runs establish exactly the required complete targets, actual features and tools, fresh reports, and input identities including dirty sources. Earlier reports, successful commands without new verification output, and inputs changed during execution never count as passing evidence; Book and source files are preserved.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for current runs" aria-expanded="true" aria-controls="verification-evidence-2-current-runs-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-2-current-runs-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>current-runs</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-runs-linked-checks">verify-runs-linked-checks</a> · <code>selected-run</code>, <code>source-preservation</code> — Partial: native proof execution, completing the test-runner scope in milestone 1; <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>scope-and-limits</code> — Partial: proof target scope.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-2-trust-policy" class="roadmap-criterion-summary"><th scope="row">Trust policy</th><td><p class="roadmap-condition">For the supported verifier, deliberate assumptions and trusted project bodies fail the configured policy. Reports retain trusted dependencies and excluded boundaries; zero errors or a successful linked function cannot override partial-target verification or an unsupported report version.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for trust policy" aria-expanded="true" aria-controls="verification-evidence-2-trust-policy-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-2-trust-policy-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>trust-policy</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/project-integration.html#project-verus-evidence">project-verus-evidence</a> · <code>trusted-assumptions</code> — Partial: the first supported adapter and engine pilot; independent consumers and their tool selections are in milestone 5.</p>
+<p><strong>Evidence:</strong> Pending. Existing engine proof runs do not establish consumer-runner behavior.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
 </tbody>
@@ -111,13 +148,120 @@ initially report them as unlinked. Linking criteria is part of the work.
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Each pull request and main revision runs <code>anchorbook verify</code> for the whole Book and retains its report.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Verification Evidence — Milestones 1 and 2.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Verification Evidence — Milestones 1, 2, and 5.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification-evidence.html">Verification Evidence</a></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-3</code></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> Define this milestone's tasks and criteria after milestone 2, including the workflow job, toolchains, report retention, and whether any explicit option blocks on regressions.</label></li>
+<li><label><input type="checkbox" disabled> Define a versioned artifact schema from the typed report, with current inputs, executed scope, tools, states, assumptions, and limits; review retained fields against public-content guidance.</label></li>
+<li><label><input type="checkbox" disabled> Run the whole-Book command in CI with supported tools and retain reports for passing, unsatisfied, and incomplete runs. Preserve the progress command's exit policy.</label></li>
+<li><label><input type="checkbox" disabled> Demonstrate an authorized failure/correction cycle and record actual revision-specific workflow results, retention, and runtime.</label></li>
 </ul></td></tr>
+<tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
+<tr id="verification-evidence-3-retained-report" class="roadmap-criterion-summary"><th scope="row">Retained report</th><td><p class="roadmap-condition">A versioned artifact preserves the typed report's scope and states, input identities, tools, and limits, with private paths and raw source/proof payloads omitted. Invalid or stale artifacts never become evidence for another run.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for retained report" aria-expanded="true" aria-controls="verification-evidence-3-retained-report-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-3-retained-report-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>retained-report</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-progress-report">verify-progress-report</a> · <code>progress-output</code>, <code>incomplete-runs</code> — Partial: retained CI presentation; <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>scope-and-limits</code> — Partial: artifact scope and limits.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-3-ci-results" class="roadmap-criterion-summary"><th scope="row">CI results</th><td><p class="roadmap-condition">Actual runs identify the tested checkout and demonstrate passing, failing-evidence, and incomplete outcomes, followed by correction at a new revision. Unsatisfied evidence remains progress; merge enforcement and rendered progress are separately agreed work.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for CI results" aria-expanded="true" aria-controls="verification-evidence-3-ci-results-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-3-ci-results-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>ci-results</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — CI execution, artifact retention, and correction workflow.</p>
+<p><strong>Evidence:</strong> Pending; local results alone cannot complete this criterion.</p>
+</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
+</tbody>
+</table>
+</div>
+
+<a id="verification-evidence-4"></a>
+
+## Milestone 4. Both runners share criterion evidence and report behavior
+
+<div class="roadmap-table-wrap">
+<table class="roadmap-criteria roadmap-milestone">
+<colgroup><col style="width:25%"><col style="width:75%"></colgroup>
+<tbody>
+<tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Configuration, function associations, target planning, input identities, evidence states, and library/CLI reports are usable before either native runner.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">The record library, configuration loader, navigation reader, and engineer agreement on this bounded foundation. Existing record identifiers remain usable.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification-evidence.html">Verification Evidence</a>, including <a href="../design/verification-evidence.html#evidence-links">links</a>, <a href="../design/verification-evidence.html#run-identity">run identity</a>, states, and command behavior.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-4</code></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
+<li><label><input type="checkbox" disabled> Add the common <code>[verification]</code> fields to the loader, ignored by <code>check</code>; validate sources and separate output without invoking tools.</label></li>
+<li><label><input type="checkbox" disabled> Implement supported source associations and function identities, distinguishing tests, Verus executable/proof functions, and specification context. Report misplaced, duplicate, dangling, mismatched, ambiguous, and unsupported links.</label></li>
+<li><label><input type="checkbox" disabled> Define runner-independent target planning, input identities, normalized evidence, and per-method/criterion/anchor aggregation behind the <code>verification</code> capability.</label></li>
+<li><label><input type="checkbox" disabled> Expose typed reports and <code>anchorbook verify --config</code> scope/report behavior. Use independent fixture results and unavailable-runner cases; no native runner or speculative plugin API is required for this milestone.</label></li>
+</ul></td></tr>
+<tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
+<tr id="verification-evidence-4-shared-states" class="roadmap-criterion-summary"><th scope="row">Shared states</th><td><p class="roadmap-condition">Independent evidence fixtures produce every method state and correct multi-method, criterion, and anchor aggregation. Missing or unsupported review remains not evaluated, and only all-required-method success satisfies a criterion.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for shared states" aria-expanded="true" aria-controls="verification-evidence-4-shared-states-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-4-shared-states-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>shared-states</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code> — Partial: normalized state model; native test/proof results are in milestones 1 and 2.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-4-function-links" class="roadmap-criterion-summary"><th scope="row">Function links</th><td><p class="roadmap-condition">Supported independent source fixtures resolve identities and methods against real inventory IDs, reject the listed invalid links, and distinguish same-named functions by module/package/target. A specification declaration alone supplies no successful proof evidence; unsupported forms have located findings.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for function links" aria-expanded="true" aria-controls="verification-evidence-4-function-links-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-4-function-links-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>function-links</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-links-resolve">verify-links-resolve</a> · <code>link-findings</code> — Partial: source discovery and inventory resolution; result matching is in each runner milestone.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-4-plans-and-reports" class="roadmap-criterion-summary"><th scope="row">Plans and reports</th><td><p class="roadmap-condition">Fixture plans identify requested criteria, selected tests/complete proof targets, input identities, and excluded scope. Library and actual CLI reports agree for valid, invalid, and unavailable-runner inputs, preserve sources, and use the designed progress/incomplete exit behavior.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for plans and reports" aria-expanded="true" aria-controls="verification-evidence-4-plans-and-reports-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-4-plans-and-reports-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>plans-and-reports</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-progress-report">verify-progress-report</a> · <code>progress-output</code>, <code>incomplete-runs</code>; <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>scope-and-limits</code>; <a href="../design/verification-evidence.html#verify-runs-linked-checks">verify-runs-linked-checks</a> · <code>selected-run</code>, <code>source-preservation</code> — Partial: planning and reporting before native execution; milestones 1 and 2 supply native results.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. This milestone provides common machinery, not passing native proof or test evidence.</td></tr>
+</tbody>
+</table>
+</div>
+
+<a id="verification-evidence-5"></a>
+
+## Milestone 5. Consumers verify their own production code
+
+<div class="roadmap-table-wrap">
+<table class="roadmap-criteria roadmap-milestone">
+<colgroup><col style="width:25%"><col style="width:75%"></colgroup>
+<tbody>
+<tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Independent Rust consumers use a packaged engine and their own Verus installations to obtain criterion evidence for their production code, with tested scope and dependency boundaries.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Milestone 2 and <a href="formal-verification.html#formal-verification-4">Formal Verification milestone 4</a>. Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/project-integration.html#formal-verification-in-a-project">Project verification</a>, <a href="../design/project-integration.html#project-verus-evidence">project-verus-evidence</a>, and <a href="../design/verification-evidence.html#responsibilities">verification responsibilities</a>.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-5</code></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
+<li><label><input type="checkbox" disabled> Prepare two independent packaged consumer fixtures with different Book/module layouts, a build toolchain separate from verification, and a consumer-selected <code>vstd</code> version different from the engine's proof workspace.</label></li>
+<li><label><input type="checkbox" disabled> Link a production executable contract and a supporting proof function to the consumer's criteria. Establish the runtime call path, preconditions, and excluded conversion/caller boundaries through tests and review.</label></li>
+<li><label><input type="checkbox" disabled> Exercise passing, deliberate proof failure and correction, incomplete/unsupported reports, unavailable tools, and trust-policy rejection through the real CLI. Add supported-version adapters only with native report fixtures.</label></li>
+<li><label><input type="checkbox" disabled> Document consumer setup, supported versions/forms, exact invocation, scope, assumptions, limits, and results for the tested package; retain partial states where review evidence is unsupported.</label></li>
+</ul></td></tr>
+<tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
+<tr id="verification-evidence-5-consumer-tools" class="roadmap-criterion-summary"><th scope="row">Consumer tools</th><td><p class="roadmap-condition">Both consumers build the packaged engine without its verifier dependencies and run their configured Verus installations using verification Rust separate from build Rust. A different consumer <code>vstd</code> resolves and builds; reports identify the actual tools and supported adapter used.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for consumer tools" aria-expanded="true" aria-controls="verification-evidence-5-consumer-tools-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-5-consumer-tools-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>consumer-tools</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/project-integration.html#project-verus-evidence">project-verus-evidence</a> · <code>separate-toolchain</code> — Full; <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a> · <code>independent-resolution</code> — Partial: proof dependencies and consumer <code>vstd</code> choice. Other exact pins and general release compatibility remain separate work.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-5-consumer-proof" class="roadmap-criterion-summary"><th scope="row">Consumer proof</th><td><p class="roadmap-condition">The consumer's own linked functions produce satisfied proof evidence, a deliberate defect fails, and correction passes at new input identities. Assumed/trusted project bodies, partial verification, unsupported versions, and engine proof results cannot satisfy a consumer criterion.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for consumer proof" aria-expanded="true" aria-controls="verification-evidence-5-consumer-proof-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-5-consumer-proof-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>consumer-proof</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/project-integration.html#project-verus-evidence">project-verus-evidence</a> · <code>trusted-assumptions</code> — Full; <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>state-per-method</code> — Partial: independent consumer proof states.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-5-scope-review" class="roadmap-criterion-summary"><th scope="row">Scope review</th><td><p class="roadmap-condition">Record the consumer criterion-to-contract assessment, production call path, satisfied preconditions, and test/review coverage of exclusions for the tested revisions. Reports disclose executed targets and any unsatisfied review method; proof success never implies all-method or whole-system verification.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for scope review" aria-expanded="true" aria-controls="verification-evidence-5-scope-review-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-5-scope-review-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>scope-review</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/verification-evidence.html#verify-criterion-states">verify-criterion-states</a> · <code>scope-and-limits</code> — Partial: consumer scope presentation. Fixture criterion fidelity and excluded boundaries are reviewed against the consumer's own Book.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-5-consumer-guidance" class="roadmap-criterion-summary"><th scope="row">Consumer guidance</th><td><p class="roadmap-condition">A fresh fixture setup reproduces packaged adoption, tool selection, supported report/function forms, deliberate failure and recovery using the documented commands, without depending on this development checkout. Unsupported workspace forms, review ingestion, and remaining release work are explicit.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for consumer guidance" aria-expanded="true" aria-controls="verification-evidence-5-consumer-guidance-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-5-consumer-guidance-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>consumer-guidance</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — reproducible consumer setup and contributor guidance.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending. Packaged fixture acceptance does not authorize publication or complete other project-integration capabilities.</td></tr>
 </tbody>
 </table>
 </div>

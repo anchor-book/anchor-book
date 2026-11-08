@@ -2,8 +2,12 @@
 
 **Status: draft for review.** Not implemented; the engine is currently used only
 from its own checkout. This chapter defines how other Rust projects use Anchor
-Book. [Later work](../implementation-roadmaps/index.md#later-work-retained-from-the-design)
-records it until a roadmap is agreed.
+Book. Consumer proof evidence is proposed in the
+[Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md#verification-evidence-5)
+and engine proof isolation in the
+[Formal Verification roadmap](../implementation-roadmaps/formal-verification.md#formal-verification-4).
+[Later work](../implementation-roadmaps/index.md#later-work-retained-from-the-design)
+records the remaining integration and release scope.
 
 A project adopts Anchor Book by depending on the published crate and adding
 configuration. Its ordinary tools then apply Anchor Book: `cargo test` checks
@@ -260,7 +264,9 @@ dependencies are constraints on that build:
 
 - **Formal verification.** The engine's own proofs, `vstd`, and the Verus
   toolchain stay out of what a project builds. A project that verifies its own
-  code chooses its own Verus and vstd versions.
+  code chooses its own Verus and vstd versions. The
+  [proof packaging design](formal-verification.md#proof-packaging-for-consumers)
+  and its roadmap own that boundary.
 - **Exact pins.** The published crate avoids exact-version requirements on
   packages a project may also use. Where an exact requirement is necessary, such
   as a parser whose behavior defines supported input, it is internal, recorded,
@@ -303,9 +309,10 @@ of the proofs in scope, and an evidence state that never overstates a result.
 The project configures its Verus installation and verification toolchain in its
 [verification configuration](verification-evidence.md#configuration), separate
 from its build toolchain. `verify` runs that installation, reads its report, and
-checks that every linked function verified in a complete run without trusted
-assumptions. The engine supports a declared range of Verus report versions; an
-unsupported version is inconclusive.
+checks that every linked function verified in the complete selected target under
+the recorded trust policy. The [Verus runner design](verification-evidence.md#verus-runner)
+defines mode-aware matching, complete reports, assumptions, and failure states.
+An unsupported report version is inconclusive.
 
 A proof criterion's scope (claim, domain, boundary, assumptions, and
 exclusions, as defined in [Anchor Definitions](anchor-definitions.md#required-scope-of-a-proof-criterion))
@@ -316,6 +323,16 @@ expresses the criterion stays a review obligation.
 The engine's proofs of its own logic, described in
 [Formal Verification](formal-verification.md), are evidence only for this Book's
 criteria.
+
+The first consumer fixtures use a packaged dependency outside this checkout:
+ordinary builds need no engine verifier, and a project with its own `vstd` uses
+its own Verus installation and a verification toolchain separate from its build
+toolchain. Proof success, deliberate failure and correction, unsupported reports,
+and excluded integration boundaries are acceptance cases in
+[Verification Evidence milestone 5](../implementation-roadmaps/verification-evidence.md#verification-evidence-5).
+These fixtures can use a locally packaged release candidate before registry
+publication. CLI version alignment and contract delivery remain separate
+integration work.
 
 ## Projects as acceptance cases
 
