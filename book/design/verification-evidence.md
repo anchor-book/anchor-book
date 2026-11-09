@@ -469,5 +469,10 @@ native Verus runs in
 5. **Sensitivity cost.** Each change verifies the complete target once, so large
    targets may need a sampling or per-function selection policy that still reports
    which changes were not tried.
-6. **Witness form.** How a Verus proof function states that it establishes another
+6. **Code or specification mutation.** Sensitivity changes executable code.
+   Changing the specification instead, while keeping the code and proof, would
+   allow uninformative changes to be filtered automatically by logical strength.
+   [Milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7)
+   compares the two.
+7. **Witness form.** How a Verus proof function states that it establishes another
    function's preconditions, so the runner can check it rather than trust the link.
