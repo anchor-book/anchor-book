@@ -219,10 +219,16 @@ changes; [Operations](system-overview.md#operations) defines both. Until
 those operations exist, a project writes its configuration and required
 chapters by hand and uses `check` to confirm them.
 
-A project with its own anchor or specification conventions migrates its records
-into the [record syntax](anchor-definitions.md#record-syntax) explicitly. The
-engine reads one canonical format; it does not interpret other conventions or
-accept aliases for them.
+A project whose existing Book serves another purpose, such as user
+documentation, keeps it and adds a separate Anchor Book with its own source and
+[mdBook configuration](configuration.md#relationship-to-mdbook). Agents adapt the
+project's existing design notes and decision records into the new Book's design
+chapters, records, and roadmaps; the existing Book is not restructured.
+
+A project with its own anchor or specification conventions replaces them with
+records in the [record syntax](anchor-definitions.md#record-syntax), rewriting
+or dropping them explicitly. The engine reads one canonical format; it does not
+interpret other conventions or accept aliases for them.
 
 ## Running the engine
 
@@ -342,8 +348,10 @@ integration work.
 The engine's acceptance cases include independent fixture workspaces with
 different layouts, existing Books, multi-crate workspaces, pinned toolchains, and
 their own Verus versions. Trials in other projects use disposable copies or
-branches and record findings in this Book's roadmaps; this Book names situations,
-not the projects they came from.
+branches and record findings in this Book's roadmaps. Design chapters describe
+situations, not the projects they came from; the
+[Project Integration roadmap](../implementation-roadmaps/project-integration.md)
+names the projects it integrates.
 
 ## Open questions
 
