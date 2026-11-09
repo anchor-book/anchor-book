@@ -243,21 +243,22 @@ Pending.
 
 **Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders a readable view with collapsible criterion details, while agents keep reading the compact Markdown source.
 
-**Status:** Proposed
+**Status:** In progress — implemented locally; presentation review pending
 
 **Identifier:** `record-rendering-4`
 
-**Dependencies:** Record Rendering milestone 2 and the converted roadmaps. Agreement on this milestone's scope, its anchor, and its criteria.
+**Dependencies:** Record Rendering milestone 2 and the converted roadmaps. The engineer agreed the scope, strict validation, and role-based chapter selection on 2026-11-09.
 
-**Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering) and the [roadmap format](index.md#defining-the-work).
+**Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering), [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones), and the [roadmap format](index.md#defining-the-work).
 
 **Tasks**
 
-- [ ] Define the governing anchor and its criteria for roadmap rendering and validation, with its authority, before the milestone is assigned.
-- [ ] Recognize milestone and criterion headings with their fragments, the field paragraphs, task lists, and anchor-coverage items in the record library, with located diagnostics for malformed milestones.
-- [ ] Validate that milestone and criterion identifiers are unique and that anchor-coverage references resolve to existing anchors and criteria.
-- [ ] Render the collapsible view in the preprocessor, readable without JavaScript and expanded when printing, replacing nothing in the source.
-- [ ] Exercise this Book's roadmaps and independent fixtures; record results.
+- [x] Define the governing anchor and its criteria, with its authority.
+- [x] Recognize milestone and criterion headings with their fragments, the field paragraphs, task lists, and anchor-coverage items in the record library, with located diagnostics for malformed milestones.
+- [x] Validate that milestone and criterion identifiers are unique and that anchor-coverage references resolve to existing anchors and criteria.
+- [x] Render the collapsible view in the preprocessor, readable without JavaScript and expanded when printing, replacing nothing in the source.
+- [x] Exercise this Book's roadmaps and independent fixtures; record results.
+- [ ] Review the rendered roadmaps: collapsing, keyboard access, and printing.
 
 ### Completion criteria
 
@@ -265,19 +266,25 @@ Pending.
 
 Independent fixtures with duplicate milestone or criterion identifiers, malformed fields, and anchor-coverage references to missing anchors or criteria fail preprocessing with located diagnostics; this Book's roadmaps pass.
 
-- **Anchor coverage:** To be defined with the milestone's anchor.
-- **Evidence:** Pending.
+- **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-validation` — Full
+- **Evidence:** Passed locally: `tests/roadmaps.rs` and the module's unit tests cover malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicates across chapters located in the repeating chapter, coverage citing a missing anchor, a requirement, or a missing criterion, section ends, and examples in code blocks. All of this Book's roadmaps pass.
 
 #### Rendered view {#record-rendering-4-rendered-view}
 
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
-- **Anchor coverage:** To be defined with the milestone's anchor.
-- **Evidence:** Pending.
+- **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
+- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters with open details sections, fragments, and visible identifiers, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output. This Book renders 99 criteria; every local link resolves and the print view has no duplicate identifiers. The review of collapsing, keyboard access, and printing is pending.
+
+### Evidence {#record-rendering-4-evidence}
+
+**Revision and checks:** Working tree based on `0baee60`, checked 2026-11-09. Formatting, Clippy, and 95 tests pass on Rust 1.88.0 and stable; the structural check, current-Book acceptance, `mdbook build`, rendered acceptance, and `scripts/check-engine-independence.sh` pass.
+
+**Mutation testing:** cargo-mutants 27.1.0 with `--jobs 2 --build-timeout 120` on `src/roadmaps.rs`, `src/rendering.rs`, `src/rendering/html.rs`, `src/adapters/mdbook.rs`, and `src/main.rs`. The first run of 204 mutations found 12 missed and 4 timeouts, all in the new code: untested section ends, multiple milestones per chapter, duplicate locations in a differing chapter, and the error source, plus loops whose index arithmetic could hang. Tests were added, the loops rewritten as iterators, and an ineffective match guard removed. The repeat run tested 182 mutations: 163 caught, 19 unviable, none missed or timed out.
 
 ### Completion record
 
-Pending.
+Pending the presentation review.
 
 ## Handoff and later work
 

@@ -26,6 +26,7 @@ fn rendered_diagnostics_are_separate_lines_without_extra_newlines() {
     let errors = render_chapters(&[RenderChapter {
         source: Chapter::new(Path::new("a.md"), "{anchor}`one`\n\n{anchor}`two`"),
         output_path: Path::new("a.md"),
+        roadmap: false,
     }])
     .unwrap_err();
     let rendered = errors.to_string();
@@ -93,6 +94,7 @@ fn adapter_preserves_json_and_record_parser_causes() {
     let route = render_chapters(&[RenderChapter {
         source: Chapter::new(Path::new("a.md"), "ordinary prose"),
         output_path: Path::new("../outside.md"),
+        roadmap: false,
     }])
     .unwrap_err();
     assert!(

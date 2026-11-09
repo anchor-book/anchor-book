@@ -25,3 +25,8 @@
   .ab-details::details-content { display: block; content-visibility: visible; }
   .ab-details summary { color: #000; }
 }
+/* Roadmap criteria: collapsible sections whose headings keep their fragments. */
+.ab-roadmap-criterion { margin: 1.2rem 0; padding-inline-start: .9rem; border-inline-start: 3px solid var(--table-border-color); }
+.ab-roadmap-criterion > summary { color: var(--fg); font-weight: inherit; }
+.ab-roadmap-criterion > summary h4 { display: inline; margin: 0; font-size: 1em; }
+.ab-roadmap-criterion .ab-link-id { display: inline; margin-inline-start: .5rem; font-weight: normal; }

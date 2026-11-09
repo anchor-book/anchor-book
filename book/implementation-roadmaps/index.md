@@ -77,10 +77,11 @@ boundaries: several milestones may advance one anchor or vice versa. Put work
 outside a roadmap's goal in a separate roadmap. Ownership belongs to assignments;
 owner fields and issue links are optional.
 
-The engine does not yet read this format. The planned
-[roadmap rendering milestone](record-rendering.md#record-rendering-4) has the
-Anchor Book preprocessor validate milestone and criterion identifiers and anchor
-references and render a collapsible view, without changing the source format.
+The Anchor Book preprocessor reads this format in the chapters of the
+`implementation-roadmaps` role: it validates milestone and criterion identifiers
+and anchor-coverage references and renders each criterion as a collapsible
+section, as [Roadmap rendering](../design/record-rendering.md#roadmap-rendering)
+describes. A malformed milestone fails the Book build with a located diagnostic.
 
 ## Naming and references
 

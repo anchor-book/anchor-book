@@ -154,3 +154,30 @@ pub(super) fn record(
     out.push_str("</section>\n\n");
     out
 }
+
+/// Inline text with backtick code spans; everything else is escaped.
+fn inline_code(text: &str) -> String {
+    let mut out = String::new();
+    for (index, part) in text.split('`').enumerate() {
+        if index % 2 == 1 {
+            write!(out, "<code>{}</code>", escape(part)).expect("writing to String");
+        } else {
+            out.push_str(&escape(part));
+        }
+    }
+    out
+}
+/// Opening of a roadmap criterion: a collapsible section, open by default, whose
+/// heading keeps the criterion's fragment and shows its identifier.
+pub(super) fn criterion_open(id: &str, title: &str) -> String {
+    format!(
+        "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"{id}\">{} <span class=\"ab-link-id\">{id}</span></h4></summary>\n",
+        inline_code(title),
+        id = escape(id),
+    )
+}
+/// Closing of a roadmap criterion section, followed by a blank line so the
+/// following Markdown is parsed normally.
+pub(super) fn criterion_close() -> String {
+    "\n</details>\n\n".to_owned()
+}

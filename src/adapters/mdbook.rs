@@ -45,8 +45,14 @@ struct Source {
     path: PathBuf,
     output: PathBuf,
     content: String,
+    roadmap: bool,
 }
-fn collect(items: &Value, sources: &mut Vec<Source>) -> Result<(), PreprocessError> {
+fn collect(
+    items: &Value,
+    roadmaps: Option<&Path>,
+    within: bool,
+    sources: &mut Vec<Source>,
+) -> Result<(), PreprocessError> {
     for item in items
         .as_array()
         .ok_or_else(|| input("Book items and chapter sub_items must be arrays"))?
@@ -80,15 +86,19 @@ fn collect(items: &Value, sources: &mut Vec<Source>) -> Result<(), PreprocessErr
             .get("path")
             .and_then(Value::as_str)
             .ok_or_else(|| input(format!("{source}: chapter needs an output path")))?;
+        let roadmap = within || roadmaps.is_some_and(|r| Path::new(source) == r);
         sources.push(Source {
             path: source.into(),
             output: output.into(),
             content: content.into(),
+            roadmap,
         });
         collect(
             chapter
                 .get("sub_items")
                 .ok_or_else(|| input(format!("{source}: missing sub_items")))?,
+            roadmaps,
+            roadmap,
             sources,
         )?;
     }
@@ -139,12 +149,25 @@ fn supported(context: &Value) -> Result<(), PreprocessError> {
 /// Transform `[context, book]` JSON into complete Book JSON for the HTML renderer.
 ///
 /// Preserves unknown metadata and navigation fields. Validates all chapter input
-/// before replacing any content. No source files are read or changed.
+/// before replacing any content. No source files are read or changed. No
+/// chapters are treated as roadmaps; see [`preprocess_with_roadmaps`].
 ///
 /// # Errors
 /// Returns located record errors or `render.invalid-input` for malformed JSON,
 /// unsupported mdBook versions/renderers, invalid chapter shapes or routes.
 pub fn preprocess(request: &str) -> Result<String, PreprocessError> {
+    preprocess_with_roadmaps(request, None)
+}
+
+/// Like [`preprocess`], treating the chapter whose source path is `roadmaps`,
+/// relative to the Book source, and every chapter nested under it as roadmaps.
+///
+/// # Errors
+/// As [`preprocess`], plus located roadmap errors.
+pub fn preprocess_with_roadmaps(
+    request: &str,
+    roadmaps: Option<&Path>,
+) -> Result<String, PreprocessError> {
     let (context, mut book): (Value, Value) =
         serde_json::from_str(request).map_err(PreprocessError::Json)?;
     supported(&context)?;
@@ -152,12 +175,13 @@ pub fn preprocess(request: &str) -> Result<String, PreprocessError> {
         .get("items")
         .ok_or_else(|| input("Book must contain items"))?;
     let mut sources = Vec::new();
-    collect(items, &mut sources)?;
+    collect(items, roadmaps, false, &mut sources)?;
     let chapters: Vec<_> = sources
         .iter()
         .map(|s| RenderChapter {
             source: Chapter::new(Path::new(&s.path), &s.content),
             output_path: &s.output,
+            roadmap: s.roadmap,
         })
         .collect();
     let rendered = render_chapters(&chapters).map_err(PreprocessError::Render)?;

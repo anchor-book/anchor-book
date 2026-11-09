@@ -159,6 +159,22 @@ one line-oriented text search and without running a parser.
 source = "Agents read and search Book sources rather than the rendered Book; record structure that needs block-level reading multiplies their reads and wrong matches."
 ```
 
+## Roadmap requirement
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-checkable-roadmaps"
+title = "Agreed work is compact for agents and checked for references"
+status = "draft"
+statement = '''
+Implementation roadmaps must be readable by agents as compact source and by
+people as rendered pages, and their milestone and criterion identifiers and
+anchor-coverage references must be checked, so a roadmap cannot silently reuse
+an identifier or cite an anchor or criterion that does not exist.
+'''
+source = "Roadmaps written as HTML tables spent about a fifth of the Book's source on presentation that agents read in every session, and nothing checked the anchor references they record."
+```
+
 ## Verification requirements
 
 ```anchorbook-requirement

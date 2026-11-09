@@ -3,6 +3,7 @@ mod html;
 mod links;
 
 use crate::records::{Chapter, RecordErrors, read_records};
+use crate::roadmaps::{RoadmapErrors, read_roadmaps};
 use std::{collections::BTreeMap, error::Error, fmt, path::Path};
 
 /// Chapter source and its renderer-selected output route.
@@ -12,6 +13,8 @@ pub struct RenderChapter<'a> {
     pub source: Chapter<'a>,
     /// Relative chapter path supplied by the renderer, before the HTML extension.
     pub output_path: &'a Path,
+    /// Whether the chapter belongs to the Book's implementation roadmaps.
+    pub roadmap: bool,
 }
 
 /// A presentation failure, separate from structural checking.
@@ -21,6 +24,8 @@ pub enum RenderError {
     InvalidInput(String),
     /// The record inventory did not validate.
     Records(RecordErrors),
+    /// Roadmap milestones did not validate.
+    Roadmaps(RoadmapErrors),
 }
 impl fmt::Display for RenderError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -35,6 +40,7 @@ impl fmt::Display for RenderError {
                 }
                 Ok(())
             }
+            Self::Roadmaps(errors) => write!(f, "{errors}"),
         }
     }
 }
@@ -42,22 +48,31 @@ impl Error for RenderError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::Records(error) => Some(error),
+            Self::Roadmaps(error) => Some(error),
             _ => None,
         }
     }
 }
 
-/// Validate the complete inventory and replace only definition ranges with HTML.
+/// Validate the complete inventory and roadmaps, and replace only definition
+/// ranges and roadmap criterion headings with HTML.
 ///
 /// Results follow input chapter order. No files are read or written. The rest of
 /// each chapter is preserved byte-for-byte, including examples and diagrams.
 ///
 /// # Errors
-/// Returns an error for invalid records, missing/duplicate source identities,
-/// or unusable/colliding output routes. Never returns partial rendered chapters.
+/// Returns an error for invalid records or roadmaps, missing/duplicate source
+/// identities, or unusable/colliding output routes. Never returns partial
+/// rendered chapters.
 pub fn render_chapters(chapters: &[RenderChapter<'_>]) -> Result<Vec<String>, RenderError> {
     let sources: Vec<_> = chapters.iter().map(|c| c.source).collect();
     let inventory = read_records(&sources).map_err(RenderError::Records)?;
+    let roadmap_sources: Vec<_> = chapters
+        .iter()
+        .filter(|c| c.roadmap)
+        .map(|c| c.source)
+        .collect();
+    let milestones = read_roadmaps(&roadmap_sources, &inventory).map_err(RenderError::Roadmaps)?;
     let mut routes = BTreeMap::new();
     let mut destinations = std::collections::BTreeSet::new();
     for chapter in chapters {
@@ -77,13 +92,38 @@ pub fn render_chapters(chapters: &[RenderChapter<'_>]) -> Result<Vec<String>, Re
             .filter(|r| r.location().path() == chapter.source.path)
             .collect();
         records.sort_by_key(|r| r.location().range().start);
+        // Replacements sorted by position; an insertion precedes a replacement
+        // starting at the same offset.
+        let mut edits: Vec<(usize, usize, String)> = records
+            .iter()
+            .map(|record| {
+                let range = record.location().range();
+                (
+                    range.start,
+                    range.end,
+                    html::record(record, &inventory, &routes),
+                )
+            })
+            .collect();
+        for criterion in milestones
+            .iter()
+            .filter(|m| m.path == chapter.source.path)
+            .flat_map(|m| &m.criteria)
+        {
+            edits.push((
+                criterion.heading.start,
+                criterion.heading.end,
+                html::criterion_open(&criterion.id, &criterion.title),
+            ));
+            edits.push((criterion.end, criterion.end, html::criterion_close()));
+        }
+        edits.sort_by_key(|(start, end, _)| (*start, *end));
         let mut content = String::new();
         let mut cursor = 0;
-        for record in records {
-            let range = record.location().range();
-            content.push_str(&chapter.source.content[cursor..range.start]);
-            content.push_str(&html::record(record, &inventory, &routes));
-            cursor = range.end;
+        for (start, end, replacement) in edits {
+            content.push_str(&chapter.source.content[cursor..start]);
+            content.push_str(&replacement);
+            cursor = end;
         }
         content.push_str(&chapter.source.content[cursor..]);
         rendered.push(content);

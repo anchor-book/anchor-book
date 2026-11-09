@@ -72,6 +72,36 @@ verification = ["test", "review"]
 statement = "Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book."
 ```
 
+```anchorbook-anchor
+schema-version = 1
+id = "render-roadmap-milestones"
+title = "Roadmaps are validated and rendered from compact Markdown"
+status = "draft"
+property = '''
+Before rendering, the preprocessor validates every milestone in the chapters of
+the Book's implementation-roadmaps role: milestone headings and required fields
+follow the roadmap format, milestone and criterion identifiers are unique, and
+each anchor-coverage reference names an existing anchor and its criteria.
+Invalid roadmaps fail preprocessing with located diagnostics and no rendered
+Book. Valid roadmaps render each criterion as a collapsible section that keeps
+its fragment and shows its identifier. Sources are unchanged, and text in code
+blocks is never roadmap structure.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-checkable-roadmaps" },
+]
+
+[[criteria]]
+id = "roadmap-validation"
+verification = ["test"]
+statement = "Independent fixtures with malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicate identifiers across chapters, and coverage citing a missing anchor, a non-anchor record, or a missing criterion each produce the expected located diagnostic; format examples in code blocks are ignored, and this Book's roadmaps pass."
+
+[[criteria]]
+id = "roadmap-presentation"
+verification = ["test", "review"]
+statement = "Through the actual adapter, roadmap chapters render each criterion as an open details section with its fragment and visible identifier, other chapters are not treated as roadmaps, and sources are unchanged. Review collapsing, keyboard access, and expanded printing in the rendered Book."
+```
+
 ## Approach
 
 Record parsing and validation are separate from presentation. Canonical record
@@ -240,7 +270,7 @@ headings; the preprocessor does not perform that migration.
 
 ## Roadmap rendering
 
-**Status: planned**, in [Record Rendering milestone 4](../implementation-roadmaps/record-rendering.md#record-rendering-4).
+**Status: prototype implemented**; [Record Rendering milestone 4](../implementation-roadmaps/record-rendering.md#record-rendering-4) records evidence.
 Roadmaps are written in plain Markdown in the
 [roadmap format](../implementation-roadmaps/index.md#defining-the-work), so agents
 read only content. The preprocessor will recognize milestone and criterion
