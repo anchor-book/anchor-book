@@ -21,9 +21,11 @@ Start with the shared foundation in milestone 4. Milestones 1 and 2 then provide
 test and proof runners independently. Milestone 5 exercises consumer proofs after
 [engine proof isolation](formal-verification.md#formal-verification-4); milestone 3
 adds CI and versioned retained reports. Milestone 6 adds the proof guards, assessment
-records, and the agent brief once both runners exist; it starts with a bounded
-experiment on the engine's authority proof. Existing milestone and criterion IDs stay
-stable. All work here remains Proposed until its scope is agreed and assigned.
+records, and the agent brief once both runners exist. Milestone 7 is a prototyping
+experiment that tries the proof guards by hand on the engine's authority proof,
+needs none of the tooling, and informs milestones 4 and 6. Existing milestone and
+criterion IDs stay stable. All work here remains Proposed until its scope is
+agreed and assigned.
 
 Milestone 4 defines the report's identity fields and collects criteria and
 configuration content identities plus Git revision and dirty state when available.
@@ -290,11 +292,10 @@ the current inventory and migrate with them when that work is assigned.
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">A proof method is satisfied only when its specification constrains the linked code, its preconditions can be met, and a current specification assessment accepts it; review criteria are evaluated from assessment records; and agents get a brief of each criterion before writing its proof.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Milestones 1 and 2. Begin with a bounded experiment on the engine's authority proof that settles the change operators, the witness form, the fingerprint inputs, and the runtime per change, and review it before assigning the full milestone. Exclusion coverage in the brief needs the proof-scope items of <a href="record-line-grammar.html#record-line-grammar-2">Record Line Grammar milestone 2</a>; before then the brief shows the statement text.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">Milestones 1 and 2, and the reviewed results of <a href="#verification-evidence-7">milestone 7</a>, which settle the change operators, the witness form, the fingerprint inputs, and the runtime per change. Exclusion coverage in the brief needs the proof-scope items of <a href="record-line-grammar.html#record-line-grammar-2">Record Line Grammar milestone 2</a>; before then the brief shows the statement text.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification.html#guards">Guards</a>, <a href="../design/verification.html#assessment-records">assessment records</a>, <a href="../design/verification-evidence.html#proof-guards">proof guards</a>, and the <a href="../design/verification-evidence.html#using-verify">brief</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-6</code></td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
-<li><label><input type="checkbox" disabled> <strong>Experiment:</strong> On a disposable copy of the authority validator, apply candidate change operators to its seven executable functions and record which changes fail verification, which survive, and why. Include the accepted-status change, which must fail, and a failure-classification change, which the specification deliberately leaves to tests. Measure time per change; try a witness for <code>validate_reference</code>.</label></li>
 <li><label><input type="checkbox" disabled> <strong>Sensitivity:</strong> Generate changes inside <code>verus!</code> executable bodies with the milestone 4 parser, never in specifications or proofs. Verify each in a fresh copy; classify survivors through the covering criteria's linked tests and the review's equivalent listing; report unviable, safety-only, and timed-out changes separately.</label></li>
 <li><label><input type="checkbox" disabled> <strong>Witnesses:</strong> Implement the <code>witness</code> link form and require a verified witness for each linked function with preconditions.</label></li>
 <li><label><input type="checkbox" disabled> <strong>Fingerprints and assessments:</strong> Compute token-based specification fingerprints over the criterion, linked contracts, and reachable specification functions and types. Add the <code>reviews</code> configuration field and the assessment record schema; read records, report malformed and stale ones, and evaluate the review method.</label></li>
@@ -331,6 +332,52 @@ the current inventory and migrate with them when that work is assigned.
 <tr id="verification-evidence-6-pilot-details" class="roadmap-criterion-details"><td colspan="2">
 <p><strong>Criterion:</strong> <code>pilot</code></p>
 <p><strong>Anchor criteria and planned coverage:</strong> None — acceptance against this Book; the authority proof's own evidence stays in the Formal Verification roadmap.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>
+</tbody>
+</table>
+</div>
+
+<a id="verification-evidence-7"></a>
+
+## Milestone 7. Try the proof guards by hand on the authority proof
+
+<div class="roadmap-table-wrap">
+<table class="roadmap-criteria roadmap-milestone">
+<colgroup><col style="width:25%"><col style="width:75%"></colgroup>
+<tbody>
+<tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Recorded results show whether the proof guards find real weaknesses in an existing proof and what they cost, so the guard design is confirmed or revised before any tooling is built.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification.html#guards">Guards</a>, <a href="../design/verification-evidence.html#proof-guards">proof guards</a>, and the <a href="../design/rust-engine.html#authority-proof">authority proof</a>.</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-7</code></td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Tasks</th><td colspan="1"><ul class="roadmap-tasks">
+<li><label><input type="checkbox" disabled> In a disposable copy, apply candidate changes to the executable statements of the seven authority functions, one at a time, never to specifications or proofs. Include the accepted-status change, which must fail, and a failure-classification change, which the specification deliberately leaves to tests.</label></li>
+<li><label><input type="checkbox" disabled> Verify the complete crate for each change with the pinned command. Record which obligation failed for each rejected change, and the time per run.</label></li>
+<li><label><input type="checkbox" disabled> For each survivor, run the <code>production-integration</code> tests against the same change and classify it as excluded and detected, equivalent with a reason, or a gap in the specification.</label></li>
+<li><label><input type="checkbox" disabled> Write a witness for the preconditions of <code>validate_reference</code>, and record the Verus form that works.</label></li>
+<li><label><input type="checkbox" disabled> List what a fingerprint of the <code>formal-authority</code> specification would cover, and check that a change to a reachable specification function, such as <code>target_is_suitable_authority</code>, falls inside it.</label></li>
+<li><label><input type="checkbox" disabled> Record the results and limits, recommend changes to the guard design, and fix any specification gap found, through the Formal Verification roadmap.</label></li>
+</ul></td></tr>
+<tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
+<tr><th scope="col">Criterion</th><th scope="col">Complete when</th></tr>
+<tr id="verification-evidence-7-change-results" class="roadmap-criterion-summary"><th scope="row">Change results</th><td><p class="roadmap-condition">Every change tried is recorded with its location, its outcome, the obligation that failed or its classification as a survivor, and its runtime; the accepted-status change fails verification. The commands reproduce the results.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for change results" aria-expanded="true" aria-controls="verification-evidence-7-change-results-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-7-change-results-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>change-results</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — design experiment; informs <a href="../design/verification.html#verify-proof-sensitive">verify-proof-sensitive</a></p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-7-witness-and-fingerprint" class="roadmap-criterion-summary"><th scope="row">Witness and fingerprint</th><td><p class="roadmap-condition">A verified witness for <code>validate_reference</code> and the list of fingerprint inputs for <code>formal-authority</code> are recorded, with any limits found.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for witness and fingerprint" aria-expanded="true" aria-controls="verification-evidence-7-witness-and-fingerprint-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-7-witness-and-fingerprint-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>witness-and-fingerprint</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — design experiment; informs <a href="../design/verification.html#verify-proof-nonvacuous">verify-proof-nonvacuous</a> and <a href="../design/verification.html#verify-proof-assessment-current">verify-proof-assessment-current</a></p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="verification-evidence-7-assessment" class="roadmap-criterion-summary"><th scope="row">Assessment</th><td><p class="roadmap-condition">A written assessment states what the guards found, what they cost, and their limits, and recommends confirming or revising the guard design. Revisions are made in the design chapters; specification gaps are recorded against the authority proof.</p><button type="button" class="roadmap-toggle" aria-label="Anchor details and evidence for assessment" aria-expanded="true" aria-controls="verification-evidence-7-assessment-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="verification-evidence-7-assessment-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>assessment</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> None — decision input</p>
 <p><strong>Evidence:</strong> Pending.</p>
 </td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Completion record</th><td colspan="1">Pending.</td></tr>

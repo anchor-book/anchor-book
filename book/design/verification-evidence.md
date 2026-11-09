@@ -213,7 +213,7 @@ a located finding.
 for the named linked function of the same criterion: it establishes that
 function's preconditions for an input it constructs. The exact Verus form of the
 witness is settled with the guard experiment in
-[milestone 6](../implementation-roadmaps/verification-evidence.md#verification-evidence-6).
+[milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7).
 
 **Identity.** Each linked function is resolved by package, crate target, module
 path, name, and verification mode, with its source location, and must match
