@@ -9,11 +9,15 @@ that proof repeatable locally and on GitHub. Start with
 [`records-valid-authority`](../design/rust-engine.md#records-valid-authority), grounded
 in [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 The [Formal Verification design](../design/formal-verification.md) defines the
-specification, production integration, trusted boundaries, and evidence.
+specification, production integration, trusted boundaries, and evidence. Isolate
+the engine's proof dependencies from consuming builds without losing the
+connection between the verified functions and the packaged implementation.
 
 The roadmap uses the engine as the first experiment in associating anchor
 criteria with formal specifications, production functions, and proof evidence.
-A general source-association syntax remains to be designed from that experience.
+The [Verification Evidence roadmap](verification-evidence.md) owns reusable
+source associations, consumer tool execution, and criterion reports. Engine
+proofs supply evidence for this Book; they never establish a consumer's criteria.
 
 The [proof-requirement convention](../design/anchor-definitions.md#does-an-anchor-require-formal-verification)
 determines which criteria require proof. This roadmap's `formal-authority` criterion
@@ -30,6 +34,12 @@ protection**. Merge protection is completed together with
 [Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2). Until it is
 enforced, review existing CI results before merging; unfinished enforcement does
 not waive tests or permit unexplained mutation findings.
+
+Milestone 4 adds proposed packaging isolation and starts with a bounded
+feasibility experiment. It does not depend on the consumer runner, but
+[consumer acceptance](verification-evidence.md#verification-evidence-5) depends
+on it. Existing proof evidence remains tied to its recorded revision; packaging
+changes require new proof and integration evidence.
 
 <a id="formal-verification-1"></a>
 
@@ -169,10 +179,65 @@ not waive tests or permit unexplained mutation findings.
 </table>
 </div>
 
+<a id="formal-verification-4"></a>
+
+## Milestone 4. Engine proofs stay outside consuming builds
+
+<div class="roadmap-table-wrap">
+<table class="roadmap-criteria roadmap-milestone">
+<colgroup><col style="width:25%"><col style="width:75%"></colgroup>
+<tbody>
+<tr><th scope="row">Outcome</th><td>A packaged engine builds without its proof libraries or verification toolchain, while the implementation consumers execute remains derived from the same maintained source whose authority contracts are verified.</td></tr>
+<tr><th scope="row">Status</th><td>Proposed</td></tr>
+<tr><th scope="row">Identifier</th><td><code>formal-verification-4</code></td></tr>
+<tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html#proof-packaging-for-consumers">Proof packaging for consumers</a>, <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
+<tr><th scope="row">Dependencies</th><td>The existing production authority proof and engineer agreement on the isolation boundary. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.</td></tr>
+<tr><th scope="row">Tasks</th><td><ul class="roadmap-tasks">
+<li><label><input type="checkbox" disabled> Test one maintained source arrangement on a representative validator slice. A development proof workspace with reproducible erasure is a candidate; establish supported transformations, tool availability, drift detection, and runtime correspondence before choosing it.</label></li>
+<li><label><input type="checkbox" disabled> Remove engine verification libraries from the ordinary packaged dependency graph. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.</label></li>
+<li><label><input type="checkbox" disabled> Preserve <code>fixtures/consumers/verus-resolution</code> as the consumer-resolution regression fixture: its exact <code>vstd</code> pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.</label></li>
+<li><label><input type="checkbox" disabled> Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.</label></li>
+<li><label><input type="checkbox" disabled> Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.</label></li>
+</ul></td></tr>
+<tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
+<tr id="formal-verification-4-runtime-correspondence" class="roadmap-criterion-summary"><th scope="row">Runtime correspondence</th><td><p class="roadmap-condition">Review identifies one maintained authority implementation and a reproducible relationship between verified and packaged functions. Independent tests and drift checks reject divergence; any erasure or conversion assumptions are explicit. A separately maintained proof-only validator cannot complete this criterion.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-4-runtime-correspondence-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="formal-verification-4-runtime-correspondence-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>runtime-correspondence</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a> · <code>formal-authority</code>, <code>production-integration</code> — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="formal-verification-4-consumer-resolution" class="roadmap-criterion-summary"><th scope="row">Consumer resolution</th><td><p class="roadmap-condition">The regression consumer keeps its exact <code>vstd = "=0.0.0-2026-10-11-0230"</code> pin: resolution fails against the baseline engine and resolution and build pass against the isolated packaged candidate. Independent consumers build without Verus installed; the engine's ordinary dependency tree contains no vstd or Verus dependency.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-4-consumer-resolution-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="formal-verification-4-consumer-resolution-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>consumer-resolution</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a> · <code>independent-resolution</code> — Partial: engine proof dependency isolation. Other exact pins, supported toolchains, and renderer compatibility retain their separate integration and release scope.</p>
+<p><strong>Baseline evidence:</strong> On 2026-11-08, Cargo 1.99.1 (<code>5f94df478</code>) reproduced the conflict against engine code at <code>fab05d6</code>, on the design branch for PR #19. The standalone consumer in <code>fixtures/consumers/verus-resolution</code> depends on the engine and exactly pins <code>vstd = "=0.0.0-2026-10-11-0230"</code>. From the repository root, <code>cargo metadata --offline --format-version 1 --manifest-path fixtures/consumers/verus-resolution/Cargo.toml</code> exits 101: the engine requires <code>=0.0.0-2026-10-18-0147</code>, and Cargo reports <code>failed to select a version for `vstd` which could resolve this conflict</code>. Compatible-version unification cannot satisfy both exact prerelease requirements; no <code>links</code> conflict is involved.</p>
+<p><strong>Limits and remaining evidence:</strong> This measures dependency resolution against a checkout using cached registry metadata. It does not establish a build, native proof, or packaged-engine compatibility. Post-isolation resolution and build with the unchanged consumer pin remain Pending, as does the ordinary consumer without Verus.</p>
+</td></tr>
+<tr id="formal-verification-4-preserved-proof" class="roadmap-criterion-summary"><th scope="row">Preserved proof</th><td><p class="roadmap-condition">A native proof and ordinary integration tests pass for the same packaged candidate and recorded source revision. A deliberate authority defect fails verification and its correction passes. Review reassesses the claim, assumptions, production callers, and excluded boundaries after the packaging change; old proof reports do not establish this result.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-4-preserved-proof-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="formal-verification-4-preserved-proof-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>preserved-proof</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a> · <code>formal-authority</code>, <code>production-integration</code> — Partial: revalidation of proof and integration after packaging changes, under the anchor's declared proof scope.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr id="formal-verification-4-dependency-review" class="roadmap-criterion-summary"><th scope="row">Dependency review</th><td><p class="roadmap-condition">A recorded review of the candidate's package contents, dependency set, and features confirms proof isolation and explains remaining exact requirements. The record identifies the package revision and explicitly limits its conclusion to verification dependencies.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-4-dependency-review-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
+<tr id="formal-verification-4-dependency-review-details" class="roadmap-criterion-details"><td colspan="2">
+<p><strong>Criterion:</strong> <code>dependency-review</code></p>
+<p><strong>Anchor criteria and planned coverage:</strong> <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a> · <code>dependency-review</code> — Partial: engine verification dependencies; general release dependency review remains separate.</p>
+<p><strong>Evidence:</strong> Pending.</p>
+</td></tr>
+<tr><th scope="row">Completion record</th><td>Pending. The source arrangement and native compatibility have not been established; source review or synthetic report checks are not packaging or proof acceptance evidence.</td></tr>
+</tbody>
+</table>
+</div>
+
 ## Later work
 
-Automatic evidence ingestion, proof-result schemas, anchor progress views, and
-support for other verifiers remain in the [later-work list](index.md#later-work-retained-from-the-design).
-The first proof uses manual evidence records. Neither milestone adds verifier
-execution to structural checking or mdBook preprocessing, proves the whole engine,
-or changes the acceptance status of an anchor automatically.
+Reusable proof execution and normalized results belong to
+[Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
+independent consumers to [milestone 5](verification-evidence.md#verification-evidence-5),
+and retained CI reports to [milestone 3](verification-evidence.md#verification-evidence-3).
+The engine's proof evidence remains manually recorded until that runner exists.
+Anchor progress views and support for other verifiers retain their later scope.
+Verification runs remain separate from structural checking and mdBook
+preprocessing; they neither prove the whole engine nor change an anchor's
+acceptance status automatically.

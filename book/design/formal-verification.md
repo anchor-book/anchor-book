@@ -11,8 +11,9 @@ criteria to proofs of their production code. The engine is the first case. The
 [criterion schema](anchor-definitions.md#verification-methods) declares required
 evidence methods; Verus is this project's chosen proof tool. Formal specifications
 and supporting proofs live with the code and identify the anchor and criterion
-they address. Refine the association convention through the first proof before
-defining a general source-annotation syntax or evidence adapter.
+they address. The consumer association and report adapter proposed in
+[Verification Evidence](verification-evidence.md) build on this first proof;
+supported native report identities still need compatibility experiments.
 
 ## First proof: authority validation
 
@@ -170,6 +171,45 @@ was rejected by the proof. This is a recorded coverage gap, not full mutation
 coverage of annotated code. Tests remain required, and mutation findings stay in
 their [own roadmap](../implementation-roadmaps/mutation-testing.md).
 
+## Proof packaging for consumers
+
+The published engine must meet the
+[dependency-isolation property](project-integration.md#project-no-imposed-dependencies):
+consuming builds do not compile the engine's verification libraries or inherit
+its `vstd` choice. The current normal, exactly pinned dependency does not meet
+that goal. On 2026-11-08, Cargo 1.99.1 rejected a consumer depending on the engine
+and `vstd = "=0.0.0-2026-10-11-0230"`: the engine requires
+`=0.0.0-2026-10-18-0147`, and resolution ended with
+``failed to select a version for `vstd` which could resolve this conflict``.
+Cargo's [compatible-version unification](https://doc.rust-lang.org/cargo/reference/resolver.html#semver-compatibility)
+applies to these prereleases of the same `0.0.0` version, but their exact
+requirements do not overlap. Both explicitly select a prerelease; this is not
+implicit prerelease exclusion or a native-library `links` conflict.
+The [consumer-resolution criterion](../implementation-roadmaps/formal-verification.md#formal-verification-4-consumer-resolution)
+retains the failing baseline and requires the same consumer pin to pass after
+isolation. Moving `vstd` into a crate still required by ordinary engine builds
+would retain the constraint.
+
+Keep one maintained authority implementation and demonstrate how the code
+verified corresponds to the functions ordinary builds execute. A development
+verification workspace with reproducible erasure into runtime source is a
+candidate for the [isolation milestone](../implementation-roadmaps/formal-verification.md#formal-verification-4).
+The source arrangement and any generation mechanism remain to be established by
+a small feasibility experiment before changing the package boundary. Record
+generation or conversion assumptions and detect drift between verified and
+compiled code. A separately maintained proof-only validator cannot establish
+production-code correspondence. Making `vstd` optional alone does not provide a
+runtime build: the maintained validator is inside `verus!` and still needs that
+macro to compile. The source arrangement must establish how ordinary builds
+compile the same implementation without the verification dependency.
+
+Accept the arrangement only after ordinary consumer builds work without Verus,
+a consumer can choose a different `vstd`, and the authority proof and integration
+tests pass for the same packaged implementation. Repeat the production-boundary
+review after any source or packaging change. Isolation evidence addresses this
+dependency boundary; other exact dependencies, public API compatibility, and
+crate publication retain their separate release obligations.
+
 ## Evidence and later integration
 
 Record the anchor and criterion IDs, specification and executable function names,
@@ -183,7 +223,11 @@ Initially, maintain this evidence in the [Formal Verification roadmap](../implem
 Keep generated proof output out of authored Book sources and review artifacts
 for public-safe content. Required verification methods do not create an automatic
 verified badge; proof results remain separate from the authored anchor.
-[Verification Evidence](verification-evidence.md) defines how `verify` runs the
-proof and associates its results with criteria alongside tests. Until it
-is implemented, the roadmap records proof evidence manually; proof development
-does not depend on it.
+[Verification Evidence](verification-evidence.md#verus-runner) owns the reusable
+runner, supported report adapters, function-mode associations, run identity, and
+criterion states for the engine and consumers. The engine's workflow and
+hard-coded seven-function report check are the first pilot. The
+[consumer acceptance work](../implementation-roadmaps/verification-evidence.md#verification-evidence-5)
+then exercises proofs of another project's production code. Until that capability
+is implemented, this roadmap records engine proof evidence manually; proof
+development does not depend on it.

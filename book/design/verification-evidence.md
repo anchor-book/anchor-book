@@ -6,9 +6,10 @@ plans the work.
 
 `anchorbook verify` reports the project's progress toward its goal design: for
 each anchor and each criterion's required methods, what current tests and proofs
-establish. It finds the tests and proofs linked to the criteria in scope, runs
-exactly those through the project's own tools, and reports each criterion's state
-by design chapter and anchor.
+establish. It finds the linked test functions and proof targets required by the
+criteria in scope, runs them through the project's own tools, and reports each
+criterion's state by design chapter and anchor. Proof targets are verified as
+whole crates; the report distinguishes requested criteria from executed scope.
 
 It is a status tool, not a gate. A Book describes a system that is still being
 built, so unlinked or unsatisfied criteria are progress to report, not errors.
@@ -100,14 +101,15 @@ statement = "Fixtures with dangling anchor and criterion links, method mismatche
 ```anchorbook-anchor
 schema-version = 1
 id = "verify-runs-linked-checks"
-title = "Verify runs exactly the linked checks and changes no sources"
+title = "Verify runs linked checks in their declared scope and changes no sources"
 status = "draft"
 property = '''
-Verify runs only the configured runners, selecting the tests and proofs linked
-to the criteria in scope, and reads only the results of that run, so its states
-describe the files as they are now. A linked test that the run did not execute,
-or reported as skipped or missing, has no evidence. Verify changes no Book or
-source files; runner output is written only under the configured output directory.
+Verify runs only the configured runners, selecting linked test functions and the
+complete proof targets required by criteria in scope, and reports what actually
+ran. It reads only results from that run, so its states describe the current
+inputs. A linked function absent, ambiguous, or skipped in the results has no
+evidence. Verify changes no Book or source files; runner output is written only
+under the configured output directory.
 '''
 authorities = [
   { kind = "decision", id = "decision-verify-runs-linked-checks" },
@@ -116,7 +118,7 @@ authorities = [
 [[criteria]]
 id = "selected-run"
 verification = ["test"]
-statement = "With fixture runners that record their invocation, a scoped run invokes only the configured runners with exactly the linked tests in scope, and reports from earlier runs are never read."
+statement = "With fixture runners that record their invocation, a scoped run selects exactly the linked tests and only the complete proof targets required by criteria in scope. The report identifies requested criteria, executed targets and features, and current inputs; earlier reports or changed inputs cannot produce satisfied evidence."
 
 [[criteria]]
 id = "source-preservation"
@@ -131,17 +133,32 @@ statement = "Compare Book and source file contents and directory entries before 
 flowchart LR
     caller["Agent, engineer, or CI"] --> verify["anchorbook verify"]
     book["Book records<br/>criteria and methods"] --> verify
-    sources["Configured sources<br/>evidence links"] --> verify
+    sources["Configured sources<br/>contracts and evidence links"] --> verify
     verify -->|"linked tests"| nextest["cargo nextest"]
-    verify -->|"linked proofs"| verus["cargo verus"]
+    verify -->|"complete linked proof targets"| verus["Project's cargo verus"]
     nextest -->|"JUnit report"| verify
     verus -->|"JSON report"| verify
     verify --> report["Progress by chapter, anchor, and criterion"]
 ```
 
-In the build loop, an agent runs `anchorbook verify --anchor <id>` after a change
-to see that anchor's criteria against the current files. CI runs it for the whole
-Book and keeps the printed report.
+In the build loop, an agent runs
+`anchorbook verify --config anchorbook.toml --anchor <id>` after a change to see
+that anchor's criteria against the current files. CI runs it for the whole Book.
+
+## Responsibilities
+
+| Owner | Responsibility |
+| --- | --- |
+| Project | Declare each criterion's claim and scope, maintain formal specifications beside production code, and choose its tools and verification targets. |
+| Verus | Verify the selected code against its formal contracts under the recorded assumptions. |
+| Anchor Book | Resolve criterion associations, plan and execute supported runners, normalize results, and report evidence states and limits. |
+| Review | Assess specification fidelity, caller preconditions, production-code correspondence, and coverage of excluded boundaries. |
+
+The required [proof scope](anchor-definitions.md#required-scope-of-a-proof-criterion)
+remains the project's statement of the claim, domain, boundary, assumptions, and
+exclusions. Successful function verification does not establish that its contract
+expresses that claim or covers the system's runtime path. A criterion requiring
+tests or review remains unsatisfied until those methods also have evidence.
 
 ## Evidence links
 
@@ -158,10 +175,27 @@ item, with only attributes and further link lines between them. One function may
 link several criteria, one per line. A link is a claim that the function
 addresses the criterion; it does not show that the test is sufficient.
 
-The function's kind decides the link's method: a function marked `#[test]` links
-the `test` method; a function inside a Verus `verus!` block links the `proof`
-method. A link line that is not followed by a function, or whose function is
-neither, is a finding. Links are read only from the configured source directories.
+An ordinary function marked `#[test]` links the `test` method. A Verus executable
+function with a verified contract or a verified proof function links the `proof`
+method. A specification supplies claim context; its declaration alone is not
+passing evidence. Membership in a `verus!` block does not determine the function's
+mode. A misplaced link or a link on an unsupported function form is a located
+finding. Links are read only from the configured source directories.
+
+Resolve each linked function by package, crate target, module path, name, and
+verification mode, with its source location. Match that identity to exactly one
+result for the selected target and features. Equal function names in different
+modules or packages must not select an arbitrary result. Use Rust-aware source
+inspection for supported forms; report unsupported macro-generated or ambiguous
+identities rather than guessing. The first implementation supports simple module
+functions and declares its limits before extending to other forms.
+
+Select and record the source parser under the
+[Rust dependency conventions](rust-engine.md#rust-development-conventions).
+An ordinary Rust parser such as `syn` leaves a `verus!` body's contents as macro
+tokens; recognizing Verus modes and function identities needs additional parsing.
+Establish that support with source fixtures and review any parser dependencies
+against the engine's [proof-isolation goal](formal-verification.md#proof-packaging-for-consumers).
 
 Links stay beside the code they describe so that renaming or moving a test moves
 its link, and the Book records only criteria. The engine derives the reverse
@@ -175,15 +209,19 @@ through runners the engine supports, invoked the way the engine documents:
 | Method | Runner | Run | Evidence for a link |
 | --- | --- | --- | --- |
 | `test` | `nextest` | `cargo nextest run` with a JUnit report, an exact filter for the linked tests, and ignored tests included | The linked test's report entry is present once, without `failure`, `error`, or `skipped` |
-| `proof` | `verus` | `cargo verus verify` with JSON output, for the whole crate | The report shows full-crate verification and zero errors, and the linked function verified successfully |
+| `proof` | `verus` | `cargo verus verify` with JSON output, for each complete selected crate target | A supported report shows complete-target verification and zero errors, with each linked function verified once in its expected mode under the trust policy |
 
 Stable `cargo test` has no machine-readable per-test output, so test runs use
 nextest. The engine maps a linked test to its report entry from its file and
 function name using Cargo's and nextest's naming: integration tests by their
 `tests/` file and function, and unit tests by their module path in the library.
 A link that maps to no entry, or to several, has no evidence and is reported.
-Verus verifies the crate as a whole, so any linked proof criterion in scope runs
-the full proof; agents iterating on tests can narrow the scope with `--method test`.
+Any linked proof criterion in scope selects its complete configured crate target.
+An anchor filter narrows reported criteria, not the proof obligations inside that
+target. Run each required target once and disclose its package, target, and
+features, including verification beyond the requested criteria. Additional
+workspace and target forms require measured support; they are not inferred from
+a successful library-target run.
 
 A runner that is not installed leaves its method not evaluated, with the reason.
 A runner that cannot build or exits without a usable report leaves its method
@@ -192,18 +230,76 @@ inconclusive. Neither stops the rest of the report.
 The `review` method has no runner; see [open questions](#open-questions). Criteria
 requiring `review` report that method as not evaluated.
 
+## Verus runner
+
+The project selects its Verus installation and verification toolchain separately
+from its build toolchain. The runner validates the actual verifier identity against
+the configured version and a supported report adapter. Start with the release
+pinned for the engine's [authority proof](formal-verification.md); add versions
+only with real passing and failing report fixtures and native-run acceptance.
+An unsupported report version makes the proof method inconclusive.
+
+Keep raw Verus parsing private to the adapter and normalize results into the same
+typed evidence model used for tests. The engine's
+`.github/verus-report.jq` is a starting fixture for its own seven executable
+functions, not the consumer function inventory. Expected consumer functions come
+from resolved links, including executable and proof modes.
+
+Classify results using the [evidence states](#evidence-states). Verus checks
+functions independently, using called functions'
+[contracts](https://verus-lang.github.io/verus/guide/requires_ensures.html).
+A linked caller can pass while a supporting lemma's own proof fails. Until all
+obligations in its target pass, a criterion linked only to that caller is
+inconclusive; the report lists the failing obligations and their locations.
+A linked function's own verification failure or a trust-policy violation is
+failed. This distinction directs repair without treating a passing caller as
+established evidence.
+
+Use the engine proof's `--no-cheating` policy initially. For each supported
+version, demonstrate rejection of deliberate assumptions and trusted project
+bodies before claiming that policy holds. Record trusted compiler, verifier,
+solver, standard-library, and external contracts; zero errors alone cannot
+establish the absence or adequacy of assumptions. Unproved conversions, callers,
+diagnostics, and other excluded behavior retain their test or review obligations.
+
+The first native proof runs use fresh target and report directories under the
+configured output, locked dependencies, and complete target verification. A
+successful Cargo invocation with no new proof report has no passing evidence.
+Measure runtime before introducing cache reuse; any later reuse needs explicit
+applicability checks and cannot silently consume an earlier report.
+
+## Run identity
+
+Each result retains the information needed to assess its scope:
+
+| Information | Content |
+| --- | --- |
+| Inputs | Content identities for the evaluated criteria, configuration, code, and lockfile; revision and dirty state when Git is available. |
+| Selection | Requested anchors and methods, actual packages/targets/features, and resolved function identities and modes. |
+| Execution | Run identity, executed argument vector, exit status, and actual verifier, solver, and Rust toolchain versions. |
+| Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations. |
+
+Git revision alone does not identify uncommitted inputs. Snapshot relevant inputs
+before and after execution; changed inputs make affected evidence inconclusive.
+Reports from earlier runs are not inputs to this operation. Local execution
+remains usable without Git. Retained public artifacts omit private machine paths
+and raw source/proof-note payloads.
+
 ## Evidence states
 
 For each criterion in scope, each required method gets one state:
 
-| State | Meaning |
-| --- | --- |
-| `satisfied` | Every link for the method passed in this run |
-| `failed` | At least one linked test or proof failed |
-| `inconclusive` | The runner did not produce usable results, for example a build error |
-| `no-evidence` | Linked, but a linked function was absent, ambiguous, or skipped in this run's results |
-| `unlinked` | No link names the criterion for this method |
-| `not-evaluated` | The method is outside the requested scope, or its runner is unavailable or not yet supported |
+All results must come from the current run with unchanged inputs. Changed inputs
+make affected evidence inconclusive, regardless of the runner's result.
+
+| State | Test method | Proof method |
+| --- | --- | --- |
+| `satisfied` | Every linked test passed once | Every required target has a successful command and supported complete report with nonzero coverage, zero verification errors, and exactly one verified result in the expected mode for each linked function; the trust policy holds |
+| `failed` | A linked test failed | A linked function fails verification, or a target violates the trust policy |
+| `inconclusive` | Build/tool failure without usable results, or malformed results | An unsuccessful command without a linked verification or trust-policy failure; unusable, unsupported, malformed, empty, partial, or zero-coverage reports; or target failures outside the criterion's links, with the failing obligations listed |
+| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in otherwise successful target results |
+| `unlinked` | No test link names the criterion | No proof link names the criterion |
+| `not-evaluated` | Outside the requested scope, or runner unavailable or unsupported | Outside the requested scope, or runner unavailable or not yet supported |
 
 Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
@@ -268,13 +364,24 @@ runners = ["nextest", "verus"]
 `sources` are the directories scanned for links; `output` is where runner reports
 are written; `runners` lists the supported runners the project uses. Paths follow
 the existing [path rules](configuration.md#paths), and `output` must be separate
-from the Book source. The section is required for `verify` and ignored by `check`;
+from the Book and configured source directories. The section is required for
+`verify` and ignored by `check`;
 its absence makes `verify` incomplete.
 
-A project that verifies its own code also identifies its Verus installation and
-verification toolchain here, separately from its build toolchain; [Project
-Integration](project-integration.md#formal-verification-in-a-project) defines
-that use. The exact fields are defined with the proof runner.
+A project that verifies its own code also identifies its Verus installation,
+expected verifier version, verification Rust toolchain, and manifest, package,
+crate target, and features here. [Project Integration](project-integration.md#formal-verification-in-a-project)
+defines that use. Project manifests and source paths follow the containment rules
+above; an explicitly selected tool installation may be outside the project root.
+The exact proof-runner fields and supported target forms are settled by
+[milestone 2](../implementation-roadmaps/verification-evidence.md#verification-evidence-2)
+against native Verus runs before assignment of the complete runner.
+
+The [shared foundation](../implementation-roadmaps/verification-evidence.md#verification-evidence-4)
+provides configuration, links, evidence states, and typed reporting before either
+runner. Test and proof runners can then be implemented independently. The
+[consumer acceptance milestone](../implementation-roadmaps/verification-evidence.md#verification-evidence-5)
+exercises packaged use after engine proof dependencies are isolated.
 
 ## Boundaries
 
@@ -300,6 +407,7 @@ that use. The exact fields are defined with the proof runner.
    `accepted`): it claims the part is implemented and verified, which `verify` would
    enforce. This would replace any separate CI gating option and needs a completion
    marker below the project level, which does not exist yet.
-4. **Machine-readable output.** A versioned output format for tools and agents.
+4. **Machine-readable output.** The versioned artifact schema for tools and agents,
+   planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
 5. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
    and Verus.

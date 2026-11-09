@@ -79,9 +79,9 @@ schema-version = 1
 id = "decision-verify-runs-linked-checks"
 title = "Verify runs the linked checks through the project's tools"
 status = "draft"
-choice = "The verify operation selects the tests and proofs linked to the criteria in scope and runs exactly those through supported runners of the project's own tools, then reads that run's reports. It does not replace the project's test commands or CI jobs."
+choice = "The verify operation selects linked test functions and the complete proof targets required by criteria in scope, runs them through supported runners of the project's own tools, and reads that run's reports. Test selection is exact; proof selection covers whole declared crate targets and the report states the executed scope. The operation does not replace the project's test commands or CI jobs."
 requirements = ["requirement-criterion-evidence"]
-rationale = "Agents in the build loop need one command that gives current results for the anchor they are changing. Only Anchor Book knows which tests address which criteria, so selecting and running them is the step it adds; running them itself also makes results current by construction, with no revision bookkeeping for reports produced elsewhere."
+rationale = "Agents in the build loop need one command that gives current results for the anchor they are changing. Anchor Book knows which functions address which criteria, so it adds selection, tool execution, and association of results with current inputs. Complete proof-target runs preserve the verifier's declared scope, while input identities prevent cached or changed inputs from being reported as fresh evidence."
 alternatives = ["Verify reads reports produced by separate runs, which avoids invoking tools but needs several steps in the build loop and recorded revisions to tell current results from old ones.", "Agents run the whole suite and read its output, which loses the link from results to criteria."]
 reconsider-when = "A project needs evidence from runs verify cannot invoke, such as tests on other platforms; add reading of supplied reports as a separate input rather than removing selected runs."
 ```
