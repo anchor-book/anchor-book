@@ -159,7 +159,7 @@ one line-oriented text search and without running a parser.
 source = "Agents read and search Book sources rather than the rendered Book; record structure that needs block-level reading multiplies their reads and wrong matches."
 ```
 
-## Verification evidence requirement
+## Verification requirements
 
 ```anchorbook-requirement
 schema-version = 1
@@ -175,6 +175,22 @@ this for the anchors they are changing with one command. Missing or outdated
 evidence must never appear as support.
 '''
 source = "Anchors declare required verification methods, but completion and verification are otherwise recorded by hand in roadmaps, so nothing shows which anchor criteria are actually supported."
+```
+
+```anchorbook-requirement
+schema-version = 1
+id = "requirement-proofs-establish-criteria"
+title = "A proof counts only when it establishes its criterion"
+status = "draft"
+statement = '''
+A proof must count as evidence for a criterion only when it establishes that
+criterion's stated claim over the production code the system executes, within
+the criterion's declared domain, boundary, assumptions, and exclusions. A
+successful verification whose specification is weaker than the claim, holds
+vacuously, rests on unrecorded assumptions, or differs from the specification
+that was reviewed must not appear as support for the criterion.
+'''
+source = "Verus establishes that code meets its specification, not that the specification expresses the design. Agents that write both the code and its specification can obtain a passing proof that establishes less than the criterion requires."
 ```
 
 ## Project integration requirements

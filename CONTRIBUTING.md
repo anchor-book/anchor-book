@@ -192,6 +192,14 @@ Keep this coverage gap explicit: scoped mutation checks exercise the unannotated
 integration code, while a deliberate code defect separately tests proof rejection.
 Neither result establishes full mutation coverage of the validator.
 
+After changing the validator or its specification, demonstrate that the proof
+still rejects a defect: in a disposable copy, make a deliberate behavioral change,
+such as making the accepted-status check always pass, confirm that verification
+fails, then verify the unchanged source again. A timeout or tool failure is
+inconclusive. Never weaken a specification or add an assumption to make a proof
+pass. The planned [sensitivity guard](book/design/verification.md#guards)
+automates this check.
+
 ### GitHub authority proof
 
 `.github/workflows/proof.yml` defines **Formal verification / Authority proof**

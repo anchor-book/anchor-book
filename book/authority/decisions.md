@@ -133,3 +133,15 @@ rationale = "Projects verifying their own code choose their own Verus and vstd v
 alternatives = ["Projects use the engine's pinned Verus and vstd, which avoids version handling in the engine but forces every project onto the engine's release cadence.", "The engine bundles a Verus installation, which simplifies setup but still dictates the version and adds a large download to every installation."]
 reconsider-when = "Verus and vstd provide compatible version ranges across releases, so a shared requirement no longer forces a single version."
 ```
+
+```anchorbook-decision
+schema-version = 1
+id = "decision-assessment-records-as-files"
+title = "Assessment records are files beside the code, outside the Book"
+status = "draft"
+choice = "A specification assessment or a review is recorded as a file in an assessment directory configured in anchorbook.toml, naming the criterion, the subject, the fingerprints of what was examined, the conclusion, the reviewer, and the revision. verify reads these records and treats one whose fingerprints no longer match as stale; it never writes them."
+requirements = ["requirement-criterion-evidence", "requirement-proofs-establish-criteria"]
+rationale = "Assessments and reviews are evidence, so they stay out of authored Book sources, which hold the goal rather than results. Files go through the project's ordinary review workflow and history, can record a judgment that spans several source files, and fingerprints make a record of changed sources visibly stale instead of silently carried forward."
+alternatives = ["Records in Book chapters, which keeps the records visible to readers but mixes results into the goal design and churns the Book on every specification change.", "Comments beside the reviewed code, which move with that code but cannot hold a judgment spanning several files and clutter the code with conclusions.", "An external tracker, which keeps the repository small but separates the evidence from the revision it describes."]
+reconsider-when = "Assessments or reviews need signatures or approval workflows that files in the repository cannot represent; keep fingerprinted staleness whatever the store."
+```

@@ -16,6 +16,8 @@ Use these definitions and conventions while authoring this Book:
   and anchor fields.
 - [Authority Definitions](design/authority-definitions.md) defines requirements,
   decisions, and authority-reference rules.
+- The [Glossary](glossary.md) lists the Book's terms. Use them in text and
+  identifiers; propose a new term to the engineer before introducing it.
 
 The engine still reads the earlier TOML record form, so write this Book's records
 in that form, following the existing records, until the
@@ -70,7 +72,7 @@ agent correction loop. Merge protection is not established until the
 [Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md) demonstrates
 it; adding a workflow alone does not enable that protection.
 
-[Formal Verification](design/formal-verification.md) implements a Verus proof of the
+The [authority proof](design/rust-engine.md#authority-proof) is a Verus proof of the
 production authority-validation functions, run locally and in a GitHub workflow.
 Its [roadmap](implementation-roadmaps/formal-verification.md) records evidence and
 remaining work. CONTRIBUTING documents the pinned tools, native command, and mutation-coverage gap.

@@ -5,14 +5,14 @@ system overview to component responsibilities, interfaces, and detailed behavior
 It represents the goal as currently understood, rather than only what is implemented.
 
 Chapters remain **drafts for review**. The record library, mdBook rendering,
-configuration loading, structural checking, and local authority proof are in use; other
+configuration loading, structural checking, and the engine's authority proof are in use; other
 capabilities remain planned. See the
 [roadmaps](../implementation-roadmaps/index.md) for progress and evidence.
 
 Read from the system overview through record definitions and configuration,
-then the engine and its operations. Formal verification establishes the proof
-boundary; verification evidence describes how results are reported; project
-integration brings those capabilities into other projects.
+then the engine and its operations. Verification defines how tests, proofs, and
+reviews establish criteria and how `verify` reports them; project integration
+brings those capabilities into other projects.
 
 | Chapter | Scope |
 | --- | --- |
@@ -24,8 +24,9 @@ integration brings those capabilities into other projects.
 | [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
 | [Checking Diagnostics](check-diagnostics.md) | Typed findings, result states, repair guidance, and CLI reports |
-| [Formal Verification](formal-verification.md) | Verus proof of production authority-validation logic, integration boundaries, and evidence |
-| [Verification Evidence](verification-evidence.md) | The verify operation: links from code to criteria, tool reports, and per-criterion evidence states |
+| [Verification](verification.md) | Methods, responsibilities, proofs that match their criteria, proof guards, and assessment records |
+| [Running Verification](verification-evidence.md) | The verify operation: links from code to criteria, runners, guards, evidence states, and reports |
+| [Shipping Verified Code](verified-code-packaging.md) | Publishing verified code without imposing its verifier on dependents |
 | [Project Integration](project-integration.md) | How other Rust projects adopt the crate, run the engine, bootstrap agents, and verify their own code with Verus |
 
 Changes to the goal are made directly in these chapters through the project's

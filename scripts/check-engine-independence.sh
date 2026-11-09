@@ -62,7 +62,12 @@ independent_tests "Invalid record"
 acceptance_failure "Invalid record" current_book_records "record.invalid-definition"
 
 restore_book
-printf '\n- [Missing chapter](deliberately-missing.md)\n' >> "$fixture_dir/book/SUMMARY.md"
+# Insert the entry after the first top-level chapter, inside the navigation list,
+# so the experiment does not depend on how the Book's navigation ends.
+awk '{ print } !done && /^- \[/ { print "  - [Missing chapter](deliberately-missing.md)"; done = 1 }' \
+    "$fixture_dir/book/SUMMARY.md" > "$fixture_dir/SUMMARY.md.new"
+grep -Fq 'deliberately-missing.md' "$fixture_dir/SUMMARY.md.new"
+mv "$fixture_dir/SUMMARY.md.new" "$fixture_dir/book/SUMMARY.md"
 test ! -e "$fixture_dir/book/deliberately-missing.md"
 independent_tests "Broken navigation"
 acceptance_failure "Broken navigation" current_book_structure "structure.chapter-missing"
