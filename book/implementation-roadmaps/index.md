@@ -28,13 +28,48 @@ List milestones directly, without a separate overview table. Each records:
   anchor-criterion coverage.
 - **Evidence and completion:** results, gaps, and the completion record.
 
-Use one table per milestone, with outcome and status first. Keep tasks,
-completion conditions, and the completion record visible; expand anchor details
-and evidence within the table. Details include criterion IDs, anchor references,
-coverage scope, and supporting results. Details remain readable without JavaScript
-and are included when printing. Following a direct criterion link opens its details.
-Completed preparation may be recorded separately, but neither preparation nor
-task checkmarks establish acceptance evidence.
+Write milestones in plain Markdown, without HTML, so agents read only content:
+
+```markdown
+## Milestone 1. Outcome stated as a title {#roadmap-id-1}
+
+**Outcome:** The capability or result enabled.
+
+**Status:** Proposed
+
+**Identifier:** `roadmap-id-1`
+
+**Dependencies:** Prerequisites and required milestones.
+
+**Design basis:** [Linked design](../design/chapter.md#section) and authority.
+
+**Tasks**
+
+- [ ] Bounded work, checked when done.
+
+### Completion criteria
+
+#### Criterion title {#roadmap-id-1-criterion-id}
+
+The observable condition that shows the outcome is reached.
+
+- **Anchor coverage:** `anchor-id` · `criterion-id` — Full, Partial with its scope, or None with a reason.
+- **Evidence:** Pending, or the recorded result.
+
+### Evidence {#roadmap-id-1-evidence}
+
+Milestone-level results, if any.
+
+### Completion record
+
+Pending, or the completion statement.
+```
+
+Fields are separate paragraphs, in this order, with outcome and status first.
+The milestone heading and each criterion heading carry their stable fragment as a
+heading attribute; these fragments are the link targets. Completed preparation may
+be recorded separately, but neither preparation nor task checkmarks establish
+acceptance evidence.
 
 Milestones may be split into smaller outcomes. Keep detailed tasks and evidence
 in one place and link from the parent. Anchors provide traceability, not work
@@ -42,10 +77,10 @@ boundaries: several milestones may advance one anchor or vice versa. Put work
 outside a roadmap's goal in a separate roadmap. Ownership belongs to assignments;
 owner fields and issue links are optional.
 
-During prototyping these tables are maintained in Markdown. The engine does not
-yet parse or render roadmap records. Proposed `anchorbook-roadmap` and
-`anchorbook-milestone` blocks need agreed TOML schemas and engine support before
-migration; these pages provide their working model.
+The engine does not yet read this format. The planned
+[roadmap rendering milestone](record-rendering.md#record-rendering-4) has the
+Anchor Book preprocessor validate milestone and criterion identifiers and anchor
+references and render a collapsible view, without changing the source format.
 
 ## Naming and references
 
@@ -158,7 +193,7 @@ clear design and outcome-based milestones before implementation.
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
 | Deliver the working contract | [Contract delivery](../design/system-overview.md#contract-delivery) | Engine-owned reusable content, command retrieval, and agent bootstrap that separately locates project guidance and configuration. Remove the temporary Book copy when that path works; keep project-specific content in the Book. Language-specific instruction extensions remain a possible later addition requiring their own design. |
-| Structured roadmaps | [Roadmap model](#defining-the-work) | Define roadmap/milestone schemas and criterion references before parsing or rendering them. |
+| Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are planned in [Record Rendering milestone 4](record-rendering.md#record-rendering-4); references between roadmaps beyond fragments remain later work. |
 | Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
 | Anchor progress views | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Provided test surfaces and progress views combining anchor development, `verify` results, and roadmap completion. The [Verification Evidence roadmap](verification-evidence.md) builds evidence evaluation itself; keep verification independent of its consuming Book build. |
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |

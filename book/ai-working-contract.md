@@ -127,7 +127,8 @@ complete by demonstrating an outcome. Do not divide solely by file, component,
 or anchor.
 
 Each milestone states its outcome, relevant design and authority, dependencies,
-tasks, and observable completion criteria. Read and follow the roadmap conventions
+tasks, and observable completion criteria. Write roadmaps in the engine's roadmap
+format, in plain Markdown without HTML; presentation is the renderer's job. Read and follow the roadmap conventions
 identified in project guidance for stable milestone and criterion identifiers,
 anchor references, coverage, and evidence.
 Link affected anchors and specific criteria; explain the scope of partial coverage.

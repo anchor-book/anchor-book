@@ -238,6 +238,17 @@ Replacing manual headings, targets, and relationship lists with generated
 versions is an explicit source migration. Preserve prose and logical section
 headings; the preprocessor does not perform that migration.
 
+## Roadmap rendering
+
+**Status: planned**, in [Record Rendering milestone 4](../implementation-roadmaps/record-rendering.md#record-rendering-4).
+Roadmaps are written in plain Markdown in the
+[roadmap format](../implementation-roadmaps/index.md#defining-the-work), so agents
+read only content. The preprocessor will recognize milestone and criterion
+headings by their fragments, validate identifiers and anchor-coverage references
+against the record inventory, and add a collapsible view of criterion details in
+the rendered output. As with records, the source is never rewritten, and an
+invalid roadmap fails preprocessing with located diagnostics.
+
 ## Acceptance and boundaries
 
 Use the current Book's complete record inventory as the main presentation case,
