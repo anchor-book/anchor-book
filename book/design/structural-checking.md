@@ -88,7 +88,7 @@ from the intended Anchor Book layout, so an engineer or agent can align them
 before rendering. Findings identify the differing settings and expected locations
 without changing either configuration. Equivalent resolved locations, including
 mdBook defaults, agree even when spelled differently. This guarantee covers the
-adjacent book.toml, not environment or command-line overrides.
+configured book.toml, not environment or command-line overrides.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-repair-feedback" },
@@ -99,7 +99,7 @@ authorities = [
 [[criteria]]
 id = "resolved-comparison"
 verification = ["test"]
-statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations. Drift findings identify the relevant settings and expected locations; aligning those settings makes the check pass without the checker editing either file."
+statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations, including a book.toml in a subdirectory of the configuration directory. Drift findings identify the relevant settings and expected locations; aligning those settings makes the check pass without the checker editing either file."
 
 [[criteria]]
 id = "renderer-input"
@@ -159,7 +159,7 @@ are separate from this operation.
 | --- | --- |
 | Source directory | The configured Book source exists and is a directory |
 | Summary | `SUMMARY.md` exists and is a readable, supported navigation document |
-| Renderer configuration | `book.toml` exists and its source/output settings agree with the resolved Anchor Book configuration |
+| Renderer configuration | The configured `book.toml` exists and its source/output settings agree with the resolved Anchor Book configuration |
 | Chapter targets | Local chapter targets referenced by navigation exist as files within the source directory |
 | Required roles | Design, Authority, and Implementation Roadmaps each map to a distinct top-level linked chapter |
 

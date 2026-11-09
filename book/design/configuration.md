@@ -188,9 +188,24 @@ future writing operations must revalidate them.
 
 ## Relationship to mdBook
 
-For the first increment, `book.toml` sits beside `anchorbook.toml`.
 The engine configuration expresses the intended source and output; mdBook's
 configuration must resolve to the same locations.
+
+**Where `book.toml` is.** `[book].mdbook` names the Book's mdBook configuration,
+relative to the directory containing `anchorbook.toml` and within it, under the
+same [path rules](#paths). A project whose repository already has another Book,
+such as user documentation, can keep that Book's `book.toml` at the root and give
+its Anchor Book its own, for example `mdbook = "design-book/book.toml"`, while
+`anchorbook.toml` stays at the root, where configured source and verification
+paths can reach the project's code. mdBook resolves `book.src` and
+`build.build-dir` relative to the directory of its own `book.toml`; the check
+compares those resolved locations with `book.source` and `book.output`.
+
+The field is planned and not yet read: until the
+[Project Integration roadmap](../implementation-roadmaps/project-integration.md#project-integration-1)
+implements it, the loader rejects it as unknown and `book.toml` must sit beside
+`anchorbook.toml`. Once implemented, it is required, like the other fields, so
+no Book relies on an implicit location.
 
 | Anchor Book setting | mdBook setting |
 | --- | --- |
@@ -207,6 +222,6 @@ materialization can reconcile the selected mdBook settings while preserving
 unrelated configuration. The renderer continues to consume ordinary
 `book.toml`; it need not understand Anchor Book's model.
 
-Separately located mdBook configuration, optional profiles, extensions, and
-cross-Book dependencies remain future schema work. They do not make the
+Optional profiles, extensions, and cross-Book dependencies remain future schema
+work. They do not make the
 initial required roles optional.
