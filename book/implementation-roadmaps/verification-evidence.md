@@ -24,8 +24,8 @@ adds CI and versioned retained reports. Milestone 6 adds the proof guards, asses
 records, and the agent brief once both runners exist. Milestone 7 is a prototyping
 experiment that tries the proof guards by hand on the engine's authority proof,
 needs none of the tooling, and informs milestones 4 and 6. Existing milestone and
-criterion IDs stay stable. All work here remains Proposed until its scope is
-agreed and assigned.
+criterion IDs stay stable. Milestone 7 is agreed and Ready; the other milestones
+remain Proposed until their scope is agreed and assigned.
 
 Milestone 4 defines the report's identity fields and collects criteria and
 configuration content identities plus Git revision and dirty state when available.
@@ -348,7 +348,7 @@ the current inventory and migrate with them when that work is assigned.
 <colgroup><col style="width:25%"><col style="width:75%"></colgroup>
 <tbody>
 <tr class="roadmap-milestone-field"><th scope="row">Outcome</th><td colspan="1">Recorded results show whether the proof guards find real weaknesses in an existing proof and what they cost, so the guard design is confirmed or revised before any tooling is built.</td></tr>
-<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Proposed</td></tr>
+<tr class="roadmap-milestone-field"><th scope="row">Status</th><td colspan="1">Ready — scope and criteria agreed with the engineer on 2026-11-09; not yet started</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Dependencies</th><td colspan="1">The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Design basis</th><td colspan="1"><a href="../design/verification.html#guards">Guards</a>, <a href="../design/verification-evidence.html#proof-guards">proof guards</a>, and the <a href="../design/rust-engine.html#authority-proof">authority proof</a>.</td></tr>
 <tr class="roadmap-milestone-field"><th scope="row">Identifier</th><td colspan="1"><code>verification-evidence-7</code></td></tr>
