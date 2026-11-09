@@ -30,3 +30,17 @@
 .ab-roadmap-criterion > summary { color: var(--fg); font-weight: inherit; }
 .ab-roadmap-criterion > summary h4 { display: inline; margin: 0; font-size: 1em; }
 .ab-roadmap-criterion .ab-link-id { display: inline; margin-inline-start: .5rem; font-weight: normal; }
+/* Roadmap milestones: a card with metadata, a field grid, and collapsible parts. */
+.ab-milestone { border: 1px solid var(--table-border-color); border-inline-start: 4px solid var(--links); border-radius: 6px; padding: .2rem 1.4rem 1rem; margin: 2rem 0; overflow-wrap: anywhere; }
+.ab-milestone-meta { display: flex; gap: 1rem; align-items: center; margin: -.4rem 0 1rem; }
+.ab-milestone-meta .ab-link-id { display: inline; }
+.ab-milestone-field { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1rem; border-top: 1px solid var(--table-border-color); padding: .35rem 0; }
+.ab-milestone-field .ab-field-label { font-weight: 650; padding-top: .2rem; }
+.ab-milestone-field .ab-field-value > :first-child { margin-top: .2rem; }
+.ab-milestone-field .ab-field-value > :last-child { margin-bottom: .2rem; }
+.ab-milestone-tasks, .ab-milestone-evidence { margin-top: 1.2rem; }
+.ab-milestone-tasks > summary, .ab-milestone-evidence > summary { color: var(--fg); }
+.ab-milestone-tasks ul { list-style: none; padding-inline-start: .4rem; }
+.ab-task-progress { font-weight: normal; opacity: .8; margin-inline-start: .5rem; }
+.ab-milestone-evidence > summary h3 { display: inline; margin: 0; }
+@media (max-width: 600px) { .ab-milestone-field { grid-template-columns: 1fr; gap: .1rem; } }

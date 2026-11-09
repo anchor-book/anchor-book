@@ -83,8 +83,9 @@ the Book's implementation-roadmaps role: milestone headings and required fields
 follow the roadmap format, milestone and criterion identifiers are unique, and
 each anchor-coverage reference names an existing anchor and its criteria.
 Invalid roadmaps fail preprocessing with located diagnostics and no rendered
-Book. Valid roadmaps render each criterion as a collapsible section that keeps
-its fragment and shows its identifier. Sources are unchanged, and text in code
+Book. Valid roadmaps render each milestone as a card with its status, identifier,
+and fields, and its tasks, criteria, and evidence as open, collapsible sections
+whose headings keep their fragments. Sources are unchanged, and text in code
 blocks is never roadmap structure.
 '''
 authorities = [
@@ -99,7 +100,7 @@ statement = "Independent fixtures with malformed milestone and criterion heading
 [[criteria]]
 id = "roadmap-presentation"
 verification = ["test", "review"]
-statement = "Through the actual adapter, roadmap chapters render each criterion as an open details section with its fragment and visible identifier, other chapters are not treated as roadmaps, and sources are unchanged. Review collapsing, keyboard access, and expanded printing in the rendered Book."
+statement = "Through the actual adapter, roadmap chapters render each milestone as a card with its status and fields, and its tasks, criteria, and evidence as open details sections with their fragments and visible identifiers; other chapters are not treated as roadmaps, and sources are unchanged. Review collapsing, keyboard access, and expanded printing in the rendered Book."
 ```
 
 ## Approach
@@ -275,8 +276,9 @@ Roadmaps are written in plain Markdown in the
 [roadmap format](../implementation-roadmaps/index.md#defining-the-work), so agents
 read only content. The preprocessor will recognize milestone and criterion
 headings by their fragments, validate identifiers and anchor-coverage references
-against the record inventory, and add a collapsible view of criterion details in
-the rendered output. As with records, the source is never rewritten, and an
+against the record inventory, and render each milestone as a card: a header with
+its status and identifier, its fields as a labeled grid, and its tasks (with
+progress), criteria, and evidence as open, collapsible sections. As with records, the source is never rewritten, and an
 invalid roadmap fails preprocessing with located diagnostics.
 
 ## Acceptance and boundaries

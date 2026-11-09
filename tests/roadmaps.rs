@@ -220,24 +220,69 @@ fn render(roadmap: bool, text: &str) -> Result<Vec<String>, RenderError> {
     render_chapters(&[design, work])
 }
 
+const CRITERION_OPEN: &str = "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"road-1-works\">It <code>works</code> <span class=\"ab-link-id\">road-1-works</span></h4></summary>\n";
+
 #[test]
-fn criteria_render_as_open_sections_keeping_their_fragments() {
+fn milestones_render_as_cards_with_fields_and_open_sections() {
     let text = milestone("road-1", "works", COVERAGE);
-    let rendered = render(true, &text).unwrap();
-    let page = &rendered[1];
-    assert!(page.contains(
-        "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"road-1-works\">It <code>works</code> <span class=\"ab-link-id\">road-1-works</span></h4></summary>\n"
-    ));
-    assert!(page.contains("\n</details>\n\n### Completion record"));
-    assert!(!page.contains("#### It"));
-    // Everything other than the criterion heading and closing is unchanged.
-    let restored = page
-        .replace(
-            "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"road-1-works\">It <code>works</code> <span class=\"ab-link-id\">road-1-works</span></h4></summary>\n",
-            "#### It `works` {#road-1-works}",
+    let page = &render(true, &text).unwrap()[1];
+    let expected = [
+        "<section class=\"ab-milestone\">\n\n",
+        "## Milestone 1. Work happens {#road-1}",
+        "\n\n<div class=\"ab-milestone-meta\"><span class=\"ab-status\">Proposed</span><span class=\"ab-link-id\">road-1</span></div>",
+        "\n\n<div class=\"ab-milestone-field\"><div class=\"ab-field-label\">Outcome</div><div class=\"ab-field-value\">\n\nSomething works.\n\n</div></div>",
+        // A bare status repeats the badge, and the identifier repeats the heading.
+        "\n\n\n\n\n\n",
+        "<details class=\"ab-details ab-milestone-tasks\" open>\n<summary>Tasks <span class=\"ab-task-progress\">0 of 1 done</span></summary>\n",
+        "\n\n- [ ] Do it.\n</details>\n\n",
+        "\n\n### Completion criteria\n\n",
+        CRITERION_OPEN,
+        "\n\nThe condition.\n\n- **Anchor coverage:** ",
+        COVERAGE,
+        "\n- **Evidence:** Pending.\n\n\n</details>\n\n",
+        "### Completion record\n\nPending.\n",
+        "\n</section>\n\n",
+    ]
+    .concat();
+    assert_eq!(page, &expected);
+}
+
+#[test]
+fn explained_statuses_tasks_and_evidence_render_in_order() {
+    let text = milestone("road-1", "works", COVERAGE)
+        .replacen(
+            "**Status:** Proposed",
+            "**Status:** In progress — tests pending",
+            1,
         )
-        .replace("\n</details>\n\n", "");
-    assert_eq!(restored, text);
+        .replacen(
+            "- [ ] Do it.",
+            "- [x] Plan it.\n- [x] Build it.\n- [ ] Ship it.",
+            1,
+        )
+        .replacen(
+            "### Completion record",
+            "### Evidence {#road-1-evidence}\n\nRan the tests.\n\n### Completion record",
+            1,
+        );
+    let second = milestone("road-2", "holds", "None — preparation");
+    let chapter = format!("{text}\n{second}");
+    let page = &render(true, &chapter).unwrap()[1];
+    assert!(page.contains("<span class=\"ab-status\">In progress</span>"));
+    assert!(page.contains("<div class=\"ab-field-label\">Status</div><div class=\"ab-field-value\">\n\nIn progress — tests pending\n\n</div></div>"));
+    assert!(page.contains("<span class=\"ab-task-progress\">2 of 3 done</span>"));
+    assert!(page.contains("- [ ] Ship it.\n</details>\n\n"));
+    assert!(page.contains(
+        "\n</details>\n\n<details class=\"ab-details ab-milestone-evidence\" open>\n<summary><h3 id=\"road-1-evidence\">Evidence</h3></summary>\n\n\nRan the tests.\n\n\n</details>\n\n### Completion record"
+    ));
+    // The first card closes before the second opens.
+    assert!(page.contains("Pending.\n\n\n</section>\n\n<section class=\"ab-milestone\">\n\n## Milestone 1. Work happens {#road-2}"));
+    assert_eq!(page.matches("<section").count(), 2);
+    assert_eq!(page.matches("</section>").count(), 2);
+    assert_eq!(
+        page.matches("<details").count(),
+        page.matches("</details>").count()
+    );
 }
 
 #[test]

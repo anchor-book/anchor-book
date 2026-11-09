@@ -241,7 +241,7 @@ Pending.
 
 ## Milestone 4. Roadmaps render from plain Markdown {#record-rendering-4}
 
-**Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders a readable view with collapsible criterion details, while agents keep reading the compact Markdown source.
+**Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders each milestone as a card with collapsible tasks, criteria, and evidence, while agents keep reading the compact Markdown source.
 
 **Status:** In progress — implemented locally; presentation review pending
 
@@ -274,13 +274,13 @@ Independent fixtures with duplicate milestone or criterion identifiers, malforme
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
 - **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
-- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters with open details sections, fragments, and visible identifiers, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output. This Book renders 99 criteria; every local link resolves and the print view has no duplicate identifiers. The review of collapsing, keyboard access, and printing is pending.
+- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. The review of collapsing, keyboard access, and printing is pending.
 
 ### Evidence {#record-rendering-4-evidence}
 
 **Revision and checks:** Working tree based on `0baee60`, checked 2026-11-09. Formatting, Clippy, and 95 tests pass on Rust 1.88.0 and stable; the structural check, current-Book acceptance, `mdbook build`, rendered acceptance, and `scripts/check-engine-independence.sh` pass.
 
-**Mutation testing:** cargo-mutants 27.1.0 with `--jobs 2 --build-timeout 120` on `src/roadmaps.rs`, `src/rendering.rs`, `src/rendering/html.rs`, `src/adapters/mdbook.rs`, and `src/main.rs`. The first run of 204 mutations found 12 missed and 4 timeouts, all in the new code: untested section ends, multiple milestones per chapter, duplicate locations in a differing chapter, and the error source, plus loops whose index arithmetic could hang. Tests were added, the loops rewritten as iterators, and an ineffective match guard removed. The repeat run tested 182 mutations: 163 caught, 19 unviable, none missed or timed out.
+**Mutation testing:** cargo-mutants 27.1.0 with `--jobs 2 --build-timeout 120` on `src/roadmaps.rs`, `src/rendering.rs`, `src/rendering/html.rs`, `src/adapters/mdbook.rs`, and `src/main.rs`. The first run of 204 mutations found 12 missed and 4 timeouts, all in the new code: untested section ends, multiple milestones per chapter, duplicate locations in a differing chapter, and the error source, plus loops whose index arithmetic could hang. Tests were added, the loops rewritten as iterators, and an ineffective match guard removed. The repeat run tested 182 mutations: 163 caught, 19 unviable, none missed or timed out. After milestone cards were added, `src/roadmaps.rs`, `src/rendering.rs`, and `src/rendering/html.rs` were tested again: 166 mutations, 148 caught, 18 unviable, none missed or timed out; 96 tests pass on Rust 1.88.0 and stable.
 
 ### Completion record
 

@@ -176,8 +176,45 @@ pub(super) fn criterion_open(id: &str, title: &str) -> String {
         id = escape(id),
     )
 }
-/// Closing of a roadmap criterion section, followed by a blank line so the
+/// Opening of a milestone's evidence section, open by default.
+pub(super) fn evidence_open(id: &str, title: &str) -> String {
+    format!(
+        "<details class=\"ab-details ab-milestone-evidence\" open>\n<summary><h3 id=\"{id}\">{}</h3></summary>\n",
+        inline_code(title),
+        id = escape(id),
+    )
+}
+/// Opening of a milestone's task list, open by default, with its progress.
+pub(super) fn tasks_open(done: usize, total: usize) -> String {
+    format!(
+        "<details class=\"ab-details ab-milestone-tasks\" open>\n<summary>Tasks <span class=\"ab-task-progress\">{done} of {total} done</span></summary>\n"
+    )
+}
+/// Closing of a collapsible section, followed by a blank line so the
 /// following Markdown is parsed normally.
-pub(super) fn criterion_close() -> String {
+pub(super) fn section_close() -> String {
     "\n</details>\n\n".to_owned()
+}
+/// Opening of a milestone card; the Markdown heading follows inside it.
+pub(super) fn milestone_open() -> String {
+    "<section class=\"ab-milestone\">\n\n".to_owned()
+}
+/// Closing of a milestone card.
+pub(super) fn milestone_close() -> String {
+    "\n</section>\n\n".to_owned()
+}
+/// Status and identifier shown under the milestone heading.
+pub(super) fn milestone_meta(status: &str, id: &str) -> String {
+    format!(
+        "\n\n<div class=\"ab-milestone-meta\"><span class=\"ab-status\">{}</span><span class=\"ab-link-id\">{}</span></div>",
+        escape(status),
+        escape(id)
+    )
+}
+/// A field as a labeled row; the value stays Markdown, separated by blank lines.
+pub(super) fn milestone_field(label: &str, value: &str) -> String {
+    format!(
+        "<div class=\"ab-milestone-field\"><div class=\"ab-field-label\">{}</div><div class=\"ab-field-value\">\n\n{value}\n\n</div></div>",
+        escape(label)
+    )
 }

@@ -17,17 +17,42 @@ use std::{
 /// Milestone statuses defined by the roadmap model.
 const STATUSES: [&str; 5] = ["Proposed", "Ready", "In progress", "Blocked", "Complete"];
 
-/// A validated completion criterion and the source line its heading occupies.
+/// A titled part of a milestone, such as a completion criterion or the
+/// milestone's evidence, and the source its heading and content occupy.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct RoadmapCriterion {
+pub struct RoadmapSection {
     /// Book-wide fragment, prefixed by its milestone identifier.
     pub id: String,
     /// Display title from the heading.
     pub title: String,
     /// Byte range of the heading line, excluding its line ending.
     pub heading: Range<usize>,
-    /// Byte offset where the criterion's section ends.
+    /// Byte offset where the section ends.
     pub end: usize,
+}
+
+/// A `**Label:** value` field paragraph before the milestone's subsections.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MilestoneField {
+    /// Label without its emphasis or colon.
+    pub label: String,
+    /// The value's Markdown source.
+    pub value: String,
+    /// Byte range of the field's line, excluding its line ending.
+    pub line: Range<usize>,
+}
+
+/// The milestone's task list and its progress.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MilestoneTasks {
+    /// Byte range of the `**Tasks**` line.
+    pub label: Range<usize>,
+    /// Byte offset after the last task item.
+    pub end: usize,
+    /// Checked tasks.
+    pub done: usize,
+    /// All tasks.
+    pub total: usize,
 }
 
 /// A validated milestone in one roadmap chapter.
@@ -37,8 +62,23 @@ pub struct Milestone {
     pub id: String,
     /// Chapter that defines it.
     pub path: PathBuf,
+    /// Byte range of the heading line, excluding its line ending.
+    pub heading: Range<usize>,
+    /// Byte offset where the milestone's section ends.
+    pub end: usize,
+    /// The status keyword that begins the Status field, such as `In progress`.
+    pub status: String,
+    /// Field paragraphs before the first subsection, in source order. The
+    /// Identifier field is excluded; it repeats the heading fragment.
+    pub fields: Vec<MilestoneField>,
+    /// Byte range of the Identifier field's line.
+    pub identifier: Range<usize>,
+    /// The task list, if the milestone has one.
+    pub tasks: Option<MilestoneTasks>,
     /// Completion criteria in source order.
-    pub criteria: Vec<RoadmapCriterion>,
+    pub criteria: Vec<RoadmapSection>,
+    /// The milestone-level evidence section, if it has a fragment.
+    pub evidence: Option<RoadmapSection>,
 }
 
 /// A located roadmap format or reference problem.
@@ -245,33 +285,87 @@ fn read_chapter(
         // The section includes its heading line, which matches no field.
         let body = &lines[start..end];
         let section_end = lines.get(end).map_or(chapter.content.len(), |l| l.start);
-        milestones.push(read_milestone(
-            chapter,
-            id,
-            line.number,
-            body,
-            section_end,
-            inventory,
-            reader,
-        ));
+        if let Some(milestone) =
+            read_milestone(chapter, id, line, body, section_end, inventory, reader)
+        {
+            milestones.push(milestone);
+        }
     }
     milestones
+}
+
+/// The end of a subsection: the start of the next heading line, or `default`.
+fn section_end_after(body: &[&Line<'_>], position: usize, default: usize) -> usize {
+    body[position + 1..]
+        .iter()
+        .find(|l| l.text.starts_with('#'))
+        .map_or(default, |l| l.start)
+}
+
+fn read_fields(body: &[&Line<'_>]) -> Vec<MilestoneField> {
+    body.iter()
+        .skip(1)
+        .take_while(|l| !l.text.starts_with("### "))
+        .filter_map(|l| {
+            let rest = l.text.strip_prefix("**")?;
+            let colon = rest.find(":**")?;
+            let value = rest[colon + 3..].trim();
+            (!value.is_empty()).then(|| MilestoneField {
+                label: rest[..colon].to_owned(),
+                value: value.to_owned(),
+                line: l.start..l.end,
+            })
+        })
+        .collect()
+}
+
+fn read_tasks(body: &[&Line<'_>]) -> Option<MilestoneTasks> {
+    let at = body.iter().position(|l| l.text == "**Tasks**")?;
+    let items: Vec<_> = body[at + 1..]
+        .iter()
+        .skip_while(|l| l.text.is_empty())
+        .take_while(|l| l.text.starts_with("- [ ] ") || l.text.starts_with("- [x] "))
+        .collect();
+    let last = items.last()?;
+    Some(MilestoneTasks {
+        label: body[at].start..body[at].end,
+        end: last.end,
+        done: items
+            .iter()
+            .filter(|l| l.text.starts_with("- [x] "))
+            .count(),
+        total: items.len(),
+    })
+}
+
+fn read_evidence(body: &[&Line<'_>], section_end: usize) -> Option<RoadmapSection> {
+    body.iter().enumerate().find_map(|(position, line)| {
+        let rest = line.text.strip_prefix("### ")?;
+        let (title, id) = heading_fragment(rest)?;
+        (title == "Evidence").then(|| RoadmapSection {
+            id: id.to_owned(),
+            title: title.to_owned(),
+            heading: line.start..line.end,
+            end: section_end_after(body, position, section_end),
+        })
+    })
 }
 
 fn read_milestone(
     chapter: Chapter<'_>,
     id: &str,
-    heading_line: usize,
+    heading: &Line<'_>,
     body: &[&Line<'_>],
     section_end: usize,
     inventory: &RecordInventory,
     reader: &mut Reader<'_>,
-) -> Milestone {
+) -> Option<Milestone> {
+    let heading_line = heading.number;
     let field = |label: &str| {
         let prefix = format!("**{label}:**");
         body.iter()
             .find(|l| l.text.starts_with(&prefix))
-            .map(|l| (l.number, l.text[prefix.len()..].trim()))
+            .map(|l| (l.number, l.text[prefix.len()..].trim(), l.start..l.end))
     };
     for label in ["Outcome", "Status", "Identifier"] {
         if field(label).is_none() {
@@ -282,7 +376,7 @@ fn read_milestone(
             );
         }
     }
-    if let Some((number, value)) = field("Identifier")
+    if let Some((number, value, _)) = field("Identifier")
         && value != format!("`{id}`")
     {
         reader.error(
@@ -291,33 +385,31 @@ fn read_milestone(
             format!("Identifier must be `{id}`, matching the heading fragment"),
         );
     }
-    if let Some((number, value)) = field("Status")
-        && !STATUSES.iter().any(|s| {
-            value == *s
+    let status = field("Status").and_then(|(number, value, _)| {
+        let found = STATUSES.iter().find(|s| {
+            value == **s
                 || value.starts_with(&format!("{s} —"))
                 || value.starts_with(&format!("{s} -"))
-        })
-    {
-        reader.error(
-            "roadmap.invalid-milestone",
-            number,
-            format!("Status must start with one of {}", STATUSES.join(", ")),
-        );
-    }
-    let mut criteria: Vec<RoadmapCriterion> = Vec::new();
+        });
+        if found.is_none() {
+            reader.error(
+                "roadmap.invalid-milestone",
+                number,
+                format!("Status must start with one of {}", STATUSES.join(", ")),
+            );
+        }
+        found
+    });
+    let mut criteria: Vec<RoadmapSection> = Vec::new();
     for (position, line) in body.iter().enumerate() {
         if let Some(rest) = line.text.strip_prefix("#### ") {
             match heading_fragment(rest) {
                 Some((title, criterion)) if criterion.starts_with(&format!("{id}-")) => {
-                    let end = body[position + 1..]
-                        .iter()
-                        .find(|l| l.text.starts_with('#'))
-                        .map_or(section_end, |l| l.start);
-                    criteria.push(RoadmapCriterion {
+                    criteria.push(RoadmapSection {
                         id: criterion.to_owned(),
                         title: title.to_owned(),
                         heading: line.start..line.end,
-                        end,
+                        end: section_end_after(body, position, section_end),
                     });
                 }
                 Some((_, criterion)) => reader.error(
@@ -342,11 +434,23 @@ fn read_milestone(
             }
         }
     }
-    Milestone {
+    // Without a valid status and identifier the milestone is reported, not rendered.
+    let identifier = field("Identifier")?.2;
+    Some(Milestone {
         id: id.to_owned(),
         path: chapter.path.to_owned(),
+        heading: heading.start..heading.end,
+        end: section_end,
+        status: (*status?).to_owned(),
+        fields: read_fields(body)
+            .into_iter()
+            .filter(|f| f.label != "Identifier")
+            .collect(),
+        identifier,
+        tasks: read_tasks(body),
         criteria,
-    }
+        evidence: read_evidence(body, section_end),
+    })
 }
 
 fn check_reference(
