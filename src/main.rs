@@ -61,7 +61,16 @@ fn md(args: &[std::ffi::OsString]) -> ExitCode {
             io::stderr().lock().write_all(text.as_bytes())?;
             return Ok(ExitCode::from(outcome.exit_code()));
         }
-        let output = anchor_book::adapters::mdbook::preprocess(&request)?;
+        // The check passed, so the configuration loads; its roadmap role names the
+        // chapter whose subtree holds the Book's roadmaps.
+        let configuration = anchor_book::configuration::load(&config)?;
+        let roadmaps = configuration
+            .section(anchor_book::configuration::SectionRole::ImplementationRoadmaps)
+            .strip_prefix(configuration.source())
+            .ok()
+            .map(std::path::Path::to_path_buf);
+        let output =
+            anchor_book::adapters::mdbook::preprocess_with_roadmaps(&request, roadmaps.as_deref())?;
         writeln!(io::stdout().lock(), "{output}")?;
         Ok(ExitCode::SUCCESS)
     })();

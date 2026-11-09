@@ -212,8 +212,9 @@ src/
   adapters/check.rs       Plain-text report formatting without process I/O
   adapters.rs             External protocol interfaces
   adapters/mdbook.rs       JSON input, validation, and Book transformation
-  rendering.rs            Record rendering operation and typed errors
+  rendering.rs            Record and roadmap rendering operation and typed errors
   rendering/              Private HTML and link generation
+  roadmaps.rs             Roadmap milestone reading and validation
   records.rs              Public record capability interface
   records/
     model.rs              Record types and chapter input

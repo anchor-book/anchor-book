@@ -1,4 +1,5 @@
-//! Configure and check Book structure, and read, validate, and render design records.
+//! Configure and check Book structure, read, validate, and render design records,
+//! and validate and render roadmap milestones.
 //!
 //! Record and rendering operations use supplied Markdown without filesystem access.
 //! Configuration and structural checking inspect explicit files without writes.
@@ -20,6 +21,7 @@ pub mod checking;
 pub mod configuration;
 pub mod records;
 pub mod rendering;
+pub mod roadmaps;
 
 // Preserve the initial API while offering a capability-scoped namespace.
 pub use records::{

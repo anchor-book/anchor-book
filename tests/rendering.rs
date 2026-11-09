@@ -45,6 +45,7 @@ fn renders_all_fields_and_preserves_unrelated_content() {
     let output = render_chapters(&[RenderChapter {
         source: Chapter::new(Path::new("a.md"), &source),
         output_path: Path::new("a.md"),
+        roadmap: false,
     }])
     .unwrap()
     .remove(0);
