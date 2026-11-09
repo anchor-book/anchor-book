@@ -91,10 +91,11 @@ test ran or that its assertions are sufficient. Evidence must preserve execution
 scope, relevant inputs, and outcomes. The model must also accommodate formal
 verification, including statements, assumptions, bounds, and inconclusive results.
 
-[Formal Verification](formal-verification.md) describes the implemented Verus
-proof of the engine's authority-validation logic. Its roadmap records proof and
-production-integration evidence manually; automated evidence evaluation remains
-later work.
+[Verification](verification.md) defines how tests, proofs, and reviews
+establish criteria, including the guards that check a proof establishes its
+criterion. The engine's own [authority proof](rust-engine.md#authority-proof) is
+implemented; its roadmap records proof and production-integration evidence
+manually, and automated evidence evaluation remains later work.
 
 ## Operations
 
@@ -119,7 +120,7 @@ checks detect drift and CI can gate it.
 
 Build keeps three views distinct: anchor development, verification evidence,
 and agreed roadmap completion. Missing, failed, stale, or incomplete evidence
-cannot count as successful verification. [Verification Evidence](verification-evidence.md)
+cannot count as successful verification. [Running Verification](verification-evidence.md)
 defines the verify operation that evaluates evidence; Build can later present its results.
 
 ## Contract delivery

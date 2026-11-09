@@ -1,10 +1,12 @@
-# Verification Evidence
+# Running Verification
 
 **Status: draft for review.** Not implemented; the
 [Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md)
 plans the work.
 
-`anchorbook verify` reports the project's progress toward its goal design: for
+This chapter defines the operation that produces the evidence described in
+[Verification](verification.md). `anchorbook verify` reports the project's
+progress toward its goal design: for
 each anchor and each criterion's required methods, what current tests and proofs
 establish. It finds the linked test functions and proof targets required by the
 criteria in scope, runs them through the project's own tools, and reports each
@@ -143,11 +145,21 @@ flowchart LR
 
 ```sh
 anchorbook verify --config anchorbook.toml [--anchor ID]... [--method test|proof]...
+                  [--skip-sensitivity] [--brief]
 ```
 
 In the build loop, an agent runs `verify` with `--anchor <id>` after a change to
 see that anchor's criteria against the current files; `--method test` skips proof
-runs while iterating on tests. CI runs it for the whole Book.
+runs while iterating on tests, and `--skip-sensitivity` skips the slowest proof
+guard, leaving it `not-evaluated`. CI runs it for the whole Book with every guard.
+
+**Brief.** `--brief` runs no tools. For each criterion in scope it prints what an
+agent needs before writing or changing its tests or proof: the statement and proof
+scope, the required methods, the linked functions with their identities and modes,
+the current specification fingerprint and assessment record status, and each exclusion
+with the criterion covering it and that criterion's linked tests. Exclusions that
+name no covering criterion are listed as gaps. States that need a run are shown as
+`not-evaluated`.
 
 `verify` first reads the Book's chapters through the configured navigation and
 its records through the record library. A structurally invalid Book or invalid
@@ -163,20 +175,12 @@ records make the run incomplete rather than reporting progress against them.
 functions, invokes runners, interprets their output, and returns the report as
 typed data; the CLI handles invocation and presentation.
 
-## Responsibilities
-
-| Owner | Responsibility |
-| --- | --- |
-| Project | Declare each criterion's claim and scope, maintain formal specifications beside production code, and choose its tools and verification targets. |
-| Verus | Verify the selected code against its formal contracts under the recorded assumptions. |
-| Anchor Book | Resolve criterion associations, plan and execute supported runners, normalize results, and report evidence states and limits. |
-| Review | Assess specification fidelity, caller preconditions, production-code correspondence, and coverage of excluded boundaries. |
-
-The required [proof scope](anchor-definitions.md#required-scope-of-a-proof-criterion)
-remains the project's statement of the claim, domain, boundary, assumptions, and
-exclusions. Successful function verification does not establish that its contract
-expresses that claim or covers the system's runtime path. A criterion requiring
-tests or review remains unsatisfied until those methods also have evidence.
+[Verification](verification.md#responsibilities) divides the work between the
+project, Verus, Anchor Book, and review. Successful function verification does
+not establish that its contract expresses the criterion or covers the system's
+runtime path; the [guards](verification.md#guards) and the specification assessment
+address that. A criterion requiring tests or review remains unsatisfied until
+those methods also have evidence.
 
 ## Evidence links
 
@@ -204,6 +208,13 @@ is not passing evidence. Membership in a `verus!` block does not determine the
 function's mode. A misplaced link, or a link on an unsupported function form, is
 a located finding.
 
+**Witnesses.** A verified proof function whose link line ends with
+`witness <function>` is the [vacuity witness](verification.md#verify-proof-nonvacuous)
+for the named linked function of the same criterion: it establishes that
+function's preconditions for an input it constructs. The exact Verus form of the
+witness is settled with the guard experiment in
+[milestone 6](../implementation-roadmaps/verification-evidence.md#verification-evidence-6).
+
 **Identity.** Each linked function is resolved by package, crate target, module
 path, name, and verification mode, with its source location, and must match
 exactly one result for the selected target and features. Equal names in different
@@ -214,7 +225,7 @@ before extending to other forms. Recognizing modes requires parsing inside
 `verus!` bodies, which ordinary Rust parsers such as `syn` leave as macro tokens.
 The parser and its dependencies are selected and reviewed under the
 [Rust dependency conventions](rust-engine.md#rust-development-conventions) and
-the [proof-isolation goal](formal-verification.md#proof-packaging-for-consumers).
+the [proof-isolation goal](verified-code-packaging.md#proof-packaging-for-consumers).
 
 ## Evidence states
 
@@ -223,14 +234,14 @@ describe the current run only: reports from earlier runs are never inputs, and
 inputs that change during the run make affected evidence inconclusive whatever
 the runner reported.
 
-| State | Test method | Proof method |
-| --- | --- | --- |
-| `satisfied` | Every linked test passed once | Every required target has a [complete result](#verus-runner), and each linked function verified once in its expected mode |
-| `failed` | A linked test failed | A linked function failed verification, or the target violated the trust policy |
-| `inconclusive` | The runner could not build or run, or its results are malformed | Without a linked failure: a required target has no complete result, or it has verification failures outside the criterion's links (listed in the report) |
-| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in a complete result |
-| `unlinked` | No test link names the criterion | No proof link names the criterion |
-| `not-evaluated` | Outside the requested scope, or the runner is unavailable or unsupported | Outside the requested scope, or the runner is unavailable or unsupported |
+| State | Test method | Proof method | Review method |
+| --- | --- | --- | --- |
+| `satisfied` | Every linked test passed once | Every required target has a [complete result](#verus-runner), each linked function verified once in its expected mode, and every [guard](#proof-guards) holds | A current accepting assessment record |
+| `failed` | A linked test failed | A linked function or its witness failed verification, the target violated the trust policy, a sensitivity survivor is unclassified, or the specification assessment rejects it | The current assessment record rejects the criterion |
+| `inconclusive` | The runner could not build or run, or its results are malformed | Without a failure above: a required target has no complete result, it has verification failures outside the criterion's links (listed in the report), or a sensitivity run timed out | Never |
+| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in a complete result; a precondition has no witness; or the specification assessment is missing or stale | The assessment record is missing or stale |
+| `unlinked` | No test link names the criterion | No proof link names the criterion | Never |
+| `not-evaluated` | Outside the requested scope, or the runner is unavailable or unsupported | Outside the requested scope, the runner is unavailable or unsupported, or sensitivity was skipped | Outside the requested scope |
 
 Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
@@ -238,8 +249,9 @@ first applicable state in the order `failed`, `inconclusive`, `no-evidence`,
 `unlinked`, `not-evaluated`. An anchor is satisfied when all its criteria are,
 partial when some are, and otherwise takes the same order.
 
-The `review` method has no runner yet; see [open questions](#open-questions).
-Criteria requiring `review` report that method as `not-evaluated`.
+The `review` method runs nothing: `verify` reads the criterion's
+[assessment records](verification.md#assessment-records) and compares their fingerprints
+with the current sources.
 
 ## Running linked checks
 
@@ -267,7 +279,7 @@ several, has no evidence and is reported.
 separately from its build toolchain. The runner checks the actual verifier
 identity against the configured version and a supported report adapter. Support
 starts with the release pinned for the engine's
-[authority proof](formal-verification.md); another version is added only with
+[authority proof](rust-engine.md#authority-proof); another version is added only with
 real passing and failing report fixtures and native-run acceptance. An
 unsupported report version makes the proof method `inconclusive`.
 
@@ -295,12 +307,17 @@ the failing obligations and their locations. This directs repair without treatin
 a passing caller as established evidence.
 
 **Trust policy.** The runner uses the engine proof's `--no-cheating` policy
-initially. For each supported version, rejection of deliberate assumptions and
-trusted project bodies is demonstrated before the policy is claimed. Reports
-record trusted compiler, verifier, solver, standard-library, and external
-contracts; zero errors alone cannot establish the absence or adequacy of
-assumptions. Unproved conversions, callers, diagnostics, and other excluded
-behavior keep their test or review obligations.
+initially. In the pinned release it rejects `assume`, `admit`,
+`#[verifier::external_body]`, the project's own `assume_specification`,
+`#[verifier::assume_termination]`, and calls to undeclared external functions in
+the crates it applies to. It does not cover the contracts of `vstd` and other
+dependencies, their broadcast lemmas, or dependency crates verified without the
+flag. For each supported version, rejection of deliberate assumptions and trusted
+project bodies is demonstrated before the policy is claimed. Reports record the
+trusted compiler, verifier, solver, standard-library, and dependency contracts;
+zero errors alone cannot establish the absence or adequacy of assumptions.
+Unproved conversions, callers, diagnostics, and other excluded behavior keep
+their test or review obligations.
 
 **Fresh runs.** Proof runs use fresh target and report directories under the
 configured output, with locked dependencies. Cache reuse is introduced only after
@@ -312,6 +329,45 @@ normalizes results into the typed evidence model used for tests. The expected
 functions come from resolved links, in executable and proof modes. The engine's
 `.github/verus-report.jq`, which checks its own seven executable functions, is a
 starting fixture, not a function inventory for other projects.
+
+### Proof guards
+
+The [guards](verification.md#guards) run after the target's own result is
+complete; a target that does not verify gets no guard results.
+
+**Sensitivity.** For each linked executable function, the runner generates
+changes to its executable statements and expressions: negated or constant
+conditions, swapped comparison and boolean operators, replaced return values,
+and removed calls that change state. Specifications, proof blocks, invariants,
+and proof functions are not changed. Each change is applied in a fresh copy and
+the complete target is verified once. A change that fails verification is
+reported with the obligation that failed; one rejected only by overflow, bounds,
+or termination obligations is reported as such, since the claim did not detect
+it. A change that verifies is a survivor. The runner then runs the linked tests
+of the criteria named in the exclusions against each survivor; a survivor they
+detect is classified as excluded, and one listed as equivalent in the current
+specification assessment is classified as equivalent. Changes are identified by
+function, location, and original and replacement text, so a listing that no
+longer matches classifies nothing. Changes that do not build are unviable;
+timeouts are inconclusive. The number of changes and the time budget are reported.
+Ordinary mutation tools find no mutations inside `verus!` bodies, so the runner
+generates these changes with the same parser that reads links and modes.
+
+**Witnesses.** Each linked function with preconditions needs a linked witness
+that verified in the same complete result. The report lists functions without
+one.
+
+**Fingerprints.** The specification fingerprint covers the criterion's statement
+and proof scope, the signatures and contracts of its linked functions, and the
+definitions of every specification function and type those contracts reach,
+followed transitively. It is computed from tokens, so comments and formatting do
+not change it; executable and proof bodies are excluded. The brief and report
+show the fingerprint so a reviewer can record it.
+
+**Assessment records.** The runner reads the records for the criteria in scope from
+the configured assessment directory, rejects malformed or duplicate records as
+located findings, and treats a record whose fingerprints differ from the current
+ones as stale.
 
 ## Report
 
@@ -349,7 +405,7 @@ Each result retains the information needed to assess its scope:
 | Inputs | Content identities for the evaluated criteria, configuration, code, and lockfile; revision and dirty state when Git is available. |
 | Selection | Requested anchors and methods, actual packages/targets/features, and resolved function identities and modes. |
 | Execution | Run identity, executed argument vector, exit status, and actual verifier, solver, and Rust toolchain versions. |
-| Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations. |
+| Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations; specification fingerprints and the assessment records read; sensitivity changes, their outcomes, and their classifications. |
 
 A Git revision alone does not identify uncommitted inputs, so relevant inputs are
 snapshotted before and after execution. Local execution remains usable without
@@ -362,13 +418,15 @@ proof-note payloads.
 [verification]
 sources = ["src", "tests"]
 output = "target/anchorbook-verify"
+assessments = "verification/assessments"
 runners = ["nextest", "verus"]
 ```
 
 `sources` are the directories scanned for links; `output` is where runner reports
-are written; `runners` lists the supported runners the project uses. Paths follow
-the existing [path rules](configuration.md#paths), and `output` must be separate
-from the Book and the configured source directories. The section is required for
+are written; `assessments` holds the project's [assessment records](verification.md#assessment-records);
+`runners` lists the supported runners the project uses. Paths follow the existing
+[path rules](configuration.md#paths). `output` must be separate from the Book, the
+configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
 `verify` and ignored by `check`; its absence makes `verify` incomplete.
 
 A project that verifies its own code also identifies here its Verus installation,
@@ -387,17 +445,16 @@ native Verus runs in
   not replace `cargo test`, the project's CI test jobs, or their commands.
 - Its states describe linked results, not the property. Passing tests may still
   miss part of a criterion; sufficiency stays a `review` obligation.
-- Mutation results assess test sensitivity and are not evidence for any method.
+- [Mutation testing](verification.md#tests-that-match-the-design) assesses test
+  sensitivity and is not evidence for any method.
 - Results are not written into Book sources. A rendered progress view, if added,
   is derived from a CI `verify` report at build time.
 
 ## Open questions
 
-1. **Review evidence.** How a review is recorded so `verify` can read it: what was
-   examined, the conclusion, the reviewer, and the revision.
-2. **Rendered progress.** Whether the published Book shows states beside criteria,
+1. **Rendered progress.** Whether the published Book shows states beside criteria,
    derived from the CI report.
-3. **When unsatisfied criteria fail.** Whether declared maturity turns states into
+2. **When unsatisfied criteria fail.** Whether declared maturity turns states into
    failures: for example, in the `complete` [project phase](configuration.md#project-phase)
    every criterion in scope must be satisfied, or a design area or anchor marked
    `complete` must have all its criteria satisfied while the rest of the Book stays
@@ -405,7 +462,12 @@ native Verus runs in
    `accepted`): it claims the part is implemented and verified, which `verify` would
    enforce. This would replace any separate CI gating option and needs a completion
    marker below the project level, which does not exist yet.
-4. **Machine-readable output.** The versioned artifact schema for tools and agents,
+3. **Machine-readable output.** The versioned artifact schema for tools and agents,
    planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
-5. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
+4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
    and Verus.
+5. **Sensitivity cost.** Each change verifies the complete target once, so large
+   targets may need a sampling or per-function selection policy that still reports
+   which changes were not tried.
+6. **Witness form.** How a Verus proof function states that it establishes another
+   function's preconditions, so the runner can check it rather than trust the link.

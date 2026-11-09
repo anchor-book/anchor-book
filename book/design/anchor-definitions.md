@@ -257,11 +257,9 @@ the anchor's title, acceptance status, or the presence of proof code. The method
 lists are the single source of truth. Requiring proof for one criterion does not
 mean the entire anchor is formally proved, nor does it describe a completed run.
 
-Choose methods during design review. Consider the consequences of a violation,
-the combinations or states that examples would need to cover, whether the claim
-can be stated precisely over actual production code, and proof maintenance cost.
-Record the rationale in the verification design. Tests and proof can complement
-each other; extending proof across every boundary is not an automatic obligation.
+Choose methods during design review, following
+[Choosing methods](verification.md#choosing-methods), and record the rationale
+with the criterion's design.
 
 ### Required scope of a proof criterion
 
@@ -282,10 +280,15 @@ four nested items, in order:
 | `Domain:` | The inputs, states, conditions, and bounds covered. Include relevant invalid cases; do not assume the property being proved. |
 | `Boundary:` | The production behavior covered, such as the validation algorithm or the path from typed input to the public API result. |
 | `Assumptions:` | Caller obligations and trusted components or contracts. Preconditions must not assume the claim itself. |
-| `Exclusions:` | Behavior outside the proof, with the criterion IDs that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
+| `Exclusions:` | Behavior outside the proof, with the criteria that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
 
-The engine checks that the four items are present and nonempty; it does not assess
-whether the scope is adequate or whether evidence satisfies it. Keep formal syntax,
+Exclusions name each covering criterion by its code-spanned identifier: the
+criterion identifier alone for one of the same anchor, or
+`<anchor-id>#<criterion-id>` for another anchor's. The engine checks that the four
+items are present and nonempty and that each named criterion exists; it does not
+assess whether the scope is adequate or whether evidence satisfies it. The
+[brief](verification-evidence.md#using-verify) lists exclusions that name no
+criterion as gaps. Keep formal syntax,
 tool versions, commands, and function/file associations in the implementing
 codebase and verification design. Exclusions must not silently remove part of the
 anchor's property. The [authority anchor](rust-engine.md#records-valid-authority)
@@ -306,11 +309,13 @@ their owning design and roadmap. The working contract defines the agent's
 [verification responsibilities](../ai-working-contract.md#develop-verification-with-the-code).
 
 Formal specifications, production code, and supporting proofs live together in
-the implementing codebase. Associate each specification with the anchor and
-criterion IDs it addresses. A source-association syntax is still experimental;
-do not invent new anchor fields for file paths, proof text, results, or timestamps.
-Assumptions that narrow the intended property require design review; assumptions
-about unverified implementation boundaries must remain visible in evidence.
+the implementing codebase, associated with criteria through
+[evidence links](verification-evidence.md#evidence-links); do not add anchor fields
+for file paths, proof text, results, or timestamps.
+[Proofs that match the design](verification.md#proofs-that-match-the-design)
+defines how a proof criterion's scope becomes a specification. Assumptions that
+narrow the intended property require design review; assumptions about unverified
+implementation boundaries must remain visible in evidence.
 
 ### Value validation and syntax evolution
 

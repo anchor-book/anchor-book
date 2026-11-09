@@ -14,6 +14,31 @@
 //!
 //! The proof establishes acceptance versus rejection. Candidate conversion and
 //! the exact failure classifications, messages, and locations are tested separately.
+//! The Book's Rust Engine chapter states the claim, domain, and boundary.
+//!
+//! Call path: `schema.rs` calls `has_required_authority` while decoding anchor
+//! authorities, and `inventory.rs` passes the complete candidate collection to
+//! `validate_authorities`. `read_records` keeps every existing diagnostic and
+//! builds no inventory when any exists. Ordinary builds run these same bodies;
+//! Verus erases only the specifications and proofs.
+//!
+//! Candidates: each carries an optional identity, kind, acceptance status,
+//! references, and `decoded`, which records whether schema decoding produced a
+//! record. `decoded` is neither a validation result nor a precondition that
+//! relationships are valid. Undecodable candidates keep any recoverable identity
+//! and still take part in lookup, so they count toward ambiguity.
+//!
+//! Specification: `reference_satisfies_authority_rules` combines
+//! `reference_is_not_repeated` (no duplicate within one record),
+//! `resolves_uniquely_to` (identity and uniqueness across all candidates), and
+//! `target_is_suitable_authority` (decoded, declared kind, compatible status).
+//! `record_satisfies_authority_rules` adds required authority, and
+//! `records_satisfy_authority_rules` quantifies over a prefix of the collection;
+//! loop invariants connect each processed prefix to the complete collection.
+//!
+//! The code favors an inspectable proof over speed: string identities, borrowed
+//! slices, linear lookup, and a scan of earlier references for duplicates. It is
+//! not optimized or benchmarked for large inventories.
 use vstd::prelude::*;
 
 verus! {

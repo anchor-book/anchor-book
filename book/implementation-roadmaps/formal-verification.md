@@ -8,8 +8,9 @@ Prove the authority-validation logic actually executed by the engine, and make
 that proof repeatable locally and on GitHub. Start with
 [`records-valid-authority`](../design/rust-engine.md#records-valid-authority), grounded
 in [traceable properties](../authority/requirements.md#requirement-traceable-properties).
-The [Formal Verification design](../design/formal-verification.md) defines the
-specification, production integration, trusted boundaries, and evidence. Isolate
+Rust Engine's [authority proof](../design/rust-engine.md#authority-proof) defines the
+claim, production boundary, and trusted base, and [Verification](../design/verification.md)
+the general method and evidence. Isolate
 the engine's proof dependencies from consuming builds without losing the
 connection between the verified functions and the packaged implementation.
 
@@ -52,7 +53,7 @@ changes require new proof and integration evidence.
 <tr><th scope="row">Outcome</th><td>Authority validation has a reproducible local proof over the executable functions used by the record API, with tested integration and explicit limits.</td></tr>
 <tr><th scope="row">Status</th><td>In progress — local proof and integration verified; engineer review pending</td></tr>
 <tr><th scope="row">Identifier</th><td><code>formal-verification-1</code></td></tr>
-<tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html">Formal Verification</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
+<tr><th scope="row">Design basis</th><td><a href="../design/rust-engine.html#authority-proof">Authority proof</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
 <tr><th scope="row">Dependencies</th><td>The implemented record reader and renderer, existing independent tests, and reviewed mutation findings. Merge protection is deferred. Review the specification against the anchor before proving the extracted implementation.</td></tr>
 <tr><th scope="row">Scope</th><td>One local proof of the authority validator used by <code>read_records</code>, covering every anchor authority and decision requirement. Parser correctness, diagnostic presentation proofs, GitHub proof jobs, merge protection, and generalized evidence tooling are outside this task.</td></tr>
 <tr><th scope="row">Tasks</th><td><ol class="roadmap-tasks">
@@ -62,7 +63,7 @@ changes require new proof and integration evidence.
 <li><label><input type="checkbox" checked disabled> Connect <code>inventory.rs</code> to those same functions. Test faithful candidate conversion and failure propagation through the library and actual mdBook adapter, preserving identities, ambiguity, invalid candidates, status, references, and located diagnostics.</label></li>
 <li><label><input type="checkbox" checked disabled> Verify the complete selected proof scope. Introduce one deliberate rule violation in a disposable copy and confirm a proof obligation fails; restore the code and verify again. Run focused integration and mutation checks, explicitly checking whether cargo-mutants reaches the annotated executable bodies.</label></li>
 <li><label><input type="checkbox" checked disabled> Document the pinned local command and the proved claim, assumptions, tested boundaries, revision, and result. Reconcile the design and milestone evidence without claiming the entire engine or anchor is proved.</label></li>
-<li><label><input type="checkbox" disabled> Review the explicit proof scope against the formal specification and map production-integration tests and review to every excluded boundary. Record any remaining coverage gaps before accepting the milestone.</label></li>
+<li><label><input type="checkbox" disabled> Assess the formal specification against the explicit proof scope (a specification assessment) and map production-integration tests and review to every excluded boundary. Record any remaining coverage gaps before accepting the milestone.</label></li>
 </ol></td></tr>
 <tr class="roadmap-section"><th colspan="2">Completion criteria</th></tr>
 <tr id="formal-verification-1-authority-proof" class="roadmap-criterion-summary"><th scope="row">Authority proof</th><td><p class="roadmap-condition">The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.</p><button type="button" class="roadmap-toggle" aria-expanded="true" aria-controls="formal-verification-1-authority-proof-details"><span class="roadmap-toggle-icon" aria-hidden="true">▾</span> Anchor details and evidence</button></td></tr>
@@ -104,7 +105,7 @@ changes require new proof and integration evidence.
 <tr><th scope="row">Outcome</th><td>Changes receive repeatable remote verification with revision-specific proof and integration evidence, and the required check protects implementation merges.</td></tr>
 <tr><th scope="row">Status</th><td>In progress — proof and integration pass on GitHub; failure demonstration and merge protection pending</td></tr>
 <tr><th scope="row">Identifier</th><td><code>formal-verification-2</code></td></tr>
-<tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html">Formal Verification</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
+<tr><th scope="row">Design basis</th><td><a href="../design/rust-engine.html#authority-proof">Authority proof</a>, <a href="../design/authority-definitions.html#validating-authority-relationships">authority rules</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
 <tr><th scope="row">Dependencies</th><td>Formal Verification milestone 1 and the existing PR workflows. Establish passing and failing proof runs first, then complete merge protection together with Mutation Testing milestone 2. Remote execution follows an authorized push.</td></tr>
 <tr><th scope="row">Tasks</th><td><ul class="roadmap-tasks">
 <li><label><input type="checkbox" checked disabled> Add a separate GitHub verification job using the pinned tools and full selected proof scope, alongside ordinary engine tests. Verify actual function coverage and retain public-safe results on failure.</label></li>
@@ -190,7 +191,7 @@ changes require new proof and integration evidence.
 <tr><th scope="row">Outcome</th><td>A packaged engine builds without its proof libraries or verification toolchain, while the implementation consumers execute remains derived from the same maintained source whose authority contracts are verified.</td></tr>
 <tr><th scope="row">Status</th><td>Proposed</td></tr>
 <tr><th scope="row">Identifier</th><td><code>formal-verification-4</code></td></tr>
-<tr><th scope="row">Design basis</th><td><a href="../design/formal-verification.html#proof-packaging-for-consumers">Proof packaging for consumers</a>, <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
+<tr><th scope="row">Design basis</th><td><a href="../design/verified-code-packaging.html#proof-packaging-for-consumers">Proof packaging for consumers</a>, <a href="../design/project-integration.html#project-no-imposed-dependencies">project-no-imposed-dependencies</a>, and <a href="../design/rust-engine.html#records-valid-authority">records-valid-authority</a>.</td></tr>
 <tr><th scope="row">Dependencies</th><td>The existing production authority proof and engineer agreement on the isolation boundary. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.</td></tr>
 <tr><th scope="row">Tasks</th><td><ul class="roadmap-tasks">
 <li><label><input type="checkbox" disabled> Test one maintained source arrangement on a representative validator slice. A development proof workspace with reproducible erasure is a candidate; establish supported transformations, tool availability, drift detection, and runtime correspondence before choosing it.</label></li>
@@ -234,6 +235,8 @@ changes require new proof and integration evidence.
 
 Reusable proof execution and normalized results belong to
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
+proof guards and the assessment record for `formal-authority` to
+[milestone 6](verification-evidence.md#verification-evidence-6),
 independent consumers to [milestone 5](verification-evidence.md#verification-evidence-5),
 and retained CI reports to [milestone 3](verification-evidence.md#verification-evidence-3).
 The engine's proof evidence remains manually recorded until that runner exists.

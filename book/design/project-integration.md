@@ -265,7 +265,7 @@ dependencies are constraints on that build:
 - **Formal verification.** The engine's own proofs, `vstd`, and the Verus
   toolchain stay out of what a project builds. A project that verifies its own
   code chooses its own Verus and vstd versions. The
-  [proof packaging design](formal-verification.md#proof-packaging-for-consumers)
+  [proof packaging design](verified-code-packaging.md#proof-packaging-for-consumers)
   and its roadmap own that boundary.
 - **Exact pins.** The published crate avoids exact-version requirements on
   packages a project may also use. Where an exact requirement is necessary, such
@@ -304,7 +304,9 @@ A project uses Anchor Book to verify its own code: its anchors declare proof
 criteria, its specifications and proofs live with its production code, and
 `verify` reports which criteria those proofs establish. The engine adds what
 Verus alone does not: the association between proofs and criteria, selection
-of the proofs in scope, and an evidence state that never overstates a result.
+of the proofs in scope, the [guards](verification.md#guards) that check a proof
+establishes its criterion, and an evidence state that never overstates a result.
+[Verification](verification.md) defines that capability.
 
 The project configures its Verus installation and verification toolchain in its
 [verification configuration](verification-evidence.md#configuration), separate
@@ -317,12 +319,13 @@ An unsupported report version is inconclusive.
 A proof criterion's scope (claim, domain, boundary, assumptions, and
 exclusions, as defined in [Anchor Definitions](anchor-definitions.md#required-scope-of-a-proof-criterion))
 remains the project's statement of what the proof must establish. The engine
-checks what it can observe from the run; whether the specification faithfully
-expresses the criterion stays a review obligation.
+checks what it can observe from the run and its guards; whether the
+specification faithfully expresses the criterion stays a review obligation,
+recorded in a [assessment record](verification.md#assessment-records).
 
-The engine's proofs of its own logic, described in
-[Formal Verification](formal-verification.md), are evidence only for this Book's
-criteria.
+The engine's proofs of its own logic, such as its
+[authority proof](rust-engine.md#authority-proof), are evidence only for this
+Book's criteria.
 
 The first consumer fixtures use a packaged dependency outside this checkout:
 ordinary builds need no engine verifier, and a project with its own `vstd` uses
@@ -349,11 +352,8 @@ not the projects they came from.
 2. **Implementation associations.** Whether evidence links extend from tests and
    proofs to implementation sites, with explicit not-yet-implemented and
    not-applicable states.
-3. **Review records.** How a recorded review identifies the exact sources it
-   examined, so a change to them makes it stale; shared with the
-   [Verification Evidence open question](verification-evidence.md#open-questions).
-4. **Supported Verus versions.** How wide a report-version range the engine can
+3. **Supported Verus versions.** How wide a report-version range the engine can
    maintain, and how a project learns of the supported range.
-5. **Bootstrap ownership.** Whether initialization writes and checks the
+4. **Bootstrap ownership.** Whether initialization writes and checks the
    `AGENTS.md` section as managed content, or the project maintains it from the
    template.

@@ -99,6 +99,65 @@ verification = ["test", "review"]
 statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
 ```
 
+## Authority proof
+
+Verus proves the `formal-authority` criterion of
+[`records-valid-authority`](#records-valid-authority) over the production
+validator. The general method is in [Verification](verification.md#proofs-that-match-the-design);
+this section records the engine's claim and boundary.
+
+**Claim.** The validator reports no violations if and only if every decoded
+record satisfies the [authority rules](authority-definitions.md#validating-authority-relationships):
+an anchor has at least one authority; every reference resolves to exactly one
+candidate with its identity, and that candidate decoded successfully and has the
+declared kind; a record's references are distinct; and accepted records cite only accepted authorities. The rules cover
+the requirements cited by decisions, including decisions no anchor cites. Proving
+rejection as well as acceptance prevents a validator that meets a one-way safety
+statement by rejecting everything.
+
+**Domain.** The complete typed candidate collection, including empty lists,
+duplicate identities, missing or invalid targets, undecodable candidates with or
+without a recoverable identity, wrong kinds, repeated references, and
+incompatible statuses. Preconditions supply only valid indices; none assumes away
+these cases or the claim. This matrix guides assessment of the specification and the
+integration tests; the proof quantifies over every collection, not these cases:
+
+| Input | Authority result |
+| --- | --- |
+| Draft anchor with a nonempty list of distinct, valid requirement or decision targets | Accept; targets may be draft or accepted. |
+| Accepted anchor with a nonempty list of distinct, valid, accepted authorities | Accept. |
+| Anchor with no authorities | Reject, including in Prototyping. |
+| Missing, invalid, ambiguous, wrong-kind, or repeated authority target | Reject. |
+| Accepted anchor or decision citing a draft authority | Reject. |
+| Decision with no requirements | Accept; requirements are optional for decisions. |
+| Decision citing requirements, even if no anchor cites the decision | Check every reference under the same resolution and status rules. |
+
+**Boundary.** The proof covers the functions the engine runs; ordinary builds
+execute the bodies Verus verifies, and there is no proof-only validator.
+
+| Boundary | Treatment |
+| --- | --- |
+| Authority lookup and validation | Proved: the seven executable functions in `src/records/authority.rs` against the specification, including collection traversal and every authority edge. |
+| Markdown/TOML decoding and candidate conversion | Tested and reviewed under `production-integration`: identity, kind, status, references, invalid candidates, and existing errors are represented faithfully. Parser correctness is not proved. |
+| Inventory construction, duplicate-identity diagnostics, backlinks, and failure classification | Tested and reviewed: validation failures cannot become success, and located diagnostics and the all-or-nothing inventory are preserved. Which failure kind is reported, its wording, and its location are not proved. |
+| Public library and mdBook adapter | Tested through the real API and process with independent valid and invalid fixtures: no successful partial inventory or Book JSON on invalid authority. |
+
+`validate_authorities` has no preconditions, so its unverified caller in
+`inventory.rs` owes it nothing; `validate_reference` has index preconditions,
+discharged by its verified caller. The trusted base is the verifier, solver,
+compiler, and the `vstd` contracts the code uses, such as string equality and the
+character-sequence view of `String`. The proof does not establish that an
+authority justifies a property or that a person approved a status; review does.
+
+**Where the detail lives.** The module documentation of `src/records/authority.rs`
+explains its call path, candidate model, and specification predicates. The root
+`CONTRIBUTING.md` documents the pinned Verus release, the native command, the CI
+job and its report check, and the mutation-coverage gap. The
+[Formal Verification roadmap](../implementation-roadmaps/formal-verification.md)
+records results and remaining review. The engine's `vstd` dependency is the first
+case for [Shipping Verified Code](verified-code-packaging.md). Reading, checking,
+and rendering a Book never run the verifier.
+
 ## Package and adapters
 
 The repository has one Cargo package containing a library and a CLI: package
@@ -359,15 +418,7 @@ tool versions and repository integration remain project guidance.
 ## Choices still open
 
 The configuration and checking APIs, parser adapter, supported-input checks,
-source-location mapping, and report presentation are implemented. Verification
-and later CI/agent demonstrations remain in the Structural Checking roadmap. Async runtimes and
-dynamic rules need concrete workflows before design.
-
-## Formal verification
-
-[Formal Verification](formal-verification.md) introduces Verus for the existing
-`records-valid-authority` anchor. The local proof covers executable validation
-logic used by `read_records`; parsing, input conversion, and diagnostic delivery
-remain explicit integration boundaries. The [roadmap](../implementation-roadmaps/formal-verification.md) owns local proof
-and production integration, then CI and evidence. The first structural checker
-and mdBook adapter do not execute verifiers.
+source-location mapping, and report presentation are implemented. The `verify`
+operation is designed in [Running Verification](verification-evidence.md) and
+planned in its roadmap. Async runtimes and dynamic rules need concrete workflows
+before design.

@@ -140,7 +140,7 @@ Each roadmap's milestones record their own status and evidence.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
 - [Formal Verification](formal-verification.md): proving production authority validation and isolating engine proof dependencies from consuming builds.
 - [Record Line Grammar](record-line-grammar.md): measuring whether a line-oriented record syntax serves agents better than TOML.
-- [Verification Evidence](verification-evidence.md): shared criterion evidence, test and proof runners, consumer-owned Verus, and retained CI reports.
+- [Verification Evidence](verification-evidence.md): shared criterion evidence, test and proof runners, proof guards and assessment records, consumer-owned Verus, and retained CI reports.
 
 Drafting is preparation, not milestone completion. Unassigned work remains
 proposed; engine automation is not needed to maintain these roadmaps.
