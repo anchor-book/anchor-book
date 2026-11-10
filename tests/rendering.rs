@@ -348,3 +348,36 @@ fn anchor_authority_failures_reach_the_real_adapter() {
         assert!(diagnostics.contains("a.md"), "{diagnostics}");
     }
 }
+
+// anchorbook: project-no-imposed-dependencies#renderer-versions
+#[test]
+fn undeclared_mdbook_versions_are_rejected_naming_the_supported_ones() {
+    use anchor_book::adapters::mdbook::SUPPORTED_MDBOOK_VERSIONS;
+    for version in SUPPORTED_MDBOOK_VERSIONS {
+        let mut input = request(vec![chapter("a.md", "a.md", RECORDS)]);
+        input[0]["mdbook_version"] = json!(version);
+        assert!(
+            run(&["md"], &input.to_string()).status.success(),
+            "{version}"
+        );
+    }
+    for version in ["0.5.5", "0.6.0", "0.5.3", "0.4.52"] {
+        let mut input = request(vec![chapter("a.md", "a.md", RECORDS)]);
+        input[0]["mdbook_version"] = json!(version);
+        let output = run(&["md"], &input.to_string());
+        assert!(!output.status.success(), "{version} accepted");
+        assert!(output.stdout.is_empty());
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            stderr.contains(&format!("mdBook {version} is not supported")),
+            "{stderr}"
+        );
+        assert!(
+            stderr.contains(&format!(
+                "supported mdBook versions: {}",
+                SUPPORTED_MDBOOK_VERSIONS.join(", ")
+            )),
+            "{stderr}"
+        );
+    }
+}

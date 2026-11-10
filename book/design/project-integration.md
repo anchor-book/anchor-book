@@ -303,7 +303,13 @@ dependencies are constraints on that build:
   toolchain.
 - **mdBook.** The preprocessor supports a declared set of mdBook versions and
   rejects others with a diagnostic naming them, so a project can upgrade mdBook
-  deliberately.
+  deliberately. The set is currently 0.5.4, the newest release, because the
+  checker's navigation parser and configuration defaults come from that version's
+  crates; a project pins its mdBook to a declared version. Accepting newer 0.5.x
+  releases could be justified later by a scheduled job that renders this Book with
+  the newest mdBook and a warning when the running version is newer than the
+  tested one; without them, a changed parser would silently diverge from the
+  checker.
 - **Layout and commands.** No fixed directory names, wrapper scripts, or
   replacement commands.
 
