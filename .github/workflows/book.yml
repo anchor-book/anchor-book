@@ -66,6 +66,65 @@ jobs:
         with:
           path: target/anchorbook/
 
+  installed:
+    name: Installed engine
+    needs: engine
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install current stable Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Install the engine the documented way
+        env:
+          # The revision under test: the PR head, or the pushed commit on main.
+          REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+          REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}', github.server_url, github.repository) }}
+        run: |
+          cargo install --git "$REPOSITORY" --rev "$REVISION" --locked \
+            --root "$RUNNER_TEMP/engine" anchor-book
+          echo "$RUNNER_TEMP/engine/bin" >> "$GITHUB_PATH"
+
+      - name: Compare installed and in-repository engines
+        run: |
+          anchorbook --version
+          set +e
+          anchorbook check --config anchorbook.toml > "$RUNNER_TEMP/installed-check.txt"
+          installed=$?
+          cargo run --quiet --locked --bin anchorbook -- check --config anchorbook.toml \
+            > "$RUNNER_TEMP/repository-check.txt"
+          repository=$?
+          set -e
+          test "$installed" -eq "$repository"
+          diff "$RUNNER_TEMP/installed-check.txt" "$RUNNER_TEMP/repository-check.txt"
+          diff <(anchorbook contract) <(cargo run --quiet --locked --bin anchorbook -- contract)
+
+      - name: Install mdBook
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/mdbook"
+          curl --fail --silent --show-error --location \
+            "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+            --output "$RUNNER_TEMP/mdbook.tar.gz"
+          tar -xzf "$RUNNER_TEMP/mdbook.tar.gz" -C "$RUNNER_TEMP/mdbook"
+          echo "$RUNNER_TEMP/mdbook" >> "$GITHUB_PATH"
+
+      - name: Install diagram support
+        run: |
+          cargo install mdbook-mermaid --version "$MDBOOK_MERMAID_VERSION" --locked
+          mdbook-mermaid install .
+
+      - name: Build the Book with the installed engine
+        env:
+          # Replace book.toml's `cargo run` preprocessor with the installed binary.
+          MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND: anchorbook md
+        run: mdbook build
+
+      - name: Check rendered Book
+        run: cargo test --locked --test rendered_book -- --ignored --nocapture
+
   deploy:
     name: Publish Book
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

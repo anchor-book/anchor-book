@@ -78,6 +78,15 @@ build may need to download Cargo dependencies. The preprocessor reads the Book
 for its structural check but does not fetch anything or write source files. Source edits rebuild through `mdbook serve`;
 after Rust or theme changes, rebuild or restart the preview if needed.
 
+The Book workflow's **Installed engine** job checks the path other projects use. It
+installs the revision under test with
+`cargo install --git <repository> --rev <commit> --locked anchor-book`, requires its
+`anchorbook check` output, exit status, and `anchorbook contract` output to match
+the in-repository build, and renders the Book with
+`MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND="anchorbook md"` before rendered-Book
+acceptance. Reproduce it locally by installing from `file://` and this checkout's
+`HEAD`.
+
 After `mdbook build`, check the rendered record inventory, fields, and links,
 including the combined print view:
 

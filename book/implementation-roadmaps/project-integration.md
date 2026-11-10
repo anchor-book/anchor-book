@@ -38,7 +38,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
 
-**Status:** In progress — mdBook location, contract command, and entry-point equivalence done; installed engine and mdBook versions remain
+**Status:** In progress — mdBook location, contract command, entry-point equivalence, and installed-engine job done; GitHub evidence for that job and mdBook versions remain
 
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
@@ -50,7 +50,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 - [x] **Configuration:** Implement `[book].mdbook`, resolving mdBook's source and output relative to that file, and migrate this repository's configuration to name its `book.toml`.
 - [x] **Contract:** Move the maintained contract source into the engine, add `anchorbook contract`, switch this repository's `AGENTS.md` to retrieve it, and remove the temporary Book copy and its navigation entry, as [contract delivery](../design/system-overview.md#contract-delivery) describes.
-- [ ] **Running the engine:** Choose and document how a project installs a pinned engine revision before crate release, and exercise that path in this repository's CI against this Book.
+- [x] **Running the engine:** Choose and document how a project installs a pinned engine revision before crate release, and exercise that path in this repository's CI against this Book.
 - [ ] **Entry points:** Test that the library, the CLI, and the `anchorbook md` preprocessor report equivalent results for the same fixtures.
 - [ ] **mdBook versions:** Decide which mdBook versions the preprocessor supports, including the version Symposium uses or a documented pin, and test each against this Book.
 
@@ -75,7 +75,7 @@ The loader accepts a configured `book.toml`, including one in a subdirectory, an
 A CI job installs the pinned engine revision the documented way and checks and renders this Book with it, with the same findings as the in-repository build; each declared mdBook version renders this Book, and an undeclared version is rejected with a diagnostic naming the supported ones.
 
 - **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `renderer-versions` — Full for the declared versions; [project-one-engine-version](../design/project-integration.md#project-one-engine-version) · `same-version-entry-points` — Partial: installed and in-repository builds of one revision.
-- **Evidence:** Pending.
+- **Evidence:** Partial, locally on branch `project-integration`: `cargo install --git file://<checkout> --rev <head> --locked anchor-book` installed the engine; its `anchorbook check` output and exit status and its `anchorbook contract` output were identical to the in-repository build's; `mdbook build` with `MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND="anchorbook md"` rendered this Book through it, confirmed by a deliberately wrong command failing the build, and rendered-Book acceptance passed. The Book workflow's **Installed engine** job runs the same steps on GitHub for the revision under test; its run is pending. The mdBook versions part of this criterion is pending.
 
 #### Equivalent entry points {#project-integration-1-entry-points}
 
