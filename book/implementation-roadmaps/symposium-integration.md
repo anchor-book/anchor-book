@@ -44,7 +44,7 @@ maintainers' decisions.
 
 **Outcome:** On a Symposium branch, a separate Anchor Book with one adapted design area passes the structural check and renders through Symposium's own commands with a pinned engine revision, and the user Book is unchanged.
 
-**Status:** Proposed
+**Status:** In progress — criteria met on branch `anchor-book` of the fork; engineer review of Symposium's Anchor Book pending
 
 **Identifier:** `symposium-integration-1`
 
@@ -54,11 +54,11 @@ maintainers' decisions.
 
 **Tasks**
 
-- [ ] **Location:** Decide where the Anchor Book and its `book.toml` live beside the user Book, and how Symposium's maintainers review it.
-- [ ] **Setup:** Install the pinned engine revision the way Project Integration milestone 1 documents, and configure `anchorbook.toml` and the Anchor Book's `book.toml` with the `anchorbook md` preprocessor and the `mdbook-mermaid` preprocessor Symposium already uses.
-- [ ] **First Book:** Create the configuration, navigation, project guidance chapter, an Authority section with the requirements and decisions the first design area needs, that design area with its anchors, and a roadmap. Choose a small, well-described area, such as configuration loading.
-- [ ] **mdBook version:** Symposium installs the newest mdBook without a pin. Confirm that version is among those the preprocessor supports, or agree on a pin.
-- [ ] **Gaps:** List every gap found and fix it in the engine and this Book, or add it to the relevant roadmap.
+- [x] **Location:** The Anchor Book lives in `anchor-book/` with its own `anchor-book/book.toml`; `anchorbook.toml` stays at the repository root with `mdbook = "anchor-book/book.toml"`. The user Book (`md/`, root `book.toml`) is untouched. Work is on a branch of the fork; whether and how it goes upstream is the maintainers' decision.
+- [x] **Setup:** Install the pinned engine revision the way Project Integration milestone 1 documents, and configure `anchorbook.toml` and the Anchor Book's `book.toml` with the `anchorbook md` preprocessor and the `mdbook-mermaid` preprocessor Symposium already uses.
+- [x] **First Book:** Create the configuration, navigation, project guidance chapter, an Authority section with the requirements and decisions the first design area needs, that design area with its anchors, and a roadmap. Choose a small, well-described area, such as configuration loading.
+- [x] **mdBook version:** Symposium installs the newest mdBook without a pin, currently 0.5.4, the only version the preprocessor supports. The Anchor Book's guidance pins 0.5.4 for local use; pinning it in Symposium's CI belongs to [milestone 5](#symposium-integration-5).
+- [x] **Gaps:** List every gap found and fix it in the engine and this Book, or add it to the relevant roadmap.
 
 ### Completion criteria
 
@@ -67,14 +67,14 @@ maintainers' decisions.
 On the Symposium branch, the documented commands check and render the Anchor Book with a pinned engine revision, leave the user Book and its build unchanged, and refuse to render a deliberately broken copy.
 
 - **Anchor coverage:** [project-native-commands](../design/project-integration.md#project-native-commands) · `consumer-fixture` — Partial: one real project using an installed engine rather than a package dependency; [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `renderer-versions` — Partial: the mdBook version Symposium uses.
-- **Evidence:** Pending.
+- **Evidence:** Passed locally on 2026-11-10, Symposium branch `anchor-book` (commit `98219876`, based on upstream `cb858e53`), not pushed. The engine was installed with `cargo install --git https://github.com/anchor-book/anchor-book --rev 40b0098fcbcc9948115680f7884ca709b9df18fc --locked anchor-book` (into a separate `--root`). With mdBook 0.5.4 and mdbook-mermaid 0.17.1, `anchorbook check --config anchorbook.toml` passed and `mdbook build anchor-book` rendered the three anchors, seven authority records, and one milestone card into `target/anchorbook`. The root `mdbook build` of the user Book still succeeded, and the commit adds files only, changing no tracked file. In disposable copies, a broken navigation target failed in mdBook before preprocessing, an unresolved authority reference failed with `record.invalid-reference`, and a renderer output mismatch failed with `structure.renderer-path-mismatch` (check exit 1); none produced output. Limits: one design area; installed engine only, not a package dependency; Symposium's CI does not build the Anchor Book yet. Setup note: mdBook copies `additional-js` paths with `../` outside the output directory, so a Book in a subdirectory carries its own copies of Symposium's Mermaid files.
 
 #### Gaps recorded {#symposium-integration-1-gaps}
 
 Every gap found has a fix with evidence in this Book or an entry in the relevant roadmap.
 
 - **Anchor coverage:** None — trial record.
-- **Evidence:** Pending.
+- **Evidence:** Recorded. (1) Cargo does not resolve a shortened `--rev`; fixed in [running the engine](../design/project-integration.md#running-the-engine), which now asks for the full commit hash. (2) `anchorbook --version` prints only the package version, so installations of different revisions are indistinguishable; (3) the record and milestone styles and print script (`theme/records.css`, `theme/records.js`) are not delivered by the engine, so Symposium's cards render unstyled and its details do not expand when printing; and (4) a project's authoring references are this Book's chapters at a pinned revision, which describe the goal record syntax alongside the earlier form the engine reads, with no versioned reference delivered with the engine. Gaps 2–4 are entries in [remaining project integration and crate release](index.md#later-work-retained-from-the-design). (5) Symposium's `AGENTS.md` asks agents to add a `Co-authored-by` line, which conflicts with the engineer's practice of no commit attribution; it is left for [milestone 3](#symposium-integration-3)'s reconciliation.
 
 ### Completion record
 
