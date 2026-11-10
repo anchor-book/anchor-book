@@ -230,7 +230,7 @@ fn matches_identity(candidate: &Candidate, id: &str) -> bool {
 }
 
 #[cfg_attr(feature = "verus", verus_spec(yes =>
-    ensures yes == !kind_matches(kind, target),
+    ensures yes == kind_matches(kind, target),
 ))]
 fn matches_target_kind(kind: Kind, target: TargetKind) -> bool {
     matches!(
