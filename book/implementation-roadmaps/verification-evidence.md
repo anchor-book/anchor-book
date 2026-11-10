@@ -8,9 +8,11 @@
 criterion, running the linked tests and proofs and checking that proofs establish
 their criteria, as defined in [Verification](../design/verification.md) and
 [Running Verification](../design/verification-evidence.md). It serves agents in
-the build loop and CI with the same command. This Book's own anchors are the first
-pilot; independent consumers establish that their own tools and code can supply
-evidence for their criteria.
+the build loop and CI with the same command. This Book comes first: each runner
+and guard works on the engine's own tests and its authority proof before another
+project relies on it. Verus is optional, so a project can use `verify` for its
+tests alone. Proofs in other projects are later work, exercised with fixture
+projects in milestone 5.
 
 None of this Book's criteria are linked to tests or proofs yet, so `verify` will
 initially report them as unlinked. Linking criteria is part of the work.
@@ -18,9 +20,10 @@ initially report them as unlinked. Linking criteria is part of the work.
 ## Sequence and scope
 
 Start with the shared foundation in milestone 4. Milestones 1 and 2 then provide
-test and proof runners independently. Milestone 5 exercises consumer proofs after
-[engine proof isolation](formal-verification.md#formal-verification-4); milestone 3
-adds CI and versioned retained reports. Milestone 6 adds the proof guards, assessment
+test and proof runners independently, both piloted on this Book; milestone 3 adds
+CI and versioned retained reports for this Book. Milestone 5, proofs in other
+projects, is deferred until this Book's runners and guards are complete and
+[Verus is optional](formal-verification.md#formal-verification-4). Milestone 6 adds the proof guards, assessment
 records, and the agent brief once both runners exist. Milestone 7 is a prototyping
 experiment that tries the proof guards by hand on the engine's authority proof,
 needs none of the tooling, and informs milestones 4 and 6. Existing milestone and
@@ -165,7 +168,7 @@ Pending.
 
 **Status:** Proposed
 
-**Dependencies:** Verification Evidence — Milestones 1, 2, and 5.
+**Dependencies:** Verification Evidence — Milestones 1 and 2.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md)
 
@@ -248,9 +251,9 @@ Pending. This milestone provides common machinery, not passing native proof or t
 
 **Outcome:** Independent Rust consumers use a packaged engine and their own Verus installations to obtain criterion evidence for their production code, with tested scope and dependency boundaries.
 
-**Status:** Proposed
+**Status:** Proposed — deferred until this Book's runners and guards are complete
 
-**Dependencies:** Milestones 2 and 6 and [Formal Verification milestone 4](formal-verification.md#formal-verification-4). Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.
+**Dependencies:** Deferred until milestones 2, 3, and 6 are complete on this Book, and [Formal Verification milestone 4](formal-verification.md#formal-verification-4). Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.
 
 **Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [project-verus-evidence](../design/project-integration.md#project-verus-evidence), and [verification responsibilities](../design/verification.md#responsibilities).
 

@@ -38,9 +38,13 @@ compile. A separately maintained proof-only copy cannot establish that the
 verified code is the code that runs.
 
 **The requirement.** Keep one maintained implementation, and show how the code
-Verus verifies corresponds to the functions ordinary builds execute. A development
-verification workspace that reproducibly erases specifications and proofs into
-the published runtime source is a candidate. The arrangement, and any generation
+Verus verifies corresponds to the functions ordinary builds execute. Two
+candidates: a development verification workspace that reproducibly erases
+specifications and proofs into the published runtime source; or an optional Cargo
+feature over ordinary Rust, where the verified functions carry their contracts
+through Verus's attribute syntax applied only with the feature, and specification
+functions and proofs compile only with it, so the default build needs no Verus
+crate. The arrangement, and any generation
 mechanism, is established by a small feasibility experiment before the package
 boundary changes. Generation and conversion assumptions are recorded, and drift
 between verified and compiled code is detected.

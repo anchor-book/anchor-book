@@ -14,8 +14,10 @@ configuration. Its ordinary tools then apply Anchor Book: `cargo test` checks
 the Book, `mdbook build` renders its records, CI runs those same commands,
 `anchorbook verify` reports evidence for its criteria, and its agents start
 from the contract. The project keeps its own layout, commands, toolchains, and
-dependencies. A project can also use Anchor Book to formally verify its own
-code with Verus against the proof criteria in its Book.
+dependencies. Verus is optional: a project that does not verify its code with
+Verus needs neither Verus nor `vstd`, and `verify` reports its tests. A project
+that does can use Anchor Book to formally verify its own code with Verus against
+the proof criteria in its Book.
 
 The engine directs how it is used; projects choose which integration points
 they adopt. This Book is the first project; the cases below describe the
@@ -350,8 +352,9 @@ different layouts, existing Books, multi-crate workspaces, pinned toolchains, an
 their own Verus versions. Trials in other projects use disposable copies or
 branches and record findings in this Book's roadmaps. Design chapters describe
 situations, not the projects they came from; the
-[Project Integration roadmap](../implementation-roadmaps/project-integration.md)
-names the projects it integrates.
+[Project Integration](../implementation-roadmaps/project-integration.md) and
+[Symposium Integration](../implementation-roadmaps/symposium-integration.md)
+roadmaps name the projects they integrate.
 
 ## Open questions
 
