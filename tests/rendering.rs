@@ -318,3 +318,33 @@ fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     assert!(diagnostics.contains("record.invalid-reference"));
     assert!(diagnostics.contains("missing: authority definition does not exist"));
 }
+
+// anchorbook: records-valid-authority#resolved-authority
+// anchorbook: records-valid-authority#compatible-status
+#[test]
+fn anchor_authority_failures_reach_the_real_adapter() {
+    let missing = RECORDS.replace(
+        "{ kind = \"requirement\", id = \"preserve-input\" }",
+        "{ kind = \"requirement\", id = \"absent\" }",
+    );
+    let draft_decision = RECORDS.replacen(
+        "id = \"pure-reader\"\ntitle = \"Use an in-memory reader\"\nstatus = \"accepted\"",
+        "id = \"pure-reader\"\ntitle = \"Use an in-memory reader\"\nstatus = \"draft\"",
+        1,
+    );
+    assert_ne!(draft_decision, RECORDS);
+    for (source, code) in [
+        (missing, "record.invalid-reference"),
+        (draft_decision, "record.incompatible-status"),
+    ] {
+        let result = run(
+            &["md"],
+            &request(vec![chapter("a.md", "a.md", &source)]).to_string(),
+        );
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty(), "no partial Book JSON");
+        let diagnostics = String::from_utf8_lossy(&result.stderr);
+        assert!(diagnostics.contains(code), "{diagnostics}");
+        assert!(diagnostics.contains("a.md"), "{diagnostics}");
+    }
+}
