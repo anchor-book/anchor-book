@@ -80,8 +80,9 @@ findings for the same Book inputs, so choosing an interface does not change the
 required repairs or whether the check passes. The library owns checking behavior
 and exposes findings, locations, scope, and errors as typed data; callers can
 distinguish structural failure from incomplete evaluation without parsing display
-text. The CLI handles invocation and presentation through that library. Malformed
-user input does not cause the library to print, exit, or panic.
+text. The CLI and the mdBook preprocessor handle invocation and presentation
+through that library. Malformed user input does not cause the library to print,
+exit, or panic.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-shared-checker" },
@@ -91,7 +92,7 @@ authorities = [
 [[criteria]]
 id = "equivalent-callers"
 verification = ["test"]
-statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
+statement = "Exercise the library, the actual CLI process, and the actual anchorbook md preprocessor process on the same passing, failing, and incomplete fixtures; assert equivalent outcomes, codes, locations, and evaluated scope against independent expectations."
 
 [[criteria]]
 id = "library-boundary"

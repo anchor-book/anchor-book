@@ -174,7 +174,7 @@ Report differing renderer settings and expected locations without editing files.
 
 Library and actual CLI results agree against independent expectations, including equivalent configured layouts and invocations from different working directories. Library errors preserve causes without printing, exiting, or panicking.
 
-- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers`, `library-boundary` — Full
+- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers`, `library-boundary` — Full for the criteria as they stood at this milestone. `equivalent-callers` later added the `anchorbook md` preprocessor as a caller; [Project Integration milestone 1](project-integration.md#project-integration-1-entry-points) covers that case.
 - **Anchor coverage:** [check-book-selection](../design/configuration.md#check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: equivalent structural findings across layouts and caller directories, completing milestone 1 selection evidence.
 - **Evidence:** Actual-process tests compare CLI output with library reports for pass, structural failure, and incomplete evaluation, plus independent expected fields and a complete passing report. Alternative layouts and caller directories are exercised. Source review confirms the CLI calls the shared library, findings retain typed locations and causes, and parser types remain private. The final GitHub mutation campaign has no survivors; see milestone evidence.
 
@@ -258,7 +258,7 @@ With deliberately broken navigation and no rendered output, engine compilation a
 
 Record actual CI showing engine checks, structural Book acceptance, then rendering for a valid revision. Broken or unprocessable Book input produces useful findings and prevents rendering; independent engine tests remain runnable.
 
-- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `ci-order` — Full
+- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `ci-order` — Full. The criterion now requires `review`; the recorded runs below are its subject, and an assessment record for them is pending the [assessment records](verification-evidence.md#verification-evidence-6) support.
 - **Evidence:** Passed on GitHub: valid revisions ran both Engine jobs, then Build mdBook, then Publish Book on main; broken and unprocessable Books failed current-Book acceptance with useful findings, independent tests passed, and rendering was skipped. Locally, `mdbook build` also refuses a structural failure (exit 1) and incomplete input (exit 2) through the preprocessor. See milestone evidence.
 
 #### No repair {#structural-checking-3-no-repair}
@@ -321,7 +321,7 @@ Complete on 2026-11-07, accepted by the engineer. Merged in `9ecd950` and `2aaf4
 
 Recorded agent runs repair seeded defects and reach a passing check. Independent review confirms intended repairs, unrelated content preservation, no weakened requirements, and any human assistance.
 
-- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `agent-repair` — Full
+- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `agent-repair` — Full. The criterion now requires only `review`; the recorded runs and independent review below are its subject, and an assessment record is pending the [assessment records](verification-evidence.md#verification-evidence-6) support.
 - **Evidence:** Passed. Two fresh Codex sessions worked on throwaway branches of this Book, given only the repository bootstrap and an engineer request. Run 1 seeded a link typo, a required role turned into a targetless draft, and a navigation entry for a chapter that never existed. Run 2 seeded unsupported summary prose, renderer output drift, a required role nested under another, and a navigation entry for a chapter that never existed. Both runs repaired every defect whose intent was clear, leaving only the nonexistent chapter for the engineer; in run 2 the engineer removed that entry and the check passed. Independent review diffed each result against its baseline revision: run 1 matched exactly apart from the unresolved entry, and run 2 matched except for keeping the prose as an HTML comment. Neither run changed `anchorbook.toml` or engine code. Human assistance: in run 1 the agent reported the failures and stopped, repairing only after the engineer asked whether it had read the contract. That guidance gap was fixed before run 2, whose only input was the request to run the check.
 
 #### Separate edits {#structural-checking-4-separate-edits}

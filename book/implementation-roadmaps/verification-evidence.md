@@ -61,6 +61,7 @@ the current inventory and migrate with them when that work is assigned.
 - [ ] Connect the runner to `anchorbook verify --config`, preserving the shared scope and exit statuses. Collect code and lockfile content identities and compare input snapshots before and after execution.
 - [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
+- [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
 - [ ] Link the test criteria of the `verify-*` anchors and at least one existing checker anchor, and record a build-loop run.
 
 ### Completion criteria

@@ -37,7 +37,7 @@ statement = "In a disposable checkout with deliberately invalid Book navigation 
 
 [[criteria]]
 id = "ci-order"
-verification = ["test"]
+verification = ["review"]
 statement = "Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it."
 ```
 

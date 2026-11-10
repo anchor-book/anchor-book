@@ -215,6 +215,12 @@ at its workspace root, mapping its existing Book source, output, and section
 roles as defined in [Configuration](configuration.md). Directory names, titles,
 and the rest of the mdBook configuration remain the project's choices.
 
+The required roles keep the [configured structure](structural-checking.md#check-navigation-conformance)
+in every project: each maps to a distinct top-level chapter. An existing Book
+whose design or decision material sits deeper in its navigation adds top-level
+role chapters rather than mapping a role to a nested chapter, so every Anchor
+Book has the same shape for agents and checks.
+
 A new project can initialize the required structure. An existing project adopts:
 the engine maps its Book into roles, reports what is missing, and applies agreed
 changes; [Operations](system-overview.md#operations) defines both. Until
@@ -358,13 +364,11 @@ roadmaps name the projects they integrate.
 
 ## Open questions
 
-1. **Role placement in existing Books.** Whether a required role may map to a
-   nested chapter, or adoption must add top-level chapters.
-2. **Implementation associations.** Whether evidence links extend from tests and
+1. **Implementation associations.** Whether evidence links extend from tests and
    proofs to implementation sites, with explicit not-yet-implemented and
    not-applicable states.
-3. **Supported Verus versions.** How wide a report-version range the engine can
+2. **Supported Verus versions.** How wide a report-version range the engine can
    maintain, and how a project learns of the supported range.
-4. **Bootstrap ownership.** Whether initialization writes and checks the
+3. **Bootstrap ownership.** Whether initialization writes and checks the
    `AGENTS.md` section as managed content, or the project maintains it from the
    template.

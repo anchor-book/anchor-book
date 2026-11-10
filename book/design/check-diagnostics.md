@@ -76,7 +76,7 @@ statement = "Repeat checks with filesystem enumeration order varied and terminal
 
 [[criteria]]
 id = "agent-repair"
-verification = ["test", "review"]
+verification = ["review"]
 statement = "Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance."
 ```
 
