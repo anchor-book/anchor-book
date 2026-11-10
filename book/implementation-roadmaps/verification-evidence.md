@@ -27,7 +27,7 @@ projects, is deferred until this Book's runners and guards are complete and
 records, and the agent brief once both runners exist. Milestone 7 is a prototyping
 experiment that tries the proof guards by hand on the engine's authority proof,
 needs none of the tooling, and informs milestones 4 and 6. Existing milestone and
-criterion IDs stay stable. Milestone 7 is agreed and Ready; the other milestones
+criterion IDs stay stable. Milestone 7 ran first, as agreed; the other milestones
 remain Proposed until their scope is agreed and assigned.
 
 Milestone 4 defines the report's identity fields and collects criteria and
@@ -367,7 +367,7 @@ Pending.
 
 **Outcome:** Recorded results show whether the proof guards find real weaknesses in an existing proof and what they cost, so the guard design is confirmed or revised before any tooling is built.
 
-**Status:** Ready — not yet started
+**Status:** Complete
 
 **Dependencies:** The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.
 
@@ -377,13 +377,13 @@ Pending.
 
 **Tasks**
 
-- [ ] In a disposable copy, apply candidate changes to the executable statements of the seven authority functions, one at a time, never to specifications or proofs. Include the accepted-status change, which must fail, and a failure-classification change, which the specification deliberately leaves to tests.
-- [ ] Verify the complete crate for each change with the pinned command. Record which obligation failed for each rejected change, and the time per run.
-- [ ] Compare with specification mutation: mutate the contracts and specification functions of `formal-authority`, keep the code and proof, and record which mutations still verify. Compare what each approach finds and its false positives, and recommend which the sensitivity guard should use.
-- [ ] For each survivor, run the `production-integration` tests against the same change and classify it as excluded and detected, equivalent with a reason, or a gap in the specification.
-- [ ] Write a witness for the preconditions of `validate_reference`, and record the Verus form that works.
-- [ ] List what a fingerprint of the `formal-authority` specification would cover, and check that a change to a reachable specification function, such as `target_is_suitable_authority`, falls inside it.
-- [ ] Record the results and limits, recommend changes to the guard design, and fix any specification gap found, through the Formal Verification roadmap.
+- [x] In a disposable copy, apply candidate changes to the executable statements of the seven authority functions, one at a time, never to specifications or proofs. Include the accepted-status change, which must fail, and a failure-classification change, which the specification deliberately leaves to tests.
+- [x] Verify the complete crate for each change with the pinned command. Record which obligation failed for each rejected change, and the time per run.
+- [x] Compare with specification mutation: mutate the contracts and specification functions of `formal-authority`, keep the code and proof, and record which mutations still verify. Compare what each approach finds and its false positives, and recommend which the sensitivity guard should use.
+- [x] For each survivor, run the `production-integration` tests against the same change and classify it as excluded and detected, equivalent with a reason, or a gap in the specification.
+- [x] Write a witness for the preconditions of `validate_reference`, and record the Verus form that works.
+- [x] List what a fingerprint of the `formal-authority` specification would cover, and check that a change to a reachable specification function, such as `target_is_suitable_authority`, falls inside it.
+- [x] Record the results and limits, recommend changes to the guard design, and fix any specification gap found, through the Formal Verification roadmap.
 
 ### Completion criteria
 
@@ -392,25 +392,54 @@ Pending.
 Every change tried is recorded with its location, its outcome, the obligation that failed or its classification as a survivor, and its runtime; the accepted-status change fails verification. The commands reproduce the results.
 
 - **Anchor coverage:** None — design experiment; informs [verify-proof-sensitive](../design/verification.md#verify-proof-sensitive)
-- **Evidence:** Pending.
+- **Evidence:** Passed. `scripts/proof-guards/code_changes.py` lists 29 changes to the executable statements of the seven functions, each with its exact original and replacement text; `scripts/proof-guards/run.py code` applies them one at a time to a disposable copy, verifies the complete crate, and runs the record-API tests against survivors. The accepted-status change (`R7`) fails a postcondition. 23 changes are rejected: 14 by postconditions, 7 by loop invariants, `U1` by both, and `A5` (skipping records) by an invariant and an overflow check. Six survive full verification (15 verified, 0 errors); see the milestone evidence. With Verus 0.2026.10.18.7d82994 built from source and six workers, each change took 1–2 seconds after a first build of about 45 seconds per worker.
 
 #### Witness and fingerprint {#verification-evidence-7-witness-and-fingerprint}
 
 A verified witness for `validate_reference` and the list of fingerprint inputs for `formal-authority` are recorded, with any limits found.
 
 - **Anchor coverage:** None — design experiment; informs [verify-proof-nonvacuous](../design/verification.md#verify-proof-nonvacuous) and [verify-proof-assessment-current](../design/verification.md#verify-proof-assessment-current)
-- **Evidence:** Pending.
+- **Evidence:** Passed in a disposable copy. **Witness:** an executable function that builds one decoded anchor candidate with one reference and calls `validate_reference(candidates.as_slice(), 0, 0)` verifies; changing the call to reference index 1 fails with "precondition not satisfied", so Verus checks the witness rather than trusting its link. In an ordinary build the function is dead code and trips Clippy's `vec_init_then_push`; gating it with `#[cfg(verus_keep_ghost)]` requires declaring that cfg for `unexpected_cfgs`. A proof-mode witness would need to construct a `Vec` in ghost code and was not pursued. **Fingerprint inputs:** the criterion's statement and proof scope; the signatures and contracts of `has_required_authority`, `matches_identity`, `matches_target_kind`, `lookup`, `has_unknown_identity`, `validate_reference`, and `validate_authorities`; the specification functions their contracts reach: `records_satisfy_authority_rules`, `record_satisfies_authority_rules`, `reference_satisfies_authority_rules`, `reference_is_not_repeated`, `resolves_uniquely_to`, `identified_by`, `target_is_suitable_authority`, `kind_matches`, and `violation_is_located`; the types `Candidate`, `Reference`, `Kind`, `TargetKind`, `Failure`, `Violation`, and `Lookup`; and the `vstd` version, whose string, sequence, and vector specifications the contracts use. `target_is_suitable_authority` is reached through `validate_reference` and through `reference_satisfies_authority_rules`, so a change to it falls inside; changing it (`SR1`, `SR3`, `SR10`) also changed the verification outcome. Loop invariants and proof blocks are excluded, as the design specifies.
 
 #### Assessment {#verification-evidence-7-assessment}
 
 A written assessment states what the guards found, what they cost, and their limits, and recommends confirming or revising the guard design. Revisions are made in the design chapters; specification gaps are recorded against the authority proof.
 
 - **Anchor coverage:** None — decision input
-- **Evidence:** Pending.
+- **Evidence:** Recorded in the milestone evidence below, with recommendations for the guard design.
+
+### Evidence {#verification-evidence-7-evidence}
+
+**Revision:** Branch `verification`, based on `60bb90d`, 2026-11-10; changes applied only in disposable copies. Verus 0.2026.10.18.7d82994 and Z3 4.16.0 built from source on Linux; Rust 1.99.1 for verification.
+
+**Survivors and classification:** each was run against the `production-integration` tests in `tests/records.rs`, `tests/authority_criteria.rs`, and `tests/rendering.rs`.
+
+| Change | What it does | Classification |
+| --- | --- | --- |
+| `H3` | `reference_count >= 1` for `> 0` | Equivalent: the same for `usize` |
+| `R2` | Missing target with unknown identities reported as missing rather than invalid | Excluded and detected: failure classification; record-API tests fail |
+| `R4` | Ambiguous target reported as missing | Excluded and detected |
+| `R9` | Wrong kind reported as invalid target | Excluded and detected |
+| `R10` | Incompatible status reported as missing target | Excluded and detected, including through the real adapter |
+| `A4` | Every reference failure attributed to the record's first reference | Excluded diagnostic location. At first only an internal unit test caught it, a gap in the record-API tests; `each_failing_reference_is_reported_at_its_own_location` now detects it |
+
+No survivor shows a gap in the specification. `A3`, which reports missing authority under another failure kind, is rejected only because the contract now includes `violation_is_located`; before that change it would have survived and been caught only by tests.
+
+**Specification changes:** `scripts/proof-guards/run.py spec` applied 12 changes to specification functions and the contract, keeping code and proofs. All nine viable rule changes were rejected, `SR4` was unviable (its quantifier lost its trigger), and the two pure weakenings (`SW1`, a one-way `ensures`; `SW2`, dropping the decoded clause from `violation_is_located`) verified, as any weakening must.
+
+**Assessment and recommendations:**
+
+1. **Keep code changes for the sensitivity guard.** They found a real test gap (`A4`) and cross-checked four exclusions; specification changes found nothing, because they can only alter what the specification states, never expose behavior it leaves out, and every weakening survives. Specification changes could still check that each stated clause is needed, if weakenings are filtered out. This answers [open question 6](../design/verification-evidence.md#open-questions).
+2. **Add a replaced-argument operator.** The designed operators cover conditions, comparisons, returned values, and removed calls; the location survivor `A4` came from replacing a constructor argument, and the classification survivors from replacing enum variants in returned values. Both forms should be generated.
+3. **Classify only with the covering criterion's tests.** Unit tests inside the proof module caught `A4` while the record-API tests did not. Keep the design's rule that survivors are classified only by the linked tests of criteria named in the exclusions, since it exposed this gap.
+4. **Witness form.** An executable function in the proof module that constructs an input and calls the linked function works, and Verus checks its call site. The witness link must name the called function, and the runner should confirm the witness calls it. Ordinary builds need the function gated out. This partly answers [open question 7](../design/verification-evidence.md#open-questions).
+5. **Cost is low for this proof.** At 1–2 seconds per change, the full set runs in under a minute, so sampling ([open question 5](../design/verification-evidence.md#open-questions)) is not needed at this size.
+
+**Limits:** One proof, 29 hand-written changes rather than generated ones, and a source-built verifier rather than the release binary. Survivor tests were the three record-API test files; `production-integration` has no evidence links yet, so these stand in for its linked tests.
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10. Every change is recorded and reproducible, the accepted-status change fails, the witness and fingerprint inputs are recorded, and the assessment recommends design changes. No specification gap was found; the record-API test gap it exposed is fixed.
 
 A rendered progress view remains an
 [open question](../design/verification-evidence.md#open-questions) in the design;
