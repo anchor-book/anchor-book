@@ -32,3 +32,8 @@ pub use records::{
     DiagnosticCode, Problem, Record, RecordData, RecordErrors, RecordInventory, RecordKind,
     Requirement, SourceLocation, Status, VerificationMethod, read_records,
 };
+
+/// Deliberately untested helper for the required-checks demonstration; never merged.
+pub fn demonstration_offset(value: u32) -> u32 {
+    value.saturating_add(1)
+}
