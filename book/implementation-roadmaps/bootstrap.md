@@ -24,7 +24,7 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 
 **Outcome:** The engineer has reviewed the checker's anchors and the requirements and decisions they cite, and those records are accepted into the goal design.
 
-**Status:** In progress
+**Status:** In progress — records reviewed and accepted; engineer confirmation of agreed scope pending
 
 **Dependencies:** None. Acceptance is a design judgment; the built checker and its evidence inform the review but do not establish it.
 
@@ -40,9 +40,9 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 - [x] Draft outcome-based checker milestones with stable identifiers, dependencies, and completion criteria.
 - [x] Settle the APIs, dependencies, and supported tool versions needed for structural checking; [Structural Checking milestones 1 and 2](structural-checker.md#structural-checking-2) record the choices.
 - [x] Agree on the Structural Checking milestones; the engineer assigned them as scoped prototypes.
-- [ ] Review each of the nine checker anchors with the engineer as a guarantee supporting the check, repair, and recheck loop: its property, cited authority, retained constraints, and criteria. Make agreed revisions in the design and reconcile affected roadmaps.
-- [ ] Review the six checker requirements and the four decisions the anchors cite for whether they justify the properties: `decision-explicit-configuration`, `decision-mdbook-structure`, `decision-separate-check-and-repair`, and `decision-typed-check-results`.
-- [ ] Mark the agreed records `accepted`, each requirement and decision no later than the anchors that cite it, and run the structural check and Book build.
+- [x] Review each of the nine checker anchors with the engineer as a guarantee supporting the check, repair, and recheck loop: its property, cited authority, retained constraints, and criteria. Make agreed revisions in the design and reconcile affected roadmaps.
+- [x] Review the six checker requirements and the four decisions the anchors cite for whether they justify the properties: `decision-explicit-configuration`, `decision-mdbook-structure`, `decision-separate-check-and-repair`, and `decision-typed-check-results`.
+- [x] Mark the agreed records `accepted`, each requirement and decision no later than the anchors that cite it, and run the structural check and Book build.
 
 ### Completion criteria
 
@@ -51,7 +51,7 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 The engineer has reviewed each checker anchor and the requirements and decisions it cites: the authority justifies the property, essential constraints are retained, and the criteria are testable. Revisions agreed in review are made in the design.
 
 - **Anchor coverage:** None — design review
-- **Evidence:** Pending.
+- **Evidence:** Passed: the engineer reviewed the anchors and their authority on 2026-11-10 and agreed these revisions: `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `check-configuration-validity` also cites `requirement-truthful-results`; `decision-separate-check-and-repair` is retitled; and `requirement-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
 
 #### Agreed scope {#engine-bootstrap-1-agreed-scope}
 
@@ -65,21 +65,25 @@ The engineer agrees on the checker scope and roadmap. Implementation choices are
 The nine checker anchors and the requirements and decisions they cite have status `accepted`, and the structural check and Book build pass, so record validation confirms that every accepted anchor and decision cites only accepted authority.
 
 - **Anchor coverage:** None — design acceptance; acceptance does not verify any anchor.
-- **Evidence:** Pending.
+- **Evidence:** Passed: all nine checker anchors, six requirements, and four decisions have status `accepted`. `anchorbook check --config anchorbook.toml` passed, and `mdbook build`, whose record validation rejects accepted records citing draft authority, succeeded.
 
 ### Progress
 
-The Book contains the checker design, six checker requirements, four governing decisions, and nine checker anchors [mapped to implementation work](structural-checker.md#authority-and-anchors). All are drafts.
+The Book contains the checker design, six checker requirements, four governing decisions, and nine checker anchors [mapped to implementation work](structural-checker.md#authority-and-anchors), all accepted.
 
 ### Evidence {#engine-bootstrap-1-evidence}
 
-*Milestone evidence — pending*
+*Milestone evidence — review and acceptance recorded*
 
-Pending; use the [evidence format](index.md#evidence-records).
+**Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Not yet integrated into main.
+
+**Checks:** The structural check, `mdbook build` with mdBook 0.5.4, current-Book acceptance, and rendered-Book acceptance passed after acceptance.
+
+**Limitations:** Acceptance establishes the goal design only; it does not verify any anchor. The review was conducted by the agent that drafted the revisions, with the engineer deciding each change.
 
 ### Completion record
 
-Pending. The engineer agreed the checker design as a prototyping starting point and assigned the Structural Checking milestones as scoped prototypes. Review and acceptance of the governing records remain.
+Pending engineer confirmation of the [agreed scope](#engine-bootstrap-1-agreed-scope) criterion. The governing records are reviewed and accepted.
 
 ## Milestone 2. A fresh agent session can take up an assigned milestone {#engine-bootstrap-2}
 

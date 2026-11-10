@@ -73,7 +73,7 @@ statement = "The engine executes the verified authority-validation functions. Te
 schema-version = 1
 id = "check-shared-typed-results"
 title = "Agents and Rust callers receive consistent format findings"
-status = "draft"
+status = "accepted"
 property = '''
 Engineers, agents, CI, and Rust integrations receive equivalent structural
 findings for the same Book inputs, so choosing an interface does not change the

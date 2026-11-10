@@ -13,7 +13,7 @@ observed problem, expected structure, location, and useful next action.
 schema-version = 1
 id = "check-truthful-results"
 title = "Results tell the agent whether format repairs are complete"
-status = "draft"
+status = "accepted"
 property = '''
 An engineer or agent can distinguish a Book that conforms to the checked format,
 a Book with known structural defects to repair, and a check that could not finish.
@@ -48,7 +48,7 @@ statement = "Assert evaluated and blocked groups and limits of the passing claim
 schema-version = 1
 id = "check-actionable-diagnostics"
 title = "Findings give agents enough information to repair the format"
-status = "draft"
+status = "accepted"
 property = '''
 An engineer or agent can use each finding to locate a format problem, understand
 what was expected and observed, and choose an appropriate repair within the

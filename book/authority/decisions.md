@@ -1,12 +1,12 @@
 # Decisions
 
-**Status: draft for review.** These choices govern the system being built; other parts of the Book must account for them.
+Each decision states its own status. These choices govern the system being built; other parts of the Book must account for them.
 
 ```anchorbook-decision
 schema-version = 1
 id = "decision-explicit-configuration"
 title = "Configuration defines the Book's layout and roles"
-status = "draft"
+status = "accepted"
 choice = "Define Book paths and section roles in anchorbook.toml. Resolve Book paths relative to that configuration and section paths relative to the source."
 requirements = ["requirement-configured-structure"]
 rationale = "Checking, initialization, adoption, and materialization need the same intended layout without relying on fixed directory names or display titles."
@@ -18,7 +18,7 @@ reconsider-when = "Books spanning multiple roots require a different path-resolu
 schema-version = 1
 id = "decision-mdbook-structure"
 title = "mdBook navigation defines the chapter hierarchy"
-status = "draft"
+status = "accepted"
 choice = "Use SUMMARY.md as the chapter hierarchy for checking, materialization, adoption, and rendering; do not maintain a separate Anchor Book hierarchy."
 requirements = ["requirement-configured-structure", "requirement-truthful-results"]
 rationale = "All operations must agree on the chapters readers see. Reusing mdBook navigation keeps structural checks and managed changes aligned with rendering."
@@ -30,7 +30,7 @@ reconsider-when = "Supporting a different book format requires a hierarchy that 
 schema-version = 1
 id = "decision-separate-check-and-repair"
 title = "Checking and repair are separate operations"
-status = "draft"
+status = "accepted"
 choice = "Checking observes and reports. Repairs and managed writes belong to separate agent actions or engine operations."
 requirements = ["requirement-observation-only", "requirement-repair-feedback"]
 rationale = "CI and callers can inspect defects without changing their inputs. Materialization and repair must define their own ownership and conflict behavior."
@@ -42,7 +42,7 @@ reconsider-when = "A combined user workflow is needed; preserve explicit observa
 schema-version = 1
 id = "decision-typed-check-results"
 title = "Shared behavior and typed results belong in the Rust library"
-status = "draft"
+status = "accepted"
 choice = "Keep shared engine behavior and typed results in the Rust library. The CLI and other adapters translate invocation and presentation without defining separate rules."
 requirements = ["requirement-shared-checker", "requirement-truthful-results", "requirement-repair-feedback"]
 rationale = "CLI commands, mdBook integration, Rust tests, and future adapters must use consistent behavior and inspect results without parsing display text."

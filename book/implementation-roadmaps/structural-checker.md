@@ -35,7 +35,8 @@ schema or rule specification.
 ## Authority and anchors
 
 The [requirements](../authority/requirements.md#initial-checker-requirements),
-[decisions](../authority/decisions.md), and referenced anchors remain drafts.
+[decisions](../authority/decisions.md), and referenced anchors were accepted on
+2026-11-10 in [Engine Bootstrap milestone 1](bootstrap.md#engine-bootstrap-1).
 Milestone criteria link to specific anchor criteria with full or partial planned
 coverage, following the [roadmap convention](index.md#anchor-criteria-and-planned-coverage).
 

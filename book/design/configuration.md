@@ -14,7 +14,7 @@ choices. Role names describe responsibilities, independently of page titles.
 schema-version = 1
 id = "check-book-selection"
 title = "Check the intended Book wherever the caller starts"
-status = "draft"
+status = "accepted"
 property = '''
 An engineer or agent can select the intended Book explicitly and check its
 configured format without relying on conventional directory names or page titles.
@@ -42,7 +42,7 @@ statement = "Check equivalent fixtures under book, docs, and md with different d
 schema-version = 1
 id = "check-configuration-validity"
 title = "Configuration problems cannot produce a misleading format check"
-status = "draft"
+status = "accepted"
 property = '''
 The checker reports invalid or unresolvable configuration so an engineer or
 agent can correct the intended layout before relying on structural findings.

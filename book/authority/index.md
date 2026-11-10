@@ -12,7 +12,8 @@ Design explains the intended system; authority explains the obligations and choi
 that govern it. Anchors cite those records so readers can trace each property to
 its justification.
 
-These records are **drafts for review**. Each uses the
+Each record states its own status: `accepted` records are part of the agreed goal
+design, and `draft` records are still under review. Each uses the
 [structured authority format](../design/authority-definitions.md); anchors cite
 its typed identity. The engine validates those references, while review establishes
 whether the authority justifies the property. Acceptance, implementation, and
