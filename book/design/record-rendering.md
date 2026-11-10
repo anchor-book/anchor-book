@@ -99,8 +99,8 @@ statement = "Independent fixtures with malformed milestone and criterion heading
 
 [[criteria]]
 id = "roadmap-presentation"
-verification = ["test", "review"]
-statement = "Through the actual adapter, roadmap chapters render each milestone as a card with its status and fields, and its tasks, criteria, and evidence as open details sections with their fragments and visible identifiers; other chapters are not treated as roadmaps, and sources are unchanged. Review collapsing, keyboard access, and expanded printing in the rendered Book."
+verification = ["test"]
+statement = "Through the actual adapter, roadmap chapters render each milestone as a card with its status and fields, and its tasks, criteria, and evidence as open details sections with their fragments and visible identifiers; other chapters are not treated as roadmaps, and sources are unchanged."
 ```
 
 ## Approach

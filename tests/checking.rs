@@ -603,35 +603,35 @@ fn renderer_configuration_in_a_subdirectory_resolves_paths_from_its_own_director
     let book = Book::new();
     let config = CONFIG.replace(
         "mdbook = \"book.toml\"",
-        "mdbook = \"design-book/book.toml\"",
+        "mdbook = \"anchor-book/book.toml\"",
     );
     book.write("anchorbook.toml", &config);
     book.write(
-        "design-book/book.toml",
+        "anchor-book/book.toml",
         "[book]\nsrc = \"../docs\"\n[build]\nbuild-dir = \"../generated/site\"\n",
     );
     // The root book.toml is not the configured one, so its contents do not matter.
     book.write("book.toml", "[book\n");
     assert_eq!(report(&book).outcome(), Outcome::Passed);
 
-    // mdBook resolves src relative to its own book.toml, so "docs" means design-book/docs.
+    // mdBook resolves src relative to its own book.toml, so "docs" means anchor-book/docs.
     book.write(
-        "design-book/book.toml",
+        "anchor-book/book.toml",
         "[book]\nsrc = \"docs\"\n[build]\nbuild-dir = \"../generated/site\"\n",
     );
     let r = report(&book);
     assert_eq!(codes(&r), ["structure.renderer-path-mismatch"]);
     let finding = &r.findings()[0];
     assert_eq!(finding.location.field.as_deref(), Some("book.src"));
-    assert_eq!(finding.location.path, book.path("design-book/book.toml"));
+    assert_eq!(finding.location.path, book.path("anchor-book/book.toml"));
     assert_eq!(finding.expected, "docs");
-    assert_eq!(finding.found, "design-book/docs");
+    assert_eq!(finding.found, "anchor-book/docs");
 
-    fs::remove_file(book.path("design-book/book.toml")).unwrap();
+    fs::remove_file(book.path("anchor-book/book.toml")).unwrap();
     let r = report(&book);
     assert_eq!(codes(&r), ["structure.renderer-missing"]);
     let finding = &r.findings()[0];
-    assert_eq!(finding.location.path, book.path("design-book/book.toml"));
+    assert_eq!(finding.location.path, book.path("anchor-book/book.toml"));
     assert!(
         finding
             .related

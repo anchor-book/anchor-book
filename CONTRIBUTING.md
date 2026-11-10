@@ -346,13 +346,15 @@ budget, and evidence artifacts retained for 14 days. A newer push cancels a PR's
 superseded run; full campaigns on `main` always complete. Missed mutants and timeouts
 fail the job; the result is not suppressed. Budget exhaustion leaves the campaign
 incomplete. CI artifacts omit the tool's host/process metadata files.
-The workflow must be pushed before it can run. To enforce it before merging,
-configure the GitHub rule for `main` to require **Mutation tests**, **Rust 1.88.0**,
-**Rust stable**, and **Build mdBook**, after confirming the new mutation check name
-in a real PR. Require a pull request and results up to date with the target branch;
-do not require **Publish Book**, which only runs after a main-branch push.
-A workflow definition alone does not enforce branch protection. The roadmap
-records the verified remote state; this workflow does not gate Pages publication.
+The **Protect main** repository ruleset enforces these checks. Changes reach
+`main` only through a pull request whose required checks pass for a revision
+current with `main`: **Engine checks / Rust 1.88.0**, **Engine checks / Rust
+stable**, **Build mdBook**, **Installed engine**, **Authority proof**, and
+**Mutation tests**. No approving review is required, force-pushes to and deletion
+of `main` are blocked, and the ruleset has no bypass list. **Publish Book** is not
+required; it runs only after a push to `main`. When adding or renaming a required
+job, add its check name to the ruleset after it has run on a pull request, so
+existing pull requests are not blocked waiting for a check they never run.
 
 Agents make corrections locally and run relevant ordinary tests. GitHub runs
 the full mutation campaign on the PR; inspect that result before declaring
