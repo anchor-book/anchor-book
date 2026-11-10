@@ -36,14 +36,31 @@ do not guess project paths or claim to have read unavailable content.
 Run the project's structural check, as described in
 [Check the Book's structure](#check-the-books-structure), and include its result
 in your readiness report. A Book that fails or cannot be checked is still read,
-but its findings qualify what you report about it. When the request is only to
-read the Book, report the findings and the repairs you would make rather than
-making them.
+but its findings qualify what you report about it.
 
-Follow the engineer's request, briefly stating scope and constraints before
-changes. A request only to read the Book calls for a readiness report, not
-self-selected implementation. Do not ask again for direction or agreement already
-given in the session.
+After reading, give the engineer a readiness report so they can see the project's
+state and choose what to work on:
+
+- **Context:** what you read, and any guidance that was missing or unreadable.
+- **Current state:** the phase, the structural check result, and what the Book
+  records as implemented.
+- **Open work:** every roadmap milestone that is not Complete, grouped by roadmap,
+  with its identifier, title, and status. Identify Ready milestones, which can be
+  assigned, and for the others the dependency, agreement, or obstacle that holds
+  them.
+
+Report status as the Book records it. Do not infer progress or completion from
+code, task checkmarks, or anchor references.
+
+When the request is only to read the Book, the readiness report is the whole
+response: report check findings and the repairs you would make rather than
+making them, and do not start self-selected work. When the request is to read the
+Book and start named work, give the same report, then start that work. Identify
+the milestone or design it belongs to and briefly state its scope and constraints
+before changes. Resolve unmet prerequisites with the engineer, as
+[Work with the engineer](#work-with-the-engineer) describes, before proceeding.
+For any other request, state its scope and constraints before making
+changes. Do not ask again for direction or agreement already given in the session.
 
 ## Check the Book's structure
 
