@@ -167,8 +167,8 @@ The actual Book passes. Independent fixtures cover source and summary prerequisi
 
 Report differing renderer settings and expected locations without editing files. Handle defaults, equivalent paths, missing configuration, and malformed or unreadable input; aligning seeded mismatches produces a pass.
 
-- **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `resolved-comparison`, `renderer-input` — Full
-- **Evidence:** Local tests cover mdBook defaults, equivalent relative and absolute paths, missing/invalid renderer input, and corrected mismatches. A CLI test sets an environment override and confirms only file settings are checked. The implementation uses pure mdbook-core deserialization; it never runs the renderer or configured commands.
+- **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `resolved-comparison`, `renderer-input` — Full for the criteria as they stood at this milestone. `resolved-comparison` later added a `book.toml` in a subdirectory of the configuration directory; [Project Integration milestone 1](project-integration.md#project-integration-1-mdbook-location) covers that case.
+- **Evidence:** Local tests cover mdBook defaults, equivalent relative and absolute paths, missing/invalid renderer input, and corrected mismatches. A CLI test sets an environment override and confirms only file settings are checked. The implementation uses pure mdbook-core deserialization; it never runs the renderer or configured commands. These tests predate the subdirectory case and do not cover it.
 
 #### Typed results {#structural-checking-2-typed-results}
 

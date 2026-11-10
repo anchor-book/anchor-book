@@ -37,8 +37,9 @@ scope, and recheck. A pass obtained by removing obligations or weakening the
 intended configuration does not satisfy this requirement.
 '''
 source = '''
-The Structural Checking roadmap's goal of an agent iterating on Book
-structure until it conforms.
+Agents bring a Book into its configured format by checking, repairing, and
+rechecking; they can only repair what the checker's output lets them locate
+and understand.
 '''
 ```
 

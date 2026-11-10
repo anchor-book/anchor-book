@@ -29,7 +29,7 @@ reconsider-when = "Supporting a different book format requires a hierarchy that 
 ```anchorbook-decision
 schema-version = 1
 id = "decision-separate-check-and-repair"
-title = "Checking and mutation are separate operations"
+title = "Checking and repair are separate operations"
 status = "draft"
 choice = "Checking observes and reports. Repairs and managed writes belong to separate agent actions or engine operations."
 requirements = ["requirement-observation-only", "requirement-repair-feedback"]

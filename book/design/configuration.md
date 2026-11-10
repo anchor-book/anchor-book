@@ -54,6 +54,7 @@ including through symlink aliases.
 authorities = [
   { kind = "requirement", id = "requirement-repair-feedback" },
   { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "requirement", id = "requirement-truthful-results" },
   { kind = "decision", id = "decision-explicit-configuration" },
 ]
 
