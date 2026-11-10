@@ -304,10 +304,13 @@ conversion, and error propagation. For the verified validator, run the proof as
 well as tests and mutations. Specification changes also need review against
 the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only
 changes need their relevant checks, not a new local mutation campaign on unchanged
-engine logic. The GitHub mutation workflow still reports on every PR, but runs the
-campaign only when the PR changes `src/`, `tests/`, Cargo manifests, the toolchain
-file, `.cargo/`, or the workflow itself; otherwise the check passes with a notice.
-Manual dispatch always runs the full campaign.
+engine logic. The GitHub mutation workflow reports on every PR. A PR that changes
+`src/`, `contract/`, or `tests/` mutates only the lines it changes, with
+`--in-diff`; one that changes Cargo manifests, the toolchain file, `.cargo/`, or the
+workflow itself runs the full campaign, because those settings affect every
+mutation. Other PRs pass with a notice. Every merge to `main` and every manual
+dispatch runs the full campaign, which covers effects of a change outside its own
+lines. A survivor found there is corrected in a follow-up change.
 
 Results are in ignored `target/mutants.out/`; the next run rotates the previous
 results to `target/mutants.out.old/`. Preserve needed evidence before rerunning.
@@ -326,10 +329,11 @@ toolchain/tool version, filters, counts, survivor analysis, and remaining gaps i
 roadmap evidence. Raw local output can contain machine paths and identity metadata;
 review it before sharing and do not commit it.
 
-The **Mutation testing** GitHub workflow runs on pull requests targeting `main`
-and can also be dispatched manually. It runs ordinary tests first, then the
-unfiltered command, with a 45-minute job budget and evidence artifacts retained
-for 14 days. Missed mutants and timeouts
+The **Mutation testing** GitHub workflow runs on pull requests targeting `main`, on
+pushes to `main`, and on manual dispatch. It runs ordinary tests first, then the
+changed-line or full command described above, with four workers, a 60-minute job
+budget, and evidence artifacts retained for 14 days. A newer push cancels a PR's
+superseded run; full campaigns on `main` always complete. Missed mutants and timeouts
 fail the job; the result is not suppressed. Budget exhaustion leaves the campaign
 incomplete. CI artifacts omit the tool's host/process metadata files.
 The workflow must be pushed before it can run. To enforce it before merging,
