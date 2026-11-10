@@ -72,11 +72,11 @@ jobs:
           # No build cache is restored. A separate target directory ensures the
           # ordinary test build cannot supply a stale or absent proof report.
           status=0
-          cargo verus verify --fwd-verus-args-to roots --locked --target-dir target/verus-ci --lib \
+          cargo verus verify --fwd-verus-args-to roots --locked --features verus --target-dir target/verus-ci --lib \
             -- --no-cheating --output-json --time-expanded \
             > target/proof-results/raw.txt || status=$?
           jq -n --argjson exit_code "$status" \
-            '{command: "cargo verus verify --fwd-verus-args-to roots --locked --target-dir target/verus-ci --lib -- --no-cheating --output-json --time-expanded", exit_code: $exit_code}' \
+            '{command: "cargo verus verify --fwd-verus-args-to roots --locked --features verus --target-dir target/verus-ci --lib -- --no-cheating --output-json --time-expanded", exit_code: $exit_code}' \
             > target/proof-results/command.json
           # Fresh dependency verification emits a plain-text success summary.
           # Remove only that known line; any other non-JSON output fails parsing.

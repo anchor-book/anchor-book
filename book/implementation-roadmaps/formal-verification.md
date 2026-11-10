@@ -252,7 +252,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Outcome:** Ordinary builds of the engine, and of every project that depends on it, need no Verus toolchain or `vstd`; the engine's proof builds only with an optional Cargo feature, over the same maintained source that ordinary builds execute.
 
-**Status:** Proposed
+**Status:** Complete
 
 **Identifier:** `formal-verification-4`
 
@@ -262,11 +262,11 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Tasks**
 
-- [ ] Test one maintained source arrangement on a representative validator slice. A feature alone does not compile: code inside `verus!` needs Verus's macro crates even with the feature off. Candidates are (a) an optional `verus` Cargo feature with the validator written as ordinary Rust, its contracts attached through Verus's attribute syntax (`#[verus_verify]`, `#[verus_spec]`, present in the pinned release) under `cfg_attr`, and specification functions and proofs compiled only with the feature; and (b) a development proof workspace with reproducible erasure. For the chosen one, establish supported forms, tool availability, drift detection, and runtime correspondence.
-- [ ] Remove engine verification libraries from the default dependency graph; with the feature off, `cargo tree` shows no `vstd` or other Verus crate. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.
-- [ ] Preserve `fixtures/consumers/verus-resolution` as the consumer-resolution regression fixture: its exact `vstd` pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.
-- [ ] Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.
-- [ ] Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.
+- [x] Test one maintained source arrangement on a representative validator slice. A feature alone does not compile: code inside `verus!` needs Verus's macro crates even with the feature off. Candidates are (a) an optional `verus` Cargo feature with the validator written as ordinary Rust, its contracts attached through Verus's attribute syntax (`#[verus_verify]`, `#[verus_spec]`, present in the pinned release) under `cfg_attr`, and specification functions and proofs compiled only with the feature; and (b) a development proof workspace with reproducible erasure. For the chosen one, establish supported forms, tool availability, drift detection, and runtime correspondence.
+- [x] Remove engine verification libraries from the default dependency graph; with the feature off, `cargo tree` shows no `vstd` or other Verus crate. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.
+- [x] Preserve `fixtures/consumers/verus-resolution` as the consumer-resolution regression fixture: its exact `vstd` pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.
+- [x] Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.
+- [x] Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.
 
 ### Completion criteria
 
@@ -275,7 +275,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 Review identifies one maintained authority implementation and a reproducible relationship between verified and packaged functions. Independent tests and drift checks reject divergence; any erasure or conversion assumptions are explicit. A separately maintained proof-only validator cannot complete this criterion.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1.
-- **Evidence:** Pending.
+- **Evidence:** Passed. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. Drift is prevented by construction and by the rule in [Shipping Verified Code](../design/verified-code-packaging.md#proof-packaging-for-consumers), which review enforces; no automated check for gated executable code exists yet.
 
 #### Consumer resolution {#formal-verification-4-consumer-resolution}
 
@@ -283,25 +283,35 @@ The regression consumer keeps its exact `vstd = "=0.0.0-2026-10-11-0230"` pin: r
 
 - **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `independent-resolution` — Partial: engine proof dependency isolation. Other exact pins, supported toolchains, and renderer compatibility retain their separate integration and release scope.
 - **Baseline evidence:** On 2026-11-08, Cargo 1.99.1 (`5f94df478`) reproduced the conflict against engine code at `fab05d6`, on the design branch for PR #19. The standalone consumer in `fixtures/consumers/verus-resolution` depends on the engine and exactly pins `vstd = "=0.0.0-2026-10-11-0230"`. From the repository root, `cargo metadata --offline --format-version 1 --manifest-path fixtures/consumers/verus-resolution/Cargo.toml` exits 101: the engine requires `=0.0.0-2026-10-18-0147`, and Cargo reports ``failed to select a version for `vstd` which could resolve this conflict``. Compatible-version unification cannot satisfy both exact prerelease requirements; no `links` conflict is involved.
-- **Limits and remaining evidence:** This measures dependency resolution against a checkout using cached registry metadata. It does not establish a build, native proof, or packaged-engine compatibility. Post-isolation resolution and build with the unchanged consumer pin remain Pending, as does the ordinary consumer without Verus.
+- **Isolation evidence:** Passed on 2026-11-10 with Cargo 1.99.1. With the consumer's pin unchanged, `cargo metadata` resolves its own `vstd 0.0.0-2026-10-11-0230` and `cargo build --locked` succeeds, both against this branch and against the extracted packaged `.crate` with only the `anchor-book` path changed in a disposable copy; the fixture's lock file needed no change. Against the pre-change engine the same command still fails with ``failed to select a version for `vstd` ``. An ordinary consumer with no `vstd` of its own builds against the packaged engine with no Verus on `PATH`, and its lock file contains no `vstd`. The engine's default dependency tree contains no `vstd` or Verus crate.
 
 #### Preserved proof {#formal-verification-4-preserved-proof}
 
 A native proof and ordinary integration tests pass for the same packaged candidate and recorded source revision. A deliberate authority defect fails verification and its correction passes. Review reassesses the claim, assumptions, production callers, and excluded boundaries after the packaging change; old proof reports do not establish this result.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority`, `production-integration` — Partial: revalidation of proof and integration after packaging changes, under the anchor's declared proof scope.
-- **Evidence:** Pending.
+- **Evidence:** Passed. `cargo verus verify --fwd-verus-args-to roots --locked --features verus --lib -- --no-cheating` reports 15 verified, 0 errors, full crate, and `.github/verus-report.jq` accepts the report with all seven functions, both on the branch and in the extracted packaged source. Making the accepted-status check always pass fails a postcondition (14 verified, 1 error); the restored source verifies. The packaged source's own tests pass, and ordinary tests, formatting, and Clippy pass on Rust 1.88.0 and stable 1.99.1. Review of the claim, assumptions, callers, and exclusions: the contracts, invariants, and executable bodies are unchanged in content from milestone 1's assessed specification; only their syntax moved from `verus!` to attributes. Verus 0.2026.10.18.7d82994 and Z3 4.16.0 were built from source on Linux; the GitHub proof job uses the release archive.
 
 #### Dependency review {#formal-verification-4-dependency-review}
 
 A recorded review of the candidate's package contents, dependency set, and features confirms proof isolation and explains remaining exact requirements. The record identifies the package revision and explicitly limits its conclusion to verification dependencies.
 
 - **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `dependency-review` — Partial: engine verification dependencies; general release dependency review remains separate.
-- **Evidence:** Pending.
+- **Evidence:** Reviewed for the branch's packaged candidate (`cargo package --locked`, 106 files). Default normal dependencies are `mdbook-core`, `mdbook-summary`, `pulldown-cmark`, `serde`, `serde_json`, and `toml_edit`; no Verus crate. The `verus` feature adds `vstd` and its `verus_*` crates. Remaining exact requirements are `mdbook-summary` and `mdbook-core` at `=0.5.4`, because that parser version defines the supported navigation input; they belong to release review, not verification isolation. The package also contains repository files such as workflows and tests, also a release-readiness question.
+
+### Evidence {#formal-verification-4-evidence}
+
+**Arrangement chosen:** candidate (a), Verus's attribute syntax under an optional `verus` feature. A feasibility slice (two helpers, `lookup` with its loop invariant, and the specification functions they use) verified with the feature and built without it, and a deliberate defect failed; the full validator then followed. Research into the Verus guide for the pinned release supports the choice: the guide recommends `#[verus_spec]` for executable functions and `verus!` for specification functions when production code must build without Verus, with dependencies controlled by feature flags. The gate is the Cargo feature rather than Verus's internal `verus_keep_ghost` cfg. Candidate (b), generated runtime source, was not needed.
+
+**Mutation coverage:** the validator's bodies are now ordinary Rust, so cargo-mutants 27.1.0 reaches them: 50 mutations, against none inside `verus!`. Five loop-counter mutations (`+= 1` to `*= 1`) hang the loops; each fails verification with "decreases not satisfied", so they are excluded in `.cargo/mutants.toml` with that reason. Of the remaining 45, tests catch 42 and 3 are unviable; none survive or time out.
+
+**Changes:** `src/records/authority.rs`, `src/lib.rs` (enables `proc_macro_hygiene` only with the feature, for loop attributes), `Cargo.toml`, `.cargo/mutants.toml`, the proof workflow's `--features verus`, CONTRIBUTING, and the Rust Engine, Running Verification, and Shipping Verified Code chapters.
+
+**Limits:** The attribute syntax is a contributed Verus extension that changes between releases; reverify on every upgrade. `cargo build --features verus` with an ordinary toolchain fails, because the loop attributes need the feature only Verus's compiler allows; the feature is for verification only. No automated check yet enforces that the feature gates no executable code.
 
 ### Completion record
 
-Pending. The source arrangement and native compatibility have not been established; source review or synthetic report checks are not packaging or proof acceptance evidence.
+Complete on 2026-11-10. Ordinary builds of the engine and of dependents need no Verus crate, the regression consumer resolves and builds with its own `vstd`, and the proof and tests pass for the same packaged implementation. GitHub results for the change are recorded with its pull request.
 
 ## Later work
 

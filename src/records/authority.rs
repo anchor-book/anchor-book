@@ -39,10 +39,15 @@
 //! The code favors an inspectable proof over speed: string identities, borrowed
 //! slices, linear lookup, and a scan of earlier references for duplicates. It is
 //! not optimized or benchmarked for large inventories.
+#[cfg(feature = "verus")]
 use vstd::prelude::*;
 
-verus! {
+// Specifications attach only with the `verus` feature, which `cargo verus verify`
+// enables and which supplies `vstd`; ordinary builds compile the same executable
+// bodies without any Verus crate. The feature may gate only specifications and
+// proofs, never executable code, so the verified bodies are the ones that run.
 
+#[cfg_attr(feature = "verus", verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
     Anchor,
@@ -50,17 +55,20 @@ pub(super) enum Kind {
     Decision,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum TargetKind {
     Requirement,
     Decision,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 pub(super) struct Reference {
     pub id: String,
     pub kind: TargetKind,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 pub(super) struct Candidate {
     // Keep any recovered identity even when the rest of the definition is invalid.
     pub id: Option<String>,
@@ -72,6 +80,7 @@ pub(super) struct Candidate {
     pub references: Vec<Reference>,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Failure {
     MissingAuthority,
@@ -83,6 +92,7 @@ pub(super) enum Failure {
     IncompatibleStatus,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 pub(super) struct Violation {
     // Position in the complete candidate collection.
     pub record_index: usize,
@@ -91,14 +101,17 @@ pub(super) struct Violation {
     pub failure: Failure,
 }
 
+#[cfg_attr(feature = "verus", verus_verify)]
 enum Lookup {
     Missing,
     Unique(usize), // The matching candidate's index.
     Ambiguous,
 }
 
-// Authority rules: these mathematical definitions do not execute at runtime.
+#[cfg(feature = "verus")]
+verus! {
 
+// Authority rules: these mathematical definitions do not execute at runtime.
 pub(super) open spec fn identified_by(candidate: Candidate, id: Seq<char>) -> bool {
     match candidate.id {
         Some(value) => value@ == id,
@@ -193,36 +206,42 @@ pub(super) open spec fn violation_is_located(candidates: Seq<Candidate>, violati
         None => violation.failure == Failure::MissingAuthority,
     }
 }
+}
 
 // Executable checks: contracts connect these Rust bodies to the rules above.
 
 // Used by schema decoding as well as the complete validator: emptiness is not
 // assumed away at the boundary of the proof.
-pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) -> (allowed: bool)
+#[cfg_attr(feature = "verus", verus_spec(allowed =>
     ensures allowed == (!is_anchor || reference_count > 0),
-{
+))]
+pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) -> bool {
     !is_anchor || reference_count > 0
 }
 
-fn matches_identity(candidate: &Candidate, id: &str) -> (yes: bool)
+#[cfg_attr(feature = "verus", verus_spec(yes =>
     ensures yes == identified_by(*candidate, id@),
-{
+))]
+fn matches_identity(candidate: &Candidate, id: &str) -> bool {
     match &candidate.id {
         Some(value) => value.as_str() == id,
         None => false,
     }
 }
 
-fn matches_target_kind(kind: Kind, target: TargetKind) -> (yes: bool)
+#[cfg_attr(feature = "verus", verus_spec(yes =>
     ensures yes == kind_matches(kind, target),
-{
-    matches!((kind, target),
-        (Kind::Requirement, TargetKind::Requirement) | (Kind::Decision, TargetKind::Decision))
+))]
+fn matches_target_kind(kind: Kind, target: TargetKind) -> bool {
+    matches!(
+        (kind, target),
+        (Kind::Requirement, TargetKind::Requirement) | (Kind::Decision, TargetKind::Decision)
+    )
 }
 
 // Count identity matches even in undecodable candidates: otherwise an invalid
 // definition could disappear and make an ambiguous authority look unique.
-fn lookup(candidates: &[Candidate], id: &str) -> (result: Lookup)
+#[cfg_attr(feature = "verus", verus_spec(result =>
     ensures match result {
         Lookup::Missing => forall|candidate_index: int| #![auto] 0 <= candidate_index < candidates.len() ==>
             !identified_by(candidates[candidate_index], id@),
@@ -234,12 +253,13 @@ fn lookup(candidates: &[Candidate], id: &str) -> (result: Lookup)
             && identified_by(candidates[first_index], id@)
             && identified_by(candidates[second_index], id@),
     },
-{
+))]
+fn lookup(candidates: &[Candidate], id: &str) -> Lookup {
     let mut candidate_index: usize = 0;
     let mut matched_index: Option<usize> = None;
     // Among candidates already visited, every match is the recorded matched_index.
     // A second match exits as Ambiguous. The unvisited count decreases each time.
-    while candidate_index < candidates.len()
+    #[cfg_attr(feature = "verus", verus_spec(
         invariant
             candidate_index <= candidates.len(),
             matched_index.is_some() ==> matched_index.unwrap() < candidate_index
@@ -248,7 +268,8 @@ fn lookup(candidates: &[Candidate], id: &str) -> (result: Lookup)
                 && identified_by(candidates[earlier_index], id@)
                 ==> matched_index == Some(earlier_index as usize),
         decreases candidates.len() - candidate_index,
-    {
+    ))]
+    while candidate_index < candidates.len() {
         if matches_identity(&candidates[candidate_index], id) {
             if matched_index.is_some() {
                 return Lookup::Ambiguous;
@@ -264,18 +285,20 @@ fn lookup(candidates: &[Candidate], id: &str) -> (result: Lookup)
 }
 
 // An unrecoverable ID means we cannot describe an unresolved target as simply missing.
-fn has_unknown_identity(candidates: &[Candidate]) -> (found: bool)
+#[cfg_attr(feature = "verus", verus_spec(found =>
     ensures found == (exists|candidate_index: int| #![auto]
         0 <= candidate_index < candidates.len() && candidates[candidate_index].id.is_none()),
-{
+))]
+fn has_unknown_identity(candidates: &[Candidate]) -> bool {
     let mut candidate_index: usize = 0;
     // Everything visited so far has a known ID; finding None is a witness for exists.
-    while candidate_index < candidates.len()
+    #[cfg_attr(feature = "verus", verus_spec(
         invariant candidate_index <= candidates.len(),
             forall|earlier_index: int| #![auto] 0 <= earlier_index < candidate_index ==>
                 candidates[earlier_index].id.is_some(),
         decreases candidates.len() - candidate_index,
-    {
+    ))]
+    while candidate_index < candidates.len() {
         if candidates[candidate_index].id.is_none() {
             return true;
         }
@@ -286,8 +309,7 @@ fn has_unknown_identity(candidates: &[Candidate]) -> (found: bool)
 
 // requires supplies only safe indices, not an assumption that the reference is valid.
 // ensures proves both directions: valid references succeed and invalid ones fail.
-fn validate_reference(candidates: &[Candidate], record_index: usize, reference_index: usize)
-    -> (failure: Option<Failure>)
+#[cfg_attr(feature = "verus", verus_spec(failure =>
     requires
         record_index < candidates.len(),
         reference_index < candidates[record_index as int].references.len(),
@@ -295,12 +317,17 @@ fn validate_reference(candidates: &[Candidate], record_index: usize, reference_i
         failure.is_none() == reference_satisfies_authority_rules(
             candidates@, record_index as int, reference_index as int),
         failure != Some(Failure::MissingAuthority),
-{
+))]
+fn validate_reference(
+    candidates: &[Candidate],
+    record_index: usize,
+    reference_index: usize,
+) -> Option<Failure> {
     let record = &candidates[record_index];
     let reference = &record.references[reference_index];
     let mut earlier_reference_index: usize = 0;
     // None of the earlier references examined so far uses this reference's ID.
-    while earlier_reference_index < reference_index
+    #[cfg_attr(feature = "verus", verus_spec(
         invariant
             record_index < candidates.len(), reference_index < record.references.len(),
             earlier_reference_index <= reference_index,
@@ -309,7 +336,8 @@ fn validate_reference(candidates: &[Candidate], record_index: usize, reference_i
             forall|checked_index: int| #![auto] 0 <= checked_index < earlier_reference_index ==>
                 record.references[checked_index].id@ != reference.id@,
         decreases reference_index - earlier_reference_index,
-    {
+    ))]
+    while earlier_reference_index < reference_index {
         if record.references[earlier_reference_index].id.as_str() == reference.id.as_str() {
             return Some(Failure::RepeatedReference);
         }
@@ -317,52 +345,64 @@ fn validate_reference(candidates: &[Candidate], record_index: usize, reference_i
     }
     match lookup(candidates, reference.id.as_str()) {
         Lookup::Missing => {
-            if has_unknown_identity(candidates) { Some(Failure::InvalidTarget) }
-            else { Some(Failure::MissingTarget) }
-        },
+            if has_unknown_identity(candidates) {
+                Some(Failure::InvalidTarget)
+            } else {
+                Some(Failure::MissingTarget)
+            }
+        }
         Lookup::Ambiguous => Some(Failure::AmbiguousTarget),
         Lookup::Unique(index) => {
             let target_record = &candidates[index];
-            if !target_record.decoded { Some(Failure::InvalidTarget) }
-            else if !matches_target_kind(target_record.kind, reference.kind) { Some(Failure::WrongTargetKind) }
-            else if record.design_accepted && !target_record.design_accepted { Some(Failure::IncompatibleStatus) }
-            else { None }
-        },
+            if !target_record.decoded {
+                Some(Failure::InvalidTarget)
+            } else if !matches_target_kind(target_record.kind, reference.kind) {
+                Some(Failure::WrongTargetKind)
+            } else if record.design_accepted && !target_record.design_accepted {
+                Some(Failure::IncompatibleStatus)
+            } else {
+                None
+            }
+        }
     }
 }
 
 // Main guarantee: no violations if and only if every decoded record's authority
 // relationships satisfy the rules. Parser errors still prevent overall Book success.
 // The contract does not prove the exact classification or location of each violation.
-pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec<Violation>)
+#[cfg_attr(feature = "verus", verus_spec(violations =>
     ensures
         (violations.len() == 0) == records_satisfy_authority_rules(
             candidates@, candidates.len() as int),
         forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
             violation_is_located(candidates@, violations[violation_index]),
-{
+))]
+pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
     let mut violations: Vec<Violation> = Vec::new();
     let mut record_index: usize = 0;
     // At each loop head, the collected violations describe whether all earlier
     // records satisfy the rules. Reaching the full length gives the final guarantee.
-    while record_index < candidates.len()
+    #[cfg_attr(feature = "verus", verus_spec(
         invariant record_index <= candidates.len(),
             (violations.len() == 0) == records_satisfy_authority_rules(candidates@, record_index as int),
             forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
                 violation_is_located(candidates@, violations[violation_index]),
         decreases candidates.len() - record_index,
-    {
-        proof {
-            // Extending the processed portion by one record means the old portion
-            // AND the current record satisfy the rules. Verus proves this assertion;
-            // it is not an assumption, and this block does not execute at runtime.
+    ))]
+    while record_index < candidates.len() {
+        // Extending the processed portion by one record means the old portion
+        // AND the current record satisfy the rules. Verus proves this assertion;
+        // it is not an assumption, and it is not compiled into ordinary builds.
+        #[cfg(feature = "verus")]
+        proof! {
             assert(records_satisfy_authority_rules(candidates@, record_index as int + 1) ==
                 (records_satisfy_authority_rules(candidates@, record_index as int)
                     && record_satisfies_authority_rules(candidates@, record_index as int)));
         }
         let record = &candidates[record_index];
         if record.decoded {
-            if !has_required_authority(matches!(record.kind, Kind::Anchor), record.references.len()) {
+            if !has_required_authority(matches!(record.kind, Kind::Anchor), record.references.len())
+            {
                 violations.push(Violation {
                     record_index,
                     reference_index: None,
@@ -372,7 +412,7 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec
             let mut reference_index: usize = 0;
             // No violations yet exactly when earlier records passed, authority
             // presence is satisfied, and every reference visited in this record passed.
-            while reference_index < record.references.len()
+            #[cfg_attr(feature = "verus", verus_spec(
                 invariant
                     record_index < candidates.len(), record == candidates[record_index as int], record.decoded,
                     reference_index <= record.references.len(),
@@ -383,9 +423,15 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec
                     forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
                         violation_is_located(candidates@, violations[violation_index]),
                 decreases record.references.len() - reference_index,
-            {
-                if let Some(failure) = validate_reference(candidates, record_index, reference_index) {
-                    violations.push(Violation { record_index, reference_index: Some(reference_index), failure });
+            ))]
+            while reference_index < record.references.len() {
+                if let Some(failure) = validate_reference(candidates, record_index, reference_index)
+                {
+                    violations.push(Violation {
+                        record_index,
+                        reference_index: Some(reference_index),
+                        failure,
+                    });
                 }
                 reference_index += 1;
             }
@@ -393,7 +439,6 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec
         record_index += 1;
     }
     violations
-}
 }
 
 #[cfg(test)]

@@ -162,6 +162,9 @@ local mutation campaigns or repeat a full campaign while remote validation is av
 The production validator in `src/records/authority.rs` has a local Verus proof.
 Use [Verus release 0.2026.10.18.7d82994](https://github.com/verus-lang/verus/releases/tag/release/0.2026.10.18.7d82994),
 its bundled Z3 4.16.0, and the exactly pinned `vstd` dependency in Cargo.toml.
+`vstd` is optional: the `verus` feature enables it and attaches the proof's
+specifications, so ordinary builds and projects that depend on the engine need no
+Verus crate.
 Download the release archive for your platform, check its published SHA-256,
 and add the extracted directory containing `verus` and `cargo-verus` to PATH.
 The arm64 macOS archive used for local verification has SHA-256
@@ -189,8 +192,14 @@ Install the verifier's toolchain alongside the normal development toolchains:
 
 ```sh
 rustup toolchain install 1.99.1 --profile minimal --component rustc-dev,llvm-tools
-cargo verus verify --fwd-verus-args-to roots --locked --lib -- --no-cheating --output-json --time-expanded
+cargo verus verify --fwd-verus-args-to roots --locked --features verus --lib -- --no-cheating --output-json --time-expanded
 ```
+
+The production functions are ordinary Rust carrying Verus attributes such as
+`#[cfg_attr(feature = "verus", verus_spec(...))]`; specification functions sit in a
+`#[cfg(feature = "verus")] verus! { ... }` block. The feature may gate only
+specifications and proofs, never executable code: code that differs under the
+feature would make the proof describe something other than what runs.
 
 Verification uses Rust 1.99.1; ordinary engine builds require Rust 1.88 or later.
 No Book build or wrapper script is required. `--no-cheating` rejects project
@@ -205,10 +214,11 @@ before verification. This retains dependency artifacts. Reverify after changes t
 code, specifications, conversion, or dependencies, and run ordinary tests for the
 unproved integration boundaries.
 
-cargo-mutants 27.1.0 does not discover executable bodies inside `verus!` blocks.
-Keep this coverage gap explicit: scoped mutation checks exercise the unannotated
-integration code, while a deliberate code defect separately tests proof rejection.
-Neither result establishes full mutation coverage of the validator.
+Because the validator's bodies are ordinary Rust, cargo-mutants reaches them.
+Five loop-counter mutations are excluded in `.cargo/mutants.toml`: they make a
+loop run forever, so tests can only time out, while each loop's `decreases` clause
+makes verification reject them. Mutation results assess the tests; a deliberate
+code defect separately tests that the proof rejects it.
 
 After changing the validator or its specification, demonstrate that the proof
 still rejects a defect: in a disposable copy, make a deliberate behavioral change,
@@ -271,8 +281,11 @@ tests, including actual-process CLI tests, run for each mutation; the ignored
 Book acceptance tests stay separate. Three exact OR-to-XOR mutations in the
 Markdown option mask are excluded because the flags are disjoint and the resulting
 mask is identical. The configuration records their locations and rationale;
-review them when the flag expression or parser dependency changes. No engine
-files are excluded, and mutations that remove flags remain in scope.
+review them when the flag expression or parser dependency changes. Five
+loop-counter mutations in `src/records/authority.rs` are also excluded, because
+verification rejects them and tests can only time out; see the local authority
+proof section. No engine files are excluded, and mutations that remove flags
+remain in scope.
 
 For a bounded local run, select the affected file or capability. For example:
 
@@ -287,8 +300,8 @@ unfiltered command covers the entire crate with the tool's supported mutations,
 not every possible defect. Rust or test changes invalidate affected earlier results.
 
 Choose local mutation runs for affected ordinary Rust behavior, including parsing,
-conversion, and error propagation. For code inside `verus!`, run proofs and tests
-and retain the mutation-coverage gap. Specification changes also need review against
+conversion, and error propagation. For the verified validator, run the proof as
+well as tests and mutations. Specification changes also need review against
 the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only
 changes need their relevant checks, not a new local mutation campaign on unchanged
 engine logic. The GitHub mutation workflow still reports on every PR, but runs the

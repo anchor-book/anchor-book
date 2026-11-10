@@ -15,6 +15,8 @@
 //! assert!(inventory.is_empty());
 //! # Ok::<(), anchor_book::RecordErrors>(())
 //! ```
+// Verus's attributes on loops need this; only verification enables the feature.
+#![cfg_attr(feature = "verus", feature(proc_macro_hygiene))]
 
 pub mod adapters;
 pub mod checking;
