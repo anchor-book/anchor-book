@@ -78,7 +78,7 @@ Every gap found has a fix with evidence in this Book or an entry in the relevant
 
 ### Completion record
 
-Complete on 2026-11-10, on fork branch `anchor-book`, not pushed. Symposium's Anchor Book checks and renders through its own commands with a pinned installed engine, the user Book is unchanged, broken copies are refused, and every gap found is fixed here or recorded. Its records are trial content for developing the engine: the two configuration decisions are reconstructed from Symposium's design and code, with alternatives written in the trial, and Symposium's maintainers review the content when it is integrated.
+Complete on 2026-11-10, on fork branch `anchor-book`, not pushed. Symposium's Anchor Book checks and renders through its own commands with a pinned installed engine, the user Book is unchanged, broken copies are refused, and every gap found is fixed here or recorded. Its records serve both as a test case for the engine and as the start of Symposium's own Book: the two configuration decisions are reconstructed from Symposium's design and code, with alternatives written in the trial, and Symposium's maintainers review the content when it is integrated.
 
 ## Milestone 2. Symposium's design and authority are anchored {#symposium-integration-2}
 
