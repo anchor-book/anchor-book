@@ -243,7 +243,7 @@ Pending.
 
 **Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders each milestone as a card with collapsible tasks, criteria, and evidence, while agents keep reading the compact Markdown source.
 
-**Status:** In progress — implemented locally; presentation review pending
+**Status:** In progress — implemented locally; source review recorded; in-browser review pending
 
 **Identifier:** `record-rendering-4`
 
@@ -274,7 +274,7 @@ Independent fixtures with duplicate milestone or criterion identifiers, malforme
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
 - **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
-- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. The review of collapsing, keyboard access, and printing is pending.
+- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. Source review on 2026-11-10 of this branch's rendered roadmaps: tasks, criteria, and milestone evidence are native `<details>` elements rendered `open`, so they read without JavaScript and collapse through their `<summary>`, which browsers make keyboard-operable; `theme/records.css` gives summaries a visible focus outline. Criterion headings sit inside their summaries with their fragment `id`, so a link still reaches a collapsed criterion; `record-rendering-4-rendered-view` resolves once in its chapter and once in `print.html`. Printing expands closed sections through `theme/records.js` on `beforeprint` and in `print.html`, restoring the reader's choices afterwards, and through a print rule on `::details-content` for browsers that support it. Not yet exercised in a browser: actual collapsing, keyboard operation, and print output. A heading inside `<summary>` may lose its heading role in some screen readers.
 
 ### Evidence {#record-rendering-4-evidence}
 
@@ -284,7 +284,7 @@ This Book's rendered roadmaps show criterion details that expand and collapse, a
 
 ### Completion record
 
-Pending the presentation review.
+Pending an in-browser check of collapsing, keyboard access, and printing.
 
 ## Handoff and later work
 
