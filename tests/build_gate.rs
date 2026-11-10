@@ -110,7 +110,7 @@ fn failed_or_incomplete_checks_prevent_rendering() {
     }
 }
 
-// anchorbook: check-shared-typed-results#equivalent-callers
+/// anchorbook: check-shared-typed-results#equivalent-callers
 #[test]
 fn library_cli_and_preprocessor_report_the_same_check() {
     use anchor_book::{

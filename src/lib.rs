@@ -1,9 +1,10 @@
 //! Configure and check Book structure, read, validate, and render design records,
-//! and validate and render roadmap milestones.
+//! validate and render roadmap milestones, and report evidence for anchor criteria.
 //!
 //! Record and rendering operations use supplied Markdown without filesystem access.
 //! Configuration and structural checking inspect explicit files without writes.
-//! No operation executes subprocesses or verifies the system being described.
+//! [`verification`] reads sources and asks `git` for the revision; no operation
+//! writes files or yet runs the project's tests or verifier.
 //! A successful inventory establishes schema and authority-reference consistency.
 //!
 //! ```
@@ -25,6 +26,7 @@ pub mod contract;
 pub mod records;
 pub mod rendering;
 pub mod roadmaps;
+pub mod verification;
 
 // Preserve the initial API while offering a capability-scoped namespace.
 pub use records::{

@@ -109,3 +109,23 @@ pub fn check(config_path: &Path) -> Result<CheckReport, CheckError> {
     }
     report.finish()
 }
+
+/// Local chapters the Book's navigation lists, in order, as source-relative
+/// paths with their nesting depth; drafts and external links are omitted.
+///
+/// For operations that read the Book after a passing check. Reads only the
+/// navigation file.
+pub(crate) fn chapters(
+    config: &configuration::Configuration,
+) -> Result<Vec<(std::path::PathBuf, usize)>, String> {
+    let path = config.source().join("SUMMARY.md");
+    let text = inspect::text(&path).map_err(|e| format!("{}: {e}", path.display()))?;
+    let entries = navigation::parse(&text).map_err(|e| e.message)?;
+    Ok(entries
+        .into_iter()
+        .filter_map(|entry| {
+            let target = entry.target?;
+            (!navigation::is_external(&target.to_string_lossy())).then_some((target, entry.depth))
+        })
+        .collect())
+}

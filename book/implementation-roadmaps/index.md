@@ -111,7 +111,8 @@ anchor criteria, and several entries may address the same anchor criterion.
 | None | No anchor applies; give a reason, such as design preparation or contributor setup. | `None — <reason>` |
 
 A Full entry with a qualifier, such as "Full for the declared versions", is a
-Partial entry; write it as one. When a criterion grows after its milestone is
+Partial entry; write it as one. The roadmap reader rejects a qualified Full, and
+an entry with no level, as `roadmap.invalid-coverage`. When a criterion grows after its milestone is
 Complete, change that milestone's Full entry to Partial with the scope it covered.
 
 Planned coverage is not verification by itself. Once a milestone is Complete,

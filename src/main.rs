@@ -9,6 +9,9 @@ fn main() -> ExitCode {
     if args.first().is_some_and(|a| a == "check") {
         return check(&args[1..]);
     }
+    if args.first().is_some_and(|a| a == "verify") {
+        return verify(&args[1..]);
+    }
     if args.first().is_some_and(|a| a == "md") {
         return md(&args[1..]);
     }
@@ -126,5 +129,57 @@ fn check(args: &[std::ffi::OsString]) -> ExitCode {
         ExitCode::from(2)
     } else {
         ExitCode::from(outcome.exit_code())
+    }
+}
+
+fn verify(args: &[std::ffi::OsString]) -> ExitCode {
+    use anchor_book::{VerificationMethod, verification};
+    let usage =
+        "Usage: anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]...";
+    let mut config = None;
+    let mut scope = verification::Scope::default();
+    let mut rest = args.iter();
+    while let Some(flag) = rest.next() {
+        let value = rest
+            .next()
+            .and_then(|v| v.to_str())
+            .filter(|v| !v.is_empty());
+        match (flag.to_str(), value) {
+            (Some("--config"), Some(path)) if config.is_none() => config = Some(path.to_owned()),
+            (Some("--anchor"), Some(id)) => scope.anchors.push(id.to_owned()),
+            (Some("--method"), Some(method)) => match method {
+                "test" => scope.methods.push(VerificationMethod::Test),
+                "proof" => scope.methods.push(VerificationMethod::Proof),
+                "review" => scope.methods.push(VerificationMethod::Review),
+                _ => {
+                    let _ = writeln!(io::stderr().lock(), "{usage}");
+                    return ExitCode::from(2);
+                }
+            },
+            _ => {
+                let _ = writeln!(io::stderr().lock(), "{usage}");
+                return ExitCode::from(2);
+            }
+        }
+    }
+    let Some(config) = config else {
+        let _ = writeln!(io::stderr().lock(), "{usage}");
+        return ExitCode::from(2);
+    };
+    match verification::verify(std::path::Path::new(&config), scope) {
+        Ok(report) => {
+            let text = anchor_book::adapters::verify::format_report(&report);
+            if io::stdout().lock().write_all(text.as_bytes()).is_err() {
+                return ExitCode::from(2);
+            }
+            ExitCode::from(report.exit_code())
+        }
+        Err(error) => {
+            let _ = writeln!(
+                io::stderr().lock(),
+                "anchorbook verify: incomplete\n{error}"
+            );
+            ExitCode::from(2)
+        }
     }
 }

@@ -222,7 +222,10 @@ src/
   rendering.rs            Record and roadmap rendering operation and typed errors
   rendering/              Private HTML and link generation
   rendering/assets/       Record and milestone styles and print script, compiled in
-  roadmaps.rs             Roadmap milestone reading and validation
+  roadmaps.rs             Roadmap milestone reading, coverage levels, and validation
+  verification.rs         verify: evidence states, claims, plans, and reports
+  verification/           Private configuration, link reading, and input identities
+  adapters/verify.rs      Plain-text verify report formatting without process I/O
   records.rs              Public record capability interface
   records/
     model.rs              Record types and chapter input
@@ -232,7 +235,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `verification` and `materialization` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
+The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `materialization` when it is implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -319,6 +322,8 @@ the Rust versions used for those revisions.
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 | `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
+| `syn` 2.0, with `full` and `parsing` only | Parse Rust sources to attach evidence-link doc comments to their functions; no proc-macro, printing, or Verus dependency |
+| `proc-macro2` 1.0, with `span-locations` only | Source line numbers for links and findings |
 | `vstd` =0.0.0-2026-10-18-0147, optional | Verus specifications for production authority validation, enabled only by the `verus` feature that `cargo verus verify` uses; ordinary builds and consuming projects do not build it, as the [isolation decision](../authority/decisions.md#decision-isolate-engine-verification) requires |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
@@ -326,7 +331,7 @@ only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects
 other versions explicitly. The checker uses the standalone summary/core crates,
 without the mdBook driver, renderer, or server. Rendered Book output remains
 unnecessary for engine compilation and independent tests. The CLI handles `check`,
-`md`, renderer capability probes, `contract`,
+`md`, renderer capability probes, `contract`, `verify`,
 help, and version with a small explicit argument dispatch. Argument-parsing
 dependencies can be reconsidered as more commands are implemented.
 
@@ -431,6 +436,6 @@ tool versions and repository integration remain project guidance.
 
 The configuration and checking APIs, parser adapter, supported-input checks,
 source-location mapping, and report presentation are implemented. The `verify`
-operation is designed in [Running Verification](verification-evidence.md) and
-planned in its roadmap. Async runtimes and dynamic rules need concrete workflows
+operation is designed in [Running Verification](verification-evidence.md); its
+links, states, claims, and report are implemented and its runners are planned. Async runtimes and dynamic rules need concrete workflows
 before design.

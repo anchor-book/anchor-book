@@ -1,8 +1,12 @@
 # Running Verification
 
-**Status: draft for review.** Not implemented; the
-[Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md)
-plans the work.
+**Status: draft for review.** Partly implemented: `anchorbook verify` reads the
+`[verification]` configuration and evidence links, computes evidence states, checks
+[claims of completion](#claims-of-completion), and prints the report, as
+[Verification Evidence milestone 4](../implementation-roadmaps/verification-evidence.md#verification-evidence-4)
+records. No runner exists yet, so linked tests and proofs are reported as not
+evaluated; the [roadmap](../implementation-roadmaps/verification-evidence.md) plans
+the runners, guards, and assessment records.
 
 This chapter defines the operation that produces the evidence described in
 [Verification](verification.md). `anchorbook verify` reports the project's
@@ -259,8 +263,16 @@ path, name, and verification mode, with its source location, and must match
 exactly one result for the selected target and features. Equal names in different
 modules or packages never select an arbitrary result; unsupported,
 macro-generated, or ambiguous identities are reported rather than guessed. The
-first implementation supports simple module functions and declares its limits
-before extending to other forms. Verus code takes two forms: functions inside
+first implementation supports module-level functions, including those in inline
+modules such as `mod tests`, in a Cargo package's `src/` (the library),
+`src/main.rs` and `src/bin/` (binaries), and `tests/<name>.rs` or
+`tests/<name>/main.rs` (integration tests). A function is a test when it carries
+an attribute whose last path segment is `test`, such as `#[test]` or
+`#[tokio::test]`, and verified when it carries `#[verus_spec]` or
+`#[verus_verify]`, directly or inside `cfg_attr`. Links on methods, inside macro
+invocations, in other files such as `tests/support/`, or on any other function
+are located findings; `#[path]` module attributes and a `[lib] path` other than
+`src/lib.rs` are not followed. Verus code takes two forms: functions inside
 `verus!` blocks, which ordinary Rust parsers such as `syn` leave as macro tokens,
 and ordinary Rust functions carrying Verus attributes such as `#[verus_spec(...)]`,
 possibly under `cfg_attr`. Recognizing modes requires reading both.
@@ -496,7 +508,12 @@ are written; `assessments` holds the project's [assessment records](verification
 `runners` lists the supported runners the project uses. Paths follow the existing
 [path rules](configuration.md#paths). `output` must be separate from the Book, the
 configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
-`verify` and ignored by `check`; its absence makes `verify` incomplete.
+`verify` and ignored by `check`; its absence makes `verify` incomplete. `verify`
+validates the section itself, so an invalid one never affects `check` or rendering.
+The implemented fields are `sources`, `output`, and `runners`, whose values are
+`nextest` and `verus`; `assessments` is added with assessment records.
+Content identities in reports are 64-bit FNV-1a hashes: stable identities for
+recognizing changed inputs, not a security measure.
 
 A project that verifies its own code also identifies here its Verus installation,
 expected verifier version, verification Rust toolchain, and the manifest,

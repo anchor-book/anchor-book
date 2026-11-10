@@ -67,7 +67,9 @@ or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
 The binary supports `anchorbook check --config PATH`, `anchorbook md`,
-`anchorbook md supports html`, `anchorbook contract`, help, and version. The
+`anchorbook md supports html`, `anchorbook contract`,
+`anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]...`,
+help, and version. The
 adapter targets **mdBook 0.5.4** and its HTML renderer. `anchorbook contract`
 prints the AI Working Contract, whose source is the section files in `contract/`;
 see `contract/README.md`. Materialization remains future work.
@@ -166,6 +168,21 @@ Full mutation campaigns run on GitHub by default. Local development uses focused
 ordinary tests; a local mutation run should have an explicitly chosen scope and
 resource budget. Use one worker for an agreed local run. Do not launch parallel
 local mutation campaigns or repeat a full campaign while remote validation is available.
+
+## Evidence for criteria
+
+```sh
+cargo run --quiet --locked --bin anchorbook -- verify --config anchorbook.toml
+```
+
+`verify` reads the `[verification]` section of `anchorbook.toml`, the evidence
+links (`/// anchorbook: <anchor-id>#<criterion-id>` on a test or verified
+function) in its `sources`, and the Book, and reports every criterion's state by
+chapter. It exits 0 when every claim it checked holds, 1 when a Complete
+milestone's Full coverage names a criterion that is not satisfied, and 2 when it
+cannot evaluate. No runner is implemented yet, so linked tests and proofs show
+as not evaluated, and this Book's run exits 1 until its claimed criteria are
+linked. `tests/verification.rs` holds its fixture tests.
 
 ## Local authority proof
 
