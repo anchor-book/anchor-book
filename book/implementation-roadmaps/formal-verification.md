@@ -34,10 +34,9 @@ criteria; [Record Rendering milestone 3](record-rendering.md#record-rendering-3-
 owns its three behavioral test criteria.
 
 The sequence is **local production-code proof, GitHub proof execution, then merge
-protection**. Merge protection is completed together with
-[Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2). Until it is
-enforced, review existing CI results before merging; unfinished enforcement does
-not waive tests or permit unexplained mutation findings.
+protection**. Merge protection is shared with
+[Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2): the
+**Protect main** ruleset requires the authority proof alongside the other checks.
 
 Milestone 4 makes Verus optional and starts with a bounded feasibility
 experiment. It does not depend on the consumer runner. Any project that adds the
@@ -134,7 +133,7 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 
 **Outcome:** Changes receive repeatable remote verification with revision-specific proof and integration evidence, and the required check protects implementation merges.
 
-**Status:** In progress — proof and integration pass on GitHub; failure demonstration and merge protection pending
+**Status:** Complete
 
 **Identifier:** `formal-verification-2`
 
@@ -145,10 +144,10 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 **Tasks**
 
 - [x] Add a separate GitHub verification job using the pinned tools and full selected proof scope, alongside ordinary engine tests. Verify actual function coverage and retain public-safe results on failure.
-- [ ] Exercise a deliberate verification failure and correction through a PR; confirm that failed, skipped, or incomplete verification cannot count as success. The passing run is recorded below.
+- [x] Exercise a deliberate verification failure and correction through a PR; confirm that failed, skipped, or incomplete verification cannot count as success. The passing run is recorded below.
 - [x] Record proof and production integration results for the same revision, including assumptions, tool versions, commands, function coverage, and evidence links.
-- [ ] Add the observed verification check to the intended merge rules and demonstrate that failure blocks merging; preserve existing required tests.
-- [ ] Demonstrate the agent correction loop without weakening the formal property, then update contributor instructions and roadmap evidence.
+- [x] Add the observed verification check to the intended merge rules and demonstrate that failure blocks merging; preserve existing required tests.
+- [x] Demonstrate the agent correction loop without weakening the formal property, then update contributor instructions and roadmap evidence.
 
 ### Completion criteria
 
@@ -157,7 +156,7 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 Actual GitHub results show the intended production functions verified for the recorded revision and a deliberate defect rejected. Retained results identify the specification, inputs, assumptions, toolchain, and scope.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Partial: remote reproduction of milestone 1 proof evidence.
-- **Evidence:** Passing PR and main-branch runs are recorded below: 15 verified units, zero errors, all seven required functions present. The deliberate-failure GitHub run remains pending; the local negative experiment does not complete this criterion.
+- **Evidence:** Passing PR and main-branch runs are recorded below: 15 verified units, zero errors, all seven required functions present. On throwaway #30, a deliberately flipped contract on `matches_target_kind` failed the [Authority proof run](https://github.com/anchor-book/anchor-book/actions/runs/42766303320) with "postcondition not satisfied" at `src/records/authority.rs:233` and `:317`, and the corrected head `1e576c1` [passed](https://github.com/anchor-book/anchor-book/actions/runs/42767217679).
 
 #### Same revision {#formal-verification-2-same-revision}
 
@@ -171,7 +170,7 @@ Record passing integration tests and proof results for the same code revision; r
 A real PR demonstrates a failed required verification check preventing merge, followed by an authorized correction and passing checks for the updated revision. Record the applied rule and any bypass policy.
 
 - **Anchor coverage:** None — repository enforcement and agent workflow; a workflow definition is not enforcement.
-- **Evidence:** Pending.
+- **Evidence:** Passed: **Authority proof** is a required check in the **Protect main** ruleset, which has no bypass list. On #30, its failure for a head current with `main` left the pull request `BLOCKED`; the agent read the failure, corrected the contract without weakening the property, and the updated head passed. Details are in [Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2-enforcement-evidence).
 
 ### Evidence {#formal-verification-2-evidence}
 
@@ -181,11 +180,11 @@ A real PR demonstrates a failed required verification check preventing merge, fo
 
 **Remote evidence:** [PR #2](https://github.com/anchor-book/anchor-book/pull/2) merged as `03fb981`. The [PR proof run](https://github.com/anchor-book/anchor-book/actions/runs/39735753233) passed for head `687a4bf`, testing merge revision `4e0d6c1`; [main verification](https://github.com/anchor-book/anchor-book/actions/runs/39737287057) passed for `03fb981`. Both report 15 verified units, zero errors, full-crate verification, and successful results for all seven required executable functions. The retained `authority-proof-results` artifacts identify revisions, commands, exit codes, tools, scope, and assumptions; ordinary engine/integration tests passed in the same jobs. Linux runs use the pinned Verus release, Rust 1.99.1 for verification and 1.85.0 for ordinary tests.
 
-**Limits:** The deliberate-failure/correction GitHub run and merge enforcement remain pending. Passing execution does not complete milestone 1 scope and integration-coverage review.
+**Limits:** The merge itself was not attempted; the blocked state is GitHub's refusal. The proof job uses the release archive, as recorded above.
 
 ### Completion record
 
-Passing remote proof and integration are recorded; failure/correction demonstration, evidence review, and merge protection remain open.
+Complete on 2026-11-10. Remote proof and integration pass for recorded revisions, a deliberate proof defect fails a required check that blocks merging, and its correction passes.
 
 ## Milestone 3. Criteria declare their required verification methods {#formal-verification-3}
 
