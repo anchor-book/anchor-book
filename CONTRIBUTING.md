@@ -67,9 +67,10 @@ or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
 The binary supports `anchorbook check --config PATH`, `anchorbook md`,
-`anchorbook md supports html`, help, and version. The adapter targets **mdBook
-0.5.4** and its HTML renderer. Materialization and contract generation remain
-future work.
+`anchorbook md supports html`, `anchorbook contract`, help, and version. The
+adapter targets **mdBook 0.5.4** and its HTML renderer. `anchorbook contract`
+prints the AI Working Contract, whose source is the section files in `contract/`;
+see `contract/README.md`. Materialization remains future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
 dependencies, after mdBook's include/link processing and before Mermaid. A first

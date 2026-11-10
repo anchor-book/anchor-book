@@ -162,7 +162,7 @@ every boundary is not an automatic obligation.
 | --- | --- |
 | Project | Declare each criterion's claim and scope; write specifications, proofs, and tests beside the production code and link them; choose and install its Verus, `vstd`, verification toolchain, and verified targets; review specifications and record the reviews. |
 | Verus | Verify the selected code against its contracts under the recorded assumptions. |
-| Anchor Book | Define the criterion schema; resolve links; run the project's tests and Verus; interpret their reports; run the guards; compute fingerprints and read assessment records; report evidence states and their limits; give agents a brief of each criterion and the contract's [proof workflow](../ai-working-contract.md#develop-a-required-proof). |
+| Anchor Book | Define the criterion schema; resolve links; run the project's tests and Verus; interpret their reports; run the guards; compute fingerprints and read assessment records; report evidence states and their limits; give agents a brief of each criterion and the contract's proof workflow (`anchorbook contract`, “Develop a required proof”). |
 | Reviewer | Assess whether the specification expresses the criterion, whether production callers meet its preconditions, whether the verified functions are the ones the system runs, and whether exclusions are covered. |
 
 Anchor Book needs no `vstd` and no verifier of its own for this: it runs the

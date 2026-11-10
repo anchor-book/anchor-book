@@ -195,7 +195,7 @@ Passing remote proof and integration are recorded; failure/correction demonstrat
 
 **Identifier:** `formal-verification-3`
 
-**Design basis:** [Criterion methods](../design/anchor-definitions.md#verification-methods), [record presentation](../design/record-rendering.md#reader-presentation), and [agent verification guidance](../ai-working-contract.md#develop-verification-with-the-code).
+**Design basis:** [Criterion methods](../design/anchor-definitions.md#verification-methods), [record presentation](../design/record-rendering.md#reader-presentation), and agent verification guidance (`anchorbook contract`, “Develop verification with the code”).
 
 **Dependencies:** The existing record parser and renderer. This scoped schema change is assigned before the proof milestones; it does not assign the Verus refactor or settle its prerequisites.
 

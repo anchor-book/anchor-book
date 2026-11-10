@@ -9,7 +9,7 @@ and add it here when agreed. Prefer plain words to abbreviations and tool jargon
 
 | Term | Meaning |
 | --- | --- |
-| Goal system | The system the engineer and agents are building, as the Book describes it; see the [AI Working Contract](ai-working-contract.md). |
+| Goal system | The system the engineer and agents are building, as the Book describes it; see the AI Working Contract (`anchorbook contract`). |
 | Design | The Book's description of the goal system as a whole; see [Design](design/index.md). |
 | Anchor | A named property that must hold in the built system, grounded in authority and with verification criteria; see [Anchor Definitions](design/anchor-definitions.md). |
 | Property | The statement of what an anchor guarantees, with its scope and limits; see [anchor fields](design/anchor-definitions.md#anchor-fields). |

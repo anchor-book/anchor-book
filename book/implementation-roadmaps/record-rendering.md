@@ -289,7 +289,7 @@ Pending an in-browser check of collapsing, keyboard access, and printing.
 ## Handoff and later work
 
 Reconcile prototype findings with design and records under the
-[working contract](../ai-working-contract.md). Happy-path rendering alone does
+working contract (`anchorbook contract`). Happy-path rendering alone does
 not complete a milestone.
 
 [Structural Checking](structural-checker.md) extends this crate with configuration

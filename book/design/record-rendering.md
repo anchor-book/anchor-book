@@ -304,5 +304,5 @@ runs the structural checker on the configuration named by
 `[preprocessor.anchorbook] config` and stops on a failed or incomplete report.
 The adapter module itself still reads no files and handles only supplied chapter
 records; the command runs the check.
-Materialization, contract generation, cross-Book authorities, and evidence
+Materialization, cross-Book authorities, and evidence
 aggregation remain future work.

@@ -12,7 +12,7 @@ the merge. Tool setup alone does not establish that the engine's tests are adequ
 Merge protection is completed together with the
 [Formal Verification roadmap](formal-verification.md#formal-verification-2); until it
 is enforced, review existing CI results before merging. This roadmap applies the
-[testing and correction policy](../ai-working-contract.md#test-before-opening-a-pull-request)
+testing and correction policy (`anchorbook contract`, “Test before opening a pull request”)
 to the existing Rust crate. Project choices and commands are documented in
 `CONTRIBUTING.md` at the repository root and the [Rust Engine design](../design/rust-engine.md#mutation-testing).
 Mutation outcomes assess tests, not design acceptance or anchor verification.

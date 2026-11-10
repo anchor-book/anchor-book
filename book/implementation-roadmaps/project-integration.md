@@ -38,7 +38,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
 
-**Status:** In progress — mdBook location implemented; contract, installed engine, and mdBook versions remain
+**Status:** In progress — mdBook location and contract command implemented; installed engine and mdBook versions remain
 
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
@@ -49,7 +49,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 **Tasks**
 
 - [x] **Configuration:** Implement `[book].mdbook`, resolving mdBook's source and output relative to that file, and migrate this repository's configuration to name its `book.toml`.
-- [ ] **Contract:** Move the maintained contract source into the engine, add `anchorbook contract`, switch this repository's `AGENTS.md` to retrieve it, and remove the temporary Book copy and its navigation entry, as [contract delivery](../design/system-overview.md#contract-delivery) describes.
+- [x] **Contract:** Move the maintained contract source into the engine, add `anchorbook contract`, switch this repository's `AGENTS.md` to retrieve it, and remove the temporary Book copy and its navigation entry, as [contract delivery](../design/system-overview.md#contract-delivery) describes.
 - [ ] **Running the engine:** Choose and document how a project installs a pinned engine revision before crate release, and exercise that path in this repository's CI against this Book.
 - [ ] **Entry points:** Test that the library, the CLI, and the `anchorbook md` preprocessor report equivalent results for the same fixtures.
 - [ ] **mdBook versions:** Decide which mdBook versions the preprocessor supports, including the version Symposium uses or a documented pin, and test each against this Book.
@@ -68,7 +68,7 @@ The loader accepts a configured `book.toml`, including one in a subdirectory, an
 `anchorbook contract` prints the contract packaged with the running engine without reading project files; this repository's agents start from it, and a fresh session in this repository reads it, the project guidance, and the Book. No copy of the contract remains in the Book.
 
 - **Anchor coverage:** [project-agent-bootstrap](../design/project-integration.md#project-agent-bootstrap) · `contract-retrieval` — Full; `fresh-session` — Partial: this repository.
-- **Evidence:** Pending.
+- **Evidence:** `contract-retrieval` passed locally on Rust 1.88.0 and stable 1.99.1, branch `project-integration`. The contract's source is eight section files in `contract/`, joined at compile time by `src/contract.rs`; the joined text is byte-identical to the former Book chapter. `tests/contract.rs` runs the actual CLI in an empty directory and in one with a malformed `anchorbook.toml` and its own `AGENTS.md`: both print the same text, equal to the library's, with no stderr; the project's instructions do not appear. It also rejects extra arguments with exit 2, checks every section file is joined exactly once in order, and resolves every link within the contract. The Book no longer contains the chapter or its navigation entry; its references name the contract's sections and the command. `AGENTS.md` retrieves the contract with `cargo run --quiet --locked --bin anchorbook -- contract`. `fresh-session`: Pending; no fresh session has started from the new bootstrap yet.
 
 #### Installed engine {#project-integration-1-installed-engine}
 

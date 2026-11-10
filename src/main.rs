@@ -12,6 +12,21 @@ fn main() -> ExitCode {
     if args.first().is_some_and(|a| a == "md") {
         return md(&args[1..]);
     }
+    if args.first().is_some_and(|a| a == "contract") {
+        if args.len() != 1 {
+            let _ = writeln!(io::stderr().lock(), "Usage: anchorbook contract");
+            return ExitCode::from(2);
+        }
+        return if io::stdout()
+            .lock()
+            .write_all(anchor_book::contract::text().as_bytes())
+            .is_ok()
+        {
+            ExitCode::SUCCESS
+        } else {
+            ExitCode::FAILURE
+        };
+    }
     if args.len() == 1 && (args[0] == "--version" || args[0] == "-V") {
         return if writeln!(
             io::stdout().lock(),
@@ -25,7 +40,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\nMaterialization and contract generation are not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | contract | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the AI Working Contract packaged with this engine version.\nMaterialization is not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS

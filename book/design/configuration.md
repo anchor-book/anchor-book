@@ -108,7 +108,7 @@ does not establish semantic validity of requirements, decisions, or anchors.
 ## Project phase
 
 `[project].phase` selects the working expectations described in the
-[AI Working Contract](../ai-working-contract.md#work-in-the-projects-phase).
+AI Working Contract (`anchorbook contract`, “Work in the project's phase”).
 It belongs in `anchorbook.toml`, alongside the project's Book configuration;
 mdBook's `book.toml` only configures rendering.
 
@@ -133,7 +133,7 @@ or verification. Automated enforcement of design readiness and completion is
 later work. The phase value expresses the chosen workflow; it is not evidence.
 
 Phase transitions follow the
-[AI Working Contract](../ai-working-contract.md#work-in-the-projects-phase); their
+AI Working Contract (`anchorbook contract`, “Work in the project's phase”); their
 scope and basis are recorded in the roadmap. Later development can begin a new iteration while preserving the prior
 completed baseline. A scoped experiment alongside accepted work is described in
 its roadmap and assignment; no per-capability override syntax is introduced here.
