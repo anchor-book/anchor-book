@@ -225,8 +225,10 @@ exactly one result for the selected target and features. Equal names in differen
 modules or packages never select an arbitrary result; unsupported,
 macro-generated, or ambiguous identities are reported rather than guessed. The
 first implementation supports simple module functions and declares its limits
-before extending to other forms. Recognizing modes requires parsing inside
-`verus!` bodies, which ordinary Rust parsers such as `syn` leave as macro tokens.
+before extending to other forms. Verus code takes two forms: functions inside
+`verus!` blocks, which ordinary Rust parsers such as `syn` leave as macro tokens,
+and ordinary Rust functions carrying Verus attributes such as `#[verus_spec(...)]`,
+possibly under `cfg_attr`. Recognizing modes requires reading both.
 The parser and its dependencies are selected and reviewed under the
 [Rust dependency conventions](rust-engine.md#rust-development-conventions) and
 the [proof-isolation goal](verified-code-packaging.md#proof-packaging-for-consumers).
@@ -357,8 +359,9 @@ specification assessment is classified as equivalent. Changes are identified by
 function, location, and original and replacement text, so a listing that no
 longer matches classifies nothing. Changes that do not build are unviable;
 timeouts are inconclusive. The number of changes and the time budget are reported.
-Ordinary mutation tools find no mutations inside `verus!` bodies, so the runner
-generates these changes with the same parser that reads links and modes.
+Ordinary mutation tools find no mutations inside `verus!` bodies and judge changes
+only by tests, so the runner generates these changes with the same parser that
+reads links and modes.
 
 **Witnesses.** Each linked function with preconditions needs a linked witness
 that verified in the same complete result. The report lists functions without

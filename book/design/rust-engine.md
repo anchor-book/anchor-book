@@ -157,10 +157,11 @@ authority justifies a property or that a person approved a status; review does.
 **Where the detail lives.** The module documentation of `src/records/authority.rs`
 explains its call path, candidate model, and specification predicates. The root
 `CONTRIBUTING.md` documents the pinned Verus release, the native command, the CI
-job and its report check, and the mutation-coverage gap. The
+job and its report check, and the mutation exclusions. The
 [Formal Verification roadmap](../implementation-roadmaps/formal-verification.md)
-records results and remaining review. The engine's `vstd` dependency is the first
-case for [Shipping Verified Code](verified-code-packaging.md). Reading, checking,
+records results and remaining review. The engine is the first case for
+[Shipping Verified Code](verified-code-packaging.md): its validator uses Verus's
+attribute syntax, so only the `verus` feature brings in `vstd`. Reading, checking,
 and rendering a Book never run the verifier.
 
 ## Package and adapters
@@ -316,7 +317,7 @@ the Rust versions used for those revisions.
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 | `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
-| `vstd` =0.0.0-2026-10-18-0147 | Verus specifications and proof annotations for production authority validation; proof code is erased in normal builds. Currently a normal dependency; the [isolation decision](../authority/decisions.md#decision-isolate-engine-verification) removes it from what consuming projects build |
+| `vstd` =0.0.0-2026-10-18-0147, optional | Verus specifications for production authority validation, enabled only by the `verus` feature that `cargo verus verify` uses; ordinary builds and consuming projects do not build it, as the [isolation decision](../authority/decisions.md#decision-isolate-engine-verification) requires |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects
@@ -405,7 +406,7 @@ Use cargo-mutants as a development tool, separate from engine dependencies and
 Book builds. It runs the independent tests against temporary source mutations;
 current-Book acceptance remains a separate check. The pinned tool and commands
 are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
-Three reviewed equivalent mutations have exact exclusions; no engine files are excluded.
+Three reviewed equivalent mutations and five loop-counter mutations that verification rejects have exact exclusions; no engine files are excluded.
 
 Agents run tests locally, investigate findings against the goal design, correct
 test gaps or implementation defects, and repeat verification. GitHub repeats the

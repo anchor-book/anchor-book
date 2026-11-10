@@ -15,4 +15,13 @@ exclude_re = [
     '^src/records/markdown\.rs:24:9: replace \| with \^ in read$',
     '^src/records/markdown\.rs:25:9: replace \| with \^ in read$',
     '^src/records/markdown\.rs:26:9: replace \| with \^ in read$',
+    # Loop counters in the verified authority functions: `+= 1` to `*= 1` leaves the
+    # index at 0, so the loop never ends and tests can only time out. Termination is
+    # proved instead: each loop's `decreases` clause rejects these changes under
+    # `cargo verus verify --features verus`. Re-review when these loops change.
+    '^src/records/authority\.rs:279:25: replace \+= with \*= in lookup$',
+    '^src/records/authority\.rs:305:25: replace \+= with \*= in has_unknown_identity$',
+    '^src/records/authority\.rs:344:33: replace \+= with \*= in validate_reference$',
+    '^src/records/authority\.rs:436:33: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:439:22: replace \+= with \*= in validate_authorities$',
 ]
