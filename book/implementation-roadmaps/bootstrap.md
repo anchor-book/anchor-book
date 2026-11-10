@@ -14,7 +14,7 @@ and acceptance of the checker's anchors, requirements, and decisions.
 
 Retrieving the contract through `anchorbook contract` belongs to
 [Project Integration milestone 1](project-integration.md#project-integration-1).
-The [AI Working Contract](../ai-working-contract.md) defines how agents work.
+The AI Working Contract (`anchorbook contract`) defines how agents work.
 
 ## Milestone 1. The checker's governing records are reviewed and accepted {#engine-bootstrap-1}
 

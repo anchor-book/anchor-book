@@ -67,15 +67,25 @@ or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
 The binary supports `anchorbook check --config PATH`, `anchorbook md`,
-`anchorbook md supports html`, help, and version. The adapter targets **mdBook
-0.5.4** and its HTML renderer. Materialization and contract generation remain
-future work.
+`anchorbook md supports html`, `anchorbook contract`, help, and version. The
+adapter targets **mdBook 0.5.4** and its HTML renderer. `anchorbook contract`
+prints the AI Working Contract, whose source is the section files in `contract/`;
+see `contract/README.md`. Materialization remains future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
 dependencies, after mdBook's include/link processing and before Mermaid. A first
 build may need to download Cargo dependencies. The preprocessor reads the Book
 for its structural check but does not fetch anything or write source files. Source edits rebuild through `mdbook serve`;
 after Rust or theme changes, rebuild or restart the preview if needed.
+
+The Book workflow's **Installed engine** job checks the path other projects use. It
+installs the revision under test with
+`cargo install --git <repository> --rev <commit> --locked anchor-book`, requires its
+`anchorbook check` output, exit status, and `anchorbook contract` output to match
+the in-repository build, and renders the Book with
+`MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND="anchorbook md"` before rendered-Book
+acceptance. Reproduce it locally by installing from `file://` and this checkout's
+`HEAD`.
 
 After `mdbook build`, check the rendered record inventory, fields, and links,
 including the combined print view:

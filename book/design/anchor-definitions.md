@@ -306,7 +306,7 @@ State the behavior, relevant conditions, and required outcome precisely in the
 property; define terms in the surrounding design. Criteria state what evidence
 must establish. Keep implementation steps, tool commands, and proof mechanics in
 their owning design and roadmap. The working contract defines the agent's
-[verification responsibilities](../ai-working-contract.md#develop-verification-with-the-code).
+verification responsibilities (`anchorbook contract`, “Develop verification with the code”).
 
 Formal specifications, production code, and supporting proofs live together in
 the implementing codebase, associated with criteria through

@@ -5,7 +5,7 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 static NEXT: AtomicUsize = AtomicUsize::new(0);
-pub const CONFIG: &str = "schema-version = 1\n[project]\nphase = \"prototyping\"\n[book]\nsource = \"docs\"\noutput = \"generated/site\"\n[book.sections]\ndesign = \"design.md\"\nauthority = \"authority.md\"\nimplementation-roadmaps = \"roadmap.md\"\n";
+pub const CONFIG: &str = "schema-version = 1\n[project]\nphase = \"prototyping\"\n[book]\nsource = \"docs\"\noutput = \"generated/site\"\nmdbook = \"book.toml\"\n[book.sections]\ndesign = \"design.md\"\nauthority = \"authority.md\"\nimplementation-roadmaps = \"roadmap.md\"\n";
 pub const SUMMARY: &str =
     "# Summary\n\n- [Design](design.md)\n- [Authority](authority.md)\n- [Work](roadmap.md)\n";
 pub const RENDERER: &str =

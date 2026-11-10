@@ -8,7 +8,7 @@ trap 'rm -rf "$experiment_dir"' EXIT
 fixture_dir="$experiment_dir/project"
 mkdir -p "$fixture_dir"
 cp "$project_dir/Cargo.toml" "$project_dir/Cargo.lock" "$fixture_dir/"
-cp -R "$project_dir/src" "$project_dir/tests" "$fixture_dir/"
+cp -R "$project_dir/src" "$project_dir/contract" "$project_dir/tests" "$fixture_dir/"
 # Keep compilation artifacts outside the disposable source and its Book.
 export CARGO_TARGET_DIR="$project_dir/target/independence"
 export CARGO_NET_OFFLINE=true

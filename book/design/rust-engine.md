@@ -215,6 +215,7 @@ src/
   configuration/          Private schema, path resolution, and errors
   checking.rs             Read-only check operation and public report API
   checking/               Private observations, navigation, rules, and report model
+  contract.rs             AI Working Contract joined from the section files in contract/
   adapters/check.rs       Plain-text report formatting without process I/O
   adapters.rs             External protocol interfaces
   adapters/mdbook.rs       JSON input, validation, and Book transformation
@@ -230,7 +231,7 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `verification`, `materialization`, and `contract` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
+The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `verification` and `materialization` as they are implemented. Do not create empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -324,7 +325,7 @@ only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects
 other versions explicitly. The checker uses the standalone summary/core crates,
 without the mdBook driver, renderer, or server. Rendered Book output remains
 unnecessary for engine compilation and independent tests. The CLI handles `check`,
-`md`, renderer capability probes,
+`md`, renderer capability probes, `contract`,
 help, and version with a small explicit argument dispatch. Argument-parsing
 dependencies can be reconsidered as more commands are implemented.
 

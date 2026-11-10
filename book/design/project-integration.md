@@ -250,6 +250,18 @@ wrapper around it. A project runs the engine in either of two ways:
 | A small binary in the project's workspace that calls the library entry point, with a Cargo alias | The project's `Cargo.lock`, shared with its tests | Workspaces that already run internal tools through Cargo |
 | An installed `anchorbook` binary | The version installed by the project's setup and CI | Projects that prefer not to add a workspace member |
 
+Until the crate is published, a project installs a pinned engine revision from
+the repository, with the engine's own lock file:
+
+```sh
+cargo install --git https://github.com/anchor-book/anchor-book --rev <commit> --locked anchor-book
+```
+
+Its `book.toml` then runs the installed binary as the preprocessor command,
+`anchorbook md`. This Book keeps its `cargo run` command so engine and Book changes
+land together, and its CI installs the revision under test this way and requires
+the same check findings, contract, and rendered Book as the in-repository build.
+
 The project declares one exact engine version in `anchorbook.toml`. Every entry
 point compares its own version with that declaration and stops before evaluating
 when they differ, so a stale installation cannot silently check or render with
@@ -291,7 +303,13 @@ dependencies are constraints on that build:
   toolchain.
 - **mdBook.** The preprocessor supports a declared set of mdBook versions and
   rejects others with a diagnostic naming them, so a project can upgrade mdBook
-  deliberately.
+  deliberately. The set is currently 0.5.4, the newest release, because the
+  checker's navigation parser and configuration defaults come from that version's
+  crates; a project pins its mdBook to a declared version. Accepting newer 0.5.x
+  releases could be justified later by a scheduled job that renders this Book with
+  the newest mdBook and a warning when the running version is newer than the
+  tested one; without them, a changed parser would silently diverge from the
+  checker.
 - **Layout and commands.** No fixed directory names, wrapper scripts, or
   replacement commands.
 

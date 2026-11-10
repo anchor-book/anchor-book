@@ -304,7 +304,7 @@ Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evid
 
 **Dependencies:** Structural Checking — Milestone 2.
 
-**Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md), and the contract's [structural check guidance](../ai-working-contract.md#check-the-books-structure)
+**Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md), and the contract's structural check guidance (`anchorbook contract`, “Check the Book's structure”)
 
 **Identifier:** `structural-checking-4`
 
@@ -361,11 +361,12 @@ Use disposable copies for deliberate failures and public-safe reusable fixtures.
 Exercise the actual Book as each capability becomes usable; Structural Checking — Milestone 3 is not the first
 self-use experiment. Do not add success-returning placeholder commands.
 
-Follow the [working contract](../ai-working-contract.md) for progress, evidence,
+Follow the working contract (`anchorbook contract`) for progress, evidence,
 and design-to-roadmap updates.
 
 This roadmap is complete when all four milestones are complete: the current
 Book and independent fixtures validate the checker, CI exercises it, and recorded
 agent runs demonstrate the check, repair, and recheck loop. A successful structural
 check does not establish full anchor verification or completion of other roadmaps.
-Materialization and contract generation remain separate later work.
+Materialization remains separate later work, and contract delivery belongs to
+[Project Integration](project-integration.md#project-integration-1).

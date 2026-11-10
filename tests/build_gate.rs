@@ -109,3 +109,71 @@ fn failed_or_incomplete_checks_prevent_rendering() {
         assert_eq!(book.snapshot(), before, "{label}: files changed");
     }
 }
+
+// anchorbook: check-shared-typed-results#equivalent-callers
+#[test]
+fn library_cli_and_preprocessor_report_the_same_check() {
+    use anchor_book::{
+        adapters::check::format_report,
+        checking::{Outcome, check},
+    };
+    let summary = fixture::SUMMARY;
+    for (label, navigation, expected) in [
+        ("passing", summary.to_owned(), Outcome::Passed),
+        (
+            "failing",
+            format!("{summary}- [Missing](missing.md)\n"),
+            Outcome::Failed,
+        ),
+        (
+            "incomplete",
+            format!("{summary}\nUnsupported prose outside navigation.\n"),
+            Outcome::Incomplete,
+        ),
+    ] {
+        let book = fixture::Book::new();
+        book.write("docs/SUMMARY.md", &navigation);
+        let report = check(&book.config()).unwrap_or_else(|error| error.into_report());
+        assert_eq!(report.outcome(), expected, "{label}");
+        let text = format_report(&report);
+        let cli = Command::new(env!("CARGO_BIN_EXE_anchorbook"))
+            .args(["check", "--config"])
+            .arg(book.config())
+            .output()
+            .unwrap();
+        let preprocessor = preprocess(&book, "anchorbook.toml");
+        let status = i32::from(expected.exit_code());
+        assert_eq!(cli.status.code(), Some(status), "{label}: CLI status");
+        assert_eq!(
+            preprocessor.status.code(),
+            Some(status),
+            "{label}: preprocessor status"
+        );
+        let cli_report = if expected == Outcome::Incomplete {
+            &cli.stderr
+        } else {
+            &cli.stdout
+        };
+        assert_eq!(
+            String::from_utf8_lossy(cli_report),
+            text,
+            "{label}: CLI report"
+        );
+        if expected == Outcome::Passed {
+            // A passing check lets the preprocessor render; it reports nothing.
+            assert!(preprocessor.stderr.is_empty(), "{label}");
+            assert!(
+                serde_json::from_slice::<Value>(&preprocessor.stdout).is_ok(),
+                "{label}"
+            );
+        } else {
+            // A failing or incomplete check stops rendering with the same report.
+            assert!(preprocessor.stdout.is_empty(), "{label}");
+            assert_eq!(
+                String::from_utf8_lossy(&preprocessor.stderr),
+                text,
+                "{label}: preprocessor report"
+            );
+        }
+    }
+}

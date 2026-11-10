@@ -2,9 +2,9 @@
 
 **Status: draft for review.** This describes the intended system. The repository
 currently has a shared Rust record library, a configuration loader, and an mdBook
-adapter that renders anchors and authorities. Structural checking now reports
-format defects through the library and CLI; managed writes, contract delivery,
-and evidence aggregation remain later work.
+adapter that renders anchors and authorities. Structural checking reports format
+defects through the library and CLI, and `anchorbook contract` delivers the AI
+Working Contract; managed writes and evidence aggregation remain later work.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
@@ -134,14 +134,14 @@ project context.
 The contract currently includes Rust guidance. Language-specific instruction
 extensions may be designed later; there is no extension mechanism yet.
 
-During bootstrap, the [contract source](../ai-working-contract.md) is maintained
-in this Book, with local context in [Working on Anchor Book](../working-on-anchor-book.md).
-Once command delivery works, move the maintained source into the engine and update
-agent startup to retrieve it. Remove the temporary Book copy and its navigation
-entry in the same transition. Maintain one contract source, without injecting
-project-specific content into it or checking in generated contract artifacts.
-An agent integration must retrieve and read the contract; generation alone does
-not place it in the agent's working context.
+`anchorbook contract` prints the contract packaged with the running engine. It
+reads no project files, so its output is the same for every project using that
+engine version. The engine keeps one contract source, maintained as section files
+joined at compile time, without project-specific content or checked-in generated
+copies; the Book refers to its sections by name. An agent integration must
+retrieve and read the contract; packaging it alone does not place it in the
+agent's working context. This repository's own startup and source location are in
+[Working on Anchor Book](../working-on-anchor-book.md#contract-source).
 
 ## Tooling boundaries
 

@@ -3,7 +3,7 @@
 Implementation roadmaps turn a sufficiently clear design into the work that
 reaches it: the outcomes to build, how the work is divided, dependencies, and how
 completion will be demonstrated. The
-[AI Working Contract](../ai-working-contract.md#work-with-the-engineer) defines
+AI Working Contract (`anchorbook contract`, “Work with the engineer”) defines
 how agents propose roadmaps and when work may begin.
 
 The relevant design must be clear enough to define the work and its completion
@@ -165,7 +165,7 @@ or need other evidence, so milestone completion does not automatically verify th
 Reconcile roadmaps in the same change as design. Review outcomes, dependencies,
 tasks, criteria, anchor references, and evidence; add work or an explicit deferral.
 Prior evidence stays tied to its tested
-revision. Follow the [AI Working Contract](../ai-working-contract.md#keep-roadmaps-aligned-with-the-goal-design)
+revision. Follow the AI Working Contract (`anchorbook contract`, “Keep roadmaps aligned with the goal design”)
 for phase-specific responsibilities.
 
 ## Current roadmaps
@@ -193,10 +193,10 @@ clear design and outcome-based milestones before implementation.
 
 | Capability | Design basis | Work to define before implementation |
 | --- | --- | --- |
-| Broader pull-request testing readiness | [Testing policy](../ai-working-contract.md#test-before-opening-a-pull-request) | The active [Mutation Testing roadmap](mutation-testing.md) owns mutation tooling, correction, and merge checks. Before adopting Building, review the combined unit, integration, acceptance, and mutation workflow and any remaining contribution-policy gaps. |
+| Broader pull-request testing readiness | Testing policy (`anchorbook contract`, “Test before opening a pull request”) | The active [Mutation Testing roadmap](mutation-testing.md) owns mutation tooling, correction, and merge checks. Before adopting Building, review the combined unit, integration, acceptance, and mutation workflow and any remaining contribution-policy gaps. |
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
-| Deliver the working contract | [Contract delivery](../design/system-overview.md#contract-delivery) | Engine-owned reusable content, command retrieval, and agent bootstrap that separately locates project guidance and configuration. Remove the temporary Book copy when that path works; keep project-specific content in the Book. Language-specific instruction extensions remain a possible later addition requiring their own design. |
+| Language-specific contract extensions | [Contract delivery](../design/system-overview.md#contract-delivery) | `anchorbook contract` delivers the engine-owned contract through [Project Integration milestone 1](project-integration.md#project-integration-1). Its Rust guidance is built in; extensions for other languages need their own design. |
 | Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are implemented in [Record Rendering milestone 4](record-rendering.md#record-rendering-4), pending presentation review; references between roadmaps beyond fragments remain later work. |
 | Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
 | Anchor progress views | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Provided test surfaces and progress views combining anchor development, `verify` results, and roadmap completion. The [Verification Evidence roadmap](verification-evidence.md) builds evidence evaluation itself; keep verification independent of its consuming Book build. |

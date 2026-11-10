@@ -1,7 +1,8 @@
 # Working on Anchor Book
 
 This chapter provides the project-specific context for developing the Anchor Book
-engine with its own Book. Read it after the [AI Working Contract](ai-working-contract.md).
+engine with its own Book. Read it after the AI Working Contract, which `AGENTS.md`
+directs agents to retrieve with `anchorbook contract`.
 The contract defines the reusable working method; this chapter identifies the
 current state and resources for applying it in this repository.
 
@@ -18,14 +19,14 @@ Use these definitions and conventions while authoring this Book:
   decisions, and authority-reference rules.
 - The [Glossary](glossary.md) lists the Book's terms. Use them in text and
   identifiers; propose a new term to the engineer before introducing it.
+- [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
+  structure, identifiers, planned coverage, statuses, and evidence records.
 
 The engine still reads the earlier TOML record form, so write this Book's records
 in that form, following the existing records, until the
 [Record Line Grammar](implementation-roadmaps/record-line-grammar.md) migration;
 [Current implementation](design/anchor-definitions.md#current-implementation)
 summarizes it.
-- [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
-  structure, identifiers, planned coverage, statuses, and evidence records.
 
 The record syntax and fields are unpublished drafts that we are refining through use.
 Follow their documented evolution policy and update the syntax, affected records,
@@ -44,8 +45,8 @@ design acceptance, implementation progress, or completion.
 The record library, configuration loader, structural checker, and `anchorbook md`
 preprocessor are implemented. Run `anchorbook check --config anchorbook.toml` to
 inspect this Book's format; the checker reports findings without repairing files.
-The binary also supports `anchorbook md supports html`, help, and version.
-Materialization and contract generation remain planned. Loading configuration
+The binary also supports `anchorbook md supports html`, `anchorbook contract`,
+help, and version. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
@@ -89,12 +90,13 @@ permission. Review the exact files and changes, relevant generated output, and
 Git author metadata before committing or publishing. Leave material with uncertain
 publication permission outside the repository.
 
-## Contract during bootstrap
+## Contract source
 
-The contract is temporarily maintained in `book/ai-working-contract.md` for review.
-Even in this temporary location, it contains only reusable guidance. Keep project
-state and instructions in normal Book chapters such as this one.
-
-The [contract delivery design](design/system-overview.md#contract-delivery) describes
-moving the maintained source into the engine and retrieving it through a command.
-That command is not implemented yet; agents read the current file directly.
+The engine owns the contract, as the [contract delivery design](design/system-overview.md#contract-delivery)
+describes. Its source is the section files in `contract/` at the repository root,
+joined in the order listed in `src/contract.rs`; `anchorbook contract` prints the
+result, and `tests/contract.rs` checks that every section file is joined once.
+Edit the contract there, keeping it to reusable guidance; project state and
+instructions belong in Book chapters such as this one. The contract is not a Book
+chapter, so the Book refers to its sections by name. In this repository, agents
+run the command through `cargo run` so they read the contract of the checkout.

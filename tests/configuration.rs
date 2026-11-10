@@ -118,6 +118,11 @@ fn invalid_paths_are_located_and_corrections_resolve() {
             "\"overview.md\"",
             vec!["", "../outside", "/absolute"],
         ),
+        (
+            "book.mdbook",
+            "\"book.toml\"",
+            vec!["", " ", "../book.toml", "/absolute/book.toml"],
+        ),
     ] {
         for value in values {
             let source = INPUT.replace(original, &format!("\"{value}\""));
@@ -359,4 +364,17 @@ fn inaccessible_descendants_are_errors_not_missing_paths() {
             std::io::ErrorKind::PermissionDenied
         );
     }
+}
+
+#[test]
+fn mdbook_configuration_location_is_required_and_resolved_from_the_configuration() {
+    let f = Fixture::new();
+    let path = f.config(&INPUT.replace("mdbook = \"book.toml\"\n", ""));
+    let error = load(&path).unwrap_err();
+    assert_eq!(error.kind(), ErrorKind::InvalidValue);
+    assert!(error.to_string().contains("mdbook"), "{error}");
+    let path = f.config(&INPUT.replace("\"book.toml\"", "\"design-book/book.toml\""));
+    let config = load(&path).unwrap();
+    assert_eq!(config.mdbook(), f.0.join("design-book/book.toml"));
+    assert!(!f.0.join("design-book").exists(), "loading creates nothing");
 }

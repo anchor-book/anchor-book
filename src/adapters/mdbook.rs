@@ -137,12 +137,21 @@ pub fn configuration_path(request: &str) -> Result<PathBuf, PreprocessError> {
         })?;
     Ok(Path::new(root).join(config))
 }
+/// mdBook versions whose preprocessor protocol, navigation parsing, and
+/// configuration defaults this engine is tested against. Others are rejected.
+pub const SUPPORTED_MDBOOK_VERSIONS: &[&str] = &["0.5.4"];
+
 fn supported(context: &Value) -> Result<(), PreprocessError> {
     if context.get("renderer").and_then(Value::as_str) != Some("html") {
         return Err(input("only the HTML renderer is supported"));
     }
-    if context.get("mdbook_version").and_then(Value::as_str) != Some("0.5.4") {
-        return Err(input("this prototype requires mdBook 0.5.4"));
+    let version = context.get("mdbook_version").and_then(Value::as_str);
+    if !version.is_some_and(|v| SUPPORTED_MDBOOK_VERSIONS.contains(&v)) {
+        return Err(input(format!(
+            "mdBook {} is not supported; supported mdBook versions: {}",
+            version.unwrap_or("(unknown)"),
+            SUPPORTED_MDBOOK_VERSIONS.join(", ")
+        )));
     }
     Ok(())
 }

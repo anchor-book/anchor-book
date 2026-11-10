@@ -21,6 +21,7 @@
 pub mod adapters;
 pub mod checking;
 pub mod configuration;
+pub mod contract;
 pub mod records;
 pub mod rendering;
 pub mod roadmaps;
