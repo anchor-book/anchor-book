@@ -191,6 +191,7 @@ fn state(report: &Report, anchor: &str, criterion: &str) -> (State, Vec<State>) 
     )
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     let book = book("");
@@ -305,6 +306,7 @@ fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     );
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     let book = book("");
@@ -324,6 +326,7 @@ fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     assert_eq!(ambiguous, [1, 6]);
 }
 
+/// anchorbook: verify-criterion-states#state-per-method
 #[test]
 fn every_method_state_comes_from_links_and_this_runs_results() {
     let book = book("");
@@ -435,6 +438,7 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
     );
 }
 
+/// anchorbook: verify-criterion-states#scope-and-limits
 #[test]
 fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     let book = book("");
@@ -479,6 +483,8 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     );
 }
 
+/// anchorbook: verify-claims-evidenced#unchecked-claims
+/// anchorbook: verify-claims-evidenced#claim-failures
 #[test]
 fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds() {
     let roadmap = [
@@ -611,6 +617,9 @@ fn cli_with(
     )
 }
 
+/// anchorbook: verify-runs-linked-checks#source-preservation
+/// anchorbook: verify-progress-report#incomplete-runs
+/// anchorbook: verify-progress-report#progress-output
 #[test]
 fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     let book = book(&milestone(1, "Complete", "`a-unlinked` · `none` — Full"));
@@ -681,6 +690,7 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     );
 }
 
+/// anchorbook: verify-progress-report#incomplete-runs
 #[test]
 fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     let book = book("");
@@ -748,6 +758,7 @@ fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     assert!(error.contains("needs a [verification] section"), "{error}");
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn every_supported_target_and_function_form_is_identified() {
     let book = book("");
@@ -856,6 +867,7 @@ fn every_supported_target_and_function_form_is_identified() {
     assert!(plan.tests.iter().any(|f| f.name == "in_main"));
 }
 
+/// anchorbook: verify-claims-evidenced#claim-failures
 #[test]
 fn roadmaps_are_the_role_chapter_and_its_subtree() {
     let book = book("");
@@ -887,6 +899,7 @@ fn roadmaps_are_the_role_chapter_and_its_subtree() {
     assert_eq!(milestones, ["work-7", "work-8"]);
 }
 
+/// anchorbook: verify-progress-report#incomplete-runs
 #[test]
 fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     use std::error::Error;
@@ -914,6 +927,7 @@ fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     assert!(error.source().is_some());
 }
 
+/// anchorbook: verify-criterion-states#state-per-method
 #[test]
 fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     let book = book("");
@@ -994,6 +1008,8 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     );
 }
 
+/// anchorbook: verify-claims-evidenced#unchecked-claims
+/// anchorbook: verify-progress-report#progress-output
 #[test]
 fn the_text_report_counts_states_and_claims() {
     let roadmap = [
@@ -1064,6 +1080,7 @@ fn flags_are_parsed_strictly() {
     assert!(stderr.contains("Usage"));
 }
 
+/// anchorbook: verify-runs-linked-checks#selected-run
 #[test]
 fn input_identities_follow_the_criteria_and_the_checkout() {
     let book = book("");
@@ -1112,6 +1129,7 @@ fn input_identities_follow_the_criteria_and_the_checkout() {
     assert_eq!(whole(&book).inputs.dirty, Some(true));
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn comment_like_text_inside_string_literals_is_not_a_link() {
     let book = book("");
@@ -1208,6 +1226,8 @@ fn recording(book: &fixture::Book, cases: &[(&str, &str, &str)]) -> Recording {
     }
 }
 
+/// anchorbook: verify-runs-linked-checks#source-preservation
+/// anchorbook: verify-runs-linked-checks#selected-run
 #[test]
 fn the_runner_selects_exactly_the_linked_tests_and_reads_only_this_runs_report() {
     let book = book(&milestone(1, "Complete", "`a-tests` · `one` — Full"));
@@ -1284,6 +1304,8 @@ fn the_runner_selects_exactly_the_linked_tests_and_reads_only_this_runs_report()
     assert!(book.path("target/verify/nextest/fixture.log").is_file());
 }
 
+/// anchorbook: verify-runs-linked-checks#selected-run
+/// anchorbook: verify-progress-report#incomplete-runs
 #[test]
 fn stale_reports_changed_inputs_and_failed_builds_are_never_evidence() {
     let book = book("");
@@ -1327,6 +1349,7 @@ fn stale_reports_changed_inputs_and_failed_builds_are_never_evidence() {
     );
 }
 
+/// anchorbook: verify-criterion-states#scope-and-limits
 #[test]
 fn the_runner_runs_only_when_configured_and_needed() {
     let book = book("");
@@ -1355,6 +1378,7 @@ fn the_runner_runs_only_when_configured_and_needed() {
     );
 }
 
+/// anchorbook: verify-runs-linked-checks#selected-run
 /// The build loop against cargo-nextest itself: a passing, a deliberately
 /// failing, and a restored test change the linked criterion's state.
 #[test]
