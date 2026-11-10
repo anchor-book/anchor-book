@@ -110,7 +110,9 @@ Pinned tools reproduce verification without rendering the Book. Ordinary builds,
 - **Boundary.** The seven executable functions above are the ones `read_records` runs: `inventory.rs` passes every parser candidate, and `schema.rs` calls `has_required_authority` while decoding. There is no proof-only copy.
 - **Assumptions.** The file contains no `assume`, `admit`, or trusted body, and `--no-cheating` is enforced. Trusted: the verifier, Z3, the compiler, and `vstd` contracts for string equality through the character-sequence view and for slice and vector indexing.
 - **Scope notes.** Which source kinds may cite which target kinds (decisions cite only requirements; requirements cite nothing) is enforced by decoding, not by the specification; decoding is excluded and tested. A decoded target with invalid relationships of its own is still a suitable target, which does not weaken the result because that target is checked as a source.
-- **Equivalent survivors.** None judged; sensitivity changes are planned in [Verification Evidence milestone 7](verification-evidence.md#verification-evidence-7).
+- **Equivalent survivors.** None judged in this assessment;
+  [Verification Evidence milestone 7](verification-evidence.md#verification-evidence-7-evidence)
+  later judged `H3` equivalent.
 
 **Exclusion coverage:** Each boundary that `formal-authority` excludes is covered by `production-integration` tests:
 

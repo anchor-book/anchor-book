@@ -14,8 +14,7 @@ project relies on it. Verus is optional, so a project can use `verify` for its
 tests alone. Proofs in other projects are later work, exercised with fixture
 projects in milestone 5.
 
-None of this Book's criteria are linked to tests or proofs yet, so `verify` will
-initially report them as unlinked. Linking criteria is part of the work.
+
 
 ## Sequence and scope
 
@@ -27,8 +26,8 @@ projects, is deferred until this Book's runners and guards are complete and
 records, and the agent brief once both runners exist. Milestone 7 is a prototyping
 experiment that tries the proof guards by hand on the engine's authority proof,
 needs none of the tooling, and informs milestones 4 and 6. Existing milestone and
-criterion IDs stay stable. Milestone 7 ran first, as agreed; the other milestones
-remain Proposed until their scope is agreed and assigned.
+criterion IDs stay stable. Milestone 7 ran first, as agreed. Each
+remaining milestone stays Proposed until its scope is agreed and assigned.
 
 Milestone 4 defines the report's identity fields and collects criteria and
 configuration content identities plus Git revision and dirty state when available.
@@ -108,7 +107,7 @@ Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the tes
 
 ### Completion record
 
-Complete on 2026-11-10 on branch `verification`, not yet integrated. `verify` runs linked tests with cargo-nextest and reports their current results, and this Book's whole-Book run passes its test claims; proof and review methods stay unchecked until milestones 2 and 6.
+Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked tests with cargo-nextest and reports their current results, and this Book's whole-Book run passes its test claims; proof and review methods stay unchecked until milestones 2 and 6.
 
 ## Milestone 2. Verify runs and reports proofs {#verification-evidence-2}
 
@@ -266,7 +265,8 @@ Limits: no runner, so native states come in milestones 1 and 2; content identiti
 
 ### Completion record
 
-Complete on 2026-11-10; merged in PR #33 as `efefa3c`, with the scanner correction above on branch `verification`. The shared machinery, link reading, states, claims, and reports work against fixture results and this Book; native test and proof evidence remain in milestones 1 and 2.
+Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correction above in PR #34 as
+`9d5d620`. The shared machinery, link reading, states, claims, and reports work against fixture results and this Book; native test and proof evidence remain in milestones 1 and 2.
 
 ## Milestone 5. Consumers verify their own production code {#verification-evidence-5}
 
