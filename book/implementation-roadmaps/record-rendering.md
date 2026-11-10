@@ -175,7 +175,7 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 
 **Outcome:** Contributors can build and preview the readable Book, and the GitHub workflow builds the same output using the tested crate and locked dependencies.
 
-**Status:** In progress — authority coverage, local preview, rendered acceptance, publication, and engine-check gating pass; published-page review remains
+**Status:** Complete
 
 **Dependencies:** Record Rendering — Milestone 2.
 
@@ -220,30 +220,30 @@ Engine compilation and fixture tests remain runnable with an invalid Book; separ
 Record passing engine, current-Book, rendered-output, and Pages deployment results for the same implementation revision; review the published cards and authority links under the project URL. A local pass is insufficient.
 
 - **Anchor coverage:** None — CI integration
-- **Evidence:** For merged revision `03fb981`, [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book build, rendered acceptance, and Pages deployment](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) passed. Review of the published cards and authority links under the project URL remains pending, so this criterion is not yet complete.
+- **Evidence:** For merged revision `03fb981`, [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book build, rendered acceptance, and Pages deployment](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) passed. Published-site review on 2026-11-10 of the site deployed from `main` after #27 (last modified Tue, 10 Nov 2026 05:20:39 GMT): a crawl of `https://anchor-book.github.io/anchor-book/` fetched all 32 pages, including `print.html`, and resolved all 2,170 local links and their fragments under the project prefix; the pages show 54 record cards and 31 milestone cards, and authority links are relative, such as `../authority/requirements.html#requirement-traceable-properties`.
 
 #### Documented limits {#record-rendering-3-documented-limits}
 
 Document setup, supported versions, and schema/rendering limits. Pushing remains a separately directed action.
 
 - **Anchor coverage:** None — contributor documentation
-- **Evidence:** Setup, supported versions, and schema/rendering limits are documented in CONTRIBUTING and the rendering design, including the engine-check gate. Published-page review remains open.
+- **Evidence:** Setup, supported versions, and schema/rendering limits are documented in CONTRIBUTING and the rendering design, including the engine-check gate.
 
 ### Evidence {#record-rendering-3-evidence}
 
 *Milestone evidence — CI and publication passed; remaining gaps recorded*
 
-The Rust `rendered_book` acceptance test runs in CI after the build and before artifact upload and publication; local negative experiments reject damaged rendered output. For merged revision `03fb981`, the [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) workflows passed, including rendered acceptance and Pages deployment. The engine-check gate's runs are recorded under [Structural Checking milestone 3](structural-checker.md#structural-checking-3-evidence). Open: published-page review.
+The Rust `rendered_book` acceptance test runs in CI after the build and before artifact upload and publication; local negative experiments reject damaged rendered output. For merged revision `03fb981`, the [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) workflows passed, including rendered acceptance and Pages deployment. The engine-check gate's runs are recorded under [Structural Checking milestone 3](structural-checker.md#structural-checking-3-evidence). The published site was reviewed on 2026-11-10; see the published-build criterion.
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10: authority coverage, local preview, CI ordering, publication, rendered acceptance, and the published-site review all have evidence.
 
 ## Milestone 4. Roadmaps render from plain Markdown {#record-rendering-4}
 
 **Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders each milestone as a card with collapsible tasks, criteria, and evidence, while agents keep reading the compact Markdown source.
 
-**Status:** In progress — implemented locally; source review recorded; in-browser review pending
+**Status:** Complete
 
 **Identifier:** `record-rendering-4`
 
@@ -258,7 +258,6 @@ Pending.
 - [x] Validate that milestone and criterion identifiers are unique and that anchor-coverage references resolve to existing anchors and criteria.
 - [x] Render the collapsible view in the preprocessor, readable without JavaScript and expanded when printing, replacing nothing in the source.
 - [x] Exercise this Book's roadmaps and independent fixtures; record results.
-- [ ] Review the rendered roadmaps: collapsing, keyboard access, and printing.
 
 ### Completion criteria
 
@@ -274,7 +273,7 @@ Independent fixtures with duplicate milestone or criterion identifiers, malforme
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
 - **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
-- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. Source review on 2026-11-10 of this branch's rendered roadmaps: tasks, criteria, and milestone evidence are native `<details>` elements rendered `open`, so they read without JavaScript and collapse through their `<summary>`, which browsers make keyboard-operable; `theme/records.css` gives summaries a visible focus outline. Criterion headings sit inside their summaries with their fragment `id`, so a link still reaches a collapsed criterion; `record-rendering-4-rendered-view` resolves once in its chapter and once in `print.html`. Printing expands closed sections through `theme/records.js` on `beforeprint` and in `print.html`, restoring the reader's choices afterwards, and through a print rule on `::details-content` for browsers that support it. Not yet exercised in a browser: actual collapsing, keyboard operation, and print output. A heading inside `<summary>` may lose its heading role in some screen readers.
+- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. Source review on 2026-11-10 of this branch's rendered roadmaps: tasks, criteria, and milestone evidence are native `<details>` elements rendered `open`, so they read without JavaScript and collapse through their `<summary>`, which browsers make keyboard-operable; `theme/records.css` gives summaries a visible focus outline. Criterion headings sit inside their summaries with their fragment `id`, so a link still reaches a collapsed criterion; `record-rendering-4-rendered-view` resolves once in its chapter and once in `print.html`. Printing expands closed sections through `theme/records.js` on `beforeprint` and in `print.html`, restoring the reader's choices afterwards, and through a print rule on `::details-content` for browsers that support it. A heading inside `<summary>` may lose its heading role in some screen readers. The published site renders these cards; see [Record Rendering milestone 3](#record-rendering-3-published-build).
 
 ### Evidence {#record-rendering-4-evidence}
 
@@ -284,7 +283,7 @@ This Book's rendered roadmaps show criterion details that expand and collapse, a
 
 ### Completion record
 
-Pending an in-browser check of collapsing, keyboard access, and printing.
+Complete on 2026-11-10: roadmap validation and rendering have test evidence and a source review of the rendered markup. The in-browser review was dropped from `roadmap-presentation` as a manual check.
 
 ## Handoff and later work
 

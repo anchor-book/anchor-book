@@ -54,7 +54,7 @@ maintainers' decisions.
 
 **Tasks**
 
-- [ ] **Location:** Decide where the Anchor Book and its `book.toml` live beside the user Book, and how Symposium's maintainers review it.
+- [x] **Location:** The Anchor Book lives in `anchor-book/` at Symposium's root, with its own `anchor-book/book.toml`; `anchorbook.toml` stays at the root and names it with `mdbook = "anchor-book/book.toml"`, so the user Book in `md/` and its root `book.toml` are unchanged. Work happens on a branch of the engineer's fork; whether it goes upstream is the maintainers' decision.
 - [ ] **Setup:** Install the pinned engine revision the way Project Integration milestone 1 documents, and configure `anchorbook.toml` and the Anchor Book's `book.toml` with the `anchorbook md` preprocessor and the `mdbook-mermaid` preprocessor Symposium already uses.
 - [ ] **First Book:** Create the configuration, navigation, project guidance chapter, an Authority section with the requirements and decisions the first design area needs, that design area with its anchors, and a roadmap. Choose a small, well-described area, such as configuration loading.
 - [ ] **mdBook version:** Symposium installs the newest mdBook without a pin. Confirm that version is among those the preprocessor supports, or agree on a pin.

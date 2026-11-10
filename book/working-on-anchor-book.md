@@ -69,9 +69,11 @@ rendering; rendered-output acceptance then gates publication.
 The contract's pre-PR testing policy is being developed during prototyping.
 Mutation testing uses pinned cargo-mutants with local commands and a pull-request
 workflow; read `CONTRIBUTING.md` for scope, runtime budgets, results, and the
-agent correction loop. Merge protection is not established until the
-[Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md) demonstrates
-it; adding a workflow alone does not enable that protection.
+agent correction loop. The **Protect main** ruleset requires the engine, Book,
+installed-engine, proof, and mutation checks to pass, for a revision current with
+`main`, before a pull request merges; CONTRIBUTING lists the check names, and the
+[Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md#mutation-testing-2-enforcement-evidence)
+records the demonstration.
 
 The [authority proof](design/rust-engine.md#authority-proof) is a Verus proof of the
 production authority-validation functions, run locally and in a GitHub workflow.
