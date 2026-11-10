@@ -74,15 +74,15 @@ changes require new proof and integration evidence.
 
 The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Full. The claim is limited to the specified authority logic and recorded assumptions.
-- **Evidence:** Passed: local proof, the deliberate-defect failure, the current main proof run, and the specification assessment; see milestone evidence.
+- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Full.
+- **Evidence:** The claim is limited to the specified authority logic and recorded assumptions. Passed: local proof, the deliberate-defect failure, the current main proof run, and the specification assessment; see milestone evidence.
 
 #### Production path {#formal-verification-1-production-path}
 
 Review identifies the same verified functions on the normal read_records call path. Independent fixtures exercise conversion, empty and invalid authority, all resolution/status cases, and rejection through the real adapter. State which boundaries are tested rather than proved.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Full. Behavioral test coverage also contributes to `required-authority`, `resolved-authority`, and `compatible-status`; reconcile with Record Rendering milestone 3.
-- **Evidence:** Passed locally; see milestone evidence.
+- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Full.
+- **Evidence:** Behavioral test coverage also contributes to `required-authority`, `resolved-authority`, and `compatible-status`; reconcile with Record Rendering milestone 3. Passed locally; see milestone evidence.
 
 #### Compatible tooling {#formal-verification-1-tooling}
 

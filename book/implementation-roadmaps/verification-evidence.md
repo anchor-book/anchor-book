@@ -62,7 +62,7 @@ the current inventory and migrate with them when that work is assigned.
 - [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
 - [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
-- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (31 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6.
+- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6.
 
 ### Completion criteria
 
@@ -220,7 +220,7 @@ Pending.
 - [ ] Implement supported source associations and function identities, distinguishing tests, Verus executable/proof functions, and specification context. Report misplaced, duplicate, dangling, mismatched, ambiguous, and unsupported links.
 - [ ] Define target planning, report identity fields, normalized evidence, and per-method/criterion/anchor aggregation behind `verification`. Collect criteria/configuration content identities and Git revision/dirty state when available; code/lockfile collection and execution snapshots belong to milestones 1 and 2.
 - [ ] Expose typed reports and `anchorbook verify --config` scope/report behavior. Use independent fixture results and unavailable-runner cases; no native runner or speculative plugin API is required for this milestone.
-- [ ] Read claims from Complete milestones' Full coverage through the roadmap reader; fail the run for unsatisfied claims in scope and list unchecked ones.
+- [ ] Read coverage levels in the roadmap reader, rejecting a qualified Full entry with a located diagnostic; read claims from Complete milestones' Full coverage; fail the run for unsatisfied claims in scope and list unchecked ones.
 
 ### Completion criteria
 
@@ -249,7 +249,7 @@ Fixture plans identify requested criteria, selected tests/proof targets, exclude
 
 Fixture Books with Complete and other milestones, Full and Partial coverage, and satisfied, unlinked, and failing criteria produce the designed claim failures, exit statuses, and unchecked lists through the library and actual CLI.
 
-- **Anchor coverage:** [verify-claims-evidenced](../design/verification-evidence.md#verify-claims-evidenced) · `claim-failures`, `unchecked-claims` — Full for fixture results; native runs are in milestones 1 and 2.
+- **Anchor coverage:** [verify-claims-evidenced](../design/verification-evidence.md#verify-claims-evidenced) · `claim-failures`, `unchecked-claims` — Partial: fixture results; native runs are in milestones 1 and 2.
 - **Evidence:** Pending.
 
 ### Completion record

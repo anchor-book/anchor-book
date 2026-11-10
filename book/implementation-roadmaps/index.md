@@ -104,11 +104,15 @@ Link to the anchor and name its criterion ID; keep the verification requirement
 in the anchor rather than copying it. One completion criterion may address several
 anchor criteria, and several entries may address the same anchor criterion.
 
-| Planned coverage | Meaning |
-| --- | --- |
-| Full | The work addresses the entire referenced criterion. |
-| Partial | The work addresses a stated portion of the criterion. |
-| None | No anchor applies; give a reason, such as design preparation or contributor setup. |
+| Planned coverage | Meaning | Written |
+| --- | --- | --- |
+| Full | The work addresses the entire referenced criterion, as it currently reads. | `— Full`, with no qualifier; notes go in the evidence |
+| Partial | The work addresses a stated portion of the criterion. | `— Partial: <scope>` |
+| None | No anchor applies; give a reason, such as design preparation or contributor setup. | `None — <reason>` |
+
+A Full entry with a qualifier, such as "Full for the declared versions", is a
+Partial entry; write it as one. When a criterion grows after its milestone is
+Complete, change that milestone's Full entry to Partial with the scope it covered.
 
 Planned coverage is not verification by itself. Once a milestone is Complete,
 its Full entries become [claims](../design/verification-evidence.md#claims-of-completion)
