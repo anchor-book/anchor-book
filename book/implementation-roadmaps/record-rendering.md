@@ -247,7 +247,7 @@ Pending.
 
 **Identifier:** `record-rendering-4`
 
-**Dependencies:** Record Rendering milestone 2 and the converted roadmaps. The engineer agreed the scope, strict validation, and role-based chapter selection on 2026-11-09.
+**Dependencies:** Record Rendering milestone 2 and the converted roadmaps.
 
 **Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering), [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones), and the [roadmap format](index.md#defining-the-work).
 

@@ -22,9 +22,9 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 
 ## Milestone 1. The checker's governing records are reviewed and accepted {#engine-bootstrap-1}
 
-**Outcome:** The engineer has reviewed the checker's anchors and the requirements and decisions they cite, and those records are accepted into the goal design.
+**Outcome:** The checker's anchors and the requirements and decisions they cite are reviewed and accepted into the goal design.
 
-**Status:** Complete — records reviewed and accepted; accepted by the engineer
+**Status:** Complete
 
 **Dependencies:** None. Acceptance is a design judgment; the built checker and its evidence inform the review but do not establish it.
 
@@ -39,26 +39,12 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 - [x] Define a canonical structured format and draft the initial checker anchors, grounding them in authority and linking them to verification criteria and implementation work.
 - [x] Draft outcome-based checker milestones with stable identifiers, dependencies, and completion criteria.
 - [x] Settle the APIs, dependencies, and supported tool versions needed for structural checking; [Structural Checking milestones 1 and 2](structural-checker.md#structural-checking-2) record the choices.
-- [x] Agree on the Structural Checking milestones; the engineer assigned them as scoped prototypes.
-- [x] Review each of the nine checker anchors with the engineer as a guarantee supporting the check, repair, and recheck loop: its property, cited authority, retained constraints, and criteria. Make agreed revisions in the design and reconcile affected roadmaps.
+- [x] Assign the Structural Checking milestones as scoped prototypes.
+- [x] Review each of the nine checker anchors as a guarantee supporting the check, repair, and recheck loop: its property, cited authority, retained constraints, and criteria. Make agreed revisions in the design and reconcile affected roadmaps.
 - [x] Review the six checker requirements and the four decisions the anchors cite for whether they justify the properties: `decision-explicit-configuration`, `decision-mdbook-structure`, `decision-separate-check-and-repair`, and `decision-typed-check-results`.
 - [x] Mark the agreed records `accepted`, each requirement and decision no later than the anchors that cite it, and run the structural check and Book build.
 
 ### Completion criteria
-
-#### Traceable design {#engine-bootstrap-1-traceable-design}
-
-The engineer has reviewed each checker anchor and the requirements and decisions it cites: the authority justifies the property, essential constraints are retained, and the criteria are testable. Revisions agreed in review are made in the design.
-
-- **Anchor coverage:** None — design review
-- **Evidence:** Passed: the engineer reviewed the anchors and their authority on 2026-11-10 and agreed these revisions: `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `check-configuration-validity` also cites `requirement-truthful-results`; `decision-separate-check-and-repair` is retitled; and `requirement-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
-
-#### Agreed scope {#engine-bootstrap-1-agreed-scope}
-
-The engineer agrees on the checker scope and roadmap. Implementation choices are resolved or explicitly deferred outside that scope.
-
-- **Anchor coverage:** None — work agreement
-- **Evidence:** The engineer assigned all four Structural Checking milestones and accepted milestones 1–3 as complete; milestone 4 is recorded complete, pending engineer acceptance. Implementation choices are recorded in those milestones and the checker design. Passed: on 2026-11-10 the engineer confirmed that these assignments and acceptances constitute agreement on the checker scope and roadmap.
 
 #### Accepted records {#engine-bootstrap-1-accepted-records}
 
@@ -73,17 +59,19 @@ The Book contains the checker design, six checker requirements, four governing d
 
 ### Evidence {#engine-bootstrap-1-evidence}
 
-*Milestone evidence — review, acceptance, and scope confirmation recorded*
+*Milestone evidence — review and acceptance recorded*
 
 **Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Not yet integrated into main.
 
+**Review revisions:** `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `check-configuration-validity` also cites `requirement-truthful-results`; `decision-separate-check-and-repair` is retitled; and `requirement-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
+
 **Checks:** The structural check, `mdbook build` with mdBook 0.5.4, current-Book acceptance, and rendered-Book acceptance passed after acceptance.
 
-**Limitations:** Acceptance establishes the goal design only; it does not verify any anchor. The review was conducted by the agent that drafted the revisions, with the engineer deciding each change.
+**Limitations:** Acceptance establishes the goal design only; it does not verify any anchor.
 
 ### Completion record
 
-Complete on 2026-11-10, accepted by the engineer. The checker's governing records are reviewed and accepted, and the engineer confirmed the agreed scope. This completes design acceptance only; it does not verify any anchor.
+Complete on 2026-11-10. The checker's governing records are reviewed and accepted. This completes design acceptance only; it does not verify any anchor.
 
 ## Milestone 2. A fresh agent session can take up an assigned milestone {#engine-bootstrap-2}
 
@@ -150,7 +138,7 @@ Pending. The preparation above does not establish that agents follow the instruc
 
 ## Scope changes and reserved identifiers
 
-The engineer narrowed this roadmap on 2026-11-10 to the review and agent-startup
+This roadmap was narrowed on 2026-11-10 to the review and agent-startup
 work that remained after Structural Checking was built. Milestone 1's completed
 preparation tasks remain as recorded; its outcome now covers only record review
 and acceptance. Milestone 2 applies to any assigned milestone rather than only
@@ -172,3 +160,8 @@ Their milestone identifiers are retired here and will not be reused:
 
 - `engine-bootstrap-5`: engine-generated contract delivery is planned in
   [Project Integration milestone 1](project-integration.md#project-integration-1).
+
+Milestone 1's criteria `engine-bootstrap-1-traceable-design` and
+`engine-bootstrap-1-agreed-scope` recorded engineer review and agreement rather
+than observable outcomes. They are retired and will not be reused;
+`engine-bootstrap-1-accepted-records` shows the result.

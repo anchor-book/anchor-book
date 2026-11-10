@@ -48,13 +48,13 @@ maintainers' decisions.
 
 **Identifier:** `symposium-integration-1`
 
-**Dependencies:** [Project Integration milestone 1](project-integration.md#project-integration-1) and agreement on this milestone's scope and the Anchor Book's location.
+**Dependencies:** [Project Integration milestone 1](project-integration.md#project-integration-1).
 
 **Design basis:** [Adding Anchor Book](../design/project-integration.md#adding-anchor-book), [running the engine](../design/project-integration.md#running-the-engine), and [mdBook configuration location](../design/configuration.md#relationship-to-mdbook).
 
 **Tasks**
 
-- [ ] **Location:** Agree with the engineer where the Anchor Book and its `book.toml` live beside the user Book, and how Symposium's maintainers review it.
+- [ ] **Location:** Decide where the Anchor Book and its `book.toml` live beside the user Book, and how Symposium's maintainers review it.
 - [ ] **Setup:** Install the pinned engine revision the way Project Integration milestone 1 documents, and configure `anchorbook.toml` and the Anchor Book's `book.toml` with the `anchorbook md` preprocessor and the `mdbook-mermaid` preprocessor Symposium already uses.
 - [ ] **First Book:** Create the configuration, navigation, project guidance chapter, an Authority section with the requirements and decisions the first design area needs, that design area with its anchors, and a roadmap. Choose a small, well-described area, such as configuration loading.
 - [ ] **mdBook version:** Symposium installs the newest mdBook without a pin. Confirm that version is among those the preprocessor supports, or agree on a pin.
@@ -111,7 +111,7 @@ Every design area in Symposium's contribution guide is either represented by a d
 
 #### Authority traced {#symposium-integration-2-authority-traced}
 
-Each anchor cites at least one requirement or decision that resolves; each adapted requirement and decision names its tenet or RFD; review with the engineer confirms that the cited authority justifies each property.
+Each anchor cites at least one requirement or decision that resolves; each adapted requirement and decision names its tenet or RFD; a recorded review confirms that the cited authority justifies each property.
 
 - **Anchor coverage:** None — project content and review.
 - **Evidence:** Pending.
@@ -149,7 +149,7 @@ A fresh agent session in the Symposium branch reads the contract, project guidan
 
 #### Instructions reconciled {#symposium-integration-3-instructions}
 
-Every instruction in Symposium's previous `AGENTS.md` is in its project guidance, kept with the engineer's agreement, or listed as a conflict with its resolution.
+Every instruction in Symposium's previous `AGENTS.md` is in its project guidance or listed as a conflict with its resolution.
 
 - **Anchor coverage:** None — project guidance.
 - **Evidence:** Pending.
@@ -246,7 +246,7 @@ Pending.
 
 **Outcome:** The engine crate provides a Symposium plugin that gives agents the contract and project bootstrap, used in this repository first and then in Symposium, without changing project files.
 
-**Status:** Proposed — scope to be agreed with the engineer
+**Status:** Proposed
 
 **Identifier:** `symposium-integration-6`
 

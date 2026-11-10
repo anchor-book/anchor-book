@@ -40,7 +40,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Status:** Proposed
 
-**Dependencies:** The configuration loader, structural checker, and record renderer. Agreement on this milestone's scope and on moving the contract source into the engine.
+**Dependencies:** The configuration loader, structural checker, and record renderer.
 
 **Design basis:** [mdBook configuration location](../design/configuration.md#relationship-to-mdbook), [contract delivery](../design/system-overview.md#contract-delivery), [running the engine](../design/project-integration.md#running-the-engine), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
 

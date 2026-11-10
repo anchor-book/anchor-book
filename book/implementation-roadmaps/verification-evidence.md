@@ -207,7 +207,7 @@ Pending.
 
 **Status:** Proposed
 
-**Dependencies:** The record library, configuration loader, navigation reader, and engineer agreement on this bounded foundation. Existing record identifiers remain usable.
+**Dependencies:** The record library, configuration loader, and navigation reader. Existing record identifiers remain usable.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md), including [links](../design/verification-evidence.md#evidence-links), [run identity](../design/verification-evidence.md#run-identity), states, and command behavior.
 
@@ -367,7 +367,7 @@ Pending.
 
 **Outcome:** Recorded results show whether the proof guards find real weaknesses in an existing proof and what they cost, so the guard design is confirmed or revised before any tooling is built.
 
-**Status:** Ready — scope and criteria agreed with the engineer on 2026-11-09; not yet started
+**Status:** Ready — not yet started
 
 **Dependencies:** The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.
 

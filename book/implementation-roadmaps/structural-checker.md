@@ -137,7 +137,7 @@ Complete and merged: configuration loading, validation, preservation, and phase 
 
 **Outcome:** An engineer or agent can run the library or CLI to locate format defects, understand the expected structure, make separate repairs, and recheck. A pass confirms the evaluated format rules; incomplete evaluation never counts as success.
 
-**Status:** Complete — merged with passing CI; accepted by the engineer
+**Status:** Complete — merged with passing CI
 
 **Dependencies:** Structural Checking — Milestone 1.
 
@@ -221,7 +221,7 @@ Record results for the design’s [acceptance cases](../design/structural-checki
 
 ### Completion record
 
-Complete on 2026-10-26, accepted by the engineer. Merged in `3d197c0` with passing CI and a full mutation campaign with no survivors. On `a1cf336`, the checker passed this Book and reported a missing chapter and a `book.toml` source mismatch in a disposable broken copy, exiting 1 without changing files. Milestone 3 owns CI gating; milestone 4 owns the real agent repair demonstration.
+Complete on 2026-10-26. Merged in `3d197c0` with passing CI and a full mutation campaign with no survivors. On `a1cf336`, the checker passed this Book and reported a missing chapter and a `book.toml` source mismatch in a disposable broken copy, exiting 1 without changing files. Milestone 3 owns CI gating; milestone 4 owns the real agent repair demonstration.
 
 ## Milestone 3. Continuous checks protect the current Book {#structural-checking-3}
 
@@ -230,7 +230,7 @@ milestone 3; its other criteria remain separate.
 
 **Outcome:** Changes to this repository receive independent engine validation and an acceptance check against its current Book before rendering.
 
-**Status:** Complete — merged with GitHub evidence; accepted by the engineer
+**Status:** Complete — merged with GitHub evidence
 
 **Dependencies:** Structural Checking — Milestone 2.
 
@@ -294,13 +294,13 @@ Record the tested revision, actual workflow results, and local commands; local s
 
 ### Completion record
 
-Complete on 2026-11-07, accepted by the engineer. Merged in `9ecd950` and `2aaf496`; local and GitHub evidence covers every criterion within the limits above.
+Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evidence covers every criterion within the limits above.
 
 ## Milestone 4. An agent can repair Book structure using checker feedback {#structural-checking-4}
 
 **Outcome:** An agent can use findings to make scoped structural repairs and reach a passing check while preserving unrelated content.
 
-**Status:** Complete — recorded agent runs and independent review; pending engineer acceptance
+**Status:** Complete — recorded agent runs and independent review
 
 **Dependencies:** Structural Checking — Milestone 2.
 
@@ -353,7 +353,7 @@ Cases outside the assignment or the agent’s ability produce an explicit explan
 
 ### Completion record
 
-Complete on 2026-11-08, pending engineer acceptance. Recorded agent runs and independent review cover every completion criterion within the limits above. With milestones 1–3 complete, this completes the Structural Checking roadmap.
+Complete on 2026-11-08. Recorded agent runs and independent review cover every completion criterion within the limits above. With milestones 1–3 complete, this completes the Structural Checking roadmap.
 
 ## Updating and completing the work
 

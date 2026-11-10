@@ -49,7 +49,7 @@ changes require new proof and integration evidence.
 
 **Outcome:** Authority validation has a reproducible local proof over the executable functions used by the record API, with tested integration and explicit limits.
 
-**Status:** In progress — local proof and integration verified; engineer review pending
+**Status:** In progress — local proof and integration verified; specification assessment pending
 
 **Identifier:** `formal-verification-1`
 
@@ -76,21 +76,21 @@ changes require new proof and integration evidence.
 The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Full. The claim is limited to the specified authority logic and recorded assumptions.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed locally; see milestone evidence. The specification assessment is pending.
 
 #### Production path {#formal-verification-1-production-path}
 
 Review identifies the same verified functions on the normal read_records call path. Independent fixtures exercise conversion, empty and invalid authority, all resolution/status cases, and rejection through the real adapter. State which boundaries are tested rather than proved.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Full. Behavioral test coverage also contributes to `required-authority`, `resolved-authority`, and `compatible-status`; reconcile with Record Rendering milestone 3.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed locally; see milestone evidence.
 
 #### Compatible tooling {#formal-verification-1-tooling}
 
 Pinned tools reproduce verification without rendering the Book. Ordinary builds, tests, formatting, and Clippy pass on supported toolchains. Record whether mutation testing reaches the annotated executable bodies and any gaps; a skipped or empty mutation scope is not coverage.
 
 - **Anchor coverage:** None — developer tooling and compatibility; proof success alone does not complete the mutation roadmap.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed locally; see milestone evidence.
 
 ### Evidence {#formal-verification-1-evidence}
 
@@ -104,7 +104,7 @@ Pinned tools reproduce verification without rendering the Book. Ordinary builds,
 
 ### Completion record
 
-Local proof and integration checks pass; engineer review and acceptance remain pending.
+Pending the specification assessment and the mapping of production-integration tests and review to the excluded boundaries.
 
 ## Milestone 2. GitHub verifies the production authority logic {#formal-verification-2}
 
@@ -234,7 +234,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies), and [records-valid-authority](../design/rust-engine.md#records-valid-authority).
 
-**Dependencies:** The existing production authority proof and engineer agreement on the isolation boundary. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
+**Dependencies:** The existing production authority proof. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
 
 **Tasks**
 

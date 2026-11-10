@@ -15,6 +15,9 @@ Each roadmap has a stable identifier, a short descriptive title, and a goal
 stating what becomes possible when it is complete. Its milestones group work
 into outcomes an engineer can take on with their agents. Tasks describe the work;
 completion criteria describe how to demonstrate that its outcome has been reached.
+A completion criterion is an observable condition shown by recorded evidence, not
+someone's approval or confirmation; a milestone is Complete when its evidence
+shows every criterion holds.
 
 List milestones directly, without a separate overview table. Each records:
 
