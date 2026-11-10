@@ -57,7 +57,7 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 
 **Outcome:** Recorded measurements show how many searches, lines read, and wrong matches agents need to answer fixed record questions in the goal line grammar, the current TOML form, and TOML with kind, identity, and status on the fence line, so the goal syntax is confirmed or revised on evidence.
 
-**Status:** Proposed
+**Status:** In progress
 
 **Dependencies:** None.
 
@@ -67,9 +67,9 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 
 **Tasks**
 
-- [ ] Produce three disposable copies of this Book's records and literal examples: current TOML, the goal line grammar, and TOML with kind, identity, and status on the fence line. Convert mechanically and check each copy preserves every identity, field, reference, and method.
-- [ ] Fix the task set: find a record's definition; list every reference to a requirement; list draft anchors; list criteria requiring proof with their anchor; change one criterion's methods; add one authority reference.
-- [ ] For the four search tasks, record the minimal searches for each variant, the lines matched, wrong matches, and further lines read to answer.
+- [x] Produce three disposable copies of this Book's records and literal examples: current TOML, the goal line grammar, and TOML with kind, identity, and status on the fence line. Convert mechanically and check each copy preserves every identity, field, reference, and method.
+- [x] Fix the task set: find a record's definition; list every reference to a requirement; list draft anchors; list criteria requiring proof with their anchor; change one criterion's methods; add one authority reference.
+- [x] For the four search tasks, record the minimal searches for each variant, the lines matched, wrong matches, and further lines read to answer.
 - [ ] Run the full task set in fresh Claude Code and Codex sessions against each variant, without engine tools. Record tool versions, tool calls, lines read, correctness, and edits that would fail validation.
 - [ ] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it.
 
@@ -80,14 +80,23 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 Each variant represents the same records: a recorded comparison shows identical identities, kinds, statuses, fields, references, criteria, and methods across all three.
 
 - **Anchor coverage:** None — experiment preparation
-- **Evidence:** Pending.
+- **Evidence:** Passed on branch `record-line-grammar`, based on `06725a0`. `scripts/record-syntax/variants.py` writes a copy of every chapter in each variant under `target/record-syntax/`, covering 56 records (29 anchors, 14 requirements, 13 decisions, 65 criteria) and the 4 literal examples, then reads each copy back: identities, kinds, statuses, titles, fields, references, criteria, and methods are identical to this Book's records in all three. The `toml` copy keeps every record byte for byte, converts only the examples, and builds through the engine's preprocessor; the `fence` copy changes only the fence, `id`, and `status` lines. Book source is 477,097 bytes as `toml`, 476,035 as `fence`, and 468,201 as `lines`. Limits: the comparison normalizes whitespace within paragraphs, since the line grammar puts each paragraph on one line; proof scope comes from the statement's labeled paragraphs; the `lines` copy renames identifiers in code spans and link fragments throughout, except in the sentence that states the rename; every copy's design chapters still describe the line grammar.
 
 #### Search measurements {#record-line-grammar-1-search-measurements}
 
 For every search task and variant, the recorded searches, matched lines, wrong matches, and further reads are reproducible from committed scripts or listed commands.
 
 - **Anchor coverage:** None — design experiment; informs [records-searchable-lines](../design/anchor-definitions.md#records-searchable-lines)
-- **Evidence:** Pending.
+- **Evidence:** Passed. `scripts/record-syntax/searches.py` runs one search per task and variant over the copies, for the tasks in `scripts/record-syntax/tasks.md`, classifies each matched line from the copy's record index, and counts the further lines above a match an agent must read to name the record or criterion. Every search returns its complete answer; the table lists matched lines, then how many are the answer, other record lines, literal examples, and prose, and the further lines read.
+
+  | Task | `toml` | `fence` | `lines` |
+  | --- | --- | --- | --- |
+  | Definition of a requirement | 2: 1 answer, 1 example; 0 read | 2: 1, 1; 0 | 2: 1, 1; 0 |
+  | Records citing it | 6: 2 answers, 1 definition, 3 examples; 15 read | 4: 2, 2 examples; 15 | 10: 2, 1 definition, 3 examples, 4 prose; 4 |
+  | Draft anchors | 41: 20 answers, 17 other kinds' drafts, 3 examples, 1 prose; 148 read | 21: 20, 1 example; 0 | 21: 20, 1 example; 0 |
+  | Proof criteria with their anchor | 2: 1 answer, 1 example; 31 read | 2: 1, 1; 31 | 2: 1, 1; 6 |
+
+  Limits: one Book and one target record per task; one minimal search per variant, written by the agent that wrote the scripts; "further lines read" counts lines back to the needed fact, not what an agent actually opens, which the agent trials measure.
 
 #### Agent trials {#record-line-grammar-1-agent-trials}
 
