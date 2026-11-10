@@ -91,10 +91,10 @@ schema-version = 1
 id = "decision-evidence-links-in-code"
 title = "Evidence links live beside the code they describe"
 status = "draft"
-choice = "A test or proof links to the anchor criteria it addresses with a comment next to the function; the engine derives each criterion's linked functions rather than listing them in the Book."
+choice = "A test or proof links to the anchor criteria it addresses with a doc-comment line on the function, /// anchorbook: <anchor-id>#<criterion-id>; the engine derives each criterion's linked functions rather than listing them in the Book."
 requirements = ["requirement-criterion-evidence"]
-rationale = "Links move with renamed or relocated tests, the Book holds only criteria and stays small, and the existing proof module already names its anchor and criterion beside the code."
-alternatives = ["Criteria list their tests in the Book, which is visible to readers without the engine but grows the Book and drifts whenever tests are renamed."]
+rationale = "Links move with renamed or relocated tests, the Book holds only criteria and stays small, and the existing proof module already names its anchor and criterion beside the code. A doc comment is an attribute of the item it precedes, so a Rust parser attaches the link to its function directly, without inferring which item follows a line, and the project needs no dependency."
+alternatives = ["Criteria list their tests in the Book, which is visible to readers without the engine but grows the Book and drifts whenever tests are renamed.", "An ordinary // comment, which Rust parsers discard, so the engine must infer from line positions which function a link belongs to.", "An attribute such as #[anchorbook::criterion(...)], which reads well but needs an engine proc-macro crate as a project dependency, since stable Rust rejects unknown tool attributes."]
 reconsider-when = "A supported language or tool cannot carry comments next to its tests or proofs; define its link form without moving links into the Book."
 ```
 

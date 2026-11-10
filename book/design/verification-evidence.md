@@ -184,17 +184,21 @@ those methods also have evidence.
 
 ## Evidence links
 
-A link is a comment line in source code naming one anchor criterion:
+A link is a doc-comment line on a function, naming one anchor criterion:
 
 ```rust
-// anchorbook: A-check-observation-only#file-preservation
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn checks_preserve_files_and_directory_entries() { /* ... */ }
 ```
 
-The line `// anchorbook: <anchor-id>#<criterion-id>` applies to the next function
-item, with only attributes and further link lines between them. One function may
-link several criteria, one per line. A link claims that the function addresses
+The line `/// anchorbook: <anchor-id>#<criterion-id>` belongs to the function item
+it documents. Rust treats a doc comment as a `#[doc]` attribute of that item, so
+the parser attaches the link to its function without inferring position, and the
+project needs no dependency. A link line may sit among other documentation lines.
+One function may link several criteria, one per line. An ordinary
+`// anchorbook:` comment is not a link; the engine reports it as a misplaced link
+at its location rather than ignoring it. A link claims that the function addresses
 the criterion; it does not show that the function is sufficient. Links are read
 only from the configured source directories, and the engine derives the reverse
 view from each criterion to its linked functions. Keeping links beside the code
