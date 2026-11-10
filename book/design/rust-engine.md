@@ -409,17 +409,20 @@ are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
 Three reviewed equivalent mutations and five loop-counter mutations that verification rejects have exact exclusions; no engine files are excluded.
 
 Agents run tests locally, investigate findings against the goal design, correct
-test gaps or implementation defects, and repeat verification. GitHub repeats the
-campaign on pull requests that change engine code, tests, or mutation settings. Ordinary tests precede mutation tests in both places.
+test gaps or implementation defects, and repeat verification. On GitHub, pull requests
+mutate the lines they change, and changes to mutation settings, manifests, or the
+toolchain run the full campaign; every merge to `main` runs the full campaign, so
+effects outside a change's own lines are found shortly after merge rather than
+before it. Ordinary tests precede mutation tests in both places.
 Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests
 detected a fault. Equivalent-mutation exclusions require specific reasoning and
 review; the default is to preserve findings for investigation.
 
 The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
 separates usable local support from a full reviewed campaign, demonstrated CI,
-and branch rules requiring success before merge. The initial CI budget is 45
-minutes with two mutation workers; adjust it from measured results without
-silently reducing scope. The contract retains the reusable testing policy;
+and branch rules requiring success before merge. Full campaigns had grown to
+about 35 minutes with two workers, so they run with four workers and a 60-minute
+budget; adjust these from measured results without silently reducing scope. The contract retains the reusable testing policy;
 tool versions and repository integration remain project guidance.
 
 ## Choices still open

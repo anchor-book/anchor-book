@@ -90,6 +90,7 @@ Complete locally on 2026-10-21. Scoped findings led to stronger tests and a pass
 - [x] Manually run the workflow on the published prototype checkpoint; verify failure reporting and retained evidence.
 - [x] Review survivors and unviable mutations. Correct test gaps or defects, justify any equivalent mutations, and repeat affected checks and the full campaign.
 - [x] Exercise the workflow on a PR and record its revision, results, artifacts, and runtime. Tune or split the 45-minute budget if needed without dropping coverage.
+- [ ] Mutate only changed lines on PRs, run the full campaign on every merge to `main` with four workers, and record a GitHub run of each.
 - [ ] Configure the main branch rule to require Mutation tests and ordinary engine checks, with results current for the revision being merged. Verify that a failed check prevents merging under the intended contributor policy.
 - [ ] Demonstrate an agent reading a remote failure, correcting it locally, and obtaining passing checks on an updated PR through authorized pushes.
 
@@ -122,6 +123,8 @@ None — test readiness and repository integration; no automatic claim of anchor
 **Equivalent mutations:** The three OR-to-XOR changes at `src/records/markdown.rs:24–26` produce the same option mask: the locked parser's four flags occupy distinct bits. Exact exclusions and their review conditions are recorded in `.cargo/mutants.toml`. Listing checks confirm exactly three exclusions and retain all flag-removal mutations. The previous unviable cases were reviewed: generated replacements call unavailable constructors or require missing trait implementations; they are not counted as detected faults.
 
 **Integration and limits:** The [PR #2 mutation run](https://github.com/anchor-book/anchor-book/actions/runs/39735753188) for head `687a4bf` passed with 228 attempted, 184 caught, 44 unviable, no survivors or timeouts, using cargo-mutants 27.1.0 and the reviewed exclusions. That work merged as `03fb981`. The tool does not discover bodies inside `verus!`; those functions have separate proof evidence. Merge protection and a remote failure/correction demonstration remain open. Passing local and GitHub authority proofs now satisfy the prerequisite for that follow-up; passing mutation runs alone do not demonstrate correction or enforcement. No ruleset rules applied to main when checked on 2026-10-24; merge enforcement has not been demonstrated.
+
+**Runtime and scope:** The full campaign grew to 667 mutations and took 35 minutes on two workers for [PR #27](https://github.com/anchor-book/anchor-book/actions/runs/42757352983) (536 caught, 131 unviable, none missed), near the 45-minute budget. PRs now mutate only their changed lines with `--in-diff`, and merges to `main` run the full campaign with four workers and a 60-minute budget; changes to mutation settings, manifests, or the toolchain still run the full campaign on the PR. Locally, PR #28's diff selects 18 mutations, tested in 16 seconds (8 caught, 10 unviable). A changed-line run cannot detect a test gap that a change exposes elsewhere; the full campaign on `main` finds it after merge. GitHub runs of both scopes are pending.
 
 ### Completion record
 
