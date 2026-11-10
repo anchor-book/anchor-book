@@ -1,13 +1,11 @@
 # Shipping Verified Code
 
-**Status: draft for review.** The engine's arrangement is implemented; see
-[Formal Verification milestone 4](../implementation-roadmaps/formal-verification.md#formal-verification-4)
-for evidence.
+
 
 A crate whose production code is written inside `verus!` depends on `vstd` to
 compile. When that crate is published, every project that depends on it inherits
 the dependency and its exact version. This chapter defines how to publish such a
-crate without imposing its verifier on dependents. The engine is the first case:
+crate without imposing its verifier on dependents. The engine is one such crate:
 its [authority validator](rust-engine.md#authority-proof) is verified, and projects
 that verify their own code must be able to depend on the engine.
 
@@ -19,9 +17,7 @@ matching `vstd`, pinned exactly. Cargo's
 treats all `0.0.0-…` prereleases as one version slot, so two exact requirements on
 different prereleases cannot both be met. A project pinning its own `vstd` cannot
 depend on a crate that pins a different one. No native-library `links` conflict is
-involved. The fixture `fixtures/consumers/verus-resolution`, which pins
-`vstd = "=0.0.0-2026-10-11-0230"`, failed to resolve against the engine while `vstd`
-was a normal dependency.
+involved.
 
 **What does not solve it.** Moving `vstd` into another crate that ordinary builds
 still require keeps the constraint. Making `vstd` optional alone gives no runtime

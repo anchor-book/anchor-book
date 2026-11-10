@@ -1,15 +1,6 @@
 # Project Integration
 
-**Status: draft for review.** Partly implemented: a project can install a pinned
-engine revision, name its `book.toml`, and retrieve the contract, as
-[Project Integration milestone 1](../implementation-roadmaps/project-integration.md#project-integration-1)
-records; the library entry point, engine-version declaration, and crate release are not. This chapter defines how other Rust projects use Anchor
-Book. Consumer proof evidence is proposed in the
-[Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md#verification-evidence-5)
-and engine proof isolation in the
-[Formal Verification roadmap](../implementation-roadmaps/formal-verification.md#formal-verification-4).
-[Later work](../implementation-roadmaps/index.md#later-work-retained-from-the-design)
-records the remaining integration and release scope.
+This chapter defines how other Rust projects use Anchor Book.
 
 A project adopts Anchor Book by depending on the published crate and adding
 configuration. Its ordinary tools then apply Anchor Book: `cargo test` checks
@@ -225,9 +216,7 @@ Book has the same shape for agents and checks.
 
 A new project can initialize the required structure. An existing project adopts:
 the engine maps its Book into roles, reports what is missing, and applies agreed
-changes; [Operations](system-overview.md#operations) defines both. Until
-those operations exist, a project writes its configuration and required
-chapters by hand and uses `check` to confirm them.
+changes; [Operations](system-overview.md#operations) defines both.
 
 A project whose existing Book serves another purpose, such as user
 documentation, keeps it and adds a separate Anchor Book with its own source and
@@ -310,7 +299,7 @@ dependencies are constraints on that build:
   toolchain.
 - **mdBook.** The preprocessor supports a declared set of mdBook versions and
   rejects others with a diagnostic naming them, so a project can upgrade mdBook
-  deliberately. The set is currently 0.5.4, the newest release, because the
+  deliberately. The set is 0.5.4, because the
   checker's navigation parser and configuration defaults come from that version's
   crates; a project pins its mdBook to a declared version. Accepting newer 0.5.x
   releases could be justified later by a scheduled job that renders this Book with
@@ -334,8 +323,8 @@ copy is checked in. Project-specific instructions belong in the guidance chapter
 not in the contract or a modified copy of it. Other agent integrations, such as a
 skill that retrieves the contract, follow the same three steps.
 
-Initially the engine documents the section as a template that the project adds by
-hand. Initialization and adoption can later write it as managed content.
+The engine documents the section as a template that the project adds by hand;
+whether initialization writes it is [open question 3](#open-questions).
 
 ## Formal verification in a project
 
@@ -366,15 +355,11 @@ The engine's proofs of its own logic, such as its
 [authority proof](rust-engine.md#authority-proof), are evidence only for this
 Book's criteria.
 
-The first consumer fixtures use a packaged dependency outside this checkout:
+Consumer acceptance fixtures use a packaged dependency outside this checkout:
 ordinary builds need no engine verifier, and a project with its own `vstd` uses
 its own Verus installation and a verification toolchain separate from its build
-toolchain. Proof success, deliberate failure and correction, unsupported reports,
-and excluded integration boundaries are acceptance cases in
-[Verification Evidence milestone 5](../implementation-roadmaps/verification-evidence.md#verification-evidence-5).
-These fixtures can use a locally packaged release candidate before registry
-publication. CLI version alignment and contract delivery remain separate
-integration work.
+toolchain. Their cases include proof success, deliberate failure and correction,
+unsupported reports, and excluded integration boundaries.
 
 ## Projects as acceptance cases
 

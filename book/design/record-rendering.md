@@ -1,8 +1,6 @@
 # Record Rendering
 
-**Status: prototype implemented.** The record library, mdBook adapter, and readable
-HTML presentation are in use; the [roadmap](../implementation-roadmaps/record-rendering.md)
-records evidence.
+
 
 Anchors, requirements, and decisions stay in their canonical
 [record syntax](anchor-definitions.md#record-syntax) in the source. In the rendered Book, they become readable sections with permalinks,
@@ -112,8 +110,7 @@ The shared library collects and validates that inventory before it can be render
 mdBook invokes `anchorbook md` with chapter input. The adapter calls the library's
 `rendering` operation, which uses `records` to validate the definitions and then
 replaces their source ranges with readable HTML in memory. The adapter returns
-the transformed Book to mdBook for normal HTML generation. Separate indexes,
-evidence pages, Rust source associations, and progress reporting are later work.
+the transformed Book to mdBook for normal HTML generation.
 
 ## Components
 
@@ -133,8 +130,8 @@ The single [Rust package](rust-engine.md#internal-boundaries) contains the libra
 and CLI. The library owns record reading, validation, indexing, and presentation.
 The adapter translates mdBook's protocol and chapter data; it does not define
 another parser or reference resolver. Keep implementation modules private until
-callers need a public interface. [Rust Engine](rust-engine.md#implemented-record-api)
-documents the implemented API.
+callers need a public interface. [Rust Engine](rust-engine.md#record-api)
+documents the API.
 
 The input inventory is the chapters supplied by mdBook, including nested and
 unnumbered chapters with source paths. Record validation does not require the
@@ -148,8 +145,7 @@ Read records with the line scanner defined in
 [Anchor Definitions](anchor-definitions.md#parsing-and-validation), retaining each
 record's source range, and validate them against
 [Anchor Definitions](anchor-definitions.md) and [Authority Definitions](authority-definitions.md).
-The current implementation reads the earlier TOML form until the
-[migration](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2).
+
 Keep ordinary examples, code literals, and surrounding prose outside the record
 inventory. Invalid recognized blocks must not disappear silently.
 
@@ -160,12 +156,11 @@ Do not render a successful partial Book when that validation fails.
 
 Return typed diagnostics with a stable code, chapter path, available source
 position, explanation, and related definition location where useful. Order them
-by chapter path, source position, then code. The prototype's diagnostic families
+by chapter path, source position, then code. The diagnostic families
 are `record.invalid-input`, `record.invalid-definition`, `record.duplicate-id`,
 `record.invalid-reference`, `record.incompatible-status`, and
 the adapter code `render.invalid-input`. The record input code covers
-missing or repeated chapter paths. Refine detailed messages during implementation;
-do not reuse structural-check codes for a different rule scope.
+missing or repeated chapter paths. Do not reuse structural-check codes for a different rule scope.
 
 These checks establish record and relationship consistency. They do not validate
 the Book's configured layout, prove that an authority logically supports a
@@ -198,7 +193,7 @@ and in mdBook's combined print view; the print view must link to the matching
 record in that view. Preserve existing public record fragment names when replacing
 the temporary HTML targets.
 
-The prototype treats record text as escaped text with paragraph breaks, not raw
+The renderer treats record text as escaped text with paragraph breaks, not raw
 HTML. Text resembling tags or scripts must stay inert. Whether field text
 renders an inline Markdown subset is an
 [open question](anchor-definitions.md#open-questions); until it is decided, field
@@ -211,9 +206,9 @@ parser, remote badge service, or external script is required to read the records
 
 ## mdBook integration
 
-Implemented command: `anchorbook md`. The local `book.toml` invokes
+The command is `anchorbook md`. The local `book.toml` invokes
 `cargo run --quiet --locked --bin anchorbook -- md`, after mdBook's `links`
-preprocessor and before Mermaid. The prototype requires mdBook **0.5.4** and
+preprocessor and before Mermaid. The adapter requires mdBook **0.5.4** and
 supports HTML only. The adapter uses `serde_json` to validate the needed protocol
 fields while preserving navigation and unknown metadata. It does not depend on
 the mdBook crate or launch a nested Book build.
@@ -223,7 +218,7 @@ the shared record reader and returns transformed chapter strings or typed errors
 Output routes must be nonempty, relative UTF-8 paths without traversal, backslashes,
 control characters, or colon-based schemes. Their HTML destinations must be
 unique. Every supplied chapter needs source and output paths, including unnumbered
-chapters; draft chapters without paths are currently rejected.
+chapters; draft chapters without paths are rejected.
 
 Generated links are relative and percent-encode path components. mdBook 0.5.4
 rewrites these HTML links into fragment links in its combined print view.
@@ -241,8 +236,7 @@ blank lines within prose are normalized for readable paragraphs.
 
 The Book workflow calls the reusable Engine workflow and waits for its checks
 before the build job. The preprocessor checks structure before rendering, and
-record validation fails the same build. Structural Checking milestone 3 owns the
-gate's evidence.
+record validation fails the same build.
 
 ```mermaid
 sequenceDiagram
@@ -279,7 +273,7 @@ headings; the preprocessor does not perform that migration.
 
 ## Roadmap rendering
 
-**Status: prototype implemented**; [Record Rendering milestone 4](../implementation-roadmaps/record-rendering.md#record-rendering-4) records evidence.
+
 Roadmaps are written in plain Markdown in the
 [roadmap format](../implementation-roadmaps/index.md#defining-the-work), so agents
 read only content. The preprocessor recognizes milestone and criterion
@@ -312,5 +306,3 @@ runs the structural checker on the configuration named by
 `[preprocessor.anchorbook] config` and stops on a failed or incomplete report.
 The adapter module itself still reads no files and handles only supplied chapter
 records; the command runs the check.
-Materialization, cross-Book authorities, and evidence
-aggregation remain future work.

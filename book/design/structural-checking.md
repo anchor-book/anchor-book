@@ -1,8 +1,6 @@
 # Structural Checking
 
-**Status: prototype implemented; verification in progress.** The library and
-`anchorbook check` implement this layout/navigation scope. Local tests cover
-passing, failing, and incomplete results; the roadmap records remaining evidence.
+
 
 `check` answers whether the current Book conforms to its configured layout and
 navigation rules. These rules will also support initialization, adoption of existing
@@ -191,7 +189,7 @@ The implementation pins `mdbook-summary = "=0.5.4"` and `mdbook-core = "=0.5.4"`
 with tested transitive versions in Cargo.lock. The core crate also supplies pure
 `book.toml` deserialization and mdBook defaults; environment overrides are not applied. The parser and its mdbook-core dependency
 [require Rust 1.88](https://github.com/rust-lang/mdBook/blob/v0.5.4/Cargo.toml),
-now the engine's minimum; development uses current stable. The dependency
+the engine's minimum; development uses current stable. The dependency
 chain adds core data/configuration support, including another TOML library, but
 not mdBook's driver or HTML/server runtime. The parser is integrated through the private navigation adapter; its types do
 not appear in the public checking API.
@@ -208,12 +206,7 @@ evaluation. An empty or title-only summary still fails the required-role rules.
 Do not treat an ignored construct as evidence that an expected chapter or role
 does not exist.
 
-The current checker handles a subset of that input: chapter-label formatting,
-comments, parts, separators, targetless drafts, and `-` or `*` chapter lists. It
-still reports ordered lists, HTML or images in link labels, and prose, code
-blocks, other headings, and blockquotes as unsupported input. Support for each
-is added when a Book needs it; until then such a summary yields incomplete
-evaluation.
+
 
 Parsed links lack source spans. Retain source ranges from the Markdown event
 stream and associate them with the observed entries, including reference-style
@@ -236,7 +229,7 @@ spaces, duplicate targets, malformed links, and input the parser silently ignore
 Check source locations and typed errors through the real checker API and CLI;
 the parser feasibility experiment is not implementation evidence for those rules.
 
-## Implemented boundaries
+## Library and report boundaries
 
 `anchor_book::checking::check(&Path)` returns a completed `CheckReport` or a
 `CheckError` retaining a partial report. Check the report's `outcome()`; an `Ok`
@@ -293,8 +286,7 @@ formal claims hold, or roadmap units are finished.
 ## Acceptance against this Book
 
 The primary acceptance case is this repository's current Book, configured with
-`source = "book"` and `output = "target/anchorbook"`. Add the real configuration
-as soon as the reader is usable. Keep destructive test cases in disposable copies.
+`source = "book"` and `output = "target/anchorbook"`.  Keep destructive test cases in disposable copies.
 
 | Case | Expected result |
 | --- | --- |

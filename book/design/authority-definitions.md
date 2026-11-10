@@ -1,10 +1,9 @@
 # Authority Definitions
 
-**Status: draft for review.** Requirements and decisions are typed records written
+Requirements and decisions are typed records written
 in the [record syntax](anchor-definitions.md#record-syntax). Their identities,
 kinds, and acceptance states support authority-link validation independently of
-layout/navigation checks. The engine currently reads the earlier TOML form; see
-[Current implementation](anchor-definitions.md#current-implementation).
+layout/navigation checks.
 
 ## Evolving the authority model
 

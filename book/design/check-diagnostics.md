@@ -1,7 +1,6 @@
 # Checking Diagnostics
 
-**Status: prototype implemented.** The library returns typed reports and the CLI
-renders them. Examples use illustrative paths and wording; diagnostic codes,
+Examples use illustrative paths and wording; diagnostic codes,
 field meanings, result states, and stream/exit behavior define the contract.
 
 Diagnostics support the check, repair, and recheck loop by identifying the
@@ -93,7 +92,7 @@ machine-readable output format is a separate future interface.
 | Scope | The selected rule set and the checks actually evaluated |
 | Diagnostic code | Stable identity for the type of problem |
 | Kind | `structure`, `configuration`, or `operation` |
-| Severity | `error` for the initial required checks; no warning policy yet |
+| Severity | `error` for the initial required checks; there is no warning severity |
 | Summary | A short description of the problem |
 | Location | Affected file or intended path, with a key or source position when available |
 | Related locations | The declaration or configuration that explains the expectation |
@@ -270,7 +269,7 @@ not passed. Known missing structure is `failed`; read/parse/unsupported-input
 failures are `error`; prerequisite-dependent checks are `blocked`.
 Only a fully evaluated scope with every required group passed can produce `passed`.
 
-Proposed initial diagnostic families include:
+The structural/v1 diagnostic families are:
 
 | Code | Meaning |
 | --- | --- |
@@ -290,7 +289,7 @@ Proposed initial diagnostic families include:
 | `input.unsupported` | Required input contains unsupported constructs |
 | `operation.read-failed` | Required input cannot be read, including an unavailable anchorbook.toml |
 
-This is the initial vocabulary to refine during implementation. Codes identify
+Codes identify
 conditions; repeated instances include distinct locations. They are not anchor
 identifiers. Keep a code's meaning stable once exposed.
 

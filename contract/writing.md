@@ -61,6 +61,9 @@ unresolved alternatives in the experiment that resolves them or outside the Book
 Git history keeps superseded designs. Agreeing on a design change and completing
 its implementation are separate steps.
 
+Design chapters define the goal system, not progress toward it. Keep out status,
+gaps, milestones, evidence, dates, and history; roadmaps record those.
+
 Distinguish implementation associations, verification mechanisms, executed results,
 and roadmap completion. Report which checks ran, their scope, and results.
 Missing, skipped, stale, or inconclusive evidence is not a pass.
