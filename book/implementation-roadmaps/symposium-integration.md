@@ -44,7 +44,7 @@ maintainers' decisions.
 
 **Outcome:** On a Symposium branch, a separate Anchor Book with one adapted design area passes the structural check and renders through Symposium's own commands with a pinned engine revision, and the user Book is unchanged.
 
-**Status:** In progress — criteria met on branch `anchor-book` of the fork; engineer review of Symposium's Anchor Book pending
+**Status:** Complete
 
 **Identifier:** `symposium-integration-1`
 
@@ -78,7 +78,7 @@ Every gap found has a fix with evidence in this Book or an entry in the relevant
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10, on fork branch `anchor-book`, not pushed. Symposium's Anchor Book checks and renders through its own commands with a pinned installed engine, the user Book is unchanged, broken copies are refused, and every gap found is fixed here or recorded. Its records are trial content for developing the engine: the two configuration decisions are reconstructed from Symposium's design and code, with alternatives written in the trial, and Symposium's maintainers review the content when it is integrated.
 
 ## Milestone 2. Symposium's design and authority are anchored {#symposium-integration-2}
 
