@@ -4,19 +4,15 @@
 
 ## Goal
 
-The checker's design rests on accepted governing records, and an agent starting a
-fresh session can use the Book to take up an assigned milestone.
+The checker's design rests on accepted governing records.
 
 Bootstrap first prepared the Book so an engineer could assign structural-checker
 work. The engineer then assigned the [Structural Checking](structural-checker.md)
 milestones as scoped prototypes before that preparation was reviewed, and that
-roadmap records the checker as built. Two parts of Bootstrap remain: the review
-and acceptance of the checker's anchors, requirements, and decisions, which are
-still drafts, and a demonstration that fresh agent sessions start from the
-contract, project guidance, and Book.
+roadmap records the checker as built. What remained of Bootstrap was the review
+and acceptance of the checker's anchors, requirements, and decisions.
 
-This roadmap uses the contract as it is maintained in the Book today. Retrieving
-it through `anchorbook contract` belongs to
+Retrieving the contract through `anchorbook contract` belongs to
 [Project Integration milestone 1](project-integration.md#project-integration-1).
 The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 
@@ -73,79 +69,23 @@ The Book contains the checker design, six checker requirements, four governing d
 
 Complete on 2026-11-10. The checker's governing records are reviewed and accepted. This completes design acceptance only; it does not verify any anchor.
 
-## Milestone 2. A fresh agent session can take up an assigned milestone {#engine-bootstrap-2}
-
-**Outcome:** An engineer can assign a roadmap milestone to an agent in a fresh session that has read the Book and can identify the applicable design, authority, anchors, and completion criteria before implementing it.
-
-**Status:** Proposed
-
-**Dependencies:** The contract and project guidance as maintained in the Book. Startup does not depend on [milestone 1](#engine-bootstrap-1): the records an agent reads can be drafts.
-
-**Design basis:** [System Overview](../design/system-overview.md#contract-delivery) and [AI Working Contract](../ai-working-contract.md)
-
-**Identifier:** `engine-bootstrap-2`
-
-**Tasks**
-
-- [ ] Exercise startup in fresh Codex and Claude Code sessions; record agent and model versions and the requests given.
-- [ ] Assign a readiness walkthrough of a roadmap milestone: observe that the agent reads the contract, project guidance, and Book; identifies the current phase, authoring references, supported commands, assigned scope, and governing content; and does not begin implementation.
-- [ ] Include a scoped design-change exercise: observe whether the agent updates the affected roadmap tasks, criteria, references, and evidence limits in the same change.
-- [ ] Refine instructions where the agent misses context, fails to reconcile the roadmap, or starts unassigned work, and repeat the affected cases.
-
-### Completion criteria
-
-#### Agent startup {#engine-bootstrap-2-agent-startup}
-
-Fresh Codex and Claude Code sessions demonstrably read the reusable contract, project guidance, and Book, and identify the project phase and supported commands from project guidance; record versions, configuration, and observations.
-
-- **Anchor coverage:** None — workflow readiness; contract retrieval through the engine is covered by [Project Integration milestone 1](project-integration.md#project-integration-1-contract).
-- **Evidence:** Pending.
-
-#### Assigned scope {#engine-bootstrap-2-assigned-scope}
-
-Each agent identifies the assigned milestone, its governing design, authority, anchors, and completion criteria without beginning unassigned implementation.
-
-- **Anchor coverage:** None — workflow readiness
-- **Evidence:** Pending.
-
-#### Design reconciliation {#engine-bootstrap-2-design-reconciliation}
-
-A fresh-session exercise changes a design criterion and updates the affected roadmap in the same change. The agent identifies stale evidence and proposed follow-up work without claiming completion or starting unassigned implementation.
-
-- **Anchor coverage:** None — agent workflow readiness
-- **Evidence:** Pending fresh-session demonstration; written contract guidance is preparation only.
-
-#### Readiness record {#engine-bootstrap-2-readiness-record}
-
-Record limitations and any instruction refinements and repeat affected cases. This demonstrates agent readiness, not any engine capability.
-
-- **Anchor coverage:** None — workflow readiness
-- **Evidence:** Pending.
-
-### Preparation already done
-
-`AGENTS.md` identifies the reusable [AI Working Contract](../ai-working-contract.md), [project guidance](../working-on-anchor-book.md), and Book index. The contract defines the working method and the readiness report; project guidance supplies the phase, paths, tools, authoring references, and public-content rules. [Structural Checking milestone 4](structural-checker.md#structural-checking-4) recorded fresh Codex sessions repairing seeded defects; those runs exercised repair, not the startup and assignment cases here.
-
-### Evidence {#engine-bootstrap-2-evidence}
-
-*Milestone evidence — pending*
-
-Pending; use the [evidence format](index.md#evidence-records).
-
-### Completion record
-
-Pending. The preparation above does not establish that agents follow the instructions successfully.
-
 ## Scope changes and reserved identifiers
 
-This roadmap was narrowed on 2026-11-10 to the review and agent-startup
-work that remained after Structural Checking was built. Milestone 1's completed
-preparation tasks remain as recorded; its outcome now covers only record review
-and acceptance. Milestone 2 applies to any assigned milestone rather than only
-checker work.
+This roadmap was narrowed on 2026-11-10 to the record review that remained after
+Structural Checking was built. Milestone 1's completed preparation tasks remain as
+recorded; its outcome now covers only record review and acceptance.
 
 The earlier draft included engine capabilities that belong after preparation.
 Their milestone identifiers are retired here and will not be reused:
+
+<a id="engine-bootstrap-2"></a>
+
+- `engine-bootstrap-2`: a staged demonstration of fresh agent sessions taking up
+  assigned work. Agents start from the contract, project guidance, and Book in
+  ordinary sessions, so observing that is a review step rather than an outcome.
+  Contract retrieval and fresh sessions in other projects remain in
+  [Project Integration milestone 1](project-integration.md#project-integration-1-contract)
+  and [Symposium Integration milestone 3](symposium-integration.md#symposium-integration-3).
 
 <a id="engine-bootstrap-3"></a>
 
