@@ -198,7 +198,7 @@ configuration must resolve to the same locations.
 relative to the directory containing `anchorbook.toml` and within it, under the
 same [path rules](#paths). A project whose repository already has another Book,
 such as user documentation, can keep that Book's `book.toml` at the root and give
-its Anchor Book its own, for example `mdbook = "design-book/book.toml"`, while
+its Anchor Book its own, for example `mdbook = "anchor-book/book.toml"`, while
 `anchorbook.toml` stays at the root, where configured source and verification
 paths can reach the project's code. mdBook resolves `book.src` and
 `build.build-dir` relative to the directory of its own `book.toml`; the check

@@ -373,8 +373,8 @@ fn mdbook_configuration_location_is_required_and_resolved_from_the_configuration
     let error = load(&path).unwrap_err();
     assert_eq!(error.kind(), ErrorKind::InvalidValue);
     assert!(error.to_string().contains("mdbook"), "{error}");
-    let path = f.config(&INPUT.replace("\"book.toml\"", "\"design-book/book.toml\""));
+    let path = f.config(&INPUT.replace("\"book.toml\"", "\"anchor-book/book.toml\""));
     let config = load(&path).unwrap();
-    assert_eq!(config.mdbook(), f.0.join("design-book/book.toml"));
-    assert!(!f.0.join("design-book").exists(), "loading creates nothing");
+    assert_eq!(config.mdbook(), f.0.join("anchor-book/book.toml"));
+    assert!(!f.0.join("anchor-book").exists(), "loading creates nothing");
 }
