@@ -2,9 +2,9 @@
 
 **Status: draft for review.** This describes the intended system. The repository
 currently has a shared Rust record library, a configuration loader, and an mdBook
-adapter that renders anchors and authorities. Structural checking now reports
-format defects through the library and CLI; managed writes, contract delivery,
-and evidence aggregation remain later work.
+adapter that renders anchors and authorities. Structural checking reports format
+defects through the library and CLI, and `anchorbook contract` delivers the AI
+Working Contract; managed writes and evidence aggregation remain later work.
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.

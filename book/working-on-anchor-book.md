@@ -19,14 +19,14 @@ Use these definitions and conventions while authoring this Book:
   decisions, and authority-reference rules.
 - The [Glossary](glossary.md) lists the Book's terms. Use them in text and
   identifiers; propose a new term to the engineer before introducing it.
+- [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
+  structure, identifiers, planned coverage, statuses, and evidence records.
 
 The engine still reads the earlier TOML record form, so write this Book's records
 in that form, following the existing records, until the
 [Record Line Grammar](implementation-roadmaps/record-line-grammar.md) migration;
 [Current implementation](design/anchor-definitions.md#current-implementation)
 summarizes it.
-- [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
-  structure, identifiers, planned coverage, statuses, and evidence records.
 
 The record syntax and fields are unpublished drafts that we are refining through use.
 Follow their documented evolution policy and update the syntax, affected records,
