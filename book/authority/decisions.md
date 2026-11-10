@@ -88,6 +88,18 @@ reconsider-when = "A project needs evidence from runs verify cannot invoke, such
 
 ```anchorbook-decision
 schema-version = 1
+id = "decision-completion-claims-checked"
+title = "Complete milestones claim their fully covered criteria, and verify checks the claim"
+status = "draft"
+choice = "A roadmap milestone with status Complete claims every anchor criterion its completion criteria cover in full. verify fails the run when a claimed criterion in scope is not satisfied, and lists claims it could not check. Partial or no coverage, and milestones in other states, claim nothing."
+requirements = ["requirement-criterion-evidence"]
+rationale = "Whether a criterion has linked tests depends on someone adding them, so absence must be caught where it matters: when the Book records work as done. Tying the check to Complete milestones uses a claim the Book already makes, keeps work in progress as a report rather than a failure, and makes a later regression in that evidence visible."
+alternatives = ["Every test must carry a link or an explicit exemption, which catches unlinked tests directly but is noisy for projects with many existing tests; kept as a possible opt-in.", "A separate completion marker on anchors or design areas, which is more precise but adds a field the Book does not have.", "Planned coverage stays informational, which avoids failures but lets completion be recorded with no evidence."]
+reconsider-when = "Completion is recorded somewhere other than roadmap milestones, or claims need finer scope than a milestone's criteria."
+```
+
+```anchorbook-decision
+schema-version = 1
 id = "decision-evidence-links-in-code"
 title = "Evidence links live beside the code they describe"
 status = "draft"

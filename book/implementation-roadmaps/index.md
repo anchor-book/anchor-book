@@ -110,8 +110,11 @@ anchor criteria, and several entries may address the same anchor criterion.
 | Partial | The work addresses a stated portion of the criterion. |
 | None | No anchor applies; give a reason, such as design preparation or contributor setup. |
 
-Planned coverage is not verification. Review the scope and evidence of partial
-entries before claiming combined full coverage. Do not invent anchors to cover
+Planned coverage is not verification by itself. Once a milestone is Complete,
+its Full entries become [claims](../design/verification-evidence.md#claims-of-completion)
+that `verify` checks against current evidence; Partial entries claim nothing.
+Review the scope and evidence of partial entries before claiming combined full
+coverage. Do not invent anchors to cover
 preparation tasks. Design links supply context; authority is traced through the
 anchors' own references.
 

@@ -62,7 +62,7 @@ the current inventory and migrate with them when that work is assigned.
 - [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
 - [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
-- [ ] Link the test criteria of the `verify-*` anchors and at least one existing checker anchor, and record a build-loop run.
+- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (31 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6.
 
 ### Completion criteria
 
@@ -96,7 +96,7 @@ Recording runners and native nextest runs select exactly the linked tests in sco
 
 #### Build loop {#verification-evidence-1-build-loop}
 
-In this repository, `anchorbook verify --anchor` for a linked anchor reports its criteria after a passing change, a deliberately failing change, and the restored code, and a whole-Book run reports the remaining unlinked criteria; record the commands and output.
+In this repository, `anchorbook verify --anchor` for a linked anchor reports its criteria after a passing change, a deliberately failing change, and the restored code, and a whole-Book run reports the remaining unlinked criteria and exits 0 with every test claim satisfied; record the commands and output.
 
 - **Anchor coverage:** None — acceptance against this Book
 - **Evidence:** Pending.
@@ -220,6 +220,7 @@ Pending.
 - [ ] Implement supported source associations and function identities, distinguishing tests, Verus executable/proof functions, and specification context. Report misplaced, duplicate, dangling, mismatched, ambiguous, and unsupported links.
 - [ ] Define target planning, report identity fields, normalized evidence, and per-method/criterion/anchor aggregation behind `verification`. Collect criteria/configuration content identities and Git revision/dirty state when available; code/lockfile collection and execution snapshots belong to milestones 1 and 2.
 - [ ] Expose typed reports and `anchorbook verify --config` scope/report behavior. Use independent fixture results and unavailable-runner cases; no native runner or speculative plugin API is required for this milestone.
+- [ ] Read claims from Complete milestones' Full coverage through the roadmap reader; fail the run for unsatisfied claims in scope and list unchecked ones.
 
 ### Completion criteria
 
@@ -242,6 +243,13 @@ A recorded parser/dependency review identifies supported Rust and Verus forms. I
 Fixture plans identify requested criteria, selected tests/proof targets, excluded scope, criteria/configuration content identities, and Git revision/dirty state, remaining usable without Git. Library and actual CLI reports agree for valid, invalid, and unavailable-runner inputs, preserve sources, and use the designed progress/incomplete exit behavior. The report model includes execution identity fields; native collection and snapshots remain in milestones 1 and 2.
 
 - **Anchor coverage:** [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output`, `incomplete-runs`; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `scope-and-limits`; [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: planning and reporting before native execution; milestones 1 and 2 supply native results.
+- **Evidence:** Pending.
+
+#### Claims checked {#verification-evidence-4-claims}
+
+Fixture Books with Complete and other milestones, Full and Partial coverage, and satisfied, unlinked, and failing criteria produce the designed claim failures, exit statuses, and unchecked lists through the library and actual CLI.
+
+- **Anchor coverage:** [verify-claims-evidenced](../design/verification-evidence.md#verify-claims-evidenced) · `claim-failures`, `unchecked-claims` — Full for fixture results; native runs are in milestones 1 and 2.
 - **Evidence:** Pending.
 
 ### Completion record

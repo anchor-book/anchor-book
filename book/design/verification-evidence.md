@@ -58,9 +58,10 @@ property = '''
 A completed verify run reports every anchor in scope, grouped by design chapter,
 with each criterion's state and its linked tests or proofs, and summary counts of
 satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and
-unlinked criteria are reported as progress and do not make the run fail; the run
-fails only when it cannot evaluate the scope, such as invalid configuration, an
-invalid Book, or invalid records.
+unlinked criteria are reported as progress and do not make the run fail, unless
+the Book [claims](#verify-claims-evidenced) them; the run is incomplete only when
+it cannot evaluate the scope, such as invalid configuration, an invalid Book, or
+invalid records.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-criterion-evidence" },
@@ -128,6 +129,35 @@ verification = ["test"]
 statement = "Compare Book and source file contents and directory entries before and after passing, failing, and incomplete runs; they are unchanged, and runner output appears only under the output directory."
 ```
 
+```anchorbook-anchor
+schema-version = 1
+id = "verify-claims-evidenced"
+title = "Work the Book records as done must have current evidence"
+status = "draft"
+property = '''
+When a roadmap milestone has status Complete, each anchor criterion that one of
+its completion criteria covers in full is claimed. Verify fails the run when a
+claimed criterion in its scope is not satisfied, naming the claiming milestone
+and the criterion's state, so work cannot be recorded as done while its evidence
+is missing, stale, or failing. Partial or no coverage claims nothing. A claimed
+method the run does not evaluate is reported as unchecked, never as satisfied.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-criterion-evidence" },
+  { kind = "decision", id = "decision-completion-claims-checked" },
+]
+
+[[criteria]]
+id = "claim-failures"
+verification = ["test"]
+statement = "In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run."
+
+[[criteria]]
+id = "unchecked-claims"
+verification = ["test"]
+statement = "A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim."
+```
+
 ## Using verify
 
 ```mermaid
@@ -167,7 +197,8 @@ records make the run incomplete rather than reporting progress against them.
 
 | Exit status | Meaning |
 | --- | --- |
-| `0` | The report completed, whatever the criteria's states |
+| `0` | The report completed and every claimed criterion it checked is satisfied |
+| `1` | The report completed, and a [claimed](#claims-of-completion) criterion is not satisfied |
 | `2` | Invalid invocation, configuration, Book, or records; no progress report |
 
 `verify` is a library capability separate from `checking`, reusing
@@ -383,6 +414,30 @@ the configured assessment directory, rejects malformed or duplicate records as
 located findings, and treats a record whose fingerprints differ from the current
 ones as stale.
 
+## Claims of completion
+
+The Book makes a claim about evidence in one place: a roadmap milestone with
+status **Complete** whose completion criterion lists an anchor criterion with
+**Full** coverage. Recording that milestone as done asserts that the criterion is
+established, so `verify` checks it, under the
+[completion-claims decision](../authority/decisions.md#decision-completion-claims-checked).
+
+- A claimed criterion that is satisfied in the run passes.
+- A claimed criterion in any other state, including `unlinked`, fails the run with
+  exit status `1`. The report names the claiming milestone, its completion
+  criterion, and the anchor criterion's state.
+- Partial and None coverage, and milestones in any other status, claim nothing;
+  their criteria remain progress.
+- A claim outside the run's scope, or on a method the run cannot evaluate yet,
+  such as `review` before assessment records, is listed as unchecked. It never
+  counts as satisfied, and only a full-scope run with every method evaluated
+  checks every claim.
+
+`verify` reads roadmap status and coverage through the same roadmap reader the
+renderer uses. Agents and CI therefore cannot mark work Complete without linked,
+passing evidence, and a later regression in that evidence fails the run that
+finds it. Unclaimed work stays a progress report.
+
 ## Report
 
 The report lists chapters in navigation order, and under each its anchors and
@@ -468,14 +523,10 @@ native Verus runs in
 
 1. **Rendered progress.** Whether the published Book shows states beside criteria,
    derived from the CI report.
-2. **When unsatisfied criteria fail.** Whether declared maturity turns states into
-   failures: for example, in the `complete` [project phase](configuration.md#project-phase)
-   every criterion in scope must be satisfied, or a design area or anchor marked
-   `complete` must have all its criteria satisfied while the rest of the Book stays
-   in progress. Completion is a separate axis from design acceptance (`draft` or
-   `accepted`): it claims the part is implemented and verified, which `verify` would
-   enforce. This would replace any separate CI gating option and needs a completion
-   marker below the project level, which does not exist yet.
+2. **Further claims.** [Claims of completion](#claims-of-completion) come from
+   Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
+   also claims every criterion in the Book, and whether a test with no link should
+   fail when a project opts in, remain open.
 3. **Machine-readable output.** The versioned artifact schema for tools and agents,
    planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
 4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
