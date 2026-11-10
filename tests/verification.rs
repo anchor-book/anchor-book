@@ -191,6 +191,7 @@ fn state(report: &Report, anchor: &str, criterion: &str) -> (State, Vec<State>) 
     )
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     let book = book("");
@@ -305,6 +306,7 @@ fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     );
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     let book = book("");
@@ -324,6 +326,7 @@ fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     assert_eq!(ambiguous, [1, 6]);
 }
 
+/// anchorbook: verify-criterion-states#state-per-method
 #[test]
 fn every_method_state_comes_from_links_and_this_runs_results() {
     let book = book("");
@@ -435,6 +438,7 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
     );
 }
 
+/// anchorbook: verify-criterion-states#scope-and-limits
 #[test]
 fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     let book = book("");
@@ -479,6 +483,8 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     );
 }
 
+/// anchorbook: verify-claims-evidenced#unchecked-claims
+/// anchorbook: verify-claims-evidenced#claim-failures
 #[test]
 fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds() {
     let roadmap = [
@@ -587,11 +593,21 @@ fn plan_scoped(book: &fixture::Book, anchor: &str) -> Plan {
 }
 
 fn cli(book: &fixture::Book, args: &[&str]) -> (Option<i32>, String, String) {
+    // No cargo at this path, so nextest is never found and nothing is run.
+    cli_with(book, args, &[("CARGO", "/nonexistent/cargo".into())])
+}
+
+fn cli_with(
+    book: &fixture::Book,
+    args: &[&str],
+    env: &[(&str, std::ffi::OsString)],
+) -> (Option<i32>, String, String) {
     let output = Command::new(env!("CARGO_BIN_EXE_anchorbook"))
         .arg("verify")
         .arg("--config")
         .arg(book.config())
         .args(args)
+        .envs(env.iter().map(|(k, v)| (*k, v.clone())))
         .output()
         .unwrap();
     (
@@ -601,6 +617,9 @@ fn cli(book: &fixture::Book, args: &[&str]) -> (Option<i32>, String, String) {
     )
 }
 
+/// anchorbook: verify-runs-linked-checks#source-preservation
+/// anchorbook: verify-progress-report#incomplete-runs
+/// anchorbook: verify-progress-report#progress-output
 #[test]
 fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     let book = book(&milestone(1, "Complete", "`a-unlinked` · `none` — Full"));
@@ -613,7 +632,7 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
         "scope: all anchors; methods test, proof, review",
         "Fixture design (design.md)",
         "  a-tests (draft) — not-evaluated, 0 of 3 criteria satisfied",
-        "    one [test]: not-evaluated — runner not available yet",
+        "    one [test]: not-evaluated — cargo-nextest is not installed; install it with `cargo install cargo-nextest --version 0.9.151 --locked`",
         "    none [test]: unlinked — no test link names the criterion",
         "      review: not-evaluated — assessment records are not read yet",
         "  verify.link-misplaced: tests/it.rs:1:",
@@ -630,7 +649,7 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     // The library and the CLI agree on every anchor's state.
     let report = evaluate(
         &whole(&book),
-        &RunResults::not_run("runner not available yet"),
+        &RunResults::not_run("cargo-nextest is not installed"),
     );
     for anchor in report.anchors() {
         assert!(stdout.contains(&format!(
@@ -671,6 +690,7 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     );
 }
 
+/// anchorbook: verify-progress-report#incomplete-runs
 #[test]
 fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     let book = book("");
@@ -738,6 +758,7 @@ fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     assert!(error.contains("needs a [verification] section"), "{error}");
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn every_supported_target_and_function_form_is_identified() {
     let book = book("");
@@ -846,6 +867,7 @@ fn every_supported_target_and_function_form_is_identified() {
     assert!(plan.tests.iter().any(|f| f.name == "in_main"));
 }
 
+/// anchorbook: verify-claims-evidenced#claim-failures
 #[test]
 fn roadmaps_are_the_role_chapter_and_its_subtree() {
     let book = book("");
@@ -877,6 +899,7 @@ fn roadmaps_are_the_role_chapter_and_its_subtree() {
     assert_eq!(milestones, ["work-7", "work-8"]);
 }
 
+/// anchorbook: verify-progress-report#incomplete-runs
 #[test]
 fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     use std::error::Error;
@@ -904,6 +927,7 @@ fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     assert!(error.source().is_some());
 }
 
+/// anchorbook: verify-criterion-states#state-per-method
 #[test]
 fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     let book = book("");
@@ -984,6 +1008,8 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     );
 }
 
+/// anchorbook: verify-claims-evidenced#unchecked-claims
+/// anchorbook: verify-progress-report#progress-output
 #[test]
 fn the_text_report_counts_states_and_claims() {
     let roadmap = [
@@ -1054,6 +1080,7 @@ fn flags_are_parsed_strictly() {
     assert!(stderr.contains("Usage"));
 }
 
+/// anchorbook: verify-runs-linked-checks#selected-run
 #[test]
 fn input_identities_follow_the_criteria_and_the_checkout() {
     let book = book("");
@@ -1102,6 +1129,7 @@ fn input_identities_follow_the_criteria_and_the_checkout() {
     assert_eq!(whole(&book).inputs.dirty, Some(true));
 }
 
+/// anchorbook: verify-links-resolve#link-findings
 #[test]
 fn comment_like_text_inside_string_literals_is_not_a_link() {
     let book = book("");
@@ -1137,4 +1165,287 @@ fn comment_like_text_inside_string_literals_is_not_a_link() {
             .iter()
             .any(|l| l.function == real && l.line == 12)
     );
+}
+
+/// A stand-in for `cargo` that records each invocation and, for `nextest run`,
+/// writes a prepared JUnit report where the tool configuration puts the store.
+const RECORDING_CARGO: &str = r#"#!/bin/sh
+printf '%s\n' "$*" >> "$RECORD"
+if [ "$1 $2" = "nextest --version" ]; then
+    echo "cargo-nextest 9.9.9 (recording)"
+    exit 0
+fi
+for argument; do
+    case "$argument" in anchorbook:*) tool="${argument#anchorbook:}" ;; esac
+done
+store=$(sed -n 's/^dir = "\(.*\)"$/\1/p' "$tool")
+mkdir -p "$store/anchorbook-verify"
+if [ -n "$TOUCH" ]; then echo "// changed" >> "$TOUCH"; fi
+if [ "$MODE" = unbuildable ]; then exit 101; fi
+cp "$JUNIT" "$store/anchorbook-verify/junit.xml"
+exit 100
+"#;
+
+fn junit(cases: &[(&str, &str, &str)]) -> String {
+    let mut xml = String::from("<testsuites>\n");
+    for (class, name, outcome) in cases {
+        match *outcome {
+            "pass" => xml.push_str(&format!(
+                "<testcase name=\"{name}\" classname=\"{class}\"/>\n"
+            )),
+            "fail" => xml.push_str(&format!(
+                "<testcase name=\"{name}\" classname=\"{class}\"><failure>no</failure></testcase>\n"
+            )),
+            _ => xml.push_str(&format!(
+                "<testcase name=\"{name}\" classname=\"{class}\"><skipped/></testcase>\n"
+            )),
+        }
+    }
+    xml.push_str("</testsuites>\n");
+    xml
+}
+
+struct Recording {
+    record: PathBuf,
+    env: Vec<(&'static str, std::ffi::OsString)>,
+}
+fn recording(book: &fixture::Book, cases: &[(&str, &str, &str)]) -> Recording {
+    use std::os::unix::fs::PermissionsExt;
+    book.write("runner/cargo", RECORDING_CARGO);
+    let cargo = book.path("runner/cargo");
+    std::fs::set_permissions(&cargo, std::fs::Permissions::from_mode(0o755)).unwrap();
+    book.write("runner/junit.xml", &junit(cases));
+    let record = book.path("runner/record.txt");
+    Recording {
+        env: vec![
+            ("CARGO", cargo.into()),
+            ("RECORD", record.clone().into()),
+            ("JUNIT", book.path("runner/junit.xml").into()),
+        ],
+        record,
+    }
+}
+
+/// anchorbook: verify-runs-linked-checks#source-preservation
+/// anchorbook: verify-runs-linked-checks#selected-run
+#[test]
+fn the_runner_selects_exactly_the_linked_tests_and_reads_only_this_runs_report() {
+    let book = book(&milestone(1, "Complete", "`a-tests` · `one` — Full"));
+    let runner = recording(
+        &book,
+        &[
+            ("fixture", "tests::same_name", "pass"),
+            ("fixture::it", "linked_twice", "pass"),
+            ("fixture::it", "duplicate", "pass"),
+            ("fixture::it", "same_name", "fail"),
+            ("fixture::it", "checked_by_test", "skip"),
+            ("other::it", "same_name", "pass"),
+        ],
+    );
+    let before: Vec<_> = book
+        .snapshot()
+        .into_iter()
+        .filter(|(path, _)| !path.starts_with("runner"))
+        .collect();
+    let (code, stdout, stderr) = cli_with(&book, &[], &runner.env);
+    assert_eq!(code, Some(0), "{stdout}{stderr}");
+    let record = std::fs::read_to_string(&runner.record).unwrap();
+    let runs: Vec<&str> = record
+        .lines()
+        .filter(|l| l.starts_with("nextest run"))
+        .collect();
+    assert_eq!(runs.len(), 2, "one run per package:\n{record}");
+    let tool = book.path("target/verify/nextest/tool.toml");
+    let expected = |manifest: &str, filter: &str| {
+        format!(
+            "nextest run --manifest-path {} --locked --no-fail-fast --no-tests=pass --run-ignored all --profile anchorbook-verify --tool-config-file anchorbook:{} -E {filter}",
+            book.path(manifest).display(),
+            tool.display()
+        )
+    };
+    assert_eq!(
+        runs[0],
+        expected(
+            "Cargo.toml",
+            "(binary_id(=fixture) & test(=tests::same_name)) | (binary_id(=fixture) & test(=tests::inner::same_name)) | (binary_id(=fixture::it) & test(=checked_by_test)) | (binary_id(=fixture::it) & test(=duplicate)) | (binary_id(=fixture::it) & test(=linked_twice)) | (binary_id(=fixture::it) & test(=same_name))"
+        )
+    );
+    assert_eq!(
+        runs[1],
+        expected(
+            "other/Cargo.toml",
+            "(binary_id(=other::it) & test(=same_name))"
+        )
+    );
+    for expected in [
+        "runners: cargo-nextest 9.9.9 (recording)",
+        "    one [test]: satisfied — 3 linked tests passed",
+        "    two [test]: failed — tests::inner::same_name (fixture lib) is absent from the results; same_name (fixture test it) failed",
+        "      test: no-evidence — checked_by_test (fixture test it) was skipped",
+        "claims: 1 claim: 1 satisfied, 0 unsatisfied, 0 unchecked",
+    ] {
+        assert!(
+            stdout.contains(expected),
+            "missing {expected:?} in\n{stdout}"
+        );
+    }
+    // Runner output lands only under the configured output directory.
+    let after: Vec<_> = book
+        .snapshot()
+        .into_iter()
+        .filter(|(path, _)| {
+            // Only the configured output directory may be new: target/ and target/verify/.
+            !path.starts_with("runner")
+                && !path.starts_with("target/verify")
+                && *path != std::path::Path::new("target")
+        })
+        .collect();
+    assert_eq!(before, after);
+    assert!(book.path("target/verify/nextest/fixture.log").is_file());
+}
+
+/// anchorbook: verify-runs-linked-checks#selected-run
+/// anchorbook: verify-progress-report#incomplete-runs
+#[test]
+fn stale_reports_changed_inputs_and_failed_builds_are_never_evidence() {
+    let book = book("");
+    let cases = [("fixture::it", "linked_twice", "pass")];
+    let state_of_one = |env: &[(&str, std::ffi::OsString)]| {
+        let (code, stdout, _) = cli_with(&book, &["--anchor", "a-tests"], env);
+        assert_eq!(code, Some(0), "{stdout}");
+        stdout
+            .lines()
+            .find(|l| l.starts_with("    one [test]:"))
+            .unwrap()
+            .to_owned()
+    };
+    // A report left by an earlier run is removed before the run, so a runner
+    // that writes none produces no evidence.
+    let runner = recording(&book, &cases);
+    book.write(
+        "target/verify/nextest/store/anchorbook-verify/junit.xml",
+        &junit(&[
+            ("fixture", "tests::same_name", "pass"),
+            ("fixture::it", "linked_twice", "pass"),
+            ("fixture::it", "duplicate", "pass"),
+        ]),
+    );
+    let mut env = runner.env.clone();
+    env.push(("MODE", "unbuildable".into()));
+    let line = state_of_one(&env);
+    assert!(
+        line.ends_with(
+            "inconclusive — cargo nextest for package `fixture` produced no report (exit 101); see target/verify/nextest/fixture.log"
+        ),
+        "{line}"
+    );
+
+    let mut env = runner.env.clone();
+    env.push(("TOUCH", book.path("src/lib.rs").into()));
+    let line = state_of_one(&env);
+    assert!(
+        line.contains("inconclusive — sources, manifests, or lockfiles changed during the run"),
+        "{line}"
+    );
+}
+
+/// anchorbook: verify-criterion-states#scope-and-limits
+#[test]
+fn the_runner_runs_only_when_configured_and_needed() {
+    let book = book("");
+    let runner = recording(&book, &[]);
+    let (_, stdout, _) = cli_with(&book, &["--method", "proof"], &runner.env);
+    assert!(
+        !runner.record.exists(),
+        "a proof-only run must not start nextest"
+    );
+    assert!(!stdout.contains("runners:"));
+    book.write(
+        "anchorbook.toml",
+        &format!(
+            "{}{}",
+            fixture::CONFIG,
+            VERIFICATION.replace("[\"nextest\"]", "[]")
+        ),
+    );
+    let (_, stdout, _) = cli_with(&book, &[], &runner.env);
+    assert!(!runner.record.exists());
+    assert!(
+        stdout.contains(
+            "    one [test]: not-evaluated — nextest is not listed in [verification] runners"
+        ),
+        "{stdout}"
+    );
+}
+
+/// anchorbook: verify-runs-linked-checks#selected-run
+/// The build loop against cargo-nextest itself: a passing, a deliberately
+/// failing, and a restored test change the linked criterion's state.
+#[test]
+#[ignore = "runs the installed cargo-nextest; run with --ignored when it is on PATH"]
+fn native_nextest_follows_a_change_through_the_build_loop() {
+    let book = fixture::Book::new();
+    book.write(
+        "anchorbook.toml",
+        &format!("{}\n[verification]\nsources = [\"src\", \"tests\"]\noutput = \"target/verify\"\nrunners = [\"nextest\"]\n", fixture::CONFIG),
+    );
+    book.write(
+        "docs/design.md",
+        &format!("# Design\n\n{}", anchor("a-loop", &[("works", "\"test\"")])),
+    );
+    book.write("docs/authority.md", AUTHORITY);
+    book.write("Cargo.toml", "[package]\nname = \"loop-fixture\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[workspace]\n");
+    book.write("src/lib.rs", "pub fn value() -> u32 { 2 }\n");
+    // The runner passes --locked, so the project must have its lockfile.
+    let lock = Command::new(env!("CARGO"))
+        .args(["generate-lockfile", "--offline", "--manifest-path"])
+        .arg(book.path("Cargo.toml"))
+        .status()
+        .unwrap();
+    assert!(lock.success());
+    let test = |expected: u32| {
+        format!(
+            "/// anchorbook: a-loop#works\n#[test]\nfn value_is_right() {{ assert_eq!(loop_fixture::value(), {expected}); }}\n\n#[test]\n#[ignore]\nfn ignored_but_run() {{}}\n"
+        )
+    };
+    let env = [("CARGO", std::ffi::OsString::from(env!("CARGO")))];
+    let state = |book: &fixture::Book| {
+        let (code, stdout, stderr) = cli_with(book, &[], &env);
+        assert_eq!(code, Some(0), "{stdout}{stderr}");
+        assert!(stdout.contains("runners: cargo-nextest"), "{stdout}");
+        stdout
+            .lines()
+            .find(|l| l.starts_with("    works [test]:"))
+            .unwrap()
+            .to_owned()
+    };
+    book.write("tests/loop.rs", &test(2));
+    assert_eq!(
+        state(&book),
+        "    works [test]: satisfied — 1 linked test passed"
+    );
+    book.write("tests/loop.rs", &test(3));
+    assert!(
+        state(&book).starts_with(
+            "    works [test]: failed — value_is_right (loop-fixture test loop) failed"
+        )
+    );
+    book.write("tests/loop.rs", &test(2));
+    assert_eq!(
+        state(&book),
+        "    works [test]: satisfied — 1 linked test passed"
+    );
+}
+
+#[test]
+fn the_code_identity_covers_a_member_packages_lockfile_at_the_root() {
+    let book = book("");
+    // Only the second package has links; its lockfile is at the configuration root.
+    book.write("src/lib.rs", "pub fn f() {}\n");
+    book.write("tests/it.rs", "#[test]\nfn t() {}\n");
+    book.write("Cargo.lock", "version = 4\n");
+    let first = whole(&book);
+    assert_eq!(first.manifests.keys().collect::<Vec<_>>(), ["other"]);
+    book.write("Cargo.lock", "version = 4\n# changed\n");
+    assert_ne!(whole(&book).inputs.code, first.inputs.code);
 }

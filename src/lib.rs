@@ -3,8 +3,9 @@
 //!
 //! Record and rendering operations use supplied Markdown without filesystem access.
 //! Configuration and structural checking inspect explicit files without writes.
-//! [`verification`] reads sources and asks `git` for the revision; no operation
-//! writes files or yet runs the project's tests or verifier.
+//! [`verification`] reads sources, asks `git` for the revision, and runs linked
+//! tests with cargo-nextest, writing only under its configured output directory;
+//! no other operation writes files or runs the project's tools.
 //! A successful inventory establishes schema and authority-reference consistency.
 //!
 //! ```

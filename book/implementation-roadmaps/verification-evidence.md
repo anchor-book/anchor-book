@@ -47,7 +47,7 @@ the current inventory and migrate with them when that work is assigned.
 
 **Outcome:** An agent or engineer runs `anchorbook verify --anchor <id> --method test` after a change and sees that anchor's test criteria for the current files, with links resolved and drift reported; a whole-Book run reports progress by chapter.
 
-**Status:** In progress — scope agreed on 2026-11-10, including cargo-nextest as the test runner
+**Status:** Complete
 
 **Dependencies:** [Milestone 4](#verification-evidence-4), complete; cargo-nextest, agreed.
 
@@ -57,13 +57,13 @@ the current inventory and migrate with them when that work is assigned.
 
 **Tasks**
 
-- [ ] Use milestone 4's configuration, link inventory, states, and report API; implement nextest selection, an exact filter with ignored tests included, JUnit interpretation, and test-name mapping.
-- [ ] Connect the runner to `anchorbook verify --config`, preserving the shared scope and exit statuses. Collect code and lockfile content identities and compare input snapshots before and after execution.
-- [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
-- [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
-- [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
-- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6. Link only a test that exercises its criterion. Where a claimed criterion has none, add the test, or change the claiming milestone's coverage to Partial with its scope, and record the case; never link a loosely related test to clear a claim.
-- [ ] Decide how ignored acceptance tests, such as `current_book` and `rendered_book`, which needs a built Book, count when linked: run them with their prerequisites, or report them as no-evidence with the reason.
+- [x] Use milestone 4's configuration, link inventory, states, and report API; implement nextest selection, an exact filter with ignored tests included, JUnit interpretation, and test-name mapping.
+- [x] Connect the runner to `anchorbook verify --config`, preserving the shared scope and exit statuses. Collect code and lockfile content identities and compare input snapshots before and after execution.
+- [x] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
+- [x] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
+- [x] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
+- [x] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6. Link only a test that exercises its criterion. Where a claimed criterion has none, add the test, or change the claiming milestone's coverage to Partial with its scope, and record the case; never link a loosely related test to clear a claim.
+- [x] Decide how ignored acceptance tests, such as `current_book` and `rendered_book`, which needs a built Book, count when linked: run them with their prerequisites, or report them as no-evidence with the reason. Decided: an ignored test that reads only current sources can be linked; one that reads earlier build output, such as `rendered_book`, cannot, as [Test runner](../design/verification-evidence.md#test-runner) states.
 
 ### Completion criteria
 
@@ -72,39 +72,43 @@ the current inventory and migrate with them when that work is assigned.
 Independent fixtures produce every state for the test method; criteria requiring several methods report partial or not evaluated correctly; scoped runs name what they exclude.
 
 - **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method`, `scope-and-limits` — Partial: test method and its execution scope; proof scope is in milestone 2.
-- **Evidence:** Pending.
+- **Evidence:** Passed. Fixture tests produce every test-method state from supplied results and through the recording runner: satisfied, failed, skipped and absent as no-evidence, inconclusive for a failed build, a missing report, or changed inputs, and not evaluated for a missing nextest or one not listed in `runners`; a test-and-review criterion is partial; scoped runs give the excluded methods' reasons.
 
 #### Progress report {#verification-evidence-1-progress-report}
 
 For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor by chapter with states, links, and summary counts and exit 0; invalid inputs make the run incomplete; an unbuildable or missing runner affects only its method.
 
 - **Anchor coverage:** [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and retained CI reports in milestone 3.
-- **Evidence:** Pending.
+- **Evidence:** Passed. The CLI reports every anchor by chapter with states, linked functions, the nextest version, and summary counts; exits 0 with every checked claim holding, 1 with a failing claim, and 2 for invalid inputs; and an unbuildable or missing runner affects only the test method (`tests/verification.rs`).
 
 #### Links {#verification-evidence-1-links}
 
 Fixtures with dangling, mismatched, misplaced, and duplicate links and unlinked criteria produce located findings; corrected fixtures resolve.
 
 - **Anchor coverage:** [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: test links
-- **Evidence:** Pending.
+- **Evidence:** Passed in [milestone 4](#verification-evidence-4-function-links), with the scanner correction recorded there; every link in this Book's sources resolves, with no link findings.
 
 #### Selected runs {#verification-evidence-1-selected-runs}
 
 Recording runners and native nextest runs select exactly the linked tests in scope and identify code and lockfile contents. Before-and-after input snapshots detect changes and make affected evidence inconclusive; earlier reports never count. Linked tests not executed, skipped, or missing have no evidence; the runner preserves Book and source files.
 
 - **Anchor coverage:** [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: native test selection, current inputs, and preservation; proof execution is in milestone 2.
-- **Evidence:** Pending.
+- **Evidence:** Passed. The recording runner shows one `cargo nextest run` per package with the exact filter, ignored tests included, and the tool configuration under the output directory, and that only that directory changes. Native runs on this repository select exactly the linked tests; with a passing report from an earlier run planted in the store and a test file that fails to build, the method is inconclusive (exit 101, no report), and a source edited during a whole-Book run makes the evidence inconclusive and the claims fail. Reports include the code identity over sources, manifests, and lockfiles; a lockfile change at the root of a member package changes it.
 
 #### Build loop {#verification-evidence-1-build-loop}
 
 In this repository, `anchorbook verify --anchor` for a linked anchor reports its criteria after a passing change, a deliberately failing change, and the restored code, and a whole-Book run reports the remaining unlinked criteria and exits 0 with every test claim satisfied; record the commands and output.
 
 - **Anchor coverage:** None — acceptance against this Book
-- **Evidence:** Pending.
+- **Evidence:** Passed on 2026-11-10 with cargo-nextest 0.9.151. `anchorbook verify --config anchorbook.toml --anchor project-agent-bootstrap --method test`: `contract-retrieval` satisfied, exit 0; with `contract::text` deliberately returning other text, failed, naming `contract_output_is_the_packaged_text_for_every_project` and the claiming `project-integration-1-contract`, exit 1; restored, satisfied, exit 0. The whole-Book run takes about 8 seconds and exits 0: 28 claims, 23 satisfied and 5 unchecked (review and proof methods); 65 criteria, 34 satisfied, 2 partial, 25 unlinked, 4 not evaluated. The ignored `native_nextest_follows_a_change_through_the_build_loop` repeats the loop on a fixture package.
+
+### Evidence {#verification-evidence-1-evidence}
+
+Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the test suite pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. Linking: every test criterion that a Complete milestone claims has linked tests that exercise it, plus the `verify-*` anchors' criteria. One claim had no such test: Record Rendering milestone 2's `relationship-navigation`, whose site-prefix and print-view checks read previously built output, so its coverage is now Partial with that scope. `check-independent-build#broken-book` is linked to a new ignored test that runs `scripts/check-engine-independence.sh`, and `roadmap-validation` to a new current-Book acceptance test of this Book's roadmaps. Mutation testing on the runner: the first run had 9 survivors, 6 in JUnit index arithmetic, rewritten so none remains, and 3 test gaps, now covered; the repeat run tested 67 mutations: 41 caught, 26 unviable, none missed. Limits: one nextest version; builds use the project's ordinary target directory; reports are read, not retained, until milestone 3.
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10 on branch `verification`, not yet integrated. `verify` runs linked tests with cargo-nextest and reports their current results, and this Book's whole-Book run passes its test claims; proof and review methods stay unchecked until milestones 2 and 6.
 
 ## Milestone 2. Verify runs and reports proofs {#verification-evidence-2}
 

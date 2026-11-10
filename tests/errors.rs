@@ -5,6 +5,7 @@ use anchor_book::{Chapter, Diagnostic, RecordErrors, read_records};
 use serde_json::json;
 use std::{error::Error, path::Path};
 
+/// anchorbook: check-shared-typed-results#library-boundary
 #[test]
 fn record_errors_expose_a_summary_and_the_first_diagnostic() {
     let errors = read_records(&[Chapter::new(Path::new("a.md"), "{anchor}`old`")]).unwrap_err();

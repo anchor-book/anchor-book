@@ -362,6 +362,8 @@ impl Error for CheckError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    /// anchorbook: check-truthful-results#outcomes-and-precedence
+    /// anchorbook: check-truthful-results#blocked-evaluation
     #[test]
     fn outcomes_require_complete_evaluation_and_operational_errors_take_precedence() {
         let mut report = CheckReport::new(Path::new("anchorbook.toml"));
@@ -415,6 +417,7 @@ mod tests {
             (0, 1, 2)
         );
     }
+    /// anchorbook: check-actionable-diagnostics#diagnostic-content
     #[test]
     fn positions_are_one_based_unicode_columns_and_invalid_offsets_are_not_invented() {
         let text = "éx\n  [链接](chapter.md)";

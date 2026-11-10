@@ -37,6 +37,7 @@ fn run(args: &[&str], input: &str) -> Output {
         .unwrap();
     process.wait_with_output().unwrap()
 }
+/// anchorbook: render-records-in-context#preservation-and-escaping
 #[test]
 fn renders_all_fields_and_preserves_unrelated_content() {
     let prefix = "# Chapter\n\nProse remains.\n\n```mermaid\ngraph LR\nA-->B\n```\n\n";
@@ -90,6 +91,7 @@ fn renders_all_fields_and_preserves_unrelated_content() {
         assert!(section.contains(&format!("<h4>{heading}</h4>")));
     }
 }
+/// anchorbook: render-records-in-context#preservation-and-escaping
 #[test]
 fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
     let text = RECORDS
@@ -117,6 +119,7 @@ fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
     assert!(html.contains("No recorded requirements."));
     assert!(html.contains(">Draft<"));
 }
+/// anchorbook: render-records-in-context#relationship-navigation
 #[test]
 fn nested_chapters_routes_and_metadata_survive_process_boundary() {
     let split = RECORDS.find("```anchorbook-decision").unwrap();
@@ -303,6 +306,7 @@ fn invalid_verification_fails_preprocessing_without_success_json() {
     }
 }
 
+/// anchorbook: records-valid-authority#production-integration
 #[test]
 fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     let source = RECORDS
@@ -324,6 +328,7 @@ fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     assert!(diagnostics.contains("missing: authority definition does not exist"));
 }
 
+/// anchorbook: records-valid-authority#production-integration
 /// anchorbook: records-valid-authority#resolved-authority
 /// anchorbook: records-valid-authority#compatible-status
 #[test]

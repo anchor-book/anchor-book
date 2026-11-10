@@ -377,6 +377,7 @@ fn validate_reference(
         forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
             violation_is_located(candidates@, violations[violation_index]),
 ))]
+/// anchorbook: records-valid-authority#formal-authority
 pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
     let mut violations: Vec<Violation> = Vec::new();
     let mut record_index: usize = 0;

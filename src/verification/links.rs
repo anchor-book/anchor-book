@@ -88,6 +88,8 @@ pub struct Link {
     pub path: PathBuf,
     /// One-based line of the link.
     pub line: usize,
+    /// The manifest of the function's package, which runners build and run.
+    pub manifest: PathBuf,
 }
 
 /// A located problem with a link or with a source file that may hold links.
@@ -202,12 +204,16 @@ fn string_literals(text: &str) -> Vec<Span> {
     spans
 }
 
+/// A source file's package, crate target, module path, and package manifest.
+type Context = (String, Target, Vec<String>, PathBuf);
+
 /// The package and crate target a source file belongs to, and its module path.
-fn context(file: &Path, base: &Path) -> Option<(String, Target, Vec<String>)> {
+fn context(file: &Path, base: &Path) -> Option<Context> {
     let mut directory = file.parent();
     while let Some(dir) = directory {
         if let Some(name) = package_name(&dir.join("Cargo.toml")) {
-            return target_of(file.strip_prefix(dir).ok()?, dir, name);
+            let (package, target, module) = target_of(file.strip_prefix(dir).ok()?, dir, name)?;
+            return Some((package, target, module, dir.join("Cargo.toml")));
         }
         if dir == base {
             break;
@@ -342,7 +348,7 @@ fn parse_link(text: &str) -> Result<(String, String, Option<String>), String> {
 
 struct FileReader<'a> {
     path: PathBuf,
-    context: Option<(String, Target, Vec<String>)>,
+    context: Option<Context>,
     inventory: &'a RecordInventory,
     attached: BTreeSet<usize>,
     macros: Vec<RangeInclusive<usize>>,
@@ -415,7 +421,7 @@ impl FileReader<'_> {
         let mut seen = BTreeSet::new();
         for (line, text) in links {
             self.attached.insert(line);
-            let Some((package, target, file_module)) = self.context.clone() else {
+            let Some((package, target, file_module, manifest)) = self.context.clone() else {
                 self.finding(
                     line,
                     "verify.link-unsupported",
@@ -486,6 +492,7 @@ impl FileReader<'_> {
                     witness,
                     path: self.path.clone(),
                     line,
+                    manifest,
                 },
                 definition,
             ));

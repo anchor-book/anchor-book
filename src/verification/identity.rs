@@ -2,7 +2,12 @@
 use super::PlannedCriterion;
 use crate::configuration::Configuration;
 use crate::records::{RecordData, RecordInventory};
-use std::{fmt::Write, fs, path::Path, process::Command};
+use std::{
+    fmt::Write,
+    fs,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 /// Content identities of a run's inputs, and the Git state when available.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -11,6 +16,9 @@ pub struct Inputs {
     pub criteria: String,
     /// Identity of the configuration file's contents.
     pub configuration: String,
+    /// Identity of the linked code: every file in the configured sources, and
+    /// the manifests and lockfiles of the packages with links.
+    pub code: String,
     /// The commit checked out, when the configuration is in a Git checkout.
     pub revision: Option<String>,
     /// Whether the checkout has uncommitted changes, when Git can tell.
@@ -31,6 +39,7 @@ pub(super) fn inputs(
     config: &Configuration,
     criteria: &[PlannedCriterion],
     inventory: &RecordInventory,
+    code: &[PathBuf],
 ) -> Inputs {
     let mut text = String::new();
     for criterion in criteria {
@@ -75,9 +84,41 @@ pub(super) fn inputs(
     Inputs {
         criteria: fnv1a(text.as_bytes()),
         configuration,
+        code: snapshot(code),
         revision,
         dirty,
     }
+}
+
+fn files(path: &Path, out: &mut Vec<PathBuf>) {
+    if path.is_dir() {
+        if let Ok(entries) = fs::read_dir(path) {
+            for entry in entries.filter_map(Result::ok) {
+                files(&entry.path(), out);
+            }
+        }
+    } else if path.is_file() {
+        out.push(path.to_owned());
+    }
+}
+
+/// One identity for the contents of every file under `paths`, independent of
+/// enumeration order; a file that cannot be read contributes its path only.
+pub(super) fn snapshot(paths: &[PathBuf]) -> String {
+    let mut all = Vec::new();
+    for path in paths {
+        files(path, &mut all);
+    }
+    all.sort();
+    all.dedup();
+    let mut bytes = Vec::new();
+    for file in all {
+        bytes.extend(file.to_string_lossy().as_bytes());
+        bytes.push(0);
+        bytes.extend(fs::read(&file).unwrap_or_default());
+        bytes.push(0);
+    }
+    fnv1a(&bytes)
 }
 
 #[cfg(test)]

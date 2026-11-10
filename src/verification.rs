@@ -9,10 +9,12 @@
 mod config;
 mod identity;
 mod links;
+mod nextest;
 
 pub use config::Settings;
 pub use identity::Inputs;
 pub use links::{FunctionId, Link, LinkFinding, Mode, Target};
+pub use nextest::NEXTEST_VERSION;
 
 use crate::checking::{self, Outcome};
 use crate::configuration::{self, SectionRole};
@@ -226,6 +228,10 @@ pub struct Plan {
     pub inputs: Inputs,
     /// The configuration's directory, the base of displayed paths.
     pub base: PathBuf,
+    /// The validated `[verification]` settings.
+    pub settings: Settings,
+    /// The manifest of each package with links in scope.
+    pub manifests: BTreeMap<String, PathBuf>,
 }
 
 /// One required method's state, with what it rests on.
@@ -311,6 +317,8 @@ pub struct Report {
     pub inputs: Inputs,
     /// Base of displayed paths.
     pub base: PathBuf,
+    /// Versions of the runners that ran.
+    pub tools: Vec<String>,
 }
 impl Report {
     /// `1` when a claim evaluated in this run is unsatisfied, otherwise `0`.
@@ -468,8 +476,11 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         .map(|l| (l.function.package.clone(), l.function.target.clone()))
         .collect();
     let claims = claims(&milestones);
-    let inputs = identity::inputs(&configuration, &criteria, &inventory);
-    Ok(Plan {
+    let manifests: BTreeMap<String, PathBuf> = links
+        .iter()
+        .map(|l| (l.function.package.clone(), l.manifest.clone()))
+        .collect();
+    let mut plan = Plan {
         scope,
         chapters: chapter_titles,
         anchors,
@@ -479,9 +490,24 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         tests: tests.into_iter().collect(),
         proof_targets: proof_targets.into_iter().collect(),
         claims,
-        inputs,
+        inputs: Inputs {
+            criteria: String::new(),
+            configuration: String::new(),
+            code: String::new(),
+            revision: None,
+            dirty: None,
+        },
         base,
-    })
+        settings,
+        manifests,
+    };
+    plan.inputs = identity::inputs(
+        &configuration,
+        &plan.criteria,
+        &inventory,
+        &nextest::input_paths(&plan),
+    );
+    Ok(plan)
 }
 
 type Planned = (
@@ -621,7 +647,10 @@ fn method_state(
                 // Failed outranks no-evidence; with neither, every linked test passed.
                 let state = problems.into_iter().min().unwrap_or(State::Satisfied);
                 let reason = if reasons.is_empty() {
-                    format!("{} linked tests passed", links.len())
+                    match links.len() {
+                        1 => "1 linked test passed".to_owned(),
+                        n => format!("{n} linked tests passed"),
+                    }
                 } else {
                     reasons.join("; ")
                 };
@@ -735,6 +764,7 @@ pub fn evaluate(plan: &Plan, results: &RunResults) -> Report {
         claims,
         inputs: plan.inputs.clone(),
         base: plan.base.clone(),
+        tools: Vec::new(),
     }
 }
 
@@ -768,17 +798,22 @@ fn claim_outcome(report: Option<&CriterionReport>, scope: &Scope) -> ClaimOutcom
     }
 }
 
-/// Plan and evaluate `scope`. No runner is implemented yet, so linked test and
-/// proof methods are not evaluated; unlinked criteria and claims are still reported.
+/// Plan `scope`, run its linked tests with cargo-nextest, and evaluate. Runner
+/// output is written only under `[verification] output`. No proof runner exists
+/// yet, so linked proofs are not evaluated.
 ///
 /// # Errors
 /// As [`plan`].
 pub fn verify(config_path: &Path, scope: Scope) -> Result<Report, VerifyError> {
     let plan = plan(config_path, scope)?;
-    Ok(evaluate(
-        &plan,
-        &RunResults::not_run("runner not available yet"),
-    ))
+    let (tests, version) = nextest::run(&plan);
+    let results = RunResults {
+        tests,
+        proofs: ProofResult::NotRun("the proof runner is not implemented yet".into()),
+    };
+    let mut report = evaluate(&plan, &results);
+    report.tools.extend(version);
+    Ok(report)
 }
 
 #[cfg(test)]

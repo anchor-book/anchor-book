@@ -59,6 +59,7 @@ fn snapshot(errors: &RecordErrors) -> Vec<String> {
         .collect()
 }
 
+/// anchorbook: records-valid-authority#production-integration
 #[test]
 fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
     let original = FIXTURE.to_owned();
@@ -210,6 +211,7 @@ fn only_real_definitions_enter_inventory() {
     assert!(read_records(&[]).unwrap().is_empty());
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
 #[test]
 fn rejects_noncanonical_fences_and_nesting() {
     let base = requirement();
@@ -237,6 +239,7 @@ fn rejects_noncanonical_fences_and_nesting() {
     }
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
 #[test]
 fn rejects_missing_unknown_duplicate_wrong_type_and_empty_fields() {
     let base = requirement();
@@ -268,6 +271,7 @@ fn rejects_missing_unknown_duplicate_wrong_type_and_empty_fields() {
     }
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
 #[test]
 fn rejects_anchor_and_decision_schema_errors() {
     let mutations = [
@@ -305,6 +309,7 @@ fn rejects_anchor_and_decision_schema_errors() {
     );
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
 #[test]
 fn validates_all_edges_including_accepted_decisions() {
     has_problem(
@@ -355,6 +360,8 @@ fn validates_all_edges_including_accepted_decisions() {
     );
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: records-valid-authority#production-integration
 #[test]
 fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
     let duplicated = format!("{FIXTURE}\n{}", requirement());
@@ -442,6 +449,7 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
     }
 }
 
+/// anchorbook: records-valid-authority#production-integration
 #[test]
 fn diagnostics_have_field_locations_and_preserve_parser_causes() {
     let text = requirement().replace("status = \"accepted\"", "status = \"wrong\"");
@@ -469,6 +477,7 @@ fn diagnostics_have_field_locations_and_preserve_parser_causes() {
     assert_eq!(&text[d.location().range()], "\"absent\"");
 }
 
+/// anchorbook: records-valid-authority#production-integration
 #[test]
 fn chapter_order_does_not_change_records_backlinks_or_diagnostics() {
     let split = FIXTURE.find("```anchorbook-decision").unwrap();
@@ -537,6 +546,7 @@ fn diagnostics_identify_unicode_columns_and_toml_error_ranges() {
     assert!(diagnostic.source().is_some());
 }
 
+/// anchorbook: render-validated-records#invalid-inventory
 #[test]
 fn accepted_authority_conflicts_have_a_distinct_diagnostic_family() {
     let text = FIXTURE.replacen("status = \"accepted\"", "status = \"draft\"", 1);
@@ -599,6 +609,7 @@ fn markdown_extensions_preserve_legacy_marker_locations() {
     }
 }
 
+/// anchorbook: check-shared-typed-results#library-boundary
 #[test]
 fn truncated_and_unicode_inputs_never_panic() {
     let text = FIXTURE.replace("Preserve input", "Preserve é😀 input");
