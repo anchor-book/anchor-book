@@ -30,8 +30,12 @@ fn main() -> ExitCode {
     if args.len() == 1 && (args[0] == "--version" || args[0] == "-V") {
         return if writeln!(
             io::stdout().lock(),
-            "anchorbook {}",
-            env!("CARGO_PKG_VERSION")
+            "anchorbook {} ({})",
+            env!("CARGO_PKG_VERSION"),
+            match env!("ANCHORBOOK_REVISION") {
+                "" => "revision unknown",
+                revision => revision,
+            }
         )
         .is_ok()
         {

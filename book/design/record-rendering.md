@@ -226,8 +226,16 @@ unique. Every supplied chapter needs source and output paths, including unnumber
 chapters; draft chapters without paths are currently rejected.
 
 Generated links are relative and percent-encode path components. mdBook 0.5.4
-rewrites these HTML links into fragment links in its combined print view. The
-local theme opens decision details in that view and during browser printing.
+rewrites these HTML links into fragment links in its combined print view.
+
+The engine delivers the presentation itself, so a Book needs no theme files: each
+chapter that renders a record or milestone ends with one inline `<style>` and
+`<script>` block, compiled into the engine from `src/rendering/assets/`, and other
+chapters are unchanged. A preprocessor cannot add mdBook's `additional-css` files,
+and writing theme files would change the project. The script opens details in the
+combined print view and during browser printing, and runs once per page although
+the print view repeats the block for each chapter. A project's own styles load
+earlier, so they do not override the block's rules of equal specificity.
 No record parsing runs in the browser. Formatting, source wrapping, and repeated
 blank lines within prose are normalized for readable paragraphs.
 

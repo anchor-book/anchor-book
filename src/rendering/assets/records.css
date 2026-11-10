@@ -1,4 +1,4 @@
-/* Record fields are escaped text, with layout supplied by this local theme. */
+/* Record fields are escaped text; the engine supplies this layout inline. */
 .ab-record { border: 1px solid var(--table-border-color); border-inline-start: 4px solid var(--links); border-radius: 6px; padding: 1.35rem 1.6rem; margin: 2rem 0; background: var(--bg); overflow-wrap: anywhere; }
 .ab-record-header { padding-bottom: 1rem; border-bottom: 1px solid var(--table-border-color); }
 .ab-record-meta { display: flex; gap: 1rem; align-items: center; justify-content: space-between; font-size: .85em; font-weight: 600; }

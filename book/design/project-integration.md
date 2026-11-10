@@ -1,7 +1,9 @@
 # Project Integration
 
-**Status: draft for review.** Not implemented; the engine is currently used only
-from its own checkout. This chapter defines how other Rust projects use Anchor
+**Status: draft for review.** Partly implemented: a project can install a pinned
+engine revision, name its `book.toml`, and retrieve the contract, as
+[Project Integration milestone 1](../implementation-roadmaps/project-integration.md#project-integration-1)
+records; the library entry point, engine-version declaration, and crate release are not. This chapter defines how other Rust projects use Anchor
 Book. Consumer proof evidence is proposed in the
 [Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md#verification-evidence-5)
 and engine proof isolation in the
@@ -257,7 +259,12 @@ the repository, with the engine's own lock file:
 cargo install --git https://github.com/anchor-book/anchor-book --rev <commit> --locked anchor-book
 ```
 
-Its `book.toml` then runs the installed binary as the preprocessor command,
+Give `--rev` the full commit hash; Cargo does not resolve a shortened one.
+`anchorbook --version` prints the package version and the commit the binary was
+built from, read from the packaged crate's `.cargo_vcs_info.json` or from Git when
+the source is the root of its own checkout, as in a `cargo install --git` build;
+otherwise it says the revision is unknown. The revision names a commit, not
+uncommitted changes. Its `book.toml` then runs the installed binary as the preprocessor command,
 `anchorbook md`. This Book keeps its `cargo run` command so engine and Book changes
 land together, and its CI installs the revision under test this way and requires
 the same check findings, contract, and rendered Book as the in-repository build.

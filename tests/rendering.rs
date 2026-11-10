@@ -50,7 +50,9 @@ fn renders_all_fields_and_preserves_unrelated_content() {
     .unwrap()
     .remove(0);
     assert!(output.starts_with(prefix));
-    assert!(output.ends_with(&literal));
+    let (body, presentation) = split_presentation(&output);
+    assert!(body.ends_with(&literal));
+    assert_presentation(presentation);
     assert_eq!(output.matches("<section class=\"ab-record ").count(), 3);
     for field in [
         "Preserve input",
@@ -103,8 +105,11 @@ fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
         );
     let response = preprocess(&request(vec![chapter("a.md", "a.md", &text)]).to_string()).unwrap();
     let book: Value = serde_json::from_str(&response).unwrap();
-    let html = book["items"][0]["Chapter"]["content"].as_str().unwrap();
+    let content = book["items"][0]["Chapter"]["content"].as_str().unwrap();
+    let (html, presentation) = split_presentation(content);
+    assert_presentation(presentation);
     assert!(!html.contains("<script>"));
+    assert!(!html.contains("<style>"));
     assert!(!html.contains("<img"));
     assert!(html.contains("&lt;script&gt;"));
     assert!(html.contains("&amp;"));
@@ -380,4 +385,50 @@ fn undeclared_mdbook_versions_are_rejected_naming_the_supported_ones() {
             "{stderr}"
         );
     }
+}
+
+/// Split a rendered chapter into its content and the trailing presentation block.
+fn split_presentation(output: &str) -> (&str, &str) {
+    let at = output
+        .rfind("\n\n<style>\n")
+        .expect("a chapter with records ends with its presentation block");
+    output.split_at(at)
+}
+
+/// The block styles records and milestones and expands details for printing,
+/// once per page, and nothing follows it.
+fn assert_presentation(block: &str) {
+    assert_eq!(block.matches("<style>").count(), 1);
+    assert_eq!(block.matches("<script>").count(), 1);
+    for rule in [
+        ".ab-record {",
+        ".ab-milestone {",
+        ".ab-details summary",
+        "@media print",
+    ] {
+        assert!(block.contains(rule), "missing {rule}");
+    }
+    assert!(block.contains("beforeprint"));
+    assert!(block.contains("window.anchorbookPresentation"));
+    assert!(block.ends_with("</script>\n"));
+}
+
+#[test]
+fn only_chapters_with_records_or_milestones_carry_the_presentation() {
+    let plain = "# Plain\n\nNo records here.\n";
+    let output = render_chapters(&[
+        RenderChapter {
+            source: Chapter::new(Path::new("a.md"), RECORDS),
+            output_path: Path::new("a.md"),
+            roadmap: false,
+        },
+        RenderChapter {
+            source: Chapter::new(Path::new("plain.md"), plain),
+            output_path: Path::new("plain.md"),
+            roadmap: false,
+        },
+    ])
+    .unwrap();
+    assert_presentation(split_presentation(&output[0]).1);
+    assert_eq!(output[1], plain);
 }

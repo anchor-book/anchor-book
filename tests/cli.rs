@@ -19,8 +19,35 @@ fn help_and_version_describe_the_actual_scope() {
     assert!(version.status.success());
     assert_eq!(
         String::from_utf8(version.stdout).unwrap(),
-        format!("anchorbook {}\n", env!("CARGO_PKG_VERSION"))
+        format!(
+            "anchorbook {} ({})\n",
+            env!("CARGO_PKG_VERSION"),
+            expected_revision()
+        )
     );
+}
+
+/// The commit of the checkout this package is the root of, as Git reports it,
+/// or "revision unknown" outside such a checkout.
+fn expected_revision() -> String {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let git = |args: &[&str]| {
+        Command::new("git")
+            .arg("-C")
+            .arg(dir)
+            .args(args)
+            .output()
+            .ok()
+            .filter(|output| output.status.success())
+            .map(|output| String::from_utf8(output.stdout).unwrap().trim().to_owned())
+    };
+    let root = git(&["rev-parse", "--show-toplevel"]);
+    match root.and_then(|root| std::fs::canonicalize(root).ok()) {
+        Some(root) if root == std::fs::canonicalize(dir).unwrap() => {
+            git(&["rev-parse", "HEAD"]).unwrap()
+        }
+        _ => "revision unknown".to_owned(),
+    }
 }
 
 #[test]

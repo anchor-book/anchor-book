@@ -221,6 +221,7 @@ src/
   adapters/mdbook.rs       JSON input, validation, and Book transformation
   rendering.rs            Record and roadmap rendering operation and typed errors
   rendering/              Private HTML and link generation
+  rendering/assets/       Record and milestone styles and print script, compiled in
   roadmaps.rs             Roadmap milestone reading and validation
   records.rs              Public record capability interface
   records/
