@@ -67,9 +67,12 @@ pub fn format_report(report: &Report) -> String {
     };
     let _ = writeln!(
         out,
-        "inputs: criteria {}, configuration {}, {revision}",
-        report.inputs.criteria, report.inputs.configuration
+        "inputs: criteria {}, configuration {}, code {}, {revision}",
+        report.inputs.criteria, report.inputs.configuration, report.inputs.code
     );
+    if !report.tools.is_empty() {
+        let _ = writeln!(out, "runners: {}", report.tools.join(", "));
+    }
     for chapter in &report.chapters {
         let _ = writeln!(out, "\n{} ({})", chapter.title, chapter.path.display());
         for anchor in &chapter.anchors {
