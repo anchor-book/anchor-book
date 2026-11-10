@@ -182,6 +182,18 @@ pub(super) open spec fn records_satisfy_authority_rules(
         record_satisfies_authority_rules(candidates, record_index)
 }
 
+// A violation names a decoded record and, unless authority is missing, one of its
+// references. Unverified callers index candidates and references with these values.
+pub(super) open spec fn violation_is_located(candidates: Seq<Candidate>, violation: Violation) -> bool {
+    &&& violation.record_index < candidates.len()
+    &&& candidates[violation.record_index as int].decoded
+    &&& match violation.reference_index {
+        Some(reference_index) => reference_index < candidates[violation.record_index as int].references.len()
+            && violation.failure != Failure::MissingAuthority,
+        None => violation.failure == Failure::MissingAuthority,
+    }
+}
+
 // Executable checks: contracts connect these Rust bodies to the rules above.
 
 // Used by schema decoding as well as the complete validator: emptiness is not
@@ -279,8 +291,10 @@ fn validate_reference(candidates: &[Candidate], record_index: usize, reference_i
     requires
         record_index < candidates.len(),
         reference_index < candidates[record_index as int].references.len(),
-    ensures failure.is_none() == reference_satisfies_authority_rules(
-        candidates@, record_index as int, reference_index as int),
+    ensures
+        failure.is_none() == reference_satisfies_authority_rules(
+            candidates@, record_index as int, reference_index as int),
+        failure != Some(Failure::MissingAuthority),
 {
     let record = &candidates[record_index];
     let reference = &record.references[reference_index];
@@ -321,8 +335,11 @@ fn validate_reference(candidates: &[Candidate], record_index: usize, reference_i
 // relationships satisfy the rules. Parser errors still prevent overall Book success.
 // The contract does not prove the exact classification or location of each violation.
 pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec<Violation>)
-    ensures (violations.len() == 0) == records_satisfy_authority_rules(
-        candidates@, candidates.len() as int),
+    ensures
+        (violations.len() == 0) == records_satisfy_authority_rules(
+            candidates@, candidates.len() as int),
+        forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
+            violation_is_located(candidates@, violations[violation_index]),
 {
     let mut violations: Vec<Violation> = Vec::new();
     let mut record_index: usize = 0;
@@ -331,6 +348,8 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec
     while record_index < candidates.len()
         invariant record_index <= candidates.len(),
             (violations.len() == 0) == records_satisfy_authority_rules(candidates@, record_index as int),
+            forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
+                violation_is_located(candidates@, violations[violation_index]),
         decreases candidates.len() - record_index,
     {
         proof {
@@ -361,6 +380,8 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> (violations: Vec
                         && (record.kind == Kind::Anchor ==> record.references.len() > 0)
                         && forall|checked_index: int| #![auto] 0 <= checked_index < reference_index ==>
                             reference_satisfies_authority_rules(candidates@, record_index as int, checked_index)),
+                    forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
+                        violation_is_located(candidates@, violations[violation_index]),
                 decreases record.references.len() - reference_index,
             {
                 if let Some(failure) = validate_reference(candidates, record_index, reference_index) {

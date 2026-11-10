@@ -123,7 +123,11 @@ pub fn read_records(chapters: &[Chapter<'_>]) -> Result<RecordInventory, RecordE
             }
         })
         .collect();
-    // The same function bodies are executed here and verified by Verus.
+    // The same function bodies are executed here and verified by Verus. Its contract
+    // guarantees that each violation names a decoded candidate in `input` and, except
+    // for missing authority, one of its references. The conversion above keeps
+    // `input` aligned with `candidates` and their references (tested, not proved), so
+    // the lookups below cannot fail.
     for violation in authority::validate_authorities(&input) {
         let candidate = &candidates[violation.record_index];
         let record = candidate
