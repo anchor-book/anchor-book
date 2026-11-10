@@ -259,8 +259,12 @@ the repository, with the engine's own lock file:
 cargo install --git https://github.com/anchor-book/anchor-book --rev <commit> --locked anchor-book
 ```
 
-Give `--rev` the full commit hash; Cargo does not resolve a shortened one. Its
-`book.toml` then runs the installed binary as the preprocessor command,
+Give `--rev` the full commit hash; Cargo does not resolve a shortened one.
+`anchorbook --version` prints the package version and the commit the binary was
+built from, read from the packaged crate's `.cargo_vcs_info.json` or from Git when
+the source is the root of its own checkout, as in a `cargo install --git` build;
+otherwise it says the revision is unknown. The revision names a commit, not
+uncommitted changes. Its `book.toml` then runs the installed binary as the preprocessor command,
 `anchorbook md`. This Book keeps its `cargo run` command so engine and Book changes
 land together, and its CI installs the revision under test this way and requires
 the same check findings, contract, and rendered Book as the in-repository build.

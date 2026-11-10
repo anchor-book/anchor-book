@@ -244,7 +244,13 @@ fn milestones_render_as_cards_with_fields_and_open_sections() {
         "\n</section>\n\n",
     ]
     .concat();
-    assert_eq!(page, &expected);
+    let at = page
+        .rfind("\n\n<style>\n")
+        .expect("a rendered milestone ends with its presentation block");
+    let (body, presentation) = page.split_at(at);
+    assert_eq!(body, expected);
+    assert!(presentation.contains(".ab-milestone {"));
+    assert!(presentation.ends_with("</script>\n"));
 }
 
 #[test]
@@ -351,7 +357,7 @@ fn the_adapter_renders_the_roadmaps_role_and_its_nested_chapters() {
     assert!(work.contains("<h4 id=\"road-1-works\">"));
     assert!(inner.contains("<h4 id=\"nested-1-works\">"));
     let design = items[0]["Chapter"]["content"].as_str().unwrap();
-    assert!(!design.contains("ab-roadmap-criterion"));
+    assert!(!design.contains("class=\"ab-details ab-roadmap-criterion\""));
     assert_eq!(book.snapshot(), before);
 }
 

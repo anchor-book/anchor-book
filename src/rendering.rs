@@ -54,11 +54,23 @@ impl Error for RenderError {
     }
 }
 
+/// Styles and print behavior for rendered records and milestones, appended
+/// once to each chapter that renders any, so a Book needs no theme files.
+const PRESENTATION: &str = concat!(
+    "\n\n<style>\n",
+    include_str!("rendering/assets/records.css"),
+    "</style>\n<script>\n",
+    include_str!("rendering/assets/records.js"),
+    "</script>\n"
+);
+
 /// Validate the complete inventory and roadmaps, and replace only definition
 /// ranges and roadmap criterion headings with HTML.
 ///
 /// Results follow input chapter order. No files are read or written. The rest of
-/// each chapter is preserved byte-for-byte, including examples and diagrams.
+/// each chapter is preserved byte-for-byte, including examples and diagrams; a
+/// chapter that renders a record or milestone ends with one inline style and
+/// script block for their presentation, and other chapters are unchanged.
 ///
 /// # Errors
 /// Returns an error for invalid records or roadmaps, missing/duplicate source
@@ -109,6 +121,7 @@ pub fn render_chapters(chapters: &[RenderChapter<'_>]) -> Result<Vec<String>, Re
         for milestone in milestones.iter().filter(|m| m.path == chapter.source.path) {
             milestone_edits(milestone, &mut edits);
         }
+        let presented = !edits.is_empty();
         edits.sort_by_key(|(start, end, order, _)| (*start, *order, *end));
         let mut content = String::new();
         let mut cursor = 0;
@@ -118,6 +131,9 @@ pub fn render_chapters(chapters: &[RenderChapter<'_>]) -> Result<Vec<String>, Re
             cursor = end;
         }
         content.push_str(&chapter.source.content[cursor..]);
+        if presented {
+            content.push_str(PRESENTATION);
+        }
         rendered.push(content);
     }
     Ok(rendered)
