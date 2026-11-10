@@ -427,9 +427,11 @@ review; the default is to preserve findings for investigation.
 
 The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
 separates usable local support from a full reviewed campaign, demonstrated CI,
-and branch rules requiring success before merge. Full campaigns had grown to
-about 35 minutes with two workers, so they run with four workers and a 60-minute
-budget; adjust these from measured results without silently reducing scope. The contract retains the reusable testing policy;
+and branch rules requiring success before merge. Full campaigns outgrew one
+runner, reaching the 60-minute budget at about 780 mutations, so every campaign runs
+as four shards on separate runners, each with four workers and that budget; the
+required **Mutation tests** job passes only when every shard does. Adjust shards and
+budgets from measured results without silently reducing scope. The contract retains the reusable testing policy;
 tool versions and repository integration remain project guidance.
 
 ## Choices still open

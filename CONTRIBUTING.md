@@ -358,8 +358,11 @@ review it before sharing and do not commit it.
 
 The **Mutation testing** GitHub workflow runs on pull requests targeting `main`, on
 pushes to `main`, and on manual dispatch. It runs ordinary tests first, then the
-changed-line or full command described above, with four workers, a 60-minute job
-budget, and evidence artifacts retained for 14 days. A newer push cancels a PR's
+changed-line or full command described above, split into four shards
+(`--shard 0/4` to `3/4`) on separate runners that together test each mutation
+once, each with four workers, a 60-minute budget, and its own evidence artifact
+retained for 14 days. The **Mutation tests** job, the required check, passes only
+when every shard passes. A newer push cancels a PR's
 superseded run; full campaigns on `main` always complete. Missed mutants and timeouts
 fail the job; the result is not suppressed. Budget exhaustion leaves the campaign
 incomplete. CI artifacts omit the tool's host/process metadata files.

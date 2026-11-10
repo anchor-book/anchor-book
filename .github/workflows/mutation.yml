@@ -5,6 +5,8 @@ name: Mutation testing
 # A PR mutates only the lines it changes; changes to mutation settings, manifests,
 # the toolchain, or this workflow run the full campaign, as do merges to main and
 # manual runs, which also cover effects of a change outside its own lines.
+# Every campaign is split into four shards that together test each mutation once;
+# the "Mutation tests" job, the required check, passes only when every shard does.
 on:
   pull_request:
     branches: [main]
@@ -21,10 +23,12 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  mutation:
-    name: Mutation tests
+  scope:
+    name: Mutation scope
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    outputs:
+      code: ${{ steps.scope.outputs.code }}
+      scope: ${{ steps.scope.outputs.scope }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,31 +48,44 @@ jobs:
           elif git diff --name-only HEAD^1 HEAD | grep -Eq '^(src/|contract/|tests/)'; then
             echo "code=true" >> "$GITHUB_OUTPUT"
             echo "scope=diff" >> "$GITHUB_OUTPUT"
-            git diff HEAD^1 HEAD > "$RUNNER_TEMP/pr.diff"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
             echo "::notice::No engine code, tests, or mutation settings changed; mutation campaign skipped."
           fi
+
+  shard:
+    name: Mutation shard ${{ matrix.shard }}
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Install Rust
-        if: steps.scope.outputs.code == 'true'
         run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
       - name: Ordinary tests
-        if: steps.scope.outputs.code == 'true'
         run: cargo +stable test --locked
       - name: Install cargo-mutants
-        if: steps.scope.outputs.code == 'true'
         run: cargo +stable install cargo-mutants --version 27.1.0 --locked
       - name: Test mutations in changed lines
-        if: steps.scope.outputs.scope == 'diff'
-        run: cargo +stable mutants --jobs 4 --build-timeout 120 --in-diff "$RUNNER_TEMP/pr.diff"
+        if: needs.scope.outputs.scope == 'diff'
+        run: |
+          git diff HEAD^1 HEAD > "$RUNNER_TEMP/pr.diff"
+          cargo +stable mutants --jobs 4 --build-timeout 120 --in-diff "$RUNNER_TEMP/pr.diff" --shard ${{ matrix.shard }}/4
       - name: Test all mutations
-        if: steps.scope.outputs.scope == 'full'
-        run: cargo +stable mutants --jobs 4 --build-timeout 120
+        if: needs.scope.outputs.scope == 'full'
+        run: cargo +stable mutants --jobs 4 --build-timeout 120 --shard ${{ matrix.shard }}/4
       - name: Retain mutation evidence
-        if: always() && steps.scope.outputs.code == 'true'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mutation-results
+          name: mutation-results-${{ matrix.shard }}
           # Deliberately omit lock.json and debug.log (host/process metadata).
           path: |
             target/mutants.out/outcomes.json
@@ -78,3 +95,19 @@ jobs:
             target/mutants.out/diff/
           if-no-files-found: warn
           retention-days: 14
+
+  mutation:
+    name: Mutation tests
+    needs: [scope, shard]
+    # Always report, so a failed or cancelled shard fails this required check
+    # instead of leaving it skipped.
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every shard to pass
+        run: |
+          echo "scope: ${{ needs.scope.result }} (${{ needs.scope.outputs.scope || 'none' }}); shards: ${{ needs.shard.result }}"
+          test "${{ needs.scope.result }}" = success
+          if [ "${{ needs.scope.outputs.code }}" = true ]; then
+            test "${{ needs.shard.result }}" = success
+          fi
