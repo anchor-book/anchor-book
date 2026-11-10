@@ -24,7 +24,7 @@ The [AI Working Contract](../ai-working-contract.md) defines how agents work.
 
 **Outcome:** The engineer has reviewed the checker's anchors and the requirements and decisions they cite, and those records are accepted into the goal design.
 
-**Status:** In progress — records reviewed and accepted; engineer confirmation of agreed scope pending
+**Status:** Complete — records reviewed and accepted; accepted by the engineer
 
 **Dependencies:** None. Acceptance is a design judgment; the built checker and its evidence inform the review but do not establish it.
 
@@ -58,7 +58,7 @@ The engineer has reviewed each checker anchor and the requirements and decisions
 The engineer agrees on the checker scope and roadmap. Implementation choices are resolved or explicitly deferred outside that scope.
 
 - **Anchor coverage:** None — work agreement
-- **Evidence:** The engineer assigned all four Structural Checking milestones and accepted milestones 1–3 as complete; milestone 4 is recorded complete, pending engineer acceptance. Implementation choices are recorded in those milestones and the checker design. Engineer confirmation that this satisfies the criterion is pending.
+- **Evidence:** The engineer assigned all four Structural Checking milestones and accepted milestones 1–3 as complete; milestone 4 is recorded complete, pending engineer acceptance. Implementation choices are recorded in those milestones and the checker design. Passed: on 2026-11-10 the engineer confirmed that these assignments and acceptances constitute agreement on the checker scope and roadmap.
 
 #### Accepted records {#engine-bootstrap-1-accepted-records}
 
@@ -73,7 +73,7 @@ The Book contains the checker design, six checker requirements, four governing d
 
 ### Evidence {#engine-bootstrap-1-evidence}
 
-*Milestone evidence — review and acceptance recorded*
+*Milestone evidence — review, acceptance, and scope confirmation recorded*
 
 **Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Not yet integrated into main.
 
@@ -83,7 +83,7 @@ The Book contains the checker design, six checker requirements, four governing d
 
 ### Completion record
 
-Pending engineer confirmation of the [agreed scope](#engine-bootstrap-1-agreed-scope) criterion. The governing records are reviewed and accepted.
+Complete on 2026-11-10, accepted by the engineer. The checker's governing records are reviewed and accepted, and the engineer confirmed the agreed scope. This completes design acceptance only; it does not verify any anchor.
 
 ## Milestone 2. A fresh agent session can take up an assigned milestone {#engine-bootstrap-2}
 
