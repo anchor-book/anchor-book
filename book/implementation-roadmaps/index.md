@@ -170,7 +170,7 @@ for phase-specific responsibilities.
 
 Each roadmap's milestones record their own status and evidence.
 
-- [Engine Bootstrap](bootstrap.md): preparing the Book so agents can take up checker work.
+- [Engine Bootstrap](bootstrap.md): accepting the checker's governing records, and fresh agent sessions taking up assigned work.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.

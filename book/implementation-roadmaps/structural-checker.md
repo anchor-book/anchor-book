@@ -2,13 +2,13 @@
 
 **Roadmap identifier:** `structural-checking`
 
-This roadmap follows [Engine Bootstrap](bootstrap.md), which prepares the Book's
-checker design, requirements, decisions, anchors, working contract, and agreed
-scope. It extends the crate from
+This roadmap builds the checker that [Engine Bootstrap](bootstrap.md) prepared
+the design for. It extends the crate from
 [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
-Milestones are assigned as scoped prototypes while Bootstrap review continues
-separately. The checker runs independently of rendering and does not require
-generated Book output.
+Milestones were assigned as scoped prototypes; review and acceptance of the
+checker's governing records continue in
+[Engine Bootstrap milestone 1](bootstrap.md#engine-bootstrap-1). The checker runs
+independently of rendering and does not require generated Book output.
 
 ## Goal
 
