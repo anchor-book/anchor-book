@@ -194,6 +194,68 @@ fn coverage_must_cite_existing_anchors_and_criteria() {
 }
 
 #[test]
+fn coverage_levels_are_read_and_full_takes_no_qualifier() {
+    use anchor_book::roadmaps::CoverageLevel;
+    let records = read_records(&[Chapter::new(Path::new("design.md"), RECORDS)]).unwrap();
+    let text = milestone("road-1", "works", COVERAGE);
+    let milestones =
+        read_roadmaps(&[Chapter::new(Path::new("roadmap.md"), &text)], &records).unwrap();
+    let coverage: Vec<_> = milestones[0]
+        .coverage
+        .iter()
+        .map(|c| {
+            (
+                c.completion_criterion.as_str(),
+                c.anchor.as_str(),
+                c.criteria.clone(),
+                c.level,
+                c.line,
+            )
+        })
+        .collect();
+    assert_eq!(
+        coverage,
+        [
+            (
+                "road-1-works",
+                "fixture-anchor",
+                vec!["first".to_owned(), "second".to_owned()],
+                CoverageLevel::Full,
+                19
+            ),
+            (
+                "road-1-works",
+                "fixture-anchor",
+                vec!["first".to_owned()],
+                CoverageLevel::Partial,
+                19
+            ),
+        ]
+    );
+    for qualified in [
+        "`fixture-anchor` · `first` — Full for the declared versions",
+        "`fixture-anchor` · `first` — Full. Limited to one case.",
+    ] {
+        let found = codes(&[("roadmap.md", &milestone("road-1", "works", qualified))]);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert_eq!(
+            (found[0].0.as_str(), found[0].1),
+            ("roadmap.invalid-coverage", 19)
+        );
+        assert!(
+            found[0].2.contains("Full with a qualifier"),
+            "{}",
+            found[0].2
+        );
+    }
+    let missing = codes(&[(
+        "roadmap.md",
+        &milestone("road-1", "works", "`fixture-anchor` · `first`"),
+    )]);
+    assert_eq!(missing[0].0, "roadmap.invalid-coverage");
+}
+
+#[test]
 fn examples_in_code_blocks_are_not_roadmap_structure() {
     let example = format!(
         "# Format\n\n```markdown\n{}```\n",
