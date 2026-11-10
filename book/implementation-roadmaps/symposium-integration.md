@@ -90,7 +90,7 @@ Pending.
 
 **Dependencies:** [Milestone 1](#symposium-integration-1).
 
-**Design basis:** [Anchor Definitions](../design/anchor-definitions.md), [Authority Definitions](../design/authority-definitions.md), and [choosing methods](../design/verification.md#methods).
+**Design basis:** [Anchor Definitions](../design/anchor-definitions.md), [Authority Definitions](../design/authority-definitions.md), and [choosing methods](../design/verification.md#choosing-methods).
 
 **Tasks**
 

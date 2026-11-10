@@ -317,7 +317,7 @@ Pending. Packaged fixture acceptance does not authorize publication or complete 
 
 - [ ] **Sensitivity:** Generate changes inside `verus!` executable bodies with the milestone 4 parser, never in specifications or proofs. Verify each in a fresh copy; classify survivors through the covering criteria's linked tests and the review's equivalent listing; report unviable, safety-only, and timed-out changes separately.
 - [ ] **Witnesses:** Implement the `witness` link form and require a verified witness for each linked function with preconditions.
-- [ ] **Fingerprints and assessments:** Compute token-based specification fingerprints over the criterion, linked contracts, and reachable specification functions and types. Add the `reviews` configuration field and the assessment record schema; read records, report malformed and stale ones, and evaluate the review method.
+- [ ] **Fingerprints and assessments:** Compute token-based specification fingerprints over the criterion, linked contracts, and reachable specification functions and types. Add the `assessments` configuration field and the assessment record schema; read records, report malformed and stale ones, and evaluate the review method.
 - [ ] **Brief:** Add `--brief`, running no tools, with each criterion's scope, links, fingerprint, assessment status, and exclusions with their covering criteria and tests.
 - [ ] **Pilot:** Record a specification assessment of `formal-authority` and run every guard on it through the real CLI; record survivors and their classification.
 
