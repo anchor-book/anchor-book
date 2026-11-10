@@ -72,6 +72,7 @@ pub struct Configuration {
     source: PathBuf,
     source_state: SourceState,
     output: PathBuf,
+    mdbook: PathBuf,
     sections: [PathBuf; 3],
 }
 impl Configuration {
@@ -95,6 +96,11 @@ impl Configuration {
     pub fn output(&self) -> &Path {
         &self.output
     }
+    /// Resolved mdBook configuration file named by `[book].mdbook`; its existence
+    /// and contents are checked by the structural checker, not by loading.
+    pub fn mdbook(&self) -> &Path {
+        &self.mdbook
+    }
     /// Resolved chapter path for a required role; existence and placement are unchecked.
     pub fn section(&self, role: SectionRole) -> &Path {
         &self.sections[match role {
@@ -109,8 +115,8 @@ impl Configuration {
 ///
 /// Relative arguments are resolved from the caller's working directory. Existing
 /// symlinks in the configuration filename are resolved first; its actual parent
-/// is the layout root. Source/output paths are relative to that root and section
-/// paths to the source. The process working directory is never changed.
+/// is the layout root. Source, output, and mdBook configuration paths are relative
+/// to that root and section paths to the source. The process working directory is never changed.
 ///
 /// A missing/non-directory source is returned as data for later structural
 /// checking. An unresolvable path, including a dangling symlink, is an error.
@@ -145,6 +151,7 @@ pub fn load(path: &Path) -> Result<Configuration, Error> {
     };
     let source = resolve(root, &settings.source, "book.source", true)?;
     let output = resolve(root, &settings.output, "book.output", true)?;
+    let mdbook = resolve(root, &settings.mdbook, "book.mdbook", true)?;
     if source.starts_with(&output) || output.starts_with(&source) {
         return Err(Error::invalid_path(
             path,
@@ -186,6 +193,7 @@ pub fn load(path: &Path) -> Result<Configuration, Error> {
         source,
         source_state,
         output,
+        mdbook,
         sections,
     })
 }

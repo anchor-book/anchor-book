@@ -20,6 +20,7 @@ struct Project {
 struct Book {
     source: String,
     output: String,
+    mdbook: String,
     sections: Sections,
 }
 #[derive(Deserialize)]
@@ -34,6 +35,7 @@ pub(super) struct Settings {
     pub phase: Phase,
     pub source: String,
     pub output: String,
+    pub mdbook: String,
     pub sections: [String; 3],
     spans: BTreeMap<String, Range<usize>>,
 }
@@ -62,7 +64,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
     )?;
     for (table_path, allowed) in [
         ("project", &["phase"][..]),
-        ("book", &["source", "output", "sections"][..]),
+        ("book", &["source", "output", "mdbook", "sections"][..]),
         (
             "book.sections",
             &["design", "authority", "implementation-roadmaps"][..],
@@ -124,6 +126,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
     let spans = [
         "book.source",
         "book.output",
+        "book.mdbook",
         "book.sections.design",
         "book.sections.authority",
         "book.sections.implementation-roadmaps",
@@ -135,6 +138,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
         phase,
         source: raw.book.source,
         output: raw.book.output,
+        mdbook: raw.book.mdbook,
         sections: [
             raw.book.sections.design,
             raw.book.sections.authority,

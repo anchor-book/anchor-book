@@ -4,6 +4,7 @@ phase = "prototyping"
 [book]
 source = "docs"
 output = "generated/site"
+mdbook = "book.toml"
 [book.sections]
 design = "design.md"
 authority = "authority.md"

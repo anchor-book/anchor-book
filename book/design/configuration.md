@@ -87,6 +87,7 @@ phase = "prototyping"
 [book]
 source = "book"
 output = "target/anchorbook"
+mdbook = "book.toml"
 
 [book.sections]
 design = "design/index.md"
@@ -203,11 +204,9 @@ paths can reach the project's code. mdBook resolves `book.src` and
 `build.build-dir` relative to the directory of its own `book.toml`; the check
 compares those resolved locations with `book.source` and `book.output`.
 
-The field is planned and not yet read: until the
-[Project Integration roadmap](../implementation-roadmaps/project-integration.md#project-integration-1)
-implements it, the loader rejects it as unknown and `book.toml` must sit beside
-`anchorbook.toml`. Once implemented, it is required, like the other fields, so
-no Book relies on an implicit location.
+The field is required, like the others, so no Book relies on an implicit
+location. Loading resolves it without opening the file; the checker reads it, and a
+missing file is a structural finding that points back to `[book].mdbook`.
 
 | Anchor Book setting | mdBook setting |
 | --- | --- |

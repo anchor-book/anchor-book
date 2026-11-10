@@ -96,10 +96,28 @@ fn read(root: &Path, name: &str) -> Result<Option<String>, InputError> {
 }
 
 pub(super) fn renderer(config: &Configuration) -> Input<Vec<Setting>> {
-    // Validated configuration has a canonical file path with a parent.
-    let root = config.path().parent().unwrap_or(config.path());
-    let path = root.join("book.toml");
-    let value = read(root, "book.toml").and_then(|text| {
+    // Loading resolved `[book].mdbook` within the configuration directory; mdBook
+    // resolves its own paths relative to the directory containing that file.
+    let path = config.mdbook().to_owned();
+    let root = path.parent().unwrap_or(&path).to_owned();
+    let value = match text(&path) {
+        Ok(text) => Ok(Some(text)),
+        Err(error)
+            if matches!(
+                error.kind(),
+                io::ErrorKind::NotFound | io::ErrorKind::NotADirectory
+            ) =>
+        {
+            Ok(None)
+        }
+        Err(error) => Err(InputError::io(
+            &path,
+            "operation.read-failed",
+            "Required input cannot be read",
+            error,
+        )),
+    }
+    .and_then(|text| {
         let Some(text) = text else {
             return Ok(None);
         };
@@ -133,7 +151,7 @@ pub(super) fn renderer(config: &Configuration) -> Input<Vec<Setting>> {
                 field,
                 anchor_field,
                 expected: expected.to_owned(),
-                resolved: renderer_path(root, &value),
+                resolved: renderer_path(&root, &value),
             })
             .collect(),
         ))

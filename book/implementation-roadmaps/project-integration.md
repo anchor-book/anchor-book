@@ -38,7 +38,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
 
-**Status:** Proposed
+**Status:** In progress — mdBook location implemented; contract, installed engine, and mdBook versions remain
 
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
@@ -48,7 +48,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Tasks**
 
-- [ ] **Configuration:** Implement `[book].mdbook`, resolving mdBook's source and output relative to that file, and migrate this repository's configuration to name its `book.toml`.
+- [x] **Configuration:** Implement `[book].mdbook`, resolving mdBook's source and output relative to that file, and migrate this repository's configuration to name its `book.toml`.
 - [ ] **Contract:** Move the maintained contract source into the engine, add `anchorbook contract`, switch this repository's `AGENTS.md` to retrieve it, and remove the temporary Book copy and its navigation entry, as [contract delivery](../design/system-overview.md#contract-delivery) describes.
 - [ ] **Running the engine:** Choose and document how a project installs a pinned engine revision before crate release, and exercise that path in this repository's CI against this Book.
 - [ ] **Entry points:** Test that the library, the CLI, and the `anchorbook md` preprocessor report equivalent results for the same fixtures.
@@ -61,7 +61,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 The loader accepts a configured `book.toml`, including one in a subdirectory, and compares its resolved source and output; fixtures cover a subdirectory, a mismatch, a missing file, and an escaping path. This repository's configuration names its `book.toml` and its Book still passes and renders.
 
 - **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `resolved-comparison`, `renderer-input` — Partial: a configured `book.toml` location; [check-configuration-validity](../design/configuration.md#check-configuration-validity) · `path-boundaries` — Partial: the new field.
-- **Evidence:** Pending.
+- **Evidence:** Passed locally on Rust 1.88.0 and stable 1.99.1, branch `project-integration`. `tests/configuration.rs` rejects a missing `book.mdbook` and empty, blank, escaping, and absolute values with located errors, and resolves `design-book/book.toml` without creating it. `tests/checking.rs` `renderer_configuration_in_a_subdirectory_resolves_paths_from_its_own_directory` passes with `book.toml` in a subdirectory whose paths are relative to it, while a malformed root `book.toml` is ignored; reports a mismatch at the subdirectory file with expected `docs` and found `design-book/docs`; and reports a missing named file as `structure.renderer-missing`, related to `anchorbook.toml` `book.mdbook`. This repository's `anchorbook.toml` names `book.toml`; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. cargo-mutants 27.1.0 on the four changed source files: 81 mutations, 48 caught, 33 unviable, none missed or timed out.
 
 #### Contract {#project-integration-1-contract}
 

@@ -31,8 +31,8 @@ pub(super) fn renderer(
     report.pass(Group::Renderer);
     match input.value {
         Err(error) => report.push(error.finding(Group::Renderer)),
-        Ok(None) => report.push(
-            Finding::new(
+        Ok(None) => {
+            let mut finding = Finding::new(
                 Group::Renderer,
                 Kind::Structure,
                 "structure.renderer-missing",
@@ -40,11 +40,15 @@ pub(super) fn renderer(
                 Location::file(&input.path),
             )
             .details(
-                "book.toml beside anchorbook.toml",
+                "the mdBook configuration named by [book].mdbook",
                 "file is missing",
-                "Restore the intended mdBook configuration, then rerun the check.",
-            ),
-        ),
+                "Restore the intended mdBook configuration, or correct [book].mdbook if it moved, then rerun the check.",
+            );
+            finding
+                .related
+                .push(Location::key(config.path(), "book.mdbook"));
+            report.push(finding);
+        }
         Ok(Some(settings)) => {
             for setting in settings {
                 match setting.resolved {

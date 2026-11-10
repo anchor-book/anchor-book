@@ -6,6 +6,7 @@ phase = "prototyping"
 [book]
 source = "book"
 output = "target/anchorbook"
+mdbook = "book.toml"
 
 [book.sections]
 design = "design/index.md"
