@@ -47,9 +47,9 @@ the current inventory and migrate with them when that work is assigned.
 
 **Outcome:** An agent or engineer runs `anchorbook verify --anchor <id> --method test` after a change and sees that anchor's test criteria for the current files, with links resolved and drift reported; a whole-Book run reports progress by chapter.
 
-**Status:** Proposed
+**Status:** In progress — scope agreed on 2026-11-10, including cargo-nextest as the test runner
 
-**Dependencies:** [Milestone 4](#verification-evidence-4) and agreement on nextest support.
+**Dependencies:** [Milestone 4](#verification-evidence-4), complete; cargo-nextest, agreed.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md), [Configuration](../design/configuration.md), [Diagnostics](../design/check-diagnostics.md), and [Rust Engine](../design/rust-engine.md)
 
@@ -62,7 +62,8 @@ the current inventory and migrate with them when that work is assigned.
 - [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
 - [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
-- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6.
+- [ ] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6. Link only a test that exercises its criterion. Where a claimed criterion has none, add the test, or change the claiming milestone's coverage to Partial with its scope, and record the case; never link a loosely related test to clear a claim.
+- [ ] Decide how ignored acceptance tests, such as `current_book` and `rendered_book`, which needs a built Book, count when linked: run them with their prerequisites, or report them as no-evidence with the reason.
 
 ### Completion criteria
 
@@ -179,6 +180,7 @@ Pending.
 
 - [ ] Define a versioned artifact schema from the typed report, with current inputs, executed scope, tools, states, assumptions, and limits; review retained fields against public-content guidance.
 - [ ] Run the whole-Book command in CI with supported tools and retain reports for passing, unsatisfied, and incomplete runs. Preserve the progress command's exit policy.
+- [ ] Run the tests once in CI: let `verify` read a nextest report supplied by the project's own CI test run, after checking that the report's recorded inputs match the current checkout, instead of running the linked tests a second time. A report whose inputs differ is no evidence. Local runs keep running the linked tests themselves, as [`decision-verify-runs-linked-checks`](../authority/decisions.md#decision-verify-runs-linked-checks) allows for runs `verify` does not invoke.
 - [ ] Demonstrate an authorized failure/correction cycle and record actual revision-specific workflow results, retention, and runtime.
 
 ### Completion criteria
