@@ -38,7 +38,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
 
-**Status:** In progress — all tasks done locally; GitHub evidence for the installed-engine job pending
+**Status:** Complete
 
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
@@ -75,7 +75,7 @@ The loader accepts a configured `book.toml`, including one in a subdirectory, an
 A CI job installs the pinned engine revision the documented way and checks and renders this Book with it, with the same findings as the in-repository build; each declared mdBook version renders this Book, and an undeclared version is rejected with a diagnostic naming the supported ones.
 
 - **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `renderer-versions` — Full for the declared versions; [project-one-engine-version](../design/project-integration.md#project-one-engine-version) · `same-version-entry-points` — Partial: installed and in-repository builds of one revision.
-- **Evidence:** Partial, locally on branch `project-integration`: `cargo install --git file://<checkout> --rev <head> --locked anchor-book` installed the engine; its `anchorbook check` output and exit status and its `anchorbook contract` output were identical to the in-repository build's; `mdbook build` with `MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND="anchorbook md"` rendered this Book through it, confirmed by a deliberately wrong command failing the build, and rendered-Book acceptance passed. The Book workflow's **Installed engine** job runs the same steps on GitHub for the revision under test; its run is pending. The declared mdBook versions are `SUPPORTED_MDBOOK_VERSIONS` in `src/adapters/mdbook.rs`, currently 0.5.4, the newest release; it is the version both Book jobs use, and Symposium milestone 1 pins Symposium's mdBook to it. `tests/rendering.rs` `undeclared_mdbook_versions_are_rejected_naming_the_supported_ones` accepts each declared version through the actual `anchorbook md` process and rejects 0.5.5, 0.6.0, 0.5.3, and 0.4.52 with no Book JSON and a diagnostic naming the running and supported versions.
+- **Evidence:** Partial, locally on branch `project-integration`: `cargo install --git file://<checkout> --rev <head> --locked anchor-book` installed the engine; its `anchorbook check` output and exit status and its `anchorbook contract` output were identical to the in-repository build's; `mdbook build` with `MDBOOK_PREPROCESSOR__ANCHORBOOK__COMMAND="anchorbook md"` rendered this Book through it, confirmed by a deliberately wrong command failing the build, and rendered-Book acceptance passed. On GitHub, the Book workflow's [Installed engine](https://github.com/anchor-book/anchor-book/actions/runs/42762907783/job/129653094417) job passed for PR #28 head `ccc7adb`, installing that revision with `cargo install --git ... --rev ... --locked`, matching the in-repository check and contract output, rendering this Book through the installed binary, and passing rendered-Book acceptance. The declared mdBook versions are `SUPPORTED_MDBOOK_VERSIONS` in `src/adapters/mdbook.rs`, currently 0.5.4, the newest release; it is the version both Book jobs use, and Symposium milestone 1 pins Symposium's mdBook to it. `tests/rendering.rs` `undeclared_mdbook_versions_are_rejected_naming_the_supported_ones` accepts each declared version through the actual `anchorbook md` process and rejects 0.5.5, 0.6.0, 0.5.3, and 0.4.52 with no Book JSON and a diagnostic naming the running and supported versions.
 
 #### Equivalent entry points {#project-integration-1-entry-points}
 
@@ -86,4 +86,4 @@ The library, the actual CLI process, and the actual `anchorbook md` preprocessor
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, an installed engine at the revision under test checks and renders it with the same results as the in-repository build, the library, CLI, and preprocessor agree, and the supported mdBook versions are declared and enforced. `fresh-session` coverage is from one Claude Code session; a Codex session was not run.
