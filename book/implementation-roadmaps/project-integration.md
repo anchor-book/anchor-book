@@ -38,7 +38,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
 
-**Status:** In progress — mdBook location and contract command implemented; installed engine and mdBook versions remain
+**Status:** In progress — mdBook location, contract command, and entry-point equivalence done; installed engine and mdBook versions remain
 
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
@@ -82,7 +82,7 @@ A CI job installs the pinned engine revision the documented way and checks and r
 The library, the actual CLI process, and the actual `anchorbook md` preprocessor process report equivalent outcomes, codes, locations, and evaluated scope for the same passing, failing, and incomplete fixtures, against independent expectations.
 
 - **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers` — Partial: the preprocessor caller; library and CLI equivalence is recorded in [Structural Checking milestone 2](structural-checker.md#structural-checking-2-typed-results).
-- **Evidence:** Pending.
+- **Evidence:** Passed locally on Rust 1.88.0 and stable 1.99.1, branch `project-integration`. `tests/build_gate.rs` `library_cli_and_preprocessor_report_the_same_check` checks one fixture Book passing, failing (a missing chapter), and incomplete (unsupported navigation) through `checking::check`, the actual `anchorbook check` process, and the actual `anchorbook md` process. The CLI and preprocessor exit with the outcome's status, and the CLI's report and, for failed and incomplete checks, the preprocessor's stderr equal the library report's formatting; a passing check lets the preprocessor return Book JSON with no stderr. Making the preprocessor exit 1 for every failed check fails the test on the incomplete case; the source was restored.
 
 ### Completion record
 
