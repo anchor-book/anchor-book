@@ -124,7 +124,7 @@ Pending.
 
 **Outcome:** A fresh agent session in Symposium reads the contract, the project guidance, and the Anchor Book through the `AGENTS.md` bootstrap, and Symposium's existing agent instructions live in its project guidance without conflicting with the contract.
 
-**Status:** Proposed
+**Status:** Complete
 
 **Identifier:** `symposium-integration-3`
 
@@ -134,9 +134,9 @@ Pending.
 
 **Tasks**
 
-- [ ] Add the bootstrap section to Symposium's `AGENTS.md`.
-- [ ] Move Symposium's own instructions, such as checking common issues, keeping design chapters current, and its commit conventions, into the project guidance chapter, and record any that conflict with the contract for the engineer and maintainers to resolve.
-- [ ] Run fresh agent sessions and record what they read and report.
+- [x] Add the bootstrap section to Symposium's `AGENTS.md`.
+- [x] Move Symposium's own instructions, such as checking common issues, keeping design chapters current, and its commit conventions, into the project guidance chapter, and record any that conflict with the contract for the engineer and maintainers to resolve.
+- [x] Run fresh agent sessions and record what they read and report.
 
 ### Completion criteria
 
@@ -145,18 +145,18 @@ Pending.
 A fresh agent session in the Symposium branch reads the contract, project guidance, and Book through the bootstrap, and identifies the phase, commands, and governing records of an adapted design area. Record agent versions and any assistance.
 
 - **Anchor coverage:** [project-agent-bootstrap](../design/project-integration.md#project-agent-bootstrap) · `fresh-session` — Partial: a second project, after this Book.
-- **Evidence:** Pending.
+- **Evidence:** Passed on 2026-11-10, Symposium branch `anchor-book` at `e63d4e38`, not pushed, with the engine installed at `2af5c89`. Two fresh non-interactive Claude Code 2.1.319 sessions (model Opus 5.5), each in a new clone of the branch. Given only "Read the Book", the first ran `anchorbook contract` before anything else, read the guidance and all nine chapters in `SUMMARY.md`, ran the structural check, and reported the phase (`prototyping`), the passing check, the three draft anchors with the records' counts, the open `SYMPOSIUM_HOME` question, and the one Proposed milestone with what holds it, starting no work; it did not list the project's commands. The second was also asked which commands check, build, and test the project and which records govern each anchor; it followed the same start and named all six commands and each anchor's requirements and decisions correctly, and noticed that `decision-raw-and-normalized-configuration` is cited by no anchor. 4 and 6 turns, 22 and 40 seconds; neither changed a file. Limits: one agent, no Codex session; the sessions were allowed to run `anchorbook contract` and `anchorbook check`, and the host's permission settings let them run read-only shell commands too; the second session's question is assistance; the transcripts were reviewed by the agent that wrote the bootstrap.
 
 #### Instructions reconciled {#symposium-integration-3-instructions}
 
 Every instruction in Symposium's previous `AGENTS.md` is in its project guidance or listed as a conflict with its resolution.
 
 - **Anchor coverage:** None — project guidance.
-- **Evidence:** Pending.
+- **Evidence:** Passed. Every part of Symposium's previous `AGENTS.md` now has a place: the user Book imports (`@md/introduction.md`, `@md/SUMMARY.md`, `@md/design/module-structure.md`, `@md/design/important-flows.md`) became pointers in Working on Symposium, under design areas not yet in the Anchor Book, so they no longer load into every session; "check common issues first" and "build and test" are working rules there, with the build rule's TypeScript and Swift dropped because the repository no longer has that code, and its commands taken from the completed config-normalization RFD; the `Co-authored-by` commit convention is kept as Symposium's rule. One instruction conflicts with the contract: "update the design documentation in `md/design`" would keep a second copy of each design area the Anchor Book now owns. Interim resolution in the guidance: update the Anchor Book chapter and keep `md/design` consistent until the maintainers decide which is kept. The `Co-authored-by` rule does not conflict with the contract; this fork's commits do not carry it, at the engineer's choice.
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-10, on fork branch `anchor-book`, not pushed. Fresh sessions start from the contract and Symposium's Anchor Book through the `AGENTS.md` bootstrap, and its earlier instructions live in the project guidance, with the design-documentation conflict resolved for now pending the maintainers' decision. Coverage is from Claude Code sessions only.
 
 ## Milestone 4. Symposium's tests are evidence for its criteria {#symposium-integration-4}
 
