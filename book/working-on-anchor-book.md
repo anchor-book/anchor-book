@@ -48,7 +48,9 @@ inspect this Book's format; the checker reports findings without repairing files
 The binary also supports `anchorbook md supports html`, `anchorbook contract`,
 `anchorbook verify --config anchorbook.toml`, help, and version. `verify` reports
 each anchor criterion's evidence state and checks the Book's claims of completion;
-it has no runner yet, so linked tests and proofs show as not evaluated. Materialization remains planned. Loading configuration
+it runs linked tests with cargo-nextest, which CONTRIBUTING describes installing,
+and has no proof runner yet. This Book's tests are linked to its anchors' criteria
+with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook

@@ -4,9 +4,11 @@
 `[verification]` configuration and evidence links, computes evidence states, checks
 [claims of completion](#claims-of-completion), and prints the report, as
 [Verification Evidence milestone 4](../implementation-roadmaps/verification-evidence.md#verification-evidence-4)
-records. No runner exists yet, so linked tests and proofs are reported as not
+records, and runs linked tests with cargo-nextest, as
+[milestone 1](../implementation-roadmaps/verification-evidence.md#verification-evidence-1)
+records. No proof runner exists yet, so linked proofs are reported as not
 evaluated; the [roadmap](../implementation-roadmaps/verification-evidence.md) plans
-the runners, guards, and assessment records.
+the proof runner, guards, and assessment records.
 
 This chapter defines the operation that produces the evidence described in
 [Verification](verification.md). `anchorbook verify` reports the project's
@@ -328,6 +330,28 @@ nextest. The engine maps a linked test to its report entry by Cargo's and
 nextest's naming: integration tests by their `tests/` file and function, unit
 tests by their module path in the library. A link that maps to no entry, or to
 several, has no evidence and is reported.
+
+The runner is implemented for cargo-nextest 0.9.151. It runs each package with
+linked tests in scope once, with that package's manifest, `--locked`, an exact
+filterset of `binary_id(=…) & test(=…)` terms, `--run-ignored all`,
+`--no-fail-fast`, and `--no-tests=pass`, from the configuration directory. Its own
+profile and report store come from a tool configuration it writes under
+`[verification] output`, so the project's nextest configuration is unchanged; the
+store is cleared before each run, so an earlier report is never read. It uses the
+`cargo` that the `CARGO` environment variable names, as Cargo does for its
+subcommands, or else `cargo`. nextest's binary names are the package for the
+library, `<package>::<test>` for integration tests, and `<package>::bin/<name>` for
+binaries. The sources, manifests, and lockfiles are snapshotted before and after
+the run; a change, a missing report, or a failed build leaves the test method
+inconclusive, and a missing nextest, or nextest not listed in `runners`, leaves it
+not evaluated. The report names the nextest version that ran. Builds still go to
+the project's ordinary Cargo target directory.
+
+A linked test must establish its criterion from the inputs of the current run. An
+ignored test that reads only current sources, such as an acceptance test of the
+Book's records, can be linked; one that reads output a separate build produced
+earlier, such as rendered pages, cannot, because that output may describe other
+inputs.
 
 ### Verus runner
 

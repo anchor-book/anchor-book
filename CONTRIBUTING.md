@@ -180,9 +180,20 @@ links (`/// anchorbook: <anchor-id>#<criterion-id>` on a test or verified
 function) in its `sources`, and the Book, and reports every criterion's state by
 chapter. It exits 0 when every claim it checked holds, 1 when a Complete
 milestone's Full coverage names a criterion that is not satisfied, and 2 when it
-cannot evaluate. No runner is implemented yet, so linked tests and proofs show
-as not evaluated, and this Book's run exits 1 until its claimed criteria are
-linked. `tests/verification.rs` holds its fixture tests.
+cannot evaluate. It runs the linked tests in scope with cargo-nextest, pinned at
+the version the engine supports:
+
+```sh
+cargo install cargo-nextest --version 0.9.151 --locked
+```
+
+`--anchor <id>` and `--method test` narrow the run for the build loop. Without
+nextest, linked tests show as not evaluated; ordinary `cargo test` and CI do not
+need it. No proof runner exists yet, so linked proofs are not evaluated. Runner
+output, including each package's log, is under `target/anchorbook-verify/`.
+`tests/verification.rs` holds the fixture tests, which use a recording stand-in
+for `cargo`; `native_nextest_follows_a_change_through_the_build_loop` is ignored
+and runs the installed nextest.
 
 ## Local authority proof
 
