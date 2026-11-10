@@ -159,6 +159,7 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     );
 }
 
+/// anchorbook: records-valid-authority#production-integration
 /// anchorbook: records-valid-authority#resolved-authority
 #[test]
 fn each_failing_reference_is_reported_at_its_own_location() {

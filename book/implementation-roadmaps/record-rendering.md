@@ -138,7 +138,7 @@ Review light/dark themes, narrow layout, keyboard access, and printed details.
 
 Links resolve across chapter depths, the project site prefix, and the combined print view.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `relationship-navigation` — Full
+- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `relationship-navigation` — Partial: nested chapters and relative routes through the adapter, which linked tests exercise; the project site prefix and the combined print view were checked in a browser and by rendered-Book acceptance, which reads previously built output and so is not linked as evidence
 - **Evidence:** Passed: generated local links and fragments resolve; browser navigation followed authority links under an `/anchor-book/` project prefix and within the combined print page. All generated record links in print resolve to that page's record fragments. Independent nested-route fixtures cover differing source/output paths and percent-encoded Unicode and spaces.
 
 #### Source preservation {#record-rendering-2-source-preservation}

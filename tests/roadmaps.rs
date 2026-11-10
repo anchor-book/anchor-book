@@ -98,6 +98,7 @@ fn valid_milestones_resolve_their_identifiers_and_coverage() {
     assert!(text[end..].starts_with("### Completion record"));
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn malformed_headings_and_fields_are_located() {
     let good = milestone("road-1", "works", COVERAGE);
@@ -123,6 +124,7 @@ fn malformed_headings_and_fields_are_located() {
     assert_eq!(only(&prefix), [("roadmap.invalid-milestone".into(), 15)]);
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn statuses_may_carry_an_explanation() {
     let text = milestone("road-1", "works", COVERAGE).replacen(
@@ -133,6 +135,7 @@ fn statuses_may_carry_an_explanation() {
     assert!(only(&text).is_empty());
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn identifiers_are_unique_across_chapters() {
     let first = milestone("road-1", "works", COVERAGE);
@@ -152,6 +155,7 @@ fn identifiers_are_unique_across_chapters() {
     );
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn milestones_end_at_the_next_section_heading() {
     let records = read_records(&[Chapter::new(Path::new("design.md"), RECORDS)]).unwrap();
@@ -173,6 +177,7 @@ fn milestones_end_at_the_next_section_heading() {
     assert!(milestones[0].criteria[0].heading.start < second);
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn coverage_must_cite_existing_anchors_and_criteria() {
     let missing_anchor = milestone("road-1", "works", "`no-such-anchor` · `first` — Full");
@@ -193,6 +198,7 @@ fn coverage_must_cite_existing_anchors_and_criteria() {
     assert!(only(&none).is_empty());
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn coverage_levels_are_read_and_full_takes_no_qualifier() {
     use anchor_book::roadmaps::CoverageLevel;
@@ -255,6 +261,7 @@ fn coverage_levels_are_read_and_full_takes_no_qualifier() {
     assert_eq!(missing[0].0, "roadmap.invalid-coverage");
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn examples_in_code_blocks_are_not_roadmap_structure() {
     let example = format!(
@@ -284,6 +291,7 @@ fn render(roadmap: bool, text: &str) -> Result<Vec<String>, RenderError> {
 
 const CRITERION_OPEN: &str = "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"road-1-works\">It <code>works</code> <span class=\"ab-link-id\">road-1-works</span></h4></summary>\n";
 
+/// anchorbook: render-roadmap-milestones#roadmap-presentation
 #[test]
 fn milestones_render_as_cards_with_fields_and_open_sections() {
     let text = milestone("road-1", "works", COVERAGE);
@@ -315,6 +323,7 @@ fn milestones_render_as_cards_with_fields_and_open_sections() {
     assert!(presentation.ends_with("</script>\n"));
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-presentation
 #[test]
 fn explained_statuses_tasks_and_evidence_render_in_order() {
     let text = milestone("road-1", "works", COVERAGE)
@@ -353,6 +362,7 @@ fn explained_statuses_tasks_and_evidence_render_in_order() {
     );
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-presentation
 #[test]
 fn chapters_outside_the_roadmaps_role_are_not_read_as_roadmaps() {
     let invalid = milestone("road-1", "works", "`no-such-anchor` · `first` — Full");
@@ -399,6 +409,8 @@ fn adapter(book: &fixture::Book, roadmap: &str, nested: &str) -> std::process::O
     process.wait_with_output().unwrap()
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-presentation
+/// anchorbook: render-records-in-context#preservation-and-escaping
 #[test]
 fn the_adapter_renders_the_roadmaps_role_and_its_nested_chapters() {
     let book = fixture::Book::new();
@@ -423,6 +435,7 @@ fn the_adapter_renders_the_roadmaps_role_and_its_nested_chapters() {
     assert_eq!(book.snapshot(), before);
 }
 
+/// anchorbook: render-roadmap-milestones#roadmap-validation
 #[test]
 fn the_adapter_refuses_invalid_roadmaps_without_output() {
     let book = fixture::Book::new();

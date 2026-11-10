@@ -118,3 +118,29 @@ fn current_book_structure() {
             .all(|group| group.state == State::Passed)
     );
 }
+
+/// anchorbook: render-roadmap-milestones#roadmap-validation
+#[test]
+#[ignore = "current-Book roadmap acceptance; run explicitly with --ignored after independent tests"]
+fn current_book_roadmaps() {
+    // This Book's roadmaps are the chapters under its implementation-roadmaps role.
+    let sources = book::load();
+    let chapters = book::chapters(&sources);
+    let inventory = read_records(&chapters).expect("current Book records are valid");
+    let roadmaps: Vec<_> = chapters
+        .iter()
+        .copied()
+        .filter(|c| c.path.starts_with("implementation-roadmaps"))
+        .collect();
+    let milestones =
+        anchor_book::roadmaps::read_roadmaps(&roadmaps, &inventory).unwrap_or_else(|e| {
+            for d in e.diagnostics() {
+                eprintln!("{d}");
+            }
+            panic!("current Book roadmaps failed validation")
+        });
+    assert!(
+        !milestones.is_empty(),
+        "the current Book has roadmap milestones"
+    );
+}
