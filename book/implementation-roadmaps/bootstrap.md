@@ -57,7 +57,7 @@ The Book contains the checker design, six checker requirements, four governing d
 
 *Milestone evidence — review and acceptance recorded*
 
-**Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Not yet integrated into main.
+**Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Merged in PR #25 as `f78f047`.
 
 **Review revisions:** `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `check-configuration-validity` also cites `requirement-truthful-results`; `decision-separate-check-and-repair` is retitled; and `requirement-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
 

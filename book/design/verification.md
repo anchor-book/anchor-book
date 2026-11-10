@@ -1,9 +1,6 @@
 # Verification
 
-**Status: draft for review.** Criterion methods are parsed and rendered, and the
-engine's own [authority proof](rust-engine.md#authority-proof) runs locally and
-in CI. Running linked checks, the proof guards, and assessment records are planned in
-the [Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md).
+
 
 Anchor criteria declare the methods that must establish them: tests, proofs, and
 reviews. Verification produces evidence that each declared method holds for the

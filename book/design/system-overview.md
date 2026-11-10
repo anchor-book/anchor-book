@@ -1,10 +1,6 @@
 # System Overview
 
-**Status: draft for review.** This describes the intended system. The repository
-currently has a shared Rust record library, a configuration loader, and an mdBook
-adapter that renders anchors and authorities. Structural checking reports format
-defects through the library and CLI, and `anchorbook contract` delivers the AI
-Working Contract; managed writes and evidence aggregation remain later work.
+
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
@@ -58,13 +54,12 @@ flowchart LR
 ```
 
 The boxes describe responsibilities, not separate services or Cargo packages.
-Dashed inputs identify later cross-Book and verification integrations whose
-formats still need design. People and agents use the CLI; automation can call
+Dashed inputs are cross-Book and verifier
+integrations whose formats are outside this design. People and agents use the CLI; automation can call
 either the CLI or Rust library. On the rendering path, mdBook reads the authored
 and managed Book files and supplies their chapter content to the preprocessor.
 
-The [record-rendering adapter](record-rendering.md) is implemented. It uses shared
-records to present anchors and authorities within files read by mdBook. Structural
+The [record-rendering adapter](record-rendering.md) uses shared records to present anchors and authorities within files read by mdBook. Structural
 checking operates independently of the renderer and its output.
 
 ## What a Book describes
@@ -94,14 +89,12 @@ verification, including statements, assumptions, bounds, and inconclusive result
 [Verification](verification.md) defines how tests, proofs, and reviews
 establish criteria, including the guards that check a proof establishes its
 criterion. The engine's own [authority proof](rust-engine.md#authority-proof) is
-implemented; its roadmap records proof and production-integration evidence
-manually, and automated evidence evaluation remains later work.
+an example.
 
 ## Operations
 
-Operations share engine models and rules. The first rendering prototype obtains
-its chapter inventory from mdBook; it does not require project
-configuration for record rendering.
+Operations share engine models and rules. Record rendering obtains its chapter
+inventory from mdBook and does not require project configuration.
 
 | Operation | Purpose | Writes |
 | --- | --- | --- |
@@ -121,7 +114,7 @@ checks detect drift and CI can gate it.
 Build keeps three views distinct: anchor development, verification evidence,
 and agreed roadmap completion. Missing, failed, stale, or incomplete evidence
 cannot count as successful verification. [Running Verification](verification-evidence.md)
-defines the verify operation that evaluates evidence; Build can later present its results.
+defines the verify operation that evaluates evidence; Build presents its results.
 
 ## Contract delivery
 
@@ -131,8 +124,8 @@ Repository bootstrap instructions identify the contract, project guidance, and
 Book source. Agents read all three; retrieving the contract alone does not supply
 project context.
 
-The contract currently includes Rust guidance. Language-specific instruction
-extensions may be designed later; there is no extension mechanism yet.
+The contract includes Rust guidance. Extensions for other languages are outside
+this design.
 
 `anchorbook contract` prints the contract packaged with the running engine. It
 reads no project files, so its output is the same for every project using that
@@ -158,8 +151,7 @@ check first and renders nothing if that check fails or is incomplete, so ordinar
 `mdbook build` and `mdbook serve` apply it without a wrapper command; see the
 [native tool integration decision](../authority/decisions.md#decision-native-tool-integration).
 It does not repair files, run tests, or recursively build the Book. Diagram preprocessors run alongside it.
-[Record Rendering](record-rendering.md) defines the shared-model integration;
-indexes, evidence pages, and progress reporting follow later.
+[Record Rendering](record-rendering.md) defines the shared-model integration.
 
 ## Developing the engine with this Book
 
@@ -185,14 +177,11 @@ makes its build job depend on successful engine checks and current-Book acceptan
 The Anchor Book preprocessor runs the structural checker before rendering, so
 every `mdbook build` refuses a structurally invalid Book; rendered-output
 acceptance precedes publication.
-[Structural Checking milestone 3](../implementation-roadmaps/structural-checker.md#structural-checking-3)
-owns this shared integration with Record Rendering and its evidence.
 
-Later, project verification runs independently and supplies completed evidence
+Project verification runs independently and supplies completed evidence
 to Book build. A structural integration test may run inside a project test suite;
 it must not depend on the final results of the suite that contains it.
 
-[Structural checking](structural-checking.md) follows rendering and supplies
-conformance rules for initialization and materialization. This Book is the primary
-acceptance case, supplemented by independent fixtures and deliberately broken copies.
-Managed content, contract delivery, and evidence behavior follow later.
+[Structural checking](structural-checking.md) supplies conformance rules for
+initialization and materialization. This Book is the primary acceptance case,
+supplemented by independent fixtures and deliberately broken copies.

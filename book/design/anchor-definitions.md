@@ -1,10 +1,8 @@
 # Anchor Definitions
 
-**Status: draft for review.** This chapter defines the goal record syntax, a
-strict line grammar. The engine currently reads an earlier TOML form; see
-[Current implementation](#current-implementation). The
-[Record Line Grammar roadmap](../implementation-roadmaps/record-line-grammar.md)
-measures the syntax with agents and migrates the engine and this Book.
+This chapter defines the record syntax, a strict line grammar.
+
+
 
 An anchor defines a property of the goal system, its authority, and verification
 criteria. Surrounding prose explains it but is not part of the definition. Agents
@@ -197,8 +195,8 @@ references are outside this syntax.
 
 **Criteria.** A criterion is a list item ``- Criterion `<id>` [<methods>]: <statement>``.
 Its identifier is unique within its anchor, and its statement is a nonempty
-description of what verification must establish. Evidence can later reference
-the anchor identifier and criterion identifier together.
+description of what verification must establish. [Evidence links](verification-evidence.md#evidence-links)
+reference the anchor identifier and criterion identifier together.
 
 **Every line accounted for.** Each line is the heading, a field, a continuation, a
 criterion, a proof-scope item, or a blank quoted line. Any other line, and any
@@ -354,34 +352,12 @@ The library owns these rules. The mdBook preprocessor consumes the same validate
 model to render anchors and links. Rendering must not define a second
 interpretation of the source.
 
-## Current implementation
-
-The engine and this Book's records still use the schema-1 TOML form: a top-level
-fenced block labeled `anchorbook-anchor`, `anchorbook-requirement`, or
-`anchorbook-decision`, whose TOML body carries `schema-version = 1`, `id`, `title`,
-`status`, and the kind's fields (`property`, inline-table `authorities`, and
-`[[criteria]]` with `id`, `statement`, and `verification` for anchors). Proof scope
-is written as labeled paragraphs inside the statement and is not checked.
-
-Current identifiers are lowercase, because the current reader accepts no kind
-code: requirements and decisions carry `requirement-` and `decision-` prefixes
-and anchors have none. Give new records names that follow the
-[identifier rules](#identifiers) in that form; the migration then only replaces
-the prefix with the kind code, such as `decision-separate-check-and-repair`
-becoming `D-separate-check-and-repair`, and adds `A-` to each anchor.
-
-Author records in this form, following the existing records, until
-[Record Line Grammar milestone 2](../implementation-roadmaps/record-line-grammar.md#record-line-grammar-2)
-migrates the reader, fixtures, records, and identifiers together. After
-migration, TOML record blocks are rejected as unsupported syntax rather than
-kept as a second format.
-
 ## Design, implementation, and evidence
 
 `accepted` status means the property has been accepted into the goal design.
 It does not mean implemented, tested, or proven. Keep implementation associations,
 executed results, and roadmap completion outside the authored definition.
-Reports can derive progress from those records as the engine gains that support.
+Reports derive progress from those records.
 
 ## Open questions
 

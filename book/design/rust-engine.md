@@ -1,9 +1,6 @@
 # Rust Engine
 
-**Status: prototype implementation in progress.** The record library described
-below is implemented, along with record rendering and the mdBook adapter.
-Configuration loading and structural checking are also implemented; verification
-progress and remaining work are recorded in their roadmaps.
+
 
 ## Anchors
 
@@ -159,7 +156,7 @@ explains its call path, candidate model, and specification predicates. The root
 `CONTRIBUTING.md` documents the pinned Verus release, the native command, the CI
 job and its report check, and the mutation exclusions. The
 [Formal Verification roadmap](../implementation-roadmaps/formal-verification.md)
-records results and remaining review. The engine is the first case for
+records results and remaining review. The engine follows
 [Shipping Verified Code](verified-code-packaging.md): its validator uses Verus's
 attribute syntax, so only the `verus` feature brings in `vstd`. Reading, checking,
 and rendering a Book never run the verifier.
@@ -205,7 +202,7 @@ flowchart TB
 Organize the library by capability, each with a small interface and private
 implementation modules.
 
-The implemented layout is:
+The layout is:
 
 ```text
 src/
@@ -235,7 +232,8 @@ src/
     diagnostics.rs        Record-specific findings and source locations
 ```
 
-The goal [record syntax](anchor-definitions.md#record-syntax) replaces `markdown.rs` and `schema.rs` with a line reader; `toml_edit` remains for configuration. Add `materialization` when it is implemented. Do not create empty modules or fold new capabilities into `records`.
+Each new capability, such as materialization, gets its own module. Do not create
+empty modules or fold new capabilities into `records`.
 
 The dependency direction is from operations and adapters toward shared models
 and validation. `records` does not depend on rendering, command handling, or
@@ -272,7 +270,7 @@ Start with synchronous Rust and explicit inputs. Avoid global configuration,
 changing the process working directory, and a speculative plugin framework.
 Internal data structures need not become public extension interfaces.
 
-## Implemented record API
+## Record API
 
 `read_records(&[Chapter<'_>]) -> Result<RecordInventory, RecordErrors>` is the
 first library operation. `Chapter` borrows a path and source string; the caller
@@ -284,8 +282,8 @@ callers from bypassing validation; `get`, `records`, and `backlinks` expose read
 access. Criteria expose required verification methods as typed values, preserving
 authored order without implying verification results. Records retain typed anchor,
 requirement, or decision data, definition and body byte ranges, and locations for
-authority references. A later renderer
-can replace exactly those blocks and resolve links from the same inventory.
+authority references. The renderer
+replaces exactly those blocks and resolves links from the same inventory.
 Backlinks contain sorted, unique IDs of direct referring records.
 
 Raw Serde deserialization types remain private. Public types use `Path` and
@@ -311,8 +309,7 @@ identities never select an arbitrary winner.
 The package uses **Rust 2024** with **Rust 1.88** as its minimum. Development uses
 current stable Rust, selected by `rust-toolchain.toml`; CI checks the minimum and
 current stable. The minimum accommodates the selected mdBook 0.5.4 summary parser.
-The pinned Verus toolchain remains independent. Earlier roadmap evidence retains
-the Rust versions used for those revisions.
+The pinned Verus toolchain remains independent.
 
 | Dependency | Purpose |
 | --- | --- |
@@ -335,8 +332,8 @@ unnecessary for engine compilation and independent tests. The CLI handles `check
 help, and version with a small explicit argument dispatch. Argument-parsing
 dependencies can be reconsidered as more commands are implemented.
 
-The public API and schema version 1 remain prototypes. The crate has
-`publish = false` until release metadata, packaging, and compatibility policy
+The crate is not
+published until release metadata, packaging, and compatibility policy
 are ready. Authority schema changes must update the design, records, and tests
 together; schema flexibility does not mean accepting alternate current formats.
 
@@ -413,7 +410,8 @@ Use cargo-mutants as a development tool, separate from engine dependencies and
 Book builds. It runs the independent tests against temporary source mutations;
 current-Book acceptance remains a separate check. The pinned tool and commands
 are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
-Three reviewed equivalent mutations and five loop-counter mutations that verification rejects have exact exclusions; no engine files are excluded.
+Reviewed equivalent mutations, and mutations that only verification rejects, have
+exact exclusions; no engine files are excluded.
 
 Agents run tests locally, investigate findings against the goal design, correct
 test gaps or implementation defects, and repeat verification. On GitHub, pull requests
@@ -427,17 +425,12 @@ review; the default is to preserve findings for investigation.
 
 The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
 separates usable local support from a full reviewed campaign, demonstrated CI,
-and branch rules requiring success before merge. Full campaigns outgrew one
-runner, reaching the 60-minute budget at about 780 mutations, so every campaign runs
-as four shards on separate runners, each with four workers and that budget; the
+and branch rules requiring success before merge. Every campaign runs
+as four shards on separate runners, each with four workers and a 60-minute budget; the
 required **Mutation tests** job passes only when every shard does. Adjust shards and
 budgets from measured results without silently reducing scope. The contract retains the reusable testing policy;
 tool versions and repository integration remain project guidance.
 
 ## Choices still open
 
-The configuration and checking APIs, parser adapter, supported-input checks,
-source-location mapping, and report presentation are implemented. The `verify`
-operation is designed in [Running Verification](verification-evidence.md); its
-links, states, claims, and report are implemented and its runners are planned. Async runtimes and dynamic rules need concrete workflows
-before design.
+Async runtimes and dynamic rules need concrete workflows before design.

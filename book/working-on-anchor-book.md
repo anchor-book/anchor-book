@@ -25,8 +25,8 @@ Use these definitions and conventions while authoring this Book:
 The engine still reads the earlier TOML record form, so write this Book's records
 in that form, following the existing records, until the
 [Record Line Grammar](implementation-roadmaps/record-line-grammar.md) migration;
-[Current implementation](design/anchor-definitions.md#current-implementation)
-summarizes it.
+[its gap](implementation-roadmaps/record-line-grammar.md#gap) describes
+that form.
 
 The record syntax and fields are unpublished drafts that we are refining through use.
 Follow their documented evolution policy and update the syntax, affected records,

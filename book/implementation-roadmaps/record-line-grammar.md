@@ -11,9 +11,27 @@ or revised on evidence before the migration.
 
 ## Gap
 
-The engine and all of this Book's records use the earlier
-[TOML form](../design/anchor-definitions.md#current-implementation). Searches
-against this Book's sources show what that costs agents:
+The engine and all of this Book's records use the earlier TOML form:
+
+- **Records.** A top-level fenced block labeled `anchorbook-anchor`,
+  `anchorbook-requirement`, or `anchorbook-decision`, whose TOML body carries
+  `schema-version = 1`, `id`, `title`, `status`, and the kind's fields
+  (`property`, inline-table `authorities`, and `[[criteria]]` with `id`,
+  `statement`, and `verification` for anchors). Proof scope is written as
+  labeled paragraphs inside the statement and is not checked.
+- **Identifiers.** Lowercase, because the reader accepts no kind code:
+  requirements and decisions carry `requirement-` and `decision-` prefixes and
+  anchors have none. Name new records by the
+  [identifier rules](../design/anchor-definitions.md#identifiers) in that form,
+  so the migration only replaces the prefix with the kind code, such as
+  `decision-separate-check-and-repair` becoming `D-separate-check-and-repair`,
+  and adds `A-` to each anchor.
+- **Reader.** `src/records/markdown.rs` and `src/records/schema.rs`. Milestone 2
+  replaces them with the line reader, keeping `toml_edit` for configuration, and
+  migrates the reader, fixtures, records, and identifiers together; TOML record
+  blocks are then rejected as unsupported syntax.
+
+Searches against this Book's sources show what that form costs agents:
 
 | Question | Result with TOML records |
 | --- | --- |

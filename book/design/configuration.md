@@ -1,9 +1,6 @@
 # Configuration
 
-**Status: prototype configuration reader implemented.** The library loads and
-validates the real repository configuration. `anchorbook check` now uses that
-configuration to evaluate Book structure; configuration loading alone does not
-check navigation or establish structural conformance.
+
 
 `anchorbook.toml` maps a project into the Book model. Directory names are project
 choices. Role names describe responsibilities, independently of page titles.
@@ -76,7 +73,7 @@ statement = "Accept a resolvable separate output that does not exist without cre
 
 ## Initial schema
 
-The repository now uses this `anchorbook.toml`:
+This repository's `anchorbook.toml`:
 
 ```toml
 schema-version = 1
@@ -96,7 +93,7 @@ implementation-roadmaps = "implementation-roadmaps/index.md"
 ```
 
 All shown fields are required in the first schema. The `[verification]` section,
-used only by `verify`, is defined in [Running Verification](verification-evidence.md#configuration); the planned `[engine]` version declaration is defined in [Project Integration](project-integration.md#running-the-engine). Reject unknown fields and
+used only by `verify`, is defined in [Running Verification](verification-evidence.md#configuration); the `[engine]` version declaration is defined in [Project Integration](project-integration.md#running-the-engine). Reject unknown fields and
 unsupported schema versions so a typo cannot silently change behavior. The loader
 accepts `[verification]` without interpreting it; `verify` validates it.
 The library rejects invalid input without creating or repairing configuration.
@@ -127,11 +124,10 @@ The repository's `anchorbook.toml` is the authoritative phase setting.
 to that field. The contract defines phase behavior without declaring a project's
 current value.
 
-The initial configuration reader validates and exposes the phase as data. All
+The configuration reader validates and exposes the phase as data. All
 three phases use the same initial structural rules: prototyping does not disable
 layout checks, and a structural pass in Complete does not establish implementation
-or verification. Automated enforcement of design readiness and completion is
-later work. The phase value expresses the chosen workflow; it is not evidence.
+or verification.  The phase value expresses the chosen workflow; it is not evidence.
 
 Phase transitions follow the
 AI Working Contract (`anchorbook contract`, “Work in the project's phase”); their

@@ -2,12 +2,10 @@
 
 This section describes the system anchor-book is intended to become, from the
 system overview to component responsibilities, interfaces, and detailed behavior.
-It represents the goal as currently understood, rather than only what is implemented.
+It defines the goal, not progress toward it.
 
-Chapters remain **drafts for review**. The record library, mdBook rendering,
-configuration loading, structural checking, and the engine's authority proof are in use; other
-capabilities remain planned. See the
-[roadmaps](../implementation-roadmaps/index.md) for progress and evidence.
+Chapters remain **drafts for review**. The
+[roadmaps](../implementation-roadmaps/index.md) record progress and evidence.
 
 Read from the system overview through record definitions and configuration,
 then the engine and its operations. Verification defines how tests, proofs, and
@@ -21,7 +19,7 @@ brings those capabilities into other projects.
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
 | [Configuration](configuration.md) | Mapping a project's layout into Book roles |
 | [Rust Engine](rust-engine.md) | Library and CLI boundaries, data and errors, and Rust development conventions |
-| [Record Rendering](record-rendering.md) | First prototype: readable records and relationship navigation through mdBook |
+| [Record Rendering](record-rendering.md) | Readable records and relationship navigation through mdBook |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
 | [Checking Diagnostics](check-diagnostics.md) | Typed findings, result states, repair guidance, and CLI reports |
 | [Verification](verification.md) | Methods, responsibilities, proofs that match their criteria, proof guards, and assessment records |

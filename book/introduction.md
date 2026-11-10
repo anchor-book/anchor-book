@@ -21,7 +21,5 @@ phase, source locations, authoring references, and development instructions.
 
 ## Current state
 
-Record parsing, authority validation, mdBook record rendering, configuration
-loading, structural checking, and contract delivery through `anchorbook contract`
-are implemented; other operations remain planned. See the
-[roadmaps](implementation-roadmaps/index.md#current-roadmaps) for progress and evidence.
+The [roadmaps](implementation-roadmaps/index.md#current-roadmaps) record what is
+implemented, remaining work, and evidence.

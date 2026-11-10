@@ -1,14 +1,6 @@
 # Running Verification
 
-**Status: draft for review.** Partly implemented: `anchorbook verify` reads the
-`[verification]` configuration and evidence links, computes evidence states, checks
-[claims of completion](#claims-of-completion), and prints the report, as
-[Verification Evidence milestone 4](../implementation-roadmaps/verification-evidence.md#verification-evidence-4)
-records, and runs linked tests with cargo-nextest, as
-[milestone 1](../implementation-roadmaps/verification-evidence.md#verification-evidence-1)
-records. No proof runner exists yet, so linked proofs are reported as not
-evaluated; the [roadmap](../implementation-roadmaps/verification-evidence.md) plans
-the proof runner, guards, and assessment records.
+
 
 This chapter defines the operation that produces the evidence described in
 [Verification](verification.md). `anchorbook verify` reports the project's
@@ -260,8 +252,7 @@ a witness whose input cannot meet them fails verification. The runner confirms
 that the witness calls the named function rather than trusting the link. A
 witness is executable code that the system never runs, so the project compiles it
 only under verification, for example with `#[cfg(verus_keep_ghost)]` and that cfg
-declared for Rust's `unexpected_cfgs` check. [Milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7)
-established this form on the engine's `validate_reference`.
+declared for Rust's `unexpected_cfgs` check.
 
 **Identity.** Each linked function is resolved by package, crate target, module
 path, name, and verification mode, with its source location, and must match
@@ -331,7 +322,7 @@ nextest's naming: integration tests by their `tests/` file and function, unit
 tests by their module path in the library. A link that maps to no entry, or to
 several, has no evidence and is reported.
 
-The runner is implemented for cargo-nextest 0.9.151. It runs each package with
+The runner supports cargo-nextest 0.9.151. It runs each package with
 linked tests in scope once, with that package's manifest, `--locked`, an exact
 filterset of `binary_id(=…) & test(=…)` terms, `--run-ignored all`,
 `--no-fail-fast`, and `--no-tests=pass`, from the configuration directory. Its own
@@ -537,8 +528,7 @@ are written; `assessments` holds the project's [assessment records](verification
 configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
 `verify` and ignored by `check`; its absence makes `verify` incomplete. `verify`
 validates the section itself, so an invalid one never affects `check` or rendering.
-The implemented fields are `sources`, `output`, and `runners`, whose values are
-`nextest` and `verus`; `assessments` is added with assessment records.
+Runner names are `nextest` and `verus`.
 Content identities in reports are 64-bit FNV-1a hashes: stable identities for
 recognizing changed inputs, not a security measure.
 
@@ -548,9 +538,7 @@ package, crate target, and features to verify;
 [Project Integration](project-integration.md#formal-verification-in-a-project)
 defines that use. Project manifests and source paths follow the containment rules
 above; an explicitly selected tool installation may be outside the project root.
-The exact proof-runner fields and supported target forms are settled against
-native Verus runs in
-[milestone 2](../implementation-roadmaps/verification-evidence.md#verification-evidence-2).
+
 
 ## Boundaries
 
@@ -571,11 +559,9 @@ native Verus runs in
    Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
    also claims every criterion in the Book, and whether a test with no link should
    fail when a project opts in, remain open.
-3. **Machine-readable output.** The versioned artifact schema for tools and agents,
-   planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
+3. **Machine-readable output.** The versioned artifact schema for tools and agents.
 4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
    and Verus.
-5. **Sensitivity cost.** Each change verifies the complete target once. For the
-   engine's authority proof this took 1–2 seconds per change, so its full set runs
-   in under a minute; much larger targets may still need a sampling or
+5. **Sensitivity cost.** Each change verifies the complete target once, so large
+   targets may need a sampling or
    per-function selection policy that reports which changes were not tried.
