@@ -121,27 +121,40 @@ struct Candidate {
     doc: bool,
 }
 
-/// Lines whose comment text starts `anchorbook:`.
-fn candidates(text: &str) -> Vec<Candidate> {
+/// Comments whose text starts `anchorbook:`. A line's comment starts at its
+/// first comment marker outside a string literal; markers inside the comment
+/// text, such as a quoted `///`, do not start another.
+fn candidates(text: &str, literals: &[Span]) -> Vec<Candidate> {
     let mut found = Vec::new();
     for (index, line) in text.lines().enumerate() {
+        let inside_string = |at: usize| {
+            let position = (index + 1, line[..at].chars().count());
+            literals
+                .iter()
+                .any(|(start, end)| *start <= position && position < *end)
+        };
         let trimmed = line.trim_start();
-        let (doc, rest) = if let Some(rest) = trimmed
-            .strip_prefix("///")
-            .or_else(|| trimmed.strip_prefix("//!"))
-            .or_else(|| trimmed.strip_prefix("/**"))
+        let indent = line.len() - trimmed.len();
+        // A block comment's continuation line: ` * anchorbook: ...`.
+        if let Some(after) = trimmed.strip_prefix('*')
+            && after.trim_start().starts_with("anchorbook:")
+            && !inside_string(indent)
         {
-            (true, rest)
-        } else if let Some(rest) = trimmed.strip_prefix("//") {
-            (false, rest)
-        } else if let Some(rest) = trimmed.strip_prefix("/*") {
-            (false, rest)
-        } else if let Some(rest) = trimmed.strip_prefix('*') {
-            (true, rest)
-        } else {
+            found.push(Candidate {
+                line: index + 1,
+                doc: true,
+            });
+            continue;
+        }
+        let Some(at) = line.match_indices('/').map(|(at, _)| at).find(|&at| {
+            (line[at..].starts_with("//") || line[at..].starts_with("/*")) && !inside_string(at)
+        }) else {
             continue;
         };
-        if rest.trim_start().starts_with("anchorbook:") {
+        let rest = &line[at..];
+        let doc = rest.starts_with("///") || rest.starts_with("//!") || rest.starts_with("/**");
+        let text = &rest[if doc { 3 } else { 2 }..];
+        if text.trim_start().starts_with("anchorbook:") {
             found.push(Candidate {
                 line: index + 1,
                 doc,
@@ -149,6 +162,44 @@ fn candidates(text: &str) -> Vec<Candidate> {
         }
     }
     found
+}
+
+/// Where a string literal starts and ends, as one-based lines and zero-based
+/// character columns.
+type Span = ((usize, usize), (usize, usize));
+
+/// Spans of the string literals in parsed source, so comment-like text inside a
+/// string, such as fixture source in a test, is never read as a link. Doc
+/// comments reach the token stream as string literals too; they are told apart
+/// by the source text at their start, which is a comment marker.
+fn string_literals(text: &str) -> Vec<Span> {
+    fn walk(tokens: proc_macro2::TokenStream, lines: &[&str], out: &mut Vec<Span>) {
+        for token in tokens {
+            match token {
+                proc_macro2::TokenTree::Group(group) => walk(group.stream(), lines, out),
+                proc_macro2::TokenTree::Literal(literal) => {
+                    let start = literal.span().start();
+                    let end = literal.span().end();
+                    let source: String = lines
+                        .get(start.line.saturating_sub(1))
+                        .map(|l| l.chars().skip(start.column).collect())
+                        .unwrap_or_default();
+                    let string = literal.to_string();
+                    let is_string = string.ends_with('"') || string.ends_with('#');
+                    if is_string && !source.starts_with("//") && !source.starts_with("/*") {
+                        out.push(((start.line, start.column), (end.line, end.column)));
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    let lines: Vec<&str> = text.lines().collect();
+    let mut spans = Vec::new();
+    if let Ok(tokens) = text.parse::<proc_macro2::TokenStream>() {
+        walk(tokens, &lines, &mut spans);
+    }
+    spans
 }
 
 /// The package and crate target a source file belongs to, and its module path.
@@ -511,8 +562,7 @@ pub(super) fn read(
             });
             continue;
         };
-        let candidates = candidates(&text);
-        if candidates.is_empty() {
+        if !text.contains("anchorbook:") {
             continue;
         }
         let parsed = match syn::parse_file(&text) {
@@ -523,13 +573,13 @@ pub(super) fn read(
                     line: error.span().start().line,
                     code: "verify.source-unparsable",
                     message: format!(
-                        "the file does not parse as Rust ({error}), so its {} link lines are not read",
-                        candidates.len()
+                        "the file does not parse as Rust ({error}), so its links are not read"
                     ),
                 });
                 continue;
             }
         };
+        let candidates = candidates(&text, &string_literals(&text));
         let mut reader = FileReader {
             path: display,
             context: context(&file, base),
@@ -626,10 +676,47 @@ mod tests {
     #[test]
     fn the_scanner_finds_link_lines_in_every_comment_form() {
         let text = "/// anchorbook: a#b\n// anchorbook: a#b\n  //! anchorbook: a#b\n/* anchorbook: a#b */\n * anchorbook: a#b\nlet s = \"anchorbook: a#b\";\n/// see anchorbook: a#b\n";
-        let found: Vec<(usize, bool)> = candidates(text).iter().map(|c| (c.line, c.doc)).collect();
+        let found: Vec<(usize, bool)> = candidates(text, &[])
+            .iter()
+            .map(|c| (c.line, c.doc))
+            .collect();
         assert_eq!(
             found,
             [(1, true), (2, false), (3, true), (4, false), (5, true)]
+        );
+    }
+
+    #[test]
+    fn a_comment_starts_at_its_first_marker_outside_strings() {
+        let text = concat!(
+            "let x = a * b / c; // anchorbook: a#b\n",
+            "//! see `/// anchorbook: a#b`\n",
+            "let u = \"//\"; // anchorbook: a#b\n",
+            "f(\"x\"// anchorbook: a#b\n",
+            "*p = 1; // anchorbook: a#b\n",
+            "  * anchorbook: a#b\n",
+        );
+        let lines = |literals: &[super::Span]| -> Vec<(usize, bool)> {
+            candidates(text, literals)
+                .iter()
+                .map(|c| (c.line, c.doc))
+                .collect()
+        };
+        // A quoted `///` inside a comment's text does not start a link, and code
+        // characters such as `*` and `/` before a comment do not hide it.
+        // Without string spans, the `//` inside the string on line 3 starts its comment.
+        assert_eq!(lines(&[]), [(1, false), (4, false), (5, false), (6, true)]);
+        // With the strings' spans, comments after them are found, including one
+        // that starts exactly where a string ends.
+        let strings = [((3, 8), (3, 12)), ((4, 2), (4, 5))];
+        assert_eq!(
+            lines(&strings),
+            [(1, false), (3, false), (4, false), (5, false), (6, true)]
+        );
+        // A continuation line inside a string is not a link.
+        assert_eq!(
+            lines(&[((6, 0), (6, 20))]),
+            [(1, false), (4, false), (5, false)]
         );
     }
 }

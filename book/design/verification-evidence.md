@@ -233,7 +233,10 @@ the parser attaches the link to its function without inferring position, and the
 project needs no dependency. A link line may sit among other documentation lines.
 One function may link several criteria, one per line. An ordinary
 `// anchorbook:` comment is not a link; the engine reports it as a misplaced link
-at its location rather than ignoring it. A link claims that the function addresses
+at its location rather than ignoring it, including a comment that follows code on
+its line. A line's comment starts at its first `//` or `/*` outside a string
+literal, so text inside strings, such as fixture source in a test, and a quoted
+`///` inside a comment are never read as links. A link claims that the function addresses
 the criterion; it does not show that the function is sufficient. Links are read
 only from the configured source directories, and the engine derives the reverse
 view from each criterion to its linked functions. Keeping links beside the code

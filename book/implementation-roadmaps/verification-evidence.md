@@ -256,11 +256,13 @@ Fixture Books with Complete and other milestones, Full and Partial coverage, and
 
 ### Evidence {#verification-evidence-4-evidence}
 
-Branch `verification`, 2026-11-10. Formatting, Clippy, and 131 tests pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, current-Book and rendered-Book acceptance, and `scripts/check-engine-independence.sh` pass. Mutation testing (cargo-mutants 27.1.0, `--in-diff` against `main`): the first run had 44 survivors in untested layouts, nested roadmaps, flags, summary counts, dirty state, and display text, and one equivalent comparison in test-state aggregation, which was rewritten so none remains; the repeat run tested 243 mutations: 203 caught, 40 unviable, none missed or timed out. Limits: no runner, so native states come in milestones 1 and 2; content identities are 64-bit FNV-1a; `#[path]` modules and a non-default library path are not followed.
+Branch `verification`, 2026-11-10. Formatting, Clippy, and 131 tests pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, current-Book and rendered-Book acceptance, and `scripts/check-engine-independence.sh` pass. Mutation testing (cargo-mutants 27.1.0, `--in-diff` against `main`): the first run had 44 survivors in untested layouts, nested roadmaps, flags, summary counts, dirty state, and display text, and one equivalent comparison in test-state aggregation, which was rewritten so none remains; the repeat run tested 243 mutations: 203 caught, 40 unviable, none missed or timed out. **Correction after merge:** an assessment of `main` at `efefa3c` found 16 false `verify.link-misplaced` findings: the scanner read fixture source inside string constants in `tests/verification.rs` as comments. Fixing it exposed two more gaps, a link in a comment after code on its line, which was ignored rather than reported, and a quoted `///` inside a comment's text, which was read as a link. A line's comment now starts at its first marker outside a string literal, using the parser's string spans; `comment_like_text_inside_string_literals_is_not_a_link` and `a_comment_starts_at_its_first_marker_outside_strings` cover all three, and this Book's run reports no link findings. Mutation testing on the changed lines: 36 tested, 30 caught, 6 unviable, none missed.
+
+Limits: no runner, so native states come in milestones 1 and 2; content identities are 64-bit FNV-1a; `#[path]` modules and a non-default library path are not followed.
 
 ### Completion record
 
-Complete on 2026-11-10 on branch `verification`, not yet integrated. The shared machinery, link reading, states, claims, and reports work against fixture results and this Book; native test and proof evidence remain in milestones 1 and 2.
+Complete on 2026-11-10; merged in PR #33 as `efefa3c`, with the scanner correction above on branch `verification`. The shared machinery, link reading, states, claims, and reports work against fixture results and this Book; native test and proof evidence remain in milestones 1 and 2.
 
 ## Milestone 5. Consumers verify their own production code {#verification-evidence-5}
 
