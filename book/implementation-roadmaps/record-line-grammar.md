@@ -26,6 +26,15 @@ cannot check. The renderer needs no change beyond the inline-text
 [open question](../design/anchor-definitions.md#open-questions): it replaces each
 record's source range with HTML from the typed inventory and never reads TOML.
 
+## Timing
+
+Tabled on 2026-11-10: decide before
+[Symposium Integration milestone 2](symposium-integration.md#symposium-integration-2),
+which writes most of Symposium's records, so they are written once in the chosen
+syntax. A mechanical conversion of this Book's 54 records then measured the line
+grammar at 13% fewer bytes than TOML (about 2% of the Book); its larger benefit is
+one-line identity and one spelling for every reference, which milestone 1 measures.
+
 ## Milestone 1. Measure how agents search each record syntax {#record-line-grammar-1}
 
 **Outcome:** Recorded measurements show how many searches, lines read, and wrong matches agents need to answer fixed record questions in the goal line grammar, the current TOML form, and TOML with kind, identity, and status on the fence line, so the goal syntax is confirmed or revised on evidence.

@@ -1101,3 +1101,40 @@ fn input_identities_follow_the_criteria_and_the_checkout() {
     book.write("docs/authority.md", &format!("{AUTHORITY}\nEdited.\n"));
     assert_eq!(whole(&book).inputs.dirty, Some(true));
 }
+
+#[test]
+fn comment_like_text_inside_string_literals_is_not_a_link() {
+    let book = book("");
+    book.write(
+        "tests/strings.rs",
+        concat!(
+            "const RAW: &str = r#\"\n",
+            "// anchorbook: a-tests#one\n",
+            "/// anchorbook: a-tests#one\n",
+            "\"#;\n",
+            "const PLAIN: &str = \"\n// anchorbook: a-tests#one\n\";\n",
+            "const BYTES: &[u8] = b\"\n/// anchorbook: a-tests#one\n\";\n",
+            "/// A real link after the strings still links.\n",
+            "/// anchorbook: a-tests#two\n",
+            "#[test]\n",
+            "fn real() {}\n",
+            "fn f() { let _s = \"x\"; // anchorbook: a-tests#one\n}\n",
+            "fn g() {\n    let _ = \"\n// anchorbook: a-tests#one\n\";\n}\n",
+        ),
+    );
+    let plan = whole(&book);
+    let findings: Vec<(usize, &str)> = plan
+        .findings
+        .iter()
+        .filter(|f| f.path.ends_with("strings.rs"))
+        .map(|f| (f.line, f.code))
+        .collect();
+    // Only the ordinary comment after a string on line 15 is a finding.
+    assert_eq!(findings, [(15, "verify.link-misplaced")]);
+    let real = function(Target::Test("strings".into()), &[], "real");
+    assert!(
+        plan.links
+            .iter()
+            .any(|l| l.function == real && l.line == 12)
+    );
+}
