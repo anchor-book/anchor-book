@@ -57,7 +57,7 @@ fn assert_fails(text: &str, expected: &[(Problem, DiagnosticCode, &str)]) {
     assert_eq!(found, expected, "{text}");
 }
 
-// anchorbook: records-valid-authority#required-authority
+/// anchorbook: records-valid-authority#required-authority
 #[test]
 fn anchors_need_a_requirement_or_decision_reference() {
     let authorities = format!(
@@ -91,7 +91,7 @@ fn anchors_need_a_requirement_or_decision_reference() {
     }
 }
 
-// anchorbook: records-valid-authority#resolved-authority
+/// anchorbook: records-valid-authority#resolved-authority
 #[test]
 fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     use DiagnosticCode::{DuplicateId, InvalidReference};
@@ -159,7 +159,7 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     );
 }
 
-// anchorbook: records-valid-authority#resolved-authority
+/// anchorbook: records-valid-authority#resolved-authority
 #[test]
 fn each_failing_reference_is_reported_at_its_own_location() {
     let authorities = format!(
@@ -179,7 +179,7 @@ fn each_failing_reference_is_reported_at_its_own_location() {
     );
 }
 
-// anchorbook: records-valid-authority#compatible-status
+/// anchorbook: records-valid-authority#compatible-status
 #[test]
 fn accepted_anchors_cite_only_accepted_authority() {
     for (kind, target) in [("requirement", "need"), ("decision", "choice")] {

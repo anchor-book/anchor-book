@@ -79,6 +79,33 @@ pub struct Milestone {
     pub criteria: Vec<RoadmapSection>,
     /// The milestone-level evidence section, if it has a fragment.
     pub evidence: Option<RoadmapSection>,
+    /// Anchor criteria cited by its completion criteria, with their levels.
+    pub coverage: Vec<Coverage>,
+}
+
+/// How much of an anchor criterion a completion criterion addresses.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CoverageLevel {
+    /// The entire criterion as it currently reads; written `— Full` with no qualifier.
+    Full,
+    /// A stated portion; written `— Partial: <scope>`.
+    Partial,
+}
+
+/// One anchor's criteria as cited by a completion criterion's anchor coverage.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Coverage {
+    /// Fragment of the completion criterion whose coverage cites them, or the
+    /// milestone identifier when the coverage precedes every criterion.
+    pub completion_criterion: String,
+    /// The cited anchor.
+    pub anchor: String,
+    /// The cited criteria of that anchor.
+    pub criteria: Vec<String>,
+    /// The planned coverage level that applies to them.
+    pub level: CoverageLevel,
+    /// One-based line of the coverage item.
+    pub line: usize,
 }
 
 /// A located roadmap format or reference problem.
@@ -223,16 +250,23 @@ impl Reader<'_> {
     }
 }
 
+/// An anchor reference in coverage text: the anchor, its criteria, and where
+/// the reference starts and its criterion list ends.
+type Reference = (String, Vec<String>, usize, usize);
+
 /// Anchor and criterion identifiers cited by an anchor-coverage text.
-fn coverage_references(text: &str) -> Vec<(String, Vec<String>)> {
+fn coverage_references(text: &str) -> Vec<Reference> {
     let mut references = Vec::new();
     for (at, separator) in text.match_indices(" · ") {
         let before = &text[..at];
         let anchor = if let Some(link) = before.strip_suffix(')') {
-            link.rfind("](")
-                .and_then(|close| link[..close].rfind('[').map(|open| &link[open + 1..close]))
+            link.rfind("](").and_then(|close| {
+                link[..close]
+                    .rfind('[')
+                    .map(|open| (open, &link[open + 1..close]))
+            })
         } else if let Some(code) = before.strip_suffix('`') {
-            code.rfind('`').map(|open| &code[open + 1..])
+            code.rfind('`').map(|open| (open, &code[open + 1..]))
         } else {
             None
         };
@@ -247,11 +281,57 @@ fn coverage_references(text: &str) -> Vec<(String, Vec<String>)> {
                 None => break,
             }
         }
-        if let Some(anchor) = anchor {
-            references.push((anchor.to_owned(), criteria));
+        if let Some((start, anchor)) = anchor {
+            references.push((anchor.to_owned(), criteria, start, text.len() - after.len()));
         }
     }
     references
+}
+
+/// Anchor references in coverage text with the level each one takes.
+///
+/// A level follows its references as `— Full` or `— Partial: <scope>`; a
+/// reference with no level of its own takes the next one stated, as in
+/// "`a` · `x`; `b` · `y` — Partial: scope". `— Full` may be followed only by
+/// the end of the text, `.` at the end, or `;` before another entry: a Full
+/// entry with a qualifier is a Partial one.
+fn coverage_entries(text: &str) -> Result<Vec<(String, Vec<String>, CoverageLevel)>, String> {
+    let references = coverage_references(text);
+    let mut levels = Vec::with_capacity(references.len());
+    for (index, (anchor, _, _, end)) in references.iter().enumerate() {
+        let next = references.get(index + 1).map_or(text.len(), |r| r.2);
+        let between = text[*end..next].trim_start();
+        let level = if let Some(rest) = between.strip_prefix("— Full") {
+            let rest = rest.trim_end();
+            if !(rest.is_empty() || rest == "." || rest.starts_with(';')) {
+                return Err(format!(
+                    "coverage of `{anchor}` is Full with a qualifier; write `— Full` alone, \
+                     or `— Partial: <scope>` for part of a criterion"
+                ));
+            }
+            Some(CoverageLevel::Full)
+        } else if between.starts_with("— Partial:") {
+            Some(CoverageLevel::Partial)
+        } else if between.is_empty() || between.starts_with(';') {
+            None
+        } else {
+            return Err(format!(
+                "coverage of `{anchor}` must be followed by `— Full` or `— Partial: <scope>`"
+            ));
+        };
+        levels.push(level);
+    }
+    let mut entries = Vec::with_capacity(references.len());
+    let mut next_level = None;
+    for ((anchor, criteria, _, _), level) in references.into_iter().zip(levels).rev() {
+        let level = level.or(next_level).ok_or_else(|| {
+            format!("coverage of `{anchor}` must be followed by `— Full` or `— Partial: <scope>`")
+        })?;
+        next_level = Some(level);
+        entries.push((anchor, criteria, level));
+    }
+    entries.reverse();
+    Ok(entries)
 }
 
 fn read_chapter(
@@ -401,6 +481,7 @@ fn read_milestone(
         found
     });
     let mut criteria: Vec<RoadmapSection> = Vec::new();
+    let mut coverage = Vec::new();
     for (position, line) in body.iter().enumerate() {
         if let Some(rest) = line.text.strip_prefix("#### ") {
             match heading_fragment(rest) {
@@ -424,13 +505,28 @@ fn read_milestone(
                 ),
             }
         }
-        let coverage = line
+        let coverage_text = line
             .text
             .strip_prefix("- **Anchor coverage:**")
             .or_else(|| line.text.strip_prefix("**Anchor coverage:**"));
-        if let Some(text) = coverage {
-            for (anchor, cited) in coverage_references(text) {
+        if let Some(text) = coverage_text {
+            for (anchor, cited, _, _) in coverage_references(text) {
                 check_reference(inventory, &anchor, &cited, line.number, reader);
+            }
+            match coverage_entries(text) {
+                Ok(entries) => {
+                    let completion_criterion = criteria.last().map_or(id, |c| c.id.as_str());
+                    for (anchor, criteria, level) in entries {
+                        coverage.push(Coverage {
+                            completion_criterion: completion_criterion.to_owned(),
+                            anchor,
+                            criteria,
+                            level,
+                            line: line.number,
+                        });
+                    }
+                }
+                Err(message) => reader.error("roadmap.invalid-coverage", line.number, message),
             }
         }
     }
@@ -450,6 +546,7 @@ fn read_milestone(
         tasks: read_tasks(body),
         criteria,
         evidence: read_evidence(body, section_end),
+        coverage,
     })
 }
 
@@ -547,7 +644,9 @@ pub fn read_roadmaps(
 
 #[cfg(test)]
 mod tests {
-    use super::{coverage_references, heading_fragment, milestone_heading};
+    use super::{
+        CoverageLevel, coverage_entries, coverage_references, heading_fragment, milestone_heading,
+    };
 
     #[test]
     fn headings_require_a_closing_identifier_fragment() {
@@ -566,13 +665,65 @@ mod tests {
     fn coverage_lists_link_and_code_anchors_with_their_criteria() {
         let text =
             " [a-one](x.md#a-one) · `c1`, `c2` — Partial: x; `a-two` · `c3` — Full; None — y";
+        let cited: Vec<_> = coverage_references(text)
+            .into_iter()
+            .map(|(anchor, criteria, _, _)| (anchor, criteria))
+            .collect();
         assert_eq!(
-            coverage_references(text),
+            cited,
             vec![
                 ("a-one".to_owned(), vec!["c1".to_owned(), "c2".to_owned()]),
                 ("a-two".to_owned(), vec!["c3".to_owned()]),
             ]
         );
         assert!(coverage_references(" None — design preparation").is_empty());
+    }
+
+    #[test]
+    fn coverage_levels_follow_their_references_and_full_takes_no_qualifier() {
+        let level = |text: &str| -> Result<Vec<(String, CoverageLevel)>, String> {
+            Ok(coverage_entries(text)?
+                .into_iter()
+                .map(|(anchor, _, level)| (anchor, level))
+                .collect())
+        };
+        let full = CoverageLevel::Full;
+        let partial = CoverageLevel::Partial;
+        assert_eq!(
+            level(" `a` · `x` — Partial: some; [b](y.md#b) · `z` — Full; None — w").unwrap(),
+            vec![("a".to_owned(), partial), ("b".to_owned(), full)]
+        );
+        // A reference without its own level takes the next one stated.
+        assert_eq!(
+            level(" `a` · `x`; `b` · `y`, `z` — Partial: the scope; with a semicolon.").unwrap(),
+            vec![("a".to_owned(), partial), ("b".to_owned(), partial)]
+        );
+        for text in [
+            " `a` · `x` — Full",
+            " `a` · `x` — Full.",
+            " `a` · `x` — Full; `b` · `y` — Full",
+        ] {
+            assert!(
+                level(text).unwrap().iter().all(|(_, l)| *l == full),
+                "{text}"
+            );
+        }
+        assert!(level(" None — preparation only").unwrap().is_empty());
+        for text in [
+            " `a` · `x` — Full for the declared versions",
+            " `a` · `x` — Full. The claim is limited to one case.",
+            " `a` · `x` — Full, mostly",
+        ] {
+            let error = level(text).unwrap_err();
+            assert!(error.contains("Full with a qualifier"), "{text}: {error}");
+        }
+        for text in [
+            " `a` · `x`",
+            " `a` · `x` — Mostly",
+            " `a` · `x` — Partial without colon",
+        ] {
+            let error = level(text).unwrap_err();
+            assert!(error.contains("must be followed by"), "{text}: {error}");
+        }
     }
 }

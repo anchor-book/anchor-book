@@ -46,7 +46,9 @@ The record library, configuration loader, structural checker, and `anchorbook md
 preprocessor are implemented. Run `anchorbook check --config anchorbook.toml` to
 inspect this Book's format; the checker reports findings without repairing files.
 The binary also supports `anchorbook md supports html`, `anchorbook contract`,
-help, and version. Materialization remains planned. Loading configuration
+`anchorbook verify --config anchorbook.toml`, help, and version. `verify` reports
+each anchor criterion's evidence state and checks the Book's claims of completion;
+it has no runner yet, so linked tests and proofs show as not evaluated. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook

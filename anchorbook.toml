@@ -12,3 +12,8 @@ mdbook = "book.toml"
 design = "design/index.md"
 authority = "authority/index.md"
 implementation-roadmaps = "implementation-roadmaps/index.md"
+
+[verification]
+sources = ["src", "tests"]
+output = "target/anchorbook-verify"
+runners = ["nextest", "verus"]

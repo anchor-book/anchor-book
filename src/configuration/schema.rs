@@ -9,6 +9,9 @@ struct Raw {
     schema_version: i64,
     project: Project,
     book: Book,
+    /// Read and validated only by `verify`; loading and checking ignore it.
+    #[serde(default, rename = "verification")]
+    _verification: Option<serde::de::IgnoredAny>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -60,7 +63,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
         path,
         document.as_table(),
         "",
-        &["schema-version", "project", "book"],
+        &["schema-version", "project", "book", "verification"],
     )?;
     for (table_path, allowed) in [
         ("project", &["phase"][..]),

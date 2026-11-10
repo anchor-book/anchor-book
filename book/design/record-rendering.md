@@ -95,7 +95,7 @@ authorities = [
 [[criteria]]
 id = "roadmap-validation"
 verification = ["test"]
-statement = "Independent fixtures with malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicate identifiers across chapters, and coverage citing a missing anchor, a non-anchor record, or a missing criterion each produce the expected located diagnostic; format examples in code blocks are ignored, and this Book's roadmaps pass."
+statement = "Independent fixtures with malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicate identifiers across chapters, coverage citing a missing anchor, a non-anchor record, or a missing criterion, and coverage with a missing level or a qualified Full each produce the expected located diagnostic; format examples in code blocks are ignored, and this Book's roadmaps pass."
 
 [[criteria]]
 id = "roadmap-presentation"

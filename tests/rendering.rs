@@ -324,8 +324,8 @@ fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     assert!(diagnostics.contains("missing: authority definition does not exist"));
 }
 
-// anchorbook: records-valid-authority#resolved-authority
-// anchorbook: records-valid-authority#compatible-status
+/// anchorbook: records-valid-authority#resolved-authority
+/// anchorbook: records-valid-authority#compatible-status
 #[test]
 fn anchor_authority_failures_reach_the_real_adapter() {
     let missing = RECORDS.replace(
@@ -354,7 +354,7 @@ fn anchor_authority_failures_reach_the_real_adapter() {
     }
 }
 
-// anchorbook: project-no-imposed-dependencies#renderer-versions
+/// anchorbook: project-no-imposed-dependencies#renderer-versions
 #[test]
 fn undeclared_mdbook_versions_are_rejected_naming_the_supported_ones() {
     use anchor_book::adapters::mdbook::SUPPORTED_MDBOOK_VERSIONS;

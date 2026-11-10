@@ -3,3 +3,6 @@ pub mod mdbook;
 
 /// Plain-text structural report presentation.
 pub mod check;
+
+/// Plain-text verify report presentation.
+pub mod verify;

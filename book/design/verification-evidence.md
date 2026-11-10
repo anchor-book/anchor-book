@@ -1,8 +1,12 @@
 # Running Verification
 
-**Status: draft for review.** Not implemented; the
-[Verification Evidence roadmap](../implementation-roadmaps/verification-evidence.md)
-plans the work.
+**Status: draft for review.** Partly implemented: `anchorbook verify` reads the
+`[verification]` configuration and evidence links, computes evidence states, checks
+[claims of completion](#claims-of-completion), and prints the report, as
+[Verification Evidence milestone 4](../implementation-roadmaps/verification-evidence.md#verification-evidence-4)
+records. No runner exists yet, so linked tests and proofs are reported as not
+evaluated; the [roadmap](../implementation-roadmaps/verification-evidence.md) plans
+the runners, guards, and assessment records.
 
 This chapter defines the operation that produces the evidence described in
 [Verification](verification.md). `anchorbook verify` reports the project's
@@ -58,9 +62,10 @@ property = '''
 A completed verify run reports every anchor in scope, grouped by design chapter,
 with each criterion's state and its linked tests or proofs, and summary counts of
 satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and
-unlinked criteria are reported as progress and do not make the run fail; the run
-fails only when it cannot evaluate the scope, such as invalid configuration, an
-invalid Book, or invalid records.
+unlinked criteria are reported as progress and do not make the run fail, unless
+the Book [claims](#verify-claims-evidenced) them; the run is incomplete only when
+it cannot evaluate the scope, such as invalid configuration, an invalid Book, or
+invalid records.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-criterion-evidence" },
@@ -128,6 +133,35 @@ verification = ["test"]
 statement = "Compare Book and source file contents and directory entries before and after passing, failing, and incomplete runs; they are unchanged, and runner output appears only under the output directory."
 ```
 
+```anchorbook-anchor
+schema-version = 1
+id = "verify-claims-evidenced"
+title = "Work the Book records as done must have current evidence"
+status = "draft"
+property = '''
+When a roadmap milestone has status Complete, each anchor criterion that one of
+its completion criteria covers in full is claimed. Verify fails the run when a
+claimed criterion in its scope is not satisfied, naming the claiming milestone
+and the criterion's state, so work cannot be recorded as done while its evidence
+is missing, stale, or failing. Partial or no coverage claims nothing. A claimed
+method the run does not evaluate is reported as unchecked, never as satisfied.
+'''
+authorities = [
+  { kind = "requirement", id = "requirement-criterion-evidence" },
+  { kind = "decision", id = "decision-completion-claims-checked" },
+]
+
+[[criteria]]
+id = "claim-failures"
+verification = ["test"]
+statement = "In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run."
+
+[[criteria]]
+id = "unchecked-claims"
+verification = ["test"]
+statement = "A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim."
+```
+
 ## Using verify
 
 ```mermaid
@@ -167,7 +201,8 @@ records make the run incomplete rather than reporting progress against them.
 
 | Exit status | Meaning |
 | --- | --- |
-| `0` | The report completed, whatever the criteria's states |
+| `0` | The report completed and every claimed criterion it checked is satisfied |
+| `1` | The report completed, and a [claimed](#claims-of-completion) criterion is not satisfied |
 | `2` | Invalid invocation, configuration, Book, or records; no progress report |
 
 `verify` is a library capability separate from `checking`, reusing
@@ -184,17 +219,21 @@ those methods also have evidence.
 
 ## Evidence links
 
-A link is a comment line in source code naming one anchor criterion:
+A link is a doc-comment line on a function, naming one anchor criterion:
 
 ```rust
-// anchorbook: A-check-observation-only#file-preservation
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn checks_preserve_files_and_directory_entries() { /* ... */ }
 ```
 
-The line `// anchorbook: <anchor-id>#<criterion-id>` applies to the next function
-item, with only attributes and further link lines between them. One function may
-link several criteria, one per line. A link claims that the function addresses
+The line `/// anchorbook: <anchor-id>#<criterion-id>` belongs to the function item
+it documents. Rust treats a doc comment as a `#[doc]` attribute of that item, so
+the parser attaches the link to its function without inferring position, and the
+project needs no dependency. A link line may sit among other documentation lines.
+One function may link several criteria, one per line. An ordinary
+`// anchorbook:` comment is not a link; the engine reports it as a misplaced link
+at its location rather than ignoring it. A link claims that the function addresses
 the criterion; it does not show that the function is sufficient. Links are read
 only from the configured source directories, and the engine derives the reverse
 view from each criterion to its linked functions. Keeping links beside the code
@@ -224,8 +263,16 @@ path, name, and verification mode, with its source location, and must match
 exactly one result for the selected target and features. Equal names in different
 modules or packages never select an arbitrary result; unsupported,
 macro-generated, or ambiguous identities are reported rather than guessed. The
-first implementation supports simple module functions and declares its limits
-before extending to other forms. Verus code takes two forms: functions inside
+first implementation supports module-level functions, including those in inline
+modules such as `mod tests`, in a Cargo package's `src/` (the library),
+`src/main.rs` and `src/bin/` (binaries), and `tests/<name>.rs` or
+`tests/<name>/main.rs` (integration tests). A function is a test when it carries
+an attribute whose last path segment is `test`, such as `#[test]` or
+`#[tokio::test]`, and verified when it carries `#[verus_spec]` or
+`#[verus_verify]`, directly or inside `cfg_attr`. Links on methods, inside macro
+invocations, in other files such as `tests/support/`, or on any other function
+are located findings; `#[path]` module attributes and a `[lib] path` other than
+`src/lib.rs` are not followed. Verus code takes two forms: functions inside
 `verus!` blocks, which ordinary Rust parsers such as `syn` leave as macro tokens,
 and ordinary Rust functions carrying Verus attributes such as `#[verus_spec(...)]`,
 possibly under `cfg_attr`. Recognizing modes requires reading both.
@@ -379,6 +426,30 @@ the configured assessment directory, rejects malformed or duplicate records as
 located findings, and treats a record whose fingerprints differ from the current
 ones as stale.
 
+## Claims of completion
+
+The Book makes a claim about evidence in one place: a roadmap milestone with
+status **Complete** whose completion criterion lists an anchor criterion with
+**Full** coverage. Recording that milestone as done asserts that the criterion is
+established, so `verify` checks it, under the
+[completion-claims decision](../authority/decisions.md#decision-completion-claims-checked).
+
+- A claimed criterion that is satisfied in the run passes.
+- A claimed criterion in any other state, including `unlinked`, fails the run with
+  exit status `1`. The report names the claiming milestone, its completion
+  criterion, and the anchor criterion's state.
+- Partial and None coverage, and milestones in any other status, claim nothing;
+  their criteria remain progress.
+- A claim outside the run's scope, or on a method the run cannot evaluate yet,
+  such as `review` before assessment records, is listed as unchecked. It never
+  counts as satisfied, and only a full-scope run with every method evaluated
+  checks every claim.
+
+`verify` reads roadmap status and coverage through the same roadmap reader the
+renderer uses. Agents and CI therefore cannot mark work Complete without linked,
+passing evidence, and a later regression in that evidence fails the run that
+finds it. Unclaimed work stays a progress report.
+
 ## Report
 
 The report lists chapters in navigation order, and under each its anchors and
@@ -437,7 +508,12 @@ are written; `assessments` holds the project's [assessment records](verification
 `runners` lists the supported runners the project uses. Paths follow the existing
 [path rules](configuration.md#paths). `output` must be separate from the Book, the
 configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
-`verify` and ignored by `check`; its absence makes `verify` incomplete.
+`verify` and ignored by `check`; its absence makes `verify` incomplete. `verify`
+validates the section itself, so an invalid one never affects `check` or rendering.
+The implemented fields are `sources`, `output`, and `runners`, whose values are
+`nextest` and `verus`; `assessments` is added with assessment records.
+Content identities in reports are 64-bit FNV-1a hashes: stable identities for
+recognizing changed inputs, not a security measure.
 
 A project that verifies its own code also identifies here its Verus installation,
 expected verifier version, verification Rust toolchain, and the manifest,
@@ -464,14 +540,10 @@ native Verus runs in
 
 1. **Rendered progress.** Whether the published Book shows states beside criteria,
    derived from the CI report.
-2. **When unsatisfied criteria fail.** Whether declared maturity turns states into
-   failures: for example, in the `complete` [project phase](configuration.md#project-phase)
-   every criterion in scope must be satisfied, or a design area or anchor marked
-   `complete` must have all its criteria satisfied while the rest of the Book stays
-   in progress. Completion is a separate axis from design acceptance (`draft` or
-   `accepted`): it claims the part is implemented and verified, which `verify` would
-   enforce. This would replace any separate CI gating option and needs a completion
-   marker below the project level, which does not exist yet.
+2. **Further claims.** [Claims of completion](#claims-of-completion) come from
+   Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
+   also claims every criterion in the Book, and whether a test with no link should
+   fail when a project opts in, remain open.
 3. **Machine-readable output.** The versioned artifact schema for tools and agents,
    planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
 4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
