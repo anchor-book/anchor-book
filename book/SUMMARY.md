@@ -31,5 +31,6 @@
   - [Record Line Grammar](implementation-roadmaps/record-line-grammar.md)
   - [Verification Evidence](implementation-roadmaps/verification-evidence.md)
   - [Project Integration](implementation-roadmaps/project-integration.md)
+  - [Symposium Integration](implementation-roadmaps/symposium-integration.md)
 
 [Glossary](glossary.md)

@@ -5,14 +5,17 @@
 ## Goal
 
 Prove the authority-validation logic actually executed by the engine, and make
-that proof repeatable locally and on GitHub. Start with
+that proof repeatable locally and on GitHub. The engine is the first and current
+subject: its own proof is exercised here before any other project relies on
+proof support. Start with
 [`records-valid-authority`](../design/rust-engine.md#records-valid-authority), grounded
 in [traceable properties](../authority/requirements.md#requirement-traceable-properties).
 Rust Engine's [authority proof](../design/rust-engine.md#authority-proof) defines the
 claim, production boundary, and trusted base, and [Verification](../design/verification.md)
-the general method and evidence. Isolate
-the engine's proof dependencies from consuming builds without losing the
-connection between the verified functions and the packaged implementation.
+the general method and evidence. Make Verus optional: the engine
+and every project that depends on it build without Verus or `vstd`, the engine's
+proof builds behind an optional Cargo feature, and the verified functions remain
+the ones ordinary builds execute.
 
 The roadmap uses the engine as the first experiment in associating anchor
 criteria with formal specifications, production functions, and proof evidence.
@@ -36,10 +39,10 @@ protection**. Merge protection is completed together with
 enforced, review existing CI results before merging; unfinished enforcement does
 not waive tests or permit unexplained mutation findings.
 
-Milestone 4 adds proposed packaging isolation and starts with a bounded
-feasibility experiment. It does not depend on the consumer runner, but
-[consumer acceptance](verification-evidence.md#verification-evidence-5) depends
-on it. Existing proof evidence remains tied to its recorded revision; packaging
+Milestone 4 makes Verus optional and starts with a bounded feasibility
+experiment. It does not depend on the consumer runner. Any project that adds the
+engine as a Cargo dependency depends on it, whether or not that project uses
+Verus, and so does [consumer acceptance](verification-evidence.md#verification-evidence-5). Existing proof evidence remains tied to its recorded revision; packaging
 changes require new proof and integration evidence.
 
 ## Milestone 1. Prove production authority validation locally {#formal-verification-1}
@@ -221,9 +224,9 @@ All Book definitions, literal examples, and fixtures use the same required field
 
 Complete locally on 2026-10-21. Required-method declarations are parsed, rendered, and exercised with independent and current-Book inputs. The schema change is committed as `7ab9616`; proof implementation and subsequent remote evidence are tracked in milestones 1 and 2.
 
-## Milestone 4. Engine proofs stay outside consuming builds {#formal-verification-4}
+## Milestone 4. Verus is an optional engine feature {#formal-verification-4}
 
-**Outcome:** A packaged engine builds without its proof libraries or verification toolchain, while the implementation consumers execute remains derived from the same maintained source whose authority contracts are verified.
+**Outcome:** Ordinary builds of the engine, and of every project that depends on it, need no Verus toolchain or `vstd`; the engine's proof builds only with an optional Cargo feature, over the same maintained source that ordinary builds execute.
 
 **Status:** Proposed
 
@@ -235,8 +238,8 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Tasks**
 
-- [ ] Test one maintained source arrangement on a representative validator slice. A development proof workspace with reproducible erasure is a candidate; establish supported transformations, tool availability, drift detection, and runtime correspondence before choosing it.
-- [ ] Remove engine verification libraries from the ordinary packaged dependency graph. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.
+- [ ] Test one maintained source arrangement on a representative validator slice. A feature alone does not compile: code inside `verus!` needs Verus's macro crates even with the feature off. Candidates are (a) an optional `verus` Cargo feature with the validator written as ordinary Rust, its contracts attached through Verus's attribute syntax (`#[verus_verify]`, `#[verus_spec]`, present in the pinned release) under `cfg_attr`, and specification functions and proofs compiled only with the feature; and (b) a development proof workspace with reproducible erasure. For the chosen one, establish supported forms, tool availability, drift detection, and runtime correspondence.
+- [ ] Remove engine verification libraries from the default dependency graph; with the feature off, `cargo tree` shows no `vstd` or other Verus crate. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.
 - [ ] Preserve `fixtures/consumers/verus-resolution` as the consumer-resolution regression fixture: its exact `vstd` pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.
 - [ ] Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.
 - [ ] Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.
