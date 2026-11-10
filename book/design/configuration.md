@@ -131,8 +131,9 @@ layout checks, and a structural pass in Complete does not establish implementati
 or verification. Automated enforcement of design readiness and completion is
 later work. The phase value expresses the chosen workflow; it is not evidence.
 
-The engineer directs transitions, with their scope and basis recorded in the
-roadmap. Later development can begin a new iteration while preserving the prior
+Phase transitions follow the
+[AI Working Contract](../ai-working-contract.md#work-in-the-projects-phase); their
+scope and basis are recorded in the roadmap. Later development can begin a new iteration while preserving the prior
 completed baseline. A scoped experiment alongside accepted work is described in
 its roadmap and assignment; no per-capability override syntax is introduced here.
 

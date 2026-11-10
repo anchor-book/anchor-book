@@ -1,10 +1,10 @@
 # Implementation Roadmaps
 
-Implementation roadmaps turn a sufficiently clear design into agreed work for
-AI agents. The engineer and agents develop the design together. Agents then propose
-the outcomes to build, how to divide the work, dependencies, and how completion
-will be demonstrated. The engineer reviews and agrees on that work before the
-agents begin its implementation.
+Implementation roadmaps turn a sufficiently clear design into the work that
+reaches it: the outcomes to build, how the work is divided, dependencies, and how
+completion will be demonstrated. The
+[AI Working Contract](../ai-working-contract.md#work-with-the-engineer) defines
+how agents propose roadmaps and when work may begin.
 
 The relevant design must be clear enough to define the work and its completion
 criteria; the entire system design need not be finished.
@@ -131,8 +131,7 @@ without duplicate coverage lists.
 
 Update code, tests, Book progress, and evidence together through the project's
 contribution workflow. This model does not mandate direct pushes or pull requests.
-Agree on scope and criterion changes with the engineer; do not weaken them to
-match completed work.
+Do not weaken scope or criteria to match completed work.
 
 ## Evidence records
 
@@ -161,11 +160,11 @@ outcome and every completion criterion; task checkmarks, anchor references, and
 structural passes are insufficient. Linked anchors may span several milestones
 or need other evidence, so milestone completion does not automatically verify them.
 
-## Keeping the agreement current
+## Keeping roadmaps current
 
 Reconcile roadmaps in the same change as design. Review outcomes, dependencies,
 tasks, criteria, anchor references, and evidence; add work or an explicit deferral.
-New scope remains proposed until agreed. Prior evidence stays tied to its tested
+Prior evidence stays tied to its tested
 revision. Follow the [AI Working Contract](../ai-working-contract.md#keep-roadmaps-aligned-with-the-goal-design)
 for phase-specific responsibilities.
 
