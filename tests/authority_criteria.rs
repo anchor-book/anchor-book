@@ -159,6 +159,26 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     );
 }
 
+// anchorbook: records-valid-authority#resolved-authority
+#[test]
+fn each_failing_reference_is_reported_at_its_own_location() {
+    let authorities = format!(
+        "{}{}",
+        requirement("need", "accepted"),
+        decision("choice", "accepted")
+    );
+    let list = "[\n  { kind = \"requirement\", id = \"need\" },\n  { kind = \"decision\", id = \"absent\" },\n]";
+    let text = format!("{authorities}{}", anchor("property", "draft", Some(list)));
+    assert_fails(
+        &text,
+        &[(
+            Problem::MissingTarget,
+            DiagnosticCode::InvalidReference,
+            "\"absent\"",
+        )],
+    );
+}
+
 // anchorbook: records-valid-authority#compatible-status
 #[test]
 fn accepted_anchors_cite_only_accepted_authority() {

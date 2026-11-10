@@ -87,7 +87,7 @@ authorities = [
 [[criteria]]
 id = "witness-required"
 verification = ["test"]
-statement = "Fixtures with linked functions whose preconditions are unsatisfiable, satisfiable but unwitnessed, and witnessed by a verified proof function produce no-evidence, no-evidence, and satisfied proof methods; a witness that fails verification fails the method."
+statement = "Fixtures with linked functions whose preconditions are unsatisfiable, satisfiable but unwitnessed, and witnessed by a verified witness function produce no-evidence, no-evidence, and satisfied proof methods; a witness that fails verification fails the method."
 ```
 
 ```anchorbook-anchor
@@ -269,8 +269,8 @@ system.
 
 A proof is **vacuous** when it holds only because its preconditions can never be
 met: Verus proves any guarantee of a function nobody can call. A **witness** is a
-verified proof function showing that some input meets a linked function's
-preconditions; tests cannot show this, because preconditions are not checked when
+verified function that calls a linked function with an input it constructs,
+showing that its preconditions can be met; tests cannot show this, because preconditions are not checked when
 code runs. A **fingerprint** is a hash of what a specification assessment
 examined; when it changes, the assessment is stale.
 [Running Verification](verification-evidence.md#proof-guards) defines how the

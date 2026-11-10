@@ -208,12 +208,16 @@ is not passing evidence. Membership in a `verus!` block does not determine the
 function's mode. A misplaced link, or a link on an unsupported function form, is
 a located finding.
 
-**Witnesses.** A verified proof function whose link line ends with
-`witness <function>` is the [vacuity witness](verification.md#verify-proof-nonvacuous)
-for the named linked function of the same criterion: it establishes that
-function's preconditions for an input it constructs. The exact Verus form of the
-witness is settled with the guard experiment in
-[milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7).
+**Witnesses.** A verified function whose link line ends with `witness <function>`
+is the [vacuity witness](verification.md#verify-proof-nonvacuous) for the named
+linked function of the same criterion. It constructs an input and calls that
+function with it, so Verus checks the call against the function's preconditions;
+a witness whose input cannot meet them fails verification. The runner confirms
+that the witness calls the named function rather than trusting the link. A
+witness is executable code that the system never runs, so the project compiles it
+only under verification, for example with `#[cfg(verus_keep_ghost)]` and that cfg
+declared for Rust's `unexpected_cfgs` check. [Milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7)
+established this form on the engine's `validate_reference`.
 
 **Identity.** Each linked function is resolved by package, crate target, module
 path, name, and verification mode, with its source location, and must match
@@ -338,8 +342,11 @@ complete; a target that does not verify gets no guard results.
 **Sensitivity.** For each linked executable function, the runner generates
 changes to its executable statements and expressions: negated or constant
 conditions, swapped comparison and boolean operators, replaced return values,
-and removed calls that change state. Specifications, proof blocks, invariants,
-and proof functions are not changed. Each change is applied in a fresh copy and
+replaced arguments and constructed field values, replaced enum variants, and
+removed calls that change state. Specifications, proof blocks, invariants, and
+proof functions are not changed: a changed specification can only alter rules it
+states, and every weakening still verifies, so only changes to code reveal
+behavior the specification leaves unconstrained. Each change is applied in a fresh copy and
 the complete target is verified once. A change that fails verification is
 reported with the obligation that failed; one rejected only by overflow, bounds,
 or termination obligations is reported as such, since the claim did not detect
@@ -466,13 +473,7 @@ native Verus runs in
    planned with [CI reporting](../implementation-roadmaps/verification-evidence.md#verification-evidence-3).
 4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
    and Verus.
-5. **Sensitivity cost.** Each change verifies the complete target once, so large
-   targets may need a sampling or per-function selection policy that still reports
-   which changes were not tried.
-6. **Code or specification mutation.** Sensitivity changes executable code.
-   Changing the specification instead, while keeping the code and proof, would
-   allow uninformative changes to be filtered automatically by logical strength.
-   [Milestone 7](../implementation-roadmaps/verification-evidence.md#verification-evidence-7)
-   compares the two.
-7. **Witness form.** How a Verus proof function states that it establishes another
-   function's preconditions, so the runner can check it rather than trust the link.
+5. **Sensitivity cost.** Each change verifies the complete target once. For the
+   engine's authority proof this took 1–2 seconds per change, so its full set runs
+   in under a minute; much larger targets may still need a sampling or
+   per-function selection policy that reports which changes were not tried.
