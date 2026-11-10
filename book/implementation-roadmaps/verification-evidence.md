@@ -61,6 +61,7 @@ the current inventory and migrate with them when that work is assigned.
 - [ ] Connect the runner to `anchorbook verify --config`, preserving the shared scope and exit statuses. Collect code and lockfile content identities and compare input snapshots before and after execution.
 - [ ] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [ ] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
+- [ ] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
 - [ ] Link the test criteria of the `verify-*` anchors and at least one existing checker anchor, and record a build-loop run.
 
 ### Completion criteria
@@ -206,7 +207,7 @@ Pending.
 
 **Status:** Proposed
 
-**Dependencies:** The record library, configuration loader, navigation reader, and engineer agreement on this bounded foundation. Existing record identifiers remain usable.
+**Dependencies:** The record library, configuration loader, and navigation reader. Existing record identifiers remain usable.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md), including [links](../design/verification-evidence.md#evidence-links), [run identity](../design/verification-evidence.md#run-identity), states, and command behavior.
 
@@ -317,7 +318,7 @@ Pending. Packaged fixture acceptance does not authorize publication or complete 
 
 - [ ] **Sensitivity:** Generate changes inside `verus!` executable bodies with the milestone 4 parser, never in specifications or proofs. Verify each in a fresh copy; classify survivors through the covering criteria's linked tests and the review's equivalent listing; report unviable, safety-only, and timed-out changes separately.
 - [ ] **Witnesses:** Implement the `witness` link form and require a verified witness for each linked function with preconditions.
-- [ ] **Fingerprints and assessments:** Compute token-based specification fingerprints over the criterion, linked contracts, and reachable specification functions and types. Add the `reviews` configuration field and the assessment record schema; read records, report malformed and stale ones, and evaluate the review method.
+- [ ] **Fingerprints and assessments:** Compute token-based specification fingerprints over the criterion, linked contracts, and reachable specification functions and types. Add the `assessments` configuration field and the assessment record schema; read records, report malformed and stale ones, and evaluate the review method.
 - [ ] **Brief:** Add `--brief`, running no tools, with each criterion's scope, links, fingerprint, assessment status, and exclusions with their covering criteria and tests.
 - [ ] **Pilot:** Record a specification assessment of `formal-authority` and run every guard on it through the real CLI; record survivors and their classification.
 
@@ -366,7 +367,7 @@ Pending.
 
 **Outcome:** Recorded results show whether the proof guards find real weaknesses in an existing proof and what they cost, so the guard design is confirmed or revised before any tooling is built.
 
-**Status:** Ready — scope and criteria agreed with the engineer on 2026-11-09; not yet started
+**Status:** Ready — not yet started
 
 **Dependencies:** The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.
 

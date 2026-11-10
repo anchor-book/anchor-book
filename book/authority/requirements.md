@@ -4,7 +4,7 @@ Requirements state required outcomes and constraints, with their source.
 
 ## Initial checker requirements
 
-**Status: draft for review.** These records express the checker goals; their
+**Status: accepted.** These records express the checker goals; their
 sources explain the product need. Authority links and backlinks are derived
 from the record inventory.
 
@@ -12,7 +12,7 @@ from the record inventory.
 schema-version = 1
 id = "requirement-configured-structure"
 title = "Check the project's configured Book structure"
-status = "draft"
+status = "accepted"
 statement = '''
 The checker must evaluate the Book selected by the caller against its configured
 layout and required section roles. Projects must be able to choose directory
@@ -29,7 +29,7 @@ layouts, including a configurable source and generated-output directory.
 schema-version = 1
 id = "requirement-repair-feedback"
 title = "Give agents enough information to repair structure"
-status = "draft"
+status = "accepted"
 statement = '''
 A developer or agent must be able to use checker output to locate a problem,
 understand the expected structure, make an appropriate repair within the assigned
@@ -37,8 +37,9 @@ scope, and recheck. A pass obtained by removing obligations or weakening the
 intended configuration does not satisfy this requirement.
 '''
 source = '''
-The Structural Checking roadmap's goal of an agent iterating on Book
-structure until it conforms.
+Agents bring a Book into its configured format by checking, repairing, and
+rechecking; they can only repair what the checker's output lets them locate
+and understand.
 '''
 ```
 
@@ -47,7 +48,7 @@ structure until it conforms.
 schema-version = 1
 id = "requirement-observation-only"
 title = "Preserve the project during checking"
-status = "draft"
+status = "accepted"
 statement = '''
 Checking must leave project content and directory entries unchanged. It must
 work locally without rendering, downloading dependencies, executing configured
@@ -64,7 +65,7 @@ that create or manage it.
 schema-version = 1
 id = "requirement-truthful-results"
 title = "Report only what was established"
-status = "draft"
+status = "accepted"
 statement = '''
 Results must distinguish conformance, known structural violations, and inability
 to evaluate. They must identify the evaluated scope and blocked checks. Missing
@@ -82,7 +83,7 @@ verification evidence, and completion claims.
 schema-version = 1
 id = "requirement-shared-checker"
 title = "Provide the same checking behavior to tools and Rust callers"
-status = "draft"
+status = "accepted"
 statement = '''
 Developers, agents, CI, and Rust integration tests must be able to use the same
 checking rules and receive equivalent findings for the same inputs. Rust callers
@@ -99,7 +100,7 @@ library usable by consuming projects.
 schema-version = 1
 id = "requirement-independent-engine"
 title = "Keep the engine usable when its own Book is broken"
-status = "draft"
+status = "accepted"
 statement = '''
 The engine must compile and run independent tests when this repository's Book
 is invalid or has not been rendered. Its current Book must also be exercised as

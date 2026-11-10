@@ -274,12 +274,13 @@ headings; the preprocessor does not perform that migration.
 **Status: prototype implemented**; [Record Rendering milestone 4](../implementation-roadmaps/record-rendering.md#record-rendering-4) records evidence.
 Roadmaps are written in plain Markdown in the
 [roadmap format](../implementation-roadmaps/index.md#defining-the-work), so agents
-read only content. The preprocessor will recognize milestone and criterion
-headings by their fragments, validate identifiers and anchor-coverage references
-against the record inventory, and render each milestone as a card: a header with
+read only content. The preprocessor recognizes milestone and criterion
+headings by their fragments, validates identifiers and anchor-coverage references
+against the record inventory, and renders each milestone as a card: a header with
 its status and identifier, its fields as a labeled grid, and its tasks (with
-progress), criteria, and evidence as open, collapsible sections. As with records, the source is never rewritten, and an
-invalid roadmap fails preprocessing with located diagnostics.
+progress), criteria, and evidence as open, collapsible sections. As with records,
+the source is never rewritten, and an invalid roadmap fails preprocessing with
+located diagnostics.
 
 ## Acceptance and boundaries
 

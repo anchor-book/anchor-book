@@ -40,7 +40,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 
 **Status:** Proposed
 
-**Dependencies:** The configuration loader, structural checker, and record renderer. Agreement on this milestone's scope and on moving the contract source into the engine.
+**Dependencies:** The configuration loader, structural checker, and record renderer.
 
 **Design basis:** [mdBook configuration location](../design/configuration.md#relationship-to-mdbook), [contract delivery](../design/system-overview.md#contract-delivery), [running the engine](../design/project-integration.md#running-the-engine), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
 
@@ -51,6 +51,7 @@ first, whether or not it verifies its own code; proofs in other projects are
 - [ ] **Configuration:** Implement `[book].mdbook`, resolving mdBook's source and output relative to that file, and migrate this repository's configuration to name its `book.toml`.
 - [ ] **Contract:** Move the maintained contract source into the engine, add `anchorbook contract`, switch this repository's `AGENTS.md` to retrieve it, and remove the temporary Book copy and its navigation entry, as [contract delivery](../design/system-overview.md#contract-delivery) describes.
 - [ ] **Running the engine:** Choose and document how a project installs a pinned engine revision before crate release, and exercise that path in this repository's CI against this Book.
+- [ ] **Entry points:** Test that the library, the CLI, and the `anchorbook md` preprocessor report equivalent results for the same fixtures.
 - [ ] **mdBook versions:** Decide which mdBook versions the preprocessor supports, including the version Symposium uses or a documented pin, and test each against this Book.
 
 ### Completion criteria
@@ -74,6 +75,13 @@ The loader accepts a configured `book.toml`, including one in a subdirectory, an
 A CI job installs the pinned engine revision the documented way and checks and renders this Book with it, with the same findings as the in-repository build; each declared mdBook version renders this Book, and an undeclared version is rejected with a diagnostic naming the supported ones.
 
 - **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `renderer-versions` — Full for the declared versions; [project-one-engine-version](../design/project-integration.md#project-one-engine-version) · `same-version-entry-points` — Partial: installed and in-repository builds of one revision.
+- **Evidence:** Pending.
+
+#### Equivalent entry points {#project-integration-1-entry-points}
+
+The library, the actual CLI process, and the actual `anchorbook md` preprocessor process report equivalent outcomes, codes, locations, and evaluated scope for the same passing, failing, and incomplete fixtures, against independent expectations.
+
+- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers` — Partial: the preprocessor caller; library and CLI equivalence is recorded in [Structural Checking milestone 2](structural-checker.md#structural-checking-2-typed-results).
 - **Evidence:** Pending.
 
 ### Completion record

@@ -14,7 +14,7 @@ choices. Role names describe responsibilities, independently of page titles.
 schema-version = 1
 id = "check-book-selection"
 title = "Check the intended Book wherever the caller starts"
-status = "draft"
+status = "accepted"
 property = '''
 An engineer or agent can select the intended Book explicitly and check its
 configured format without relying on conventional directory names or page titles.
@@ -42,7 +42,7 @@ statement = "Check equivalent fixtures under book, docs, and md with different d
 schema-version = 1
 id = "check-configuration-validity"
 title = "Configuration problems cannot produce a misleading format check"
-status = "draft"
+status = "accepted"
 property = '''
 The checker reports invalid or unresolvable configuration so an engineer or
 agent can correct the intended layout before relying on structural findings.
@@ -54,6 +54,7 @@ including through symlink aliases.
 authorities = [
   { kind = "requirement", id = "requirement-repair-feedback" },
   { kind = "requirement", id = "requirement-configured-structure" },
+  { kind = "requirement", id = "requirement-truthful-results" },
   { kind = "decision", id = "decision-explicit-configuration" },
 ]
 
@@ -130,8 +131,9 @@ layout checks, and a structural pass in Complete does not establish implementati
 or verification. Automated enforcement of design readiness and completion is
 later work. The phase value expresses the chosen workflow; it is not evidence.
 
-The engineer directs transitions, with their scope and basis recorded in the
-roadmap. Later development can begin a new iteration while preserving the prior
+Phase transitions follow the
+[AI Working Contract](../ai-working-contract.md#work-in-the-projects-phase); their
+scope and basis are recorded in the roadmap. Later development can begin a new iteration while preserving the prior
 completed baseline. A scoped experiment alongside accepted work is described in
 its roadmap and assignment; no per-capability override syntax is introduced here.
 

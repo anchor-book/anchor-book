@@ -1,10 +1,10 @@
 # Implementation Roadmaps
 
-Implementation roadmaps turn a sufficiently clear design into agreed work for
-AI agents. The engineer and agents develop the design together. Agents then propose
-the outcomes to build, how to divide the work, dependencies, and how completion
-will be demonstrated. The engineer reviews and agrees on that work before the
-agents begin its implementation.
+Implementation roadmaps turn a sufficiently clear design into the work that
+reaches it: the outcomes to build, how the work is divided, dependencies, and how
+completion will be demonstrated. The
+[AI Working Contract](../ai-working-contract.md#work-with-the-engineer) defines
+how agents propose roadmaps and when work may begin.
 
 The relevant design must be clear enough to define the work and its completion
 criteria; the entire system design need not be finished.
@@ -15,6 +15,9 @@ Each roadmap has a stable identifier, a short descriptive title, and a goal
 stating what becomes possible when it is complete. Its milestones group work
 into outcomes an engineer can take on with their agents. Tasks describe the work;
 completion criteria describe how to demonstrate that its outcome has been reached.
+A completion criterion is an observable condition shown by recorded evidence, not
+someone's approval or confirmation; a milestone is Complete when its evidence
+shows every criterion holds.
 
 List milestones directly, without a separate overview table. Each records:
 
@@ -128,8 +131,7 @@ without duplicate coverage lists.
 
 Update code, tests, Book progress, and evidence together through the project's
 contribution workflow. This model does not mandate direct pushes or pull requests.
-Agree on scope and criterion changes with the engineer; do not weaken them to
-match completed work.
+Do not weaken scope or criteria to match completed work.
 
 ## Evidence records
 
@@ -158,11 +160,11 @@ outcome and every completion criterion; task checkmarks, anchor references, and
 structural passes are insufficient. Linked anchors may span several milestones
 or need other evidence, so milestone completion does not automatically verify them.
 
-## Keeping the agreement current
+## Keeping roadmaps current
 
 Reconcile roadmaps in the same change as design. Review outcomes, dependencies,
 tasks, criteria, anchor references, and evidence; add work or an explicit deferral.
-New scope remains proposed until agreed. Prior evidence stays tied to its tested
+Prior evidence stays tied to its tested
 revision. Follow the [AI Working Contract](../ai-working-contract.md#keep-roadmaps-aligned-with-the-goal-design)
 for phase-specific responsibilities.
 
@@ -170,7 +172,7 @@ for phase-specific responsibilities.
 
 Each roadmap's milestones record their own status and evidence.
 
-- [Engine Bootstrap](bootstrap.md): preparing the Book so agents can take up checker work.
+- [Engine Bootstrap](bootstrap.md): reviewing and accepting the checker's governing records.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
@@ -195,7 +197,7 @@ clear design and outcome-based milestones before implementation.
 | Initialize and adopt Books | [Operations](../design/system-overview.md#operations) | New-project setup and mapping existing layouts; exercise different consuming projects after configuration and materialization are usable. |
 | Materialize managed content | [Operations](../design/system-overview.md#operations) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Depends on configured structure and checking. |
 | Deliver the working contract | [Contract delivery](../design/system-overview.md#contract-delivery) | Engine-owned reusable content, command retrieval, and agent bootstrap that separately locates project guidance and configuration. Remove the temporary Book copy when that path works; keep project-specific content in the Book. Language-specific instruction extensions remain a possible later addition requiring their own design. |
-| Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are planned in [Record Rendering milestone 4](record-rendering.md#record-rendering-4); references between roadmaps beyond fragments remain later work. |
+| Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are implemented in [Record Rendering milestone 4](record-rendering.md#record-rendering-4), pending presentation review; references between roadmaps beyond fragments remain later work. |
 | Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
 | Anchor progress views | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Provided test surfaces and progress views combining anchor development, `verify` results, and roadmap completion. The [Verification Evidence roadmap](verification-evidence.md) builds evidence evaluation itself; keep verification independent of its consuming Book build. |
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |

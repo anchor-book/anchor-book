@@ -18,7 +18,7 @@ passes. The agent performs those edits; the checker remains read-only.
 schema-version = 1
 id = "check-observation-only"
 title = "Checking preserves the Book for deliberate repair"
-status = "draft"
+status = "accepted"
 property = '''
 Engineers and agents can inspect a Book's format without changing the project
 or triggering its tools. Passing, failing, and incomplete checks leave project
@@ -46,7 +46,7 @@ statement = "Use fixtures with configured execution traps and run with subproces
 schema-version = 1
 id = "check-navigation-conformance"
 title = "Navigation findings guide repairs to the configured Book format"
-status = "draft"
+status = "accepted"
 property = '''
 The checker identifies where the Book's chapters and required sections differ
 from its configured structure, and reports the location and expected structure
@@ -81,7 +81,7 @@ statement = "Against the documented supported mdBook grammar and version, test v
 schema-version = 1
 id = "check-renderer-alignment"
 title = "The checked Book and rendered Book use the intended layout"
-status = "draft"
+status = "accepted"
 property = '''
 The checker detects when mdBook's file-based source or output settings differ
 from the intended Anchor Book layout, so an engineer or agent can align them

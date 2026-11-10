@@ -2,13 +2,13 @@
 
 **Roadmap identifier:** `structural-checking`
 
-This roadmap follows [Engine Bootstrap](bootstrap.md), which prepares the Book's
-checker design, requirements, decisions, anchors, working contract, and agreed
-scope. It extends the crate from
+This roadmap builds the checker that [Engine Bootstrap](bootstrap.md) prepared
+the design for. It extends the crate from
 [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
-Milestones are assigned as scoped prototypes while Bootstrap review continues
-separately. The checker runs independently of rendering and does not require
-generated Book output.
+Milestones were assigned as scoped prototypes; review and acceptance of the
+checker's governing records continue in
+[Engine Bootstrap milestone 1](bootstrap.md#engine-bootstrap-1). The checker runs
+independently of rendering and does not require generated Book output.
 
 ## Goal
 
@@ -35,7 +35,8 @@ schema or rule specification.
 ## Authority and anchors
 
 The [requirements](../authority/requirements.md#initial-checker-requirements),
-[decisions](../authority/decisions.md), and referenced anchors remain drafts.
+[decisions](../authority/decisions.md), and referenced anchors were accepted on
+2026-11-10 in [Engine Bootstrap milestone 1](bootstrap.md#engine-bootstrap-1).
 Milestone criteria link to specific anchor criteria with full or partial planned
 coverage, following the [roadmap convention](index.md#anchor-criteria-and-planned-coverage).
 
@@ -136,7 +137,7 @@ Complete and merged: configuration loading, validation, preservation, and phase 
 
 **Outcome:** An engineer or agent can run the library or CLI to locate format defects, understand the expected structure, make separate repairs, and recheck. A pass confirms the evaluated format rules; incomplete evaluation never counts as success.
 
-**Status:** Complete — merged with passing CI; accepted by the engineer
+**Status:** Complete — merged with passing CI
 
 **Dependencies:** Structural Checking — Milestone 1.
 
@@ -167,14 +168,14 @@ The actual Book passes. Independent fixtures cover source and summary prerequisi
 
 Report differing renderer settings and expected locations without editing files. Handle defaults, equivalent paths, missing configuration, and malformed or unreadable input; aligning seeded mismatches produces a pass.
 
-- **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `resolved-comparison`, `renderer-input` — Full
-- **Evidence:** Local tests cover mdBook defaults, equivalent relative and absolute paths, missing/invalid renderer input, and corrected mismatches. A CLI test sets an environment override and confirms only file settings are checked. The implementation uses pure mdbook-core deserialization; it never runs the renderer or configured commands.
+- **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `resolved-comparison`, `renderer-input` — Full for the criteria as they stood at this milestone. `resolved-comparison` later added a `book.toml` in a subdirectory of the configuration directory; [Project Integration milestone 1](project-integration.md#project-integration-1-mdbook-location) covers that case.
+- **Evidence:** Local tests cover mdBook defaults, equivalent relative and absolute paths, missing/invalid renderer input, and corrected mismatches. A CLI test sets an environment override and confirms only file settings are checked. The implementation uses pure mdbook-core deserialization; it never runs the renderer or configured commands. These tests predate the subdirectory case and do not cover it.
 
 #### Typed results {#structural-checking-2-typed-results}
 
 Library and actual CLI results agree against independent expectations, including equivalent configured layouts and invocations from different working directories. Library errors preserve causes without printing, exiting, or panicking.
 
-- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers`, `library-boundary` — Full
+- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `equivalent-callers`, `library-boundary` — Full for the criteria as they stood at this milestone. `equivalent-callers` later added the `anchorbook md` preprocessor as a caller; [Project Integration milestone 1](project-integration.md#project-integration-1-entry-points) covers that case.
 - **Anchor coverage:** [check-book-selection](../design/configuration.md#check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: equivalent structural findings across layouts and caller directories, completing milestone 1 selection evidence.
 - **Evidence:** Actual-process tests compare CLI output with library reports for pass, structural failure, and incomplete evaluation, plus independent expected fields and a complete passing report. Alternative layouts and caller directories are exercised. Source review confirms the CLI calls the shared library, findings retain typed locations and causes, and parser types remain private. The final GitHub mutation campaign has no survivors; see milestone evidence.
 
@@ -220,7 +221,7 @@ Record results for the design’s [acceptance cases](../design/structural-checki
 
 ### Completion record
 
-Complete on 2026-10-26, accepted by the engineer. Merged in `3d197c0` with passing CI and a full mutation campaign with no survivors. On `a1cf336`, the checker passed this Book and reported a missing chapter and a `book.toml` source mismatch in a disposable broken copy, exiting 1 without changing files. Milestone 3 owns CI gating; milestone 4 owns the real agent repair demonstration.
+Complete on 2026-10-26. Merged in `3d197c0` with passing CI and a full mutation campaign with no survivors. On `a1cf336`, the checker passed this Book and reported a missing chapter and a `book.toml` source mismatch in a disposable broken copy, exiting 1 without changing files. Milestone 3 owns CI gating; milestone 4 owns the real agent repair demonstration.
 
 ## Milestone 3. Continuous checks protect the current Book {#structural-checking-3}
 
@@ -229,7 +230,7 @@ milestone 3; its other criteria remain separate.
 
 **Outcome:** Changes to this repository receive independent engine validation and an acceptance check against its current Book before rendering.
 
-**Status:** Complete — merged with GitHub evidence; accepted by the engineer
+**Status:** Complete — merged with GitHub evidence
 
 **Dependencies:** Structural Checking — Milestone 2.
 
@@ -258,7 +259,7 @@ With deliberately broken navigation and no rendered output, engine compilation a
 
 Record actual CI showing engine checks, structural Book acceptance, then rendering for a valid revision. Broken or unprocessable Book input produces useful findings and prevents rendering; independent engine tests remain runnable.
 
-- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `ci-order` — Full
+- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `ci-order` — Full. The criterion now requires `review`; the recorded runs below are its subject, and an assessment record for them is pending the [assessment records](verification-evidence.md#verification-evidence-6) support.
 - **Evidence:** Passed on GitHub: valid revisions ran both Engine jobs, then Build mdBook, then Publish Book on main; broken and unprocessable Books failed current-Book acceptance with useful findings, independent tests passed, and rendering was skipped. Locally, `mdbook build` also refuses a structural failure (exit 1) and incomplete input (exit 2) through the preprocessor. See milestone evidence.
 
 #### No repair {#structural-checking-3-no-repair}
@@ -293,13 +294,13 @@ Record the tested revision, actual workflow results, and local commands; local s
 
 ### Completion record
 
-Complete on 2026-11-07, accepted by the engineer. Merged in `9ecd950` and `2aaf496`; local and GitHub evidence covers every criterion within the limits above.
+Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evidence covers every criterion within the limits above.
 
 ## Milestone 4. An agent can repair Book structure using checker feedback {#structural-checking-4}
 
 **Outcome:** An agent can use findings to make scoped structural repairs and reach a passing check while preserving unrelated content.
 
-**Status:** Complete — recorded agent runs and independent review; pending engineer acceptance
+**Status:** Complete — recorded agent runs and independent review
 
 **Dependencies:** Structural Checking — Milestone 2.
 
@@ -321,7 +322,7 @@ Complete on 2026-11-07, accepted by the engineer. Merged in `9ecd950` and `2aaf4
 
 Recorded agent runs repair seeded defects and reach a passing check. Independent review confirms intended repairs, unrelated content preservation, no weakened requirements, and any human assistance.
 
-- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `agent-repair` — Full
+- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `agent-repair` — Full. The criterion now requires only `review`; the recorded runs and independent review below are its subject, and an assessment record is pending the [assessment records](verification-evidence.md#verification-evidence-6) support.
 - **Evidence:** Passed. Two fresh Codex sessions worked on throwaway branches of this Book, given only the repository bootstrap and an engineer request. Run 1 seeded a link typo, a required role turned into a targetless draft, and a navigation entry for a chapter that never existed. Run 2 seeded unsupported summary prose, renderer output drift, a required role nested under another, and a navigation entry for a chapter that never existed. Both runs repaired every defect whose intent was clear, leaving only the nonexistent chapter for the engineer; in run 2 the engineer removed that entry and the check passed. Independent review diffed each result against its baseline revision: run 1 matched exactly apart from the unresolved entry, and run 2 matched except for keeping the prose as an HTML comment. Neither run changed `anchorbook.toml` or engine code. Human assistance: in run 1 the agent reported the failures and stopped, repairing only after the engineer asked whether it had read the contract. That guidance gap was fixed before run 2, whose only input was the request to run the check.
 
 #### Separate edits {#structural-checking-4-separate-edits}
@@ -352,7 +353,7 @@ Cases outside the assignment or the agent’s ability produce an explicit explan
 
 ### Completion record
 
-Complete on 2026-11-08, pending engineer acceptance. Recorded agent runs and independent review cover every completion criterion within the limits above. With milestones 1–3 complete, this completes the Structural Checking roadmap.
+Complete on 2026-11-08. Recorded agent runs and independent review cover every completion criterion within the limits above. With milestones 1–3 complete, this completes the Structural Checking roadmap.
 
 ## Updating and completing the work
 

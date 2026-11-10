@@ -49,7 +49,7 @@ changes require new proof and integration evidence.
 
 **Outcome:** Authority validation has a reproducible local proof over the executable functions used by the record API, with tested integration and explicit limits.
 
-**Status:** In progress — local proof and integration verified; engineer review pending
+**Status:** Complete — local and CI proof, integration tests, and specification assessment recorded
 
 **Identifier:** `formal-verification-1`
 
@@ -67,7 +67,7 @@ changes require new proof and integration evidence.
 - [x] Connect `inventory.rs` to those same functions. Test faithful candidate conversion and failure propagation through the library and actual mdBook adapter, preserving identities, ambiguity, invalid candidates, status, references, and located diagnostics.
 - [x] Verify the complete selected proof scope. Introduce one deliberate rule violation in a disposable copy and confirm a proof obligation fails; restore the code and verify again. Run focused integration and mutation checks, explicitly checking whether cargo-mutants reaches the annotated executable bodies.
 - [x] Document the pinned local command and the proved claim, assumptions, tested boundaries, revision, and result. Reconcile the design and milestone evidence without claiming the entire engine or anchor is proved.
-- [ ] Assess the formal specification against the explicit proof scope (a specification assessment) and map production-integration tests and review to every excluded boundary. Record any remaining coverage gaps before accepting the milestone.
+- [x] Assess the formal specification against the explicit proof scope (a specification assessment) and map production-integration tests and review to every excluded boundary. Record any remaining coverage gaps before accepting the milestone.
 
 ### Completion criteria
 
@@ -76,25 +76,27 @@ changes require new proof and integration evidence.
 The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Full. The claim is limited to the specified authority logic and recorded assumptions.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed: local proof, the deliberate-defect failure, the current main proof run, and the specification assessment; see milestone evidence.
 
 #### Production path {#formal-verification-1-production-path}
 
 Review identifies the same verified functions on the normal read_records call path. Independent fixtures exercise conversion, empty and invalid authority, all resolution/status cases, and rejection through the real adapter. State which boundaries are tested rather than proved.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Full. Behavioral test coverage also contributes to `required-authority`, `resolved-authority`, and `compatible-status`; reconcile with Record Rendering milestone 3.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed locally; see milestone evidence.
 
 #### Compatible tooling {#formal-verification-1-tooling}
 
 Pinned tools reproduce verification without rendering the Book. Ordinary builds, tests, formatting, and Clippy pass on supported toolchains. Record whether mutation testing reaches the annotated executable bodies and any gaps; a skipped or empty mutation scope is not coverage.
 
 - **Anchor coverage:** None — developer tooling and compatibility; proof success alone does not complete the mutation roadmap.
-- **Evidence:** Passed locally; see milestone evidence. Engineer review pending.
+- **Evidence:** Passed locally; see milestone evidence.
 
 ### Evidence {#formal-verification-1-evidence}
 
-**Local result:** Working tree based on `45125f6`, tested 2026-10-21. Verus `0.2026.10.18.7d82994`, verifier Rust 1.99.1, and bundled Z3 4.16.0 report 15 verification units passed, zero errors. All seven executable authority functions appear in the report. The native command and exactly pinned library are documented in CONTRIBUTING; no verification wrapper script is required.
+**Latest local result:** On 2026-11-10, Verus `0.2026.10.18.7d82994` and Z3 4.16.0, built from source at their pinned tags on Linux, verified the revised specification on branch `book-upkeep`: 15 verified, zero errors, full crate, all seven functions, accepted by `.github/verus-report.jq`, in about 30 seconds. A deliberate defect that reports a reference failure without its reference index failed a loop invariant; the restored source verified. Ordinary tests, formatting, and Clippy pass on Rust 1.88.0 and stable 1.99.1.
+
+**First local result:** Working tree based on `45125f6`, tested 2026-10-21. Verus `0.2026.10.18.7d82994`, verifier Rust 1.99.1, and bundled Z3 4.16.0 report 15 verification units passed, zero errors. All seven executable authority functions appear in the report. The native command and exactly pinned library are documented in CONTRIBUTING; no verification wrapper script is required.
 
 **Scope and assumptions:** The production `validate_authorities` function satisfies its acceptance biconditional over complete typed candidates. Project assumptions and trusted function bodies are prohibited by `--no-cheating`; standard-library specifications, verifier/solver, and compiler remain trusted. Parsing, conversion, diagnostics, and backlinks are tested boundaries. Review the specification's interpretation of the anchor before accepting the milestone.
 
@@ -102,9 +104,31 @@ Pinned tools reproduce verification without rendering the Book. Ordinary builds,
 
 **Mutation assessment:** cargo-mutants 27.1.0 discovers no mutations inside `verus!`, so automatic mutation coverage of the validator is unavailable. The focused inventory integration run initially found four diagnostic assertion gaps; after strengthening message and related-location assertions, all 24 selected mutations were attempted: 22 caught, two unviable, no survivors or timeouts. Command: `target/mutation-tools/bin/cargo-mutants mutants --jobs 2 --build-timeout 120 --file src/records/inventory.rs --output target/verus-mutations-fixed`. This is scoped evidence, not a new whole-engine campaign. Raw reports remain ignored under target. Milestone 2 records subsequent remote proof results.
 
+**Specification assessment:** Accepted. A first assessment of `src/records/authority.rs` at `cea6ba3`, verified on main by the [Formal Verification](https://github.com/anchor-book/anchor-book/actions/runs/42741006859) workflow, accepted its claim and found that `inventory.rs` relied on violation properties the contract did not state. The contract now states them in `violation_is_located`, an added `ensures` on `validate_authorities`, and `validate_reference`'s guarantee that it never reports missing authority. Because that changed the specification, a fresh agent that wrote none of it assessed the revised specification on 2026-11-10 from the code, the criterion, and the design, against `formal-authority`'s claim, domain, boundary, assumptions, and exclusions, and accepted it. There is no assessment-record file yet, because [assessment records](verification-evidence.md#verification-evidence-6) are not implemented.
+
+- **Claim.** `validate_authorities` ensures `violations.len() == 0` exactly when `records_satisfy_authority_rules` holds over the whole collection, so acceptance and rejection are both proved. The rules state each part of the claim: anchors need a reference; references within a record are distinct by identity, which also rejects one identity cited as two kinds; a reference resolves to exactly one candidate, counting undecodable candidates with a recovered identity; the target is decoded, of the declared kind, and accepted when the source is accepted. Every decoded record is checked, including decisions no anchor cites.
+- **Domain.** `validate_authorities`, `has_required_authority`, `lookup`, `has_unknown_identity`, `matches_identity`, and `matches_target_kind` have no preconditions. `validate_reference` requires only valid record and reference indices, which its verified caller establishes; none assumes a valid relationship. Undecodable source records carry no reference obligations, matching the claim's "successfully decoded record"; their parse errors are kept by `read_records`.
+- **Boundary.** The seven executable functions above are the ones `read_records` runs: `inventory.rs` passes every parser candidate, and `schema.rs` calls `has_required_authority` while decoding. There is no proof-only copy.
+- **Assumptions.** The file contains no `assume`, `admit`, or trusted body, and `--no-cheating` is enforced. Trusted: the verifier, Z3, the compiler, and `vstd` contracts for string equality through the character-sequence view and for slice and vector indexing.
+- **Scope notes.** Which source kinds may cite which target kinds (decisions cite only requirements; requirements cite nothing) is enforced by decoding, not by the specification; decoding is excluded and tested. A decoded target with invalid relationships of its own is still a suitable target, which does not weaken the result because that target is checked as a source.
+- **Equivalent survivors.** None judged; sensitivity changes are planned in [Verification Evidence milestone 7](verification-evidence.md#verification-evidence-7).
+
+**Exclusion coverage:** Each boundary that `formal-authority` excludes is covered by `production-integration` tests:
+
+| Excluded boundary | Covering tests |
+| --- | --- |
+| Parsing | `tests/records.rs`: noncanonical fences, schema and field errors, Markdown containers and code boundaries, truncated and Unicode input |
+| Candidate conversion | `tests/authority_criteria.rs`: every anchor status, target status, and target kind, and anchors citing one requirement or one decision; `tests/records.rs`: invalid candidates keep their identity and unknown identities block resolution; unit tests in `authority.rs` |
+| Global identity checks | `tests/records.rs` `duplicates_have_no_winner_and_bad_authorities_do_not_look_missing`, including duplicates across kinds |
+| Diagnostic classification and locations | `tests/authority_criteria.rs` reference-text locations for each failure; `tests/records.rs` codes, field locations, Unicode columns, and related locations |
+| Inventory construction | `tests/records.rs` ranges, backlinks, and chapter-order independence; every failing case returns no inventory |
+| Adapter failure propagation | `tests/rendering.rs` invalid inputs, `uncited_decision_authority_failure_reaches_the_real_adapter`, and `anchor_authority_failures_reach_the_real_adapter` |
+
+**Integration guarantee:** `inventory.rs` indexes the violating record, expects it to be decoded, treats `MissingAuthority` as having no reference index, and indexes its references. The contract now proves these facts about the converted candidates. That they carry over to `inventory.rs`'s own records depends on the conversion keeping order, decoded state, and reference counts; that holds by construction and is exercised only through correctly located diagnostics, with no direct conversion test.
+
 ### Completion record
 
-Local proof and integration checks pass; engineer review and acceptance remain pending.
+Complete on 2026-11-10. The production validator's proof establishes the `formal-authority` claim within its stated scope, an independent specification assessment accepts the revised specification, and each excluded boundary has covering tests. Conversion fidelity remains tested rather than proved.
 
 ## Milestone 2. GitHub verifies the production authority logic {#formal-verification-2}
 
@@ -234,7 +258,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies), and [records-valid-authority](../design/rust-engine.md#records-valid-authority).
 
-**Dependencies:** The existing production authority proof and engineer agreement on the isolation boundary. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
+**Dependencies:** The existing production authority proof. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
 
 **Tasks**
 

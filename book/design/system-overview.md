@@ -17,7 +17,7 @@ mdBook supplies the underlying Book structure and rendering.
 schema-version = 1
 id = "check-independent-build"
 title = "A broken Book remains diagnosable by its own engine"
-status = "draft"
+status = "accepted"
 property = '''
 Engineers and agents can still build and use the checker to diagnose a broken
 Book while developing Anchor Book with that Book. Engine compilation and
@@ -37,7 +37,7 @@ statement = "In a disposable checkout with deliberately invalid Book navigation 
 
 [[criteria]]
 id = "ci-order"
-verification = ["test"]
+verification = ["review"]
 statement = "Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it."
 ```
 

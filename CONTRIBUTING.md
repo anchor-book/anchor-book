@@ -167,6 +167,24 @@ and add the extracted directory containing `verus` and `cargo-verus` to PATH.
 The arm64 macOS archive used for local verification has SHA-256
 `3fc56c58277b5f0999368f7b3a2b07ba4eb9ec2965454ce7a9f2769c0464d32b`.
 
+The x86-64 Linux release archive and Z3 4.16.0's Linux release require glibc
+2.39 or later. On an older Linux system, build both from source at the pinned
+tags; Z3 4.16 needs a C++20 compiler with `<format>`, such as GCC 13 or later:
+
+```sh
+git clone --depth 1 --branch z3-4.16.0 https://github.com/Z3Prover/z3.git
+(cd z3 && CXX=g++-14 CC=gcc-14 python3 scripts/mk_make.py && cd build && make -j"$(nproc)")
+git clone --depth 1 --branch release/0.2026.10.18.7d82994 https://github.com/verus-lang/verus.git
+cp z3/build/z3 verus/source/z3
+cd verus/source && source ../tools/activate && vargo build --release
+```
+
+Substitute your distribution's names for the GCC 14 compilers. Add
+`verus/source/target-verus/release` to PATH; it contains `verus`, `cargo-verus`,
+`vstd`, and Z3. A source build is the same pinned version as the release but not
+the same binary, so record local results as built from source; the GitHub proof
+job uses the release archive.
+
 Install the verifier's toolchain alongside the normal development toolchains:
 
 ```sh

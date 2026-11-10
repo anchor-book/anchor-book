@@ -73,15 +73,16 @@ statement = "The engine executes the verified authority-validation functions. Te
 schema-version = 1
 id = "check-shared-typed-results"
 title = "Agents and Rust callers receive consistent format findings"
-status = "draft"
+status = "accepted"
 property = '''
 Engineers, agents, CI, and Rust integrations receive equivalent structural
 findings for the same Book inputs, so choosing an interface does not change the
 required repairs or whether the check passes. The library owns checking behavior
 and exposes findings, locations, scope, and errors as typed data; callers can
 distinguish structural failure from incomplete evaluation without parsing display
-text. The CLI handles invocation and presentation through that library. Malformed
-user input does not cause the library to print, exit, or panic.
+text. The CLI and the mdBook preprocessor handle invocation and presentation
+through that library. Malformed user input does not cause the library to print,
+exit, or panic.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-shared-checker" },
@@ -91,7 +92,7 @@ authorities = [
 [[criteria]]
 id = "equivalent-callers"
 verification = ["test"]
-statement = "Exercise the library and actual CLI process on the same passing, failing, and incomplete fixtures; assert equivalent codes, locations, and evaluated scope against independent expectations."
+statement = "Exercise the library, the actual CLI process, and the actual anchorbook md preprocessor process on the same passing, failing, and incomplete fixtures; assert equivalent outcomes, codes, locations, and evaluated scope against independent expectations."
 
 [[criteria]]
 id = "library-boundary"
@@ -143,8 +144,12 @@ execute the bodies Verus verifies, and there is no proof-only validator.
 | Public library and mdBook adapter | Tested through the real API and process with independent valid and invalid fixtures: no successful partial inventory or Book JSON on invalid authority. |
 
 `validate_authorities` has no preconditions, so its unverified caller in
-`inventory.rs` owes it nothing; `validate_reference` has index preconditions,
-discharged by its verified caller. The trusted base is the verifier, solver,
+`inventory.rs` owes it nothing. In return, its contract guarantees that each
+violation names a decoded candidate and, unless authority is missing, one of that
+candidate's references. With the tested conversion, which keeps candidates and
+references in order, the caller's lookups of the violating record and reference
+cannot fail. `validate_reference` has index preconditions, discharged by its
+verified caller. The trusted base is the verifier, solver,
 compiler, and the `vstd` contracts the code uses, such as string equality and the
 character-sequence view of `String`. The proof does not establish that an
 authority justifies a property or that a person approved a status; review does.

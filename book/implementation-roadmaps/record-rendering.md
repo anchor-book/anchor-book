@@ -175,7 +175,7 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 
 **Outcome:** Contributors can build and preview the readable Book, and the GitHub workflow builds the same output using the tested crate and locked dependencies.
 
-**Status:** In progress — rendered acceptance, publication, and engine-check gating pass; coverage review, preview evidence, and published-page review remain
+**Status:** In progress — authority coverage, local preview, rendered acceptance, publication, and engine-check gating pass; published-page review remains
 
 **Dependencies:** Record Rendering — Milestone 2.
 
@@ -186,10 +186,10 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 **Tasks**
 
 - [x] Configure `book.toml` and preprocessor ordering; document local setup and preview.
-- [ ] Review and complete independent test coverage for the `required-authority`, `resolved-authority`, and `compatible-status` criteria of `records-valid-authority`; record the exact tests and remaining gaps.
+- [x] Review and complete independent test coverage for the `required-authority`, `resolved-authority`, and `compatible-status` criteria of `records-valid-authority`; record the exact tests and remaining gaps.
 - [x] Make Book rendering and Pages publication depend on passing engine checks and current-Book acceptance for the same revision. [Structural Checking milestone 3](structural-checker.md#structural-checking-3) owns the shared implementation and evidence, now merged with GitHub runs. Preserve `target/anchorbook`.
 - [x] Run the Rust `rendered_book` acceptance test in CI after building with the pinned mdBook version, including authority links and combined-print targets.
-- [ ] Exercise a clean build and a live source-edit/rebuild cycle.
+- [x] Exercise a clean build and a live source-edit/rebuild cycle.
 - [x] Record actual GitHub Actions results for the implemented revision when that revision is pushed through the engineer's chosen contribution workflow.
 
 ### Completion criteria
@@ -199,14 +199,14 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 Independent tests exercise the three behavioral authority criteria through the record API; invalid authority also fails the actual preprocessor without successful partial output. Record the tests and results for the implementation revision.
 
 - **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
-- **Evidence:** Pending criterion-by-criterion review. Existing record, reference, and adapter tests and current-Book acceptance do not by themselves establish complete coverage of these criteria.
+- **Evidence:** Passed locally on Rust 1.88.0 and stable 1.99.1. Review found that earlier tests exercised most authority edges through a decision's requirements rather than an anchor's authorities. `tests/authority_criteria.rs` now covers each criterion through the record API with fixtures built from the criteria: `required-authority` accepts an anchor citing only a requirement or only a decision and rejects a missing or empty list with a located invalid-definition diagnostic; `resolved-authority` rejects missing, wrong-kind, invalid, and ambiguous anchor targets, each at the reference's source text and with no inventory; `compatible-status` checks all eight combinations of anchor status, target status, and target kind. `tests/rendering.rs` `anchor_authority_failures_reach_the_real_adapter` shows a missing anchor authority and an accepted anchor citing a draft decision failing the actual `anchorbook md` process with no Book JSON. Disabling the wrong-kind check, and separately the status check, in `src/records/authority.rs` each failed a new test; the source was restored. Mutation tools do not reach these `verus!` bodies, so those two manual changes are the sensitivity evidence. Existing `tests/records.rs` cases remain for decision edges, duplicates, and repeated references.
 
 #### Local preview {#record-rendering-3-local-preview}
 
 Clean builds and live source-edit/rebuild cycles use the record adapter successfully.
 
 - **Anchor coverage:** None — contributor workflow
-- **Evidence:** Pending.
+- **Evidence:** Passed locally with mdBook 0.5.4 on a disposable copy of this Book. After removing `target/anchorbook`, `mdbook build` rendered every chapter with record and milestone fragments. Under `mdbook watch`, a prose edit rebuilt within 2 seconds; an invalid record status failed the rebuild with located `record.` diagnostics while the previous output remained; restoring it and editing again rebuilt within 2 seconds. Limits: the engine binary was already built, so the clean build measured Book output only; `mdbook serve` and browser live reload were not exercised, since `watch` runs the same preprocessor without a network listener.
 
 #### Independent CI {#record-rendering-3-independent-ci}
 
@@ -233,7 +233,7 @@ Document setup, supported versions, and schema/rendering limits. Pushing remains
 
 *Milestone evidence — CI and publication passed; remaining gaps recorded*
 
-The Rust `rendered_book` acceptance test runs in CI after the build and before artifact upload and publication; local negative experiments reject damaged rendered output. For merged revision `03fb981`, the [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) workflows passed, including rendered acceptance and Pages deployment. The engine-check gate's runs are recorded under [Structural Checking milestone 3](structural-checker.md#structural-checking-3-evidence). Open: authority-criterion review, clean and live-preview evidence, and published-page review.
+The Rust `rendered_book` acceptance test runs in CI after the build and before artifact upload and publication; local negative experiments reject damaged rendered output. For merged revision `03fb981`, the [Engine](https://github.com/anchor-book/anchor-book/actions/runs/39737287093) and [Book](https://github.com/anchor-book/anchor-book/actions/runs/39737287245) workflows passed, including rendered acceptance and Pages deployment. The engine-check gate's runs are recorded under [Structural Checking milestone 3](structural-checker.md#structural-checking-3-evidence). Open: published-page review.
 
 ### Completion record
 
@@ -243,11 +243,11 @@ Pending.
 
 **Outcome:** The Anchor Book preprocessor recognizes roadmap milestones written in the [roadmap format](index.md#defining-the-work), validates their identifiers and anchor references, and renders each milestone as a card with collapsible tasks, criteria, and evidence, while agents keep reading the compact Markdown source.
 
-**Status:** In progress — implemented locally; presentation review pending
+**Status:** In progress — implemented locally; source review recorded; in-browser review pending
 
 **Identifier:** `record-rendering-4`
 
-**Dependencies:** Record Rendering milestone 2 and the converted roadmaps. The engineer agreed the scope, strict validation, and role-based chapter selection on 2026-11-09.
+**Dependencies:** Record Rendering milestone 2 and the converted roadmaps.
 
 **Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering), [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones), and the [roadmap format](index.md#defining-the-work).
 
@@ -274,7 +274,7 @@ Independent fixtures with duplicate milestone or criterion identifiers, malforme
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
 - **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
-- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. The review of collapsing, keyboard access, and printing is pending.
+- **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. Source review on 2026-11-10 of this branch's rendered roadmaps: tasks, criteria, and milestone evidence are native `<details>` elements rendered `open`, so they read without JavaScript and collapse through their `<summary>`, which browsers make keyboard-operable; `theme/records.css` gives summaries a visible focus outline. Criterion headings sit inside their summaries with their fragment `id`, so a link still reaches a collapsed criterion; `record-rendering-4-rendered-view` resolves once in its chapter and once in `print.html`. Printing expands closed sections through `theme/records.js` on `beforeprint` and in `print.html`, restoring the reader's choices afterwards, and through a print rule on `::details-content` for browsers that support it. Not yet exercised in a browser: actual collapsing, keyboard operation, and print output. A heading inside `<summary>` may lose its heading role in some screen readers.
 
 ### Evidence {#record-rendering-4-evidence}
 
@@ -284,7 +284,7 @@ This Book's rendered roadmaps show criterion details that expand and collapse, a
 
 ### Completion record
 
-Pending the presentation review.
+Pending an in-browser check of collapsing, keyboard access, and printing.
 
 ## Handoff and later work
 

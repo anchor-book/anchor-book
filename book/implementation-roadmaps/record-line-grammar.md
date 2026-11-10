@@ -32,7 +32,7 @@ record's source range with HTML from the typed inventory and never reads TOML.
 
 **Status:** Proposed
 
-**Dependencies:** Engineer agreement on the task set, variants, and assessment below.
+**Dependencies:** None.
 
 **Design basis:** [Record syntax](../design/anchor-definitions.md#record-syntax), [Authority Definitions](../design/authority-definitions.md), and the [gap](#gap)
 
@@ -44,7 +44,7 @@ record's source range with HTML from the typed inventory and never reads TOML.
 - [ ] Fix the task set: find a record's definition; list every reference to a requirement; list draft anchors; list criteria requiring proof with their anchor; change one criterion's methods; add one authority reference.
 - [ ] For the four search tasks, record the minimal searches for each variant, the lines matched, wrong matches, and further lines read to answer.
 - [ ] Run the full task set in fresh Claude Code and Codex sessions against each variant, without engine tools. Record tool versions, tool calls, lines read, correctness, and edits that would fail validation.
-- [ ] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it, for engineer review.
+- [ ] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it.
 
 ### Completion criteria
 
