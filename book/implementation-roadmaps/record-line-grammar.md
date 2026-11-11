@@ -70,7 +70,7 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 - [x] Produce three disposable copies of this Book's records and literal examples: current TOML, the goal line grammar, and TOML with kind, identity, and status on the fence line. Convert mechanically and check each copy preserves every identity, field, reference, and method.
 - [x] Fix the task set: find a record's definition; list every reference to a requirement; list draft anchors; list criteria requiring proof with their anchor; change one criterion's methods; add one authority reference.
 - [x] For the four search tasks, record the minimal searches for each variant, the lines matched, wrong matches, and further lines read to answer.
-- [ ] Run the full task set in fresh Claude Code and Codex sessions against each variant, without engine tools. Record tool versions, tool calls, lines read, correctness, and edits that would fail validation.
+- [x] Run the full task set in fresh Claude Code and Codex sessions against each variant, without engine tools. Record tool versions, tool calls, lines read, correctness, and edits that would fail validation.
 - [ ] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it.
 
 ### Completion criteria
@@ -103,18 +103,44 @@ For every search task and variant, the recorded searches, matched lines, wrong m
 Fresh-session results for each agent and variant record tool calls, lines read, answer correctness, and edit validity, with versions and any human assistance. Inconclusive or failed sessions remain in the record.
 
 - **Anchor coverage:** None — design experiment
-- **Evidence:** Pending.
+- **Evidence:** Passed on 2026-11-11. `scripts/record-syntax/trials.py run` started six fresh non-interactive sessions, Claude Code 2.1.319 (model Opus 5.5) and Codex 0.167 each against each variant, every one in its own copy of the variant's `book/` outside any repository, so none could see the record index or the scripts. Each received only the prompt in `trials.py`: the six tasks in `tasks.md`, with identifiers in the variant's form, no syntax explanation, and no engine tools; Claude Code was limited to its read, search, and edit tools, and Codex ran in its workspace sandbox. `trials.py score` scores the answers against this Book's records and reads each edited copy back: an edit is valid only when every record matches this Book's with exactly the two requested changes. A diff of each copy shows no other change.
+
+  | Session | Seconds | Tool calls | Lines returned by tools | Answers correct | Edits valid |
+  | --- | --- | --- | --- | --- | --- |
+  | Claude Code, `toml` | 36 | 13 | 1,052 | 4 of 4 | yes |
+  | Claude Code, `fence` | 42 | 14 | 451 | 4 of 4 | yes |
+  | Claude Code, `lines` | 45 | 13 | 388 | 4 of 4 | yes |
+  | Codex, `toml` | 80 | 8 | 2,125 | 4 of 4 | yes |
+  | Codex, `fence` | 58 | 7 | 1,672 | 4 of 4 | yes |
+  | Codex, `lines` | 57 | 8 | 1,879 | 4 of 4 | yes |
+
+  With TOML, Claude Code read both authority chapters whole to connect references to records; with the other variants its searches answered most tasks from matched lines. Codex read the record-syntax chapters in full before every task set, which dominates its counts; with TOML it wrote its own Python TOML parser to list records. Every session distinguished the literal examples from records. No human assistance. Limits: one session per agent and variant, so differences of tens of percent are within the variation of repeated runs; one Book whose design chapters explain the line grammar to every variant; tasks small enough that every session was fully correct, so correctness does not separate the variants.
 
 #### Assessment {#record-line-grammar-1-assessment}
 
 A written assessment compares the variants on searches, reads, wrong matches, and edit validity, states its limits, and recommends confirming or revising the goal syntax. Any revision is made in the design chapters, not here.
 
 - **Anchor coverage:** None — decision input
-- **Evidence:** Pending.
+- **Evidence:** Recorded in the milestone evidence below; the decision rests with the engineer.
+
+### Evidence {#record-line-grammar-1-evidence}
+
+**Assessment.** All three syntaxes let agents answer and edit correctly at this Book's size; they differ in what an agent must read.
+
+1. **TOML costs the most.** Its searches return lines that do not name their record: 41 matches and 148 lines read back for draft anchors, against 21 and none for the others. Claude Code read 2.7 times as many lines as with the line grammar, and Codex wrote a parser to list records, which [`requirement-searchable-records`](../authority/requirements.md#requirement-searchable-records) says agents must not need.
+2. **The fence line gives most of the gain.** Putting kind, identity, and status on the fence line matches the line grammar for finding definitions and listing records by status, and Claude Code read 451 lines against 388.
+3. **The line grammar gains the rest.** Tracing a match back to its record or criterion takes 4 lines instead of 15 for references and 6 instead of 31 for proof criteria, because each criterion is one line. It matches more prose (4 mentions for one requirement), since identifiers in prose are spelled as in records; those lines are references the design means a search to find.
+4. **Unmeasured differences.** Only the line grammar gives proof scope a checked form, identifiers a kind code, and references one spelling. The trials do not measure these, and its migration is larger: a new reader and every identifier renamed, against a change to fence recognition alone.
+
+**Recommendation.** Confirm the line grammar as the goal syntax. The evidence supports it over TOML clearly and over fence-line TOML modestly; the deciding reasons are the checked proof scope and one spelling per reference, which fence-line TOML cannot give without becoming a new syntax itself. Fence-line TOML is the fallback if the migration's cost outweighs those.
+
+**Open questions.** (1) Inline Markdown in fields and (2) the `Property:` label were not exercised; carried forward. (3) The one proof criterion converted into a statement and the four scope items without loss, supporting the shape. (4) Literal examples matched every search in every variant, 1 to 3 lines each, and no session mistook one for a record; no distinct example form is needed for now.
+
+**Limits.** One Book of 56 records, one target record per search, one session per agent and variant, and scripts and searches written by one agent.
 
 ### Completion record
 
-Pending.
+Pending the engineer's decision on the recommendation.
 
 ## Milestone 2. The engine and this Book use the chosen syntax {#record-line-grammar-2}
 
