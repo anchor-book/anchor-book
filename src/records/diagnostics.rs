@@ -114,7 +114,6 @@ pub struct Diagnostic {
     pub(super) message: String,
     pub(super) location: SourceLocation,
     pub(super) related: Vec<SourceLocation>,
-    pub(super) cause: Option<Box<dyn Error + Send + Sync>>,
 }
 
 impl Diagnostic {
@@ -128,7 +127,6 @@ impl Diagnostic {
             message: message.into(),
             location,
             related: Vec::new(),
-            cause: None,
         }
     }
     /// Stable family code.
@@ -166,11 +164,8 @@ impl fmt::Display for Diagnostic {
         )
     }
 }
-impl Error for Diagnostic {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        self.cause.as_deref().map(|e| e as &(dyn Error + 'static))
-    }
-}
+/// A record diagnostic has no underlying cause: the line reader parses records itself.
+impl Error for Diagnostic {}
 
 /// Errors from the whole inventory. No partially validated inventory is exposed.
 #[derive(Debug)]

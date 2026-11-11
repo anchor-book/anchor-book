@@ -218,7 +218,7 @@ inspect records or failures.
 
 An invalid inventory returns diagnostics, never a partially validated inventory.
 Each diagnostic exposes a stable code, typed problem, explanation, source
-location, related locations, and a parser cause when available. Byte ranges are
+location, and related locations; the line reader has no underlying parser cause to attach. Byte ranges are
 half-open; lines and Unicode-scalar columns are one-based. Diagnostics are sorted
 by path, byte position, code, and message. Record iteration is sorted by identity.
 Both orders are independent of the caller's chapter order.

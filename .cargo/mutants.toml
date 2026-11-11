@@ -19,6 +19,6 @@ exclude_re = [
     '^src/records/authority\.rs:279:25: replace \+= with \*= in lookup$',
     '^src/records/authority\.rs:305:25: replace \+= with \*= in has_unknown_identity$',
     '^src/records/authority\.rs:344:33: replace \+= with \*= in validate_reference$',
-    '^src/records/authority\.rs:436:33: replace \+= with \*= in validate_authorities$',
-    '^src/records/authority\.rs:439:22: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:437:33: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:440:22: replace \+= with \*= in validate_authorities$',
 ]
