@@ -316,11 +316,9 @@ and a test timeout of five times the baseline duration, with a 30-second minimum
 The command limits each build to 120 seconds. It runs an unmodified baseline
 before testing mutations. Do not use `--in-place` or skip the baseline. Ordinary
 tests, including actual-process CLI tests, run for each mutation; the ignored
-Book acceptance tests stay separate. Three exact OR-to-XOR mutations in the
-Markdown option mask are excluded because the flags are disjoint and the resulting
-mask is identical. The configuration records their locations and rationale;
-review them when the flag expression or parser dependency changes. Five
-loop-counter mutations in `src/records/authority.rs` are also excluded, because
+Book acceptance tests stay separate. One reviewed equivalent mutation in the
+record reader's code-block line start is excluded; the configuration records why.
+Five loop-counter mutations in `src/records/authority.rs` are also excluded, because
 verification rejects them and tests can only time out; see the local authority
 proof section. No engine files are excluded, and mutations that remove flags
 remain in scope.

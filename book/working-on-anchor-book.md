@@ -22,11 +22,8 @@ Use these definitions and conventions while authoring this Book:
 - [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
   structure, identifiers, planned coverage, statuses, and evidence records.
 
-The engine still reads the earlier TOML record form, so write this Book's records
-in that form, following the existing records, until the
-[Record Line Grammar](implementation-roadmaps/record-line-grammar.md) migration;
-[its gap](implementation-roadmaps/record-line-grammar.md#gap) describes
-that form.
+Write records in the [record syntax](design/anchor-definitions.md#record-syntax),
+following the existing records; the engine reads no other form.
 
 The record syntax and fields are unpublished drafts that we are refining through use.
 Follow their documented evolution policy and update the syntax, affected records,

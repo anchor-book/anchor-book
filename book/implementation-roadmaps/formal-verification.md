@@ -8,8 +8,8 @@ Prove the authority-validation logic actually executed by the engine, and make
 that proof repeatable locally and on GitHub. The engine is the first and current
 subject: its own proof is exercised here before any other project relies on
 proof support. Start with
-[`records-valid-authority`](../design/rust-engine.md#records-valid-authority), grounded
-in [traceable properties](../authority/requirements.md#requirement-traceable-properties).
+[`A-records-valid-authority`](../design/rust-engine.md#A-records-valid-authority), grounded
+in [traceable properties](../authority/requirements.md#R-traceable-properties).
 Rust Engine's [authority proof](../design/rust-engine.md#authority-proof) defines the
 claim, production boundary, and trusted base, and [Verification](../design/verification.md)
 the general method and evidence. Make Verus optional: the engine
@@ -52,7 +52,7 @@ changes require new proof and integration evidence.
 
 **Identifier:** `formal-verification-1`
 
-**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [records-valid-authority](../design/rust-engine.md#records-valid-authority).
+**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Dependencies:** The implemented record reader and renderer, existing independent tests, and reviewed mutation findings. Merge protection is deferred. Review the specification against the anchor before proving the extracted implementation.
 
@@ -74,14 +74,14 @@ changes require new proof and integration evidence.
 
 The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Full.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Full.
 - **Evidence:** The claim is limited to the specified authority logic and recorded assumptions. Passed: local proof, the deliberate-defect failure, the current main proof run, and the specification assessment; see milestone evidence.
 
 #### Production path {#formal-verification-1-production-path}
 
 Review identifies the same verified functions on the normal read_records call path. Independent fixtures exercise conversion, empty and invalid authority, all resolution/status cases, and rejection through the real adapter. State which boundaries are tested rather than proved.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Full.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `production-integration` — Full.
 - **Evidence:** Behavioral test coverage also contributes to `required-authority`, `resolved-authority`, and `compatible-status`; reconcile with Record Rendering milestone 3. Passed locally; see milestone evidence.
 
 #### Compatible tooling {#formal-verification-1-tooling}
@@ -139,7 +139,7 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 
 **Identifier:** `formal-verification-2`
 
-**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [records-valid-authority](../design/rust-engine.md#records-valid-authority).
+**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Dependencies:** Formal Verification milestone 1 and the existing PR workflows. Establish passing and failing proof runs first, then complete merge protection together with Mutation Testing milestone 2. Remote execution follows an authorized push.
 
@@ -157,14 +157,14 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 
 Actual GitHub results show the intended production functions verified for the recorded revision and a deliberate defect rejected. Retained results identify the specification, inputs, assumptions, toolchain, and scope.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Partial: remote reproduction of milestone 1 proof evidence.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Partial: remote reproduction of milestone 1 proof evidence.
 - **Evidence:** Passing PR and main-branch runs are recorded below: 15 verified units, zero errors, all seven required functions present. On throwaway #30, a deliberately flipped contract on `matches_target_kind` failed the [Authority proof run](https://github.com/anchor-book/anchor-book/actions/runs/42766303320) with "postcondition not satisfied" at `src/records/authority.rs:233` and `:317`, and the corrected head `1e576c1` [passed](https://github.com/anchor-book/anchor-book/actions/runs/42767217679).
 
 #### Same revision {#formal-verification-2-same-revision}
 
 Record passing integration tests and proof results for the same code revision; review evidence applicability when design, code, conversion, or dependencies change.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `production-integration` — Partial: remote integration evidence and revision alignment.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `production-integration` — Partial: remote integration evidence and revision alignment.
 - **Evidence:** Passed: the retained artifact from [main verification](https://github.com/anchor-book/anchor-book/actions/runs/39737287057) identifies `03fb98136809d30caba3b9c4a04e7617035a294a`, with successful proof and ordinary engine/integration-test commands for that checkout. Scope and integration-coverage review remain in milestone 1.
 
 #### Merge and correction loop {#formal-verification-2-merge-loop}
@@ -219,7 +219,7 @@ The record API accepts every supported method and combinations in authored order
 
 The actual adapter displays every criterion’s methods as required verification, preserves design acceptance status, and rejects invalid methods without success JSON. The current Book and print view preserve the authored criteria and links.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `record-presentation` — Partial: the new required-method labels.
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: the new required-method labels.
 - **Evidence:** Passed locally; see the milestone evidence below for checks and limits.
 
 #### Migration and guidance {#formal-verification-3-migration}
@@ -257,7 +257,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Identifier:** `formal-verification-4`
 
-**Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies), and [records-valid-authority](../design/rust-engine.md#records-valid-authority).
+**Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Dependencies:** The existing production authority proof. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
 
@@ -275,14 +275,14 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 Review identifies one maintained authority implementation and a reproducible relationship between verified and packaged functions. Independent tests and drift checks reject divergence; any erasure or conversion assumptions are explicit. A separately maintained proof-only validator cannot complete this criterion.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1.
 - **Evidence:** Passed. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. Drift is prevented by construction and by the rule in [Shipping Verified Code](../design/verified-code-packaging.md#proof-packaging-for-consumers), which review enforces; no automated check for gated executable code exists yet.
 
 #### Consumer resolution {#formal-verification-4-consumer-resolution}
 
 The regression consumer keeps its exact `vstd = "=0.0.0-2026-10-11-0230"` pin: resolution fails against the baseline engine and resolution and build pass against the isolated packaged candidate. Independent consumers build without Verus installed; the engine's ordinary dependency tree contains no vstd or Verus dependency.
 
-- **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `independent-resolution` — Partial: engine proof dependency isolation. Other exact pins, supported toolchains, and renderer compatibility retain their separate integration and release scope.
+- **Anchor coverage:** [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution` — Partial: engine proof dependency isolation. Other exact pins, supported toolchains, and renderer compatibility retain their separate integration and release scope.
 - **Baseline evidence:** On 2026-11-08, Cargo 1.99.1 (`5f94df478`) reproduced the conflict against engine code at `fab05d6`, on the design branch for PR #19. The standalone consumer in `fixtures/consumers/verus-resolution` depends on the engine and exactly pins `vstd = "=0.0.0-2026-10-11-0230"`. From the repository root, `cargo metadata --offline --format-version 1 --manifest-path fixtures/consumers/verus-resolution/Cargo.toml` exits 101: the engine requires `=0.0.0-2026-10-18-0147`, and Cargo reports ``failed to select a version for `vstd` which could resolve this conflict``. Compatible-version unification cannot satisfy both exact prerelease requirements; no `links` conflict is involved.
 - **Isolation evidence:** Passed on 2026-11-10 with Cargo 1.99.1. With the consumer's pin unchanged, `cargo metadata` resolves its own `vstd 0.0.0-2026-10-11-0230` and `cargo build --locked` succeeds, both against this branch and against the extracted packaged `.crate` with only the `anchor-book` path changed in a disposable copy; the fixture's lock file needed no change. Against the pre-change engine the same command still fails with ``failed to select a version for `vstd` ``. An ordinary consumer with no `vstd` of its own builds against the packaged engine with no Verus on `PATH`, and its lock file contains no `vstd`. The engine's default dependency tree contains no `vstd` or Verus crate.
 
@@ -290,14 +290,14 @@ The regression consumer keeps its exact `vstd = "=0.0.0-2026-10-11-0230"` pin: r
 
 A native proof and ordinary integration tests pass for the same packaged candidate and recorded source revision. A deliberate authority defect fails verification and its correction passes. Review reassesses the claim, assumptions, production callers, and excluded boundaries after the packaging change; old proof reports do not establish this result.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority`, `production-integration` — Partial: revalidation of proof and integration after packaging changes, under the anchor's declared proof scope.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority`, `production-integration` — Partial: revalidation of proof and integration after packaging changes, under the anchor's declared proof scope.
 - **Evidence:** Passed. `cargo verus verify --fwd-verus-args-to roots --locked --features verus --lib -- --no-cheating` reports 15 verified, 0 errors, full crate, and `.github/verus-report.jq` accepts the report with all seven functions, both on the branch and in the extracted packaged source. Making the accepted-status check always pass fails a postcondition (14 verified, 1 error); the restored source verifies. The packaged source's own tests pass, and ordinary tests, formatting, and Clippy pass on Rust 1.88.0 and stable 1.99.1. Review of the claim, assumptions, callers, and exclusions: the contracts, invariants, and executable bodies are unchanged in content from milestone 1's assessed specification; only their syntax moved from `verus!` to attributes. Verus 0.2026.10.18.7d82994 and Z3 4.16.0 were built from source on Linux; the GitHub proof job uses the release archive.
 
 #### Dependency review {#formal-verification-4-dependency-review}
 
 A recorded review of the candidate's package contents, dependency set, and features confirms proof isolation and explains remaining exact requirements. The record identifies the package revision and explicitly limits its conclusion to verification dependencies.
 
-- **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `dependency-review` — Partial: engine verification dependencies; general release dependency review remains separate.
+- **Anchor coverage:** [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `dependency-review` — Partial: engine verification dependencies; general release dependency review remains separate.
 - **Evidence:** Reviewed for the branch's packaged candidate (`cargo package --locked`, 106 files). Default normal dependencies are `mdbook-core`, `mdbook-summary`, `pulldown-cmark`, `serde`, `serde_json`, and `toml_edit`; no Verus crate. The `verus` feature adds `vstd` and its `verus_*` crates. Remaining exact requirements are `mdbook-summary` and `mdbook-core` at `=0.5.4`, because that parser version defines the supported navigation input; they belong to release review, not verification isolation. The package also contains repository files such as workflows and tests, also a release-readiness question.
 
 ### Evidence {#formal-verification-4-evidence}

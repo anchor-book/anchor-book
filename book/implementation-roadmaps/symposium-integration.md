@@ -66,7 +66,7 @@ maintainers' decisions.
 
 On the Symposium branch, the documented commands check and render the Anchor Book with a pinned engine revision, leave the user Book and its build unchanged, and refuse to render a deliberately broken copy.
 
-- **Anchor coverage:** [project-native-commands](../design/project-integration.md#project-native-commands) · `consumer-fixture` — Partial: one real project using an installed engine rather than a package dependency; [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `renderer-versions` — Partial: the mdBook version Symposium uses.
+- **Anchor coverage:** [A-project-native-commands](../design/project-integration.md#A-project-native-commands) · `consumer-fixture` — Partial: one real project using an installed engine rather than a package dependency; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `renderer-versions` — Partial: the mdBook version Symposium uses.
 - **Evidence:** Passed locally on 2026-11-10, Symposium branch `anchor-book` (commit `98219876`, based on upstream `cb858e53`), on the fork. The engine was installed with `cargo install --git https://github.com/anchor-book/anchor-book --rev 40b0098fcbcc9948115680f7884ca709b9df18fc --locked anchor-book` (into a separate `--root`). With mdBook 0.5.4 and mdbook-mermaid 0.17.1, `anchorbook check --config anchorbook.toml` passed and `mdbook build anchor-book` rendered the three anchors, seven authority records, and one milestone card into `target/anchorbook`. The root `mdbook build` of the user Book still succeeded, and the commit adds files only, changing no tracked file. In disposable copies, a broken navigation target failed in mdBook before preprocessing, an unresolved authority reference failed with `record.invalid-reference`, and a renderer output mismatch failed with `structure.renderer-path-mismatch` (check exit 1); none produced output. Limits: one design area; installed engine only, not a package dependency; Symposium's CI does not build the Anchor Book yet. Setup note: mdBook copies `additional-js` paths with `../` outside the output directory, so a Book in a subdirectory carries its own copies of Symposium's Mermaid files.
 
 #### Gaps recorded {#symposium-integration-1-gaps}
@@ -144,7 +144,7 @@ Pending.
 
 A fresh agent session in the Symposium branch reads the contract, project guidance, and Book through the bootstrap, and identifies the phase, commands, and governing records of an adapted design area. Record agent versions and any assistance.
 
-- **Anchor coverage:** [project-agent-bootstrap](../design/project-integration.md#project-agent-bootstrap) · `fresh-session` — Partial: a second project, after this Book.
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: a second project, after this Book.
 - **Evidence:** Passed on 2026-11-10, Symposium branch `anchor-book` at `e63d4e38`, on the fork, with the engine installed at `2af5c89`. Two fresh non-interactive Claude Code 2.1.319 sessions (model Opus 5.5), each in a new clone of the branch. Given only "Read the Book", the first ran `anchorbook contract` before anything else, read the guidance and all nine chapters in `SUMMARY.md`, ran the structural check, and reported the phase (`prototyping`), the passing check, the three draft anchors with the records' counts, the open `SYMPOSIUM_HOME` question, and the one Proposed milestone with what holds it, starting no work; it did not list the project's commands. The second was also asked which commands check, build, and test the project and which records govern each anchor; it followed the same start and named all six commands and each anchor's requirements and decisions correctly, and noticed that `decision-raw-and-normalized-configuration` is cited by no anchor. 4 and 6 turns, 22 and 40 seconds; neither changed a file. Limits: one agent, no Codex session; the sessions were allowed to run `anchorbook contract` and `anchorbook check`, and the host's permission settings let them run read-only shell commands too; the second session's question is assistance; the transcripts were reviewed by the agent that wrote the bootstrap.
 
 #### Instructions reconciled {#symposium-integration-3-instructions}
@@ -183,14 +183,14 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 Every link in Symposium's sources resolves to a criterion requiring `test`, misplaced or dangling links are reported at their location, and unlinked criteria are listed.
 
-- **Anchor coverage:** [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: a multi-crate project workspace.
+- **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: a multi-crate project workspace.
 - **Evidence:** Pending.
 
 #### Honest test states {#symposium-integration-4-honest-states}
 
 A whole-Book run reports every anchor by chapter with its criteria's states; a passing, a deliberately failing, and a restored test change the expected criterion; an agent-mode test that ran no agent is not satisfied evidence.
 
-- **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: tests that skip themselves at run time; [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output` — Partial: a second project.
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: tests that skip themselves at run time; [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output` — Partial: a second project.
 - **Evidence:** Pending.
 
 ### Completion record
@@ -221,14 +221,14 @@ Pending.
 
 Symposium's dependency tree with the engine contains no Verus crate, and its existing builds and tests pass unchanged on every platform in its CI matrix.
 
-- **Anchor coverage:** [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `independent-resolution` — Partial: a project without Verus.
+- **Anchor coverage:** [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution` — Partial: a project without Verus.
 - **Evidence:** Pending.
 
 #### Same results everywhere {#symposium-integration-5-same-results}
 
 The library check in `cargo test`, the installed CLI, and the preprocessor report the same findings for the same Book at the same engine version, and a deliberately broken Book fails all three.
 
-- **Anchor coverage:** [project-native-commands](../design/project-integration.md#project-native-commands) · `consumer-fixture` — Partial: a real project's package dependency; [project-one-engine-version](../design/project-integration.md#project-one-engine-version) · `same-version-entry-points` — Partial: one project.
+- **Anchor coverage:** [A-project-native-commands](../design/project-integration.md#A-project-native-commands) · `consumer-fixture` — Partial: a real project's package dependency; [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version) · `same-version-entry-points` — Partial: one project.
 - **Evidence:** Pending.
 
 #### CI results {#symposium-integration-5-ci-results}
@@ -266,7 +266,7 @@ Pending.
 
 With the plugin enabled, a fresh agent session in this repository and then in Symposium retrieves the contract from the declared engine version and reads the project guidance and Book; project files are unchanged before and after.
 
-- **Anchor coverage:** [project-agent-bootstrap](../design/project-integration.md#project-agent-bootstrap) · `contract-retrieval`, `fresh-session` — Partial: delivery through a plugin.
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `contract-retrieval`, `fresh-session` — Partial: delivery through a plugin.
 - **Evidence:** Pending.
 
 ### Completion record

@@ -5,7 +5,7 @@ use anchor_book::{Chapter, Diagnostic, RecordErrors, read_records};
 use serde_json::json;
 use std::{error::Error, path::Path};
 
-/// anchorbook: check-shared-typed-results#library-boundary
+/// anchorbook: A-check-shared-typed-results#library-boundary
 #[test]
 fn record_errors_expose_a_summary_and_the_first_diagnostic() {
     let errors = read_records(&[Chapter::new(Path::new("a.md"), "{anchor}`old`")]).unwrap_err();
@@ -49,7 +49,7 @@ fn rendered_diagnostics_are_separate_lines_without_extra_newlines() {
 }
 
 #[test]
-fn adapter_preserves_json_and_record_parser_causes() {
+fn adapter_preserves_json_causes_and_record_diagnostics() {
     let error = preprocess("[").unwrap_err();
     let json = error
         .source()
@@ -62,7 +62,7 @@ fn adapter_preserves_json_and_record_parser_causes() {
         {"renderer":"html", "mdbook_version":"0.5.4"},
         {"items":[{"Chapter":{
             "source_path":"a.md", "path":"a.md", "sub_items":[],
-            "content":"```anchorbook-requirement\nid = @\n```\n"
+            "content":"> **`R-x`** (draft): **X**\n> Statement: S.\n"
         }}]}
     ]);
     let error = preprocess(&request.to_string()).unwrap_err();
@@ -83,8 +83,8 @@ fn adapter_preserves_json_and_record_parser_causes() {
         .unwrap();
     assert_eq!(diagnostic.code().as_str(), "record.invalid-definition");
     assert!(
-        diagnostic.source().is_some(),
-        "preserve underlying TOML parser cause"
+        diagnostic.source().is_none(),
+        "the line reader has no underlying parser cause"
     );
 
     let protocol = preprocess("[{},{}]").unwrap_err();

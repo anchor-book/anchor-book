@@ -5,7 +5,7 @@
 ## Goal
 
 Read this Book's anchors, requirements, and decisions as formatted, linked
-content while retaining canonical TOML sources. Use the prototype to refine the
+content while retaining the canonical record sources. Use the prototype to refine the
 schemas. This work can proceed alongside [Engine Bootstrap](bootstrap.md).
 
 ## Design basis
@@ -15,19 +15,19 @@ schemas. This work can proceed alongside [Engine Bootstrap](bootstrap.md).
 - [Anchor Definitions](../design/anchor-definitions.md) and
   [Authority Definitions](../design/authority-definitions.md) define the current schemas.
 - [Rust Engine](../design/rust-engine.md) supplies package and API boundaries. Its
-  [valid-authority anchor](../design/rust-engine.md#records-valid-authority), grounded
-  in [traceable properties](../authority/requirements.md#requirement-traceable-properties),
+  [valid-authority anchor](../design/rust-engine.md#A-records-valid-authority), grounded
+  in [traceable properties](../authority/requirements.md#R-traceable-properties),
   defines the authority checks to exercise explicitly in milestone 3.
-- [Readable records requirement](../authority/requirements.md#requirement-readable-records)
-  and [shared rendering decision](../authority/decisions.md#decision-shared-record-rendering)
-  govern [rendered records](../design/record-rendering.md#render-records-in-context)
-  and [validated inventory](../design/record-rendering.md#render-validated-records).
+- [Readable records requirement](../authority/requirements.md#R-readable-records)
+  and [shared rendering decision](../authority/decisions.md#D-shared-record-rendering)
+  govern [rendered records](../design/record-rendering.md#A-render-records-in-context)
+  and [validated inventory](../design/record-rendering.md#A-render-validated-records).
 
 Records remain drafts; assignment does not establish design acceptance.
 
 ## Scope boundaries
 
-Milestone 3 covers the three behavioral criteria of `records-valid-authority`.
+Milestone 3 covers the three behavioral criteria of `A-records-valid-authority`.
 The [Formal Verification roadmap](formal-verification.md) owns its
 `formal-authority` and `production-integration` criteria and the required-method
 labels added by [criterion-method preparation](formal-verification.md#formal-verification-3).
@@ -65,14 +65,14 @@ Read the full current inventory without diagnostics, with every reference resolv
 
 Reject the canonical-format violations and invalid relationships specified by the anchor; literal examples are not collected.
 
-- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `invalid-inventory` — Full
+- **Anchor coverage:** [A-render-validated-records](../design/record-rendering.md#A-render-validated-records) · `invalid-inventory` — Full
 - **Evidence:** Passed: `tests/records.rs` rejects noncanonical fences, schema violations, duplicate identities, wrong-kind, missing, invalid, ambiguous, repeated, and incompatible-status references. Literal code examples are excluded. Tests check stable diagnostics, parser causes, Unicode positions, and truncation safety. This covers record validation; it does not verify rendering or the adapter.
 
 #### Independent build {#record-rendering-1-independent-build}
 
 Compile and run fixture tests with an invalid or unrendered Book; formatting, Clippy, and library tests pass.
 
-- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `protocol-and-independence` — Partial: compilation and fixture-test independence
+- **Anchor coverage:** [A-render-validated-records](../design/record-rendering.md#A-render-validated-records) · `protocol-and-independence` — Partial: compilation and fixture-test independence
 - **Evidence:** Passed: formatting on Rust 1.90; Clippy, independent tests, and documentation tests on Rust 1.85 and 1.90. `scripts/check-engine-independence.sh` runs a temporary source copy with no Book, then an invalid Book: independent tests pass both times, while explicit Book acceptance fails as expected. No renderer or mdBook build is invoked.
 
 #### Declared scope {#record-rendering-1-declared-scope}
@@ -124,35 +124,35 @@ Complete locally on 2026-10-20. The library reads this Book and independent fixt
 
 Every authored record appears once per chapter with expected fields and links; literal examples remain code.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `record-presentation` — Partial: inventory and field checks
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: inventory and field checks
 - **Evidence:** Passed at the milestone 2 revision: the former `scripts/check-rendered-book.py` compared all 24 authored records with their rendered fields, counts one record per source chapter, and checks unique combined-print targets. Independent Rust fixtures verify all three kinds and literal examples. The complete input passes the real mdBook 0.5.2 build.
 
 #### Accessible presentation {#record-rendering-2-accessible-presentation}
 
 Review light/dark themes, narrow layout, keyboard access, and printed details.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `record-presentation` — Partial: visual and accessibility review
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: visual and accessibility review
 - **Evidence:** Passed: browser review of Light/Auto and Coal themes, a 390-pixel viewport with navigation collapsed, and keyboard Enter on the decision disclosure. No horizontal overflow was observed. Combined-print review showed all six decision details expanded. A disposable copy disabled only the automatic print-dialog call for inspection; the generated print content and local print helper were unchanged. Physical printer output was not tested.
 
 #### Relationship navigation {#record-rendering-2-relationship-navigation}
 
 Links resolve across chapter depths, the project site prefix, and the combined print view.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `relationship-navigation` — Partial: nested chapters and relative routes through the adapter, which linked tests exercise; the project site prefix and the combined print view were checked in a browser and by rendered-Book acceptance, which reads previously built output and so is not linked as evidence
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `relationship-navigation` — Partial: nested chapters and relative routes through the adapter, which linked tests exercise; the project site prefix and the combined print view were checked in a browser and by rendered-Book acceptance, which reads previously built output and so is not linked as evidence
 - **Evidence:** Passed: generated local links and fragments resolve; browser navigation followed authority links under an `/anchor-book/` project prefix and within the combined print page. All generated record links in print resolve to that page's record fragments. Independent nested-route fixtures cover differing source/output paths and percent-encoded Unicode and spaces.
 
 #### Source preservation {#record-rendering-2-source-preservation}
 
 Passing and failing preprocessing preserve sources; field text stays inert and unrelated prose and Mermaid diagrams retain their behavior.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `preservation-and-escaping` — Full
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `preservation-and-escaping` — Full
 - **Evidence:** Passed: source hashes match before and after successful and deliberately failed mdBook builds. Process and library fixtures preserve unrelated prose, Mermaid input, examples, and navigation metadata. Script/tag-like fields remain escaped text. Temporary authoring targets, duplicate headings, and manual backlinks were deliberately removed in this implementation migration.
 
 #### Adapter protocol {#record-rendering-2-adapter-protocol}
 
 Exercise the actual process with valid and malformed input and renderer probes. Success emits complete Book JSON; failure emits diagnostics and no successful partial Book.
 
-- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `protocol-and-independence` — Partial: adapter protocol; independent build is addressed in milestone 1
+- **Anchor coverage:** [A-render-validated-records](../design/record-rendering.md#A-render-validated-records) · `protocol-and-independence` — Partial: adapter protocol; independent build is addressed in milestone 1
 - **Evidence:** Passed: five rendering/protocol tests exercise the actual CLI, complete JSON output, nested/unnumbered chapters, preserved metadata, malformed JSON and chapter shapes, invalid versions/routes/records/references, and supported/unsupported renderer probes. Failure returns nonzero with stderr diagnostics and no success JSON.
 
 ### Evidence {#record-rendering-2-evidence}
@@ -186,7 +186,7 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 **Tasks**
 
 - [x] Configure `book.toml` and preprocessor ordering; document local setup and preview.
-- [x] Review and complete independent test coverage for the `required-authority`, `resolved-authority`, and `compatible-status` criteria of `records-valid-authority`; record the exact tests and remaining gaps.
+- [x] Review and complete independent test coverage for the `required-authority`, `resolved-authority`, and `compatible-status` criteria of `A-records-valid-authority`; record the exact tests and remaining gaps.
 - [x] Make Book rendering and Pages publication depend on passing engine checks and current-Book acceptance for the same revision. [Structural Checking milestone 3](structural-checker.md#structural-checking-3) owns the shared implementation and evidence, now merged with GitHub runs. Preserve `target/anchorbook`.
 - [x] Run the Rust `rendered_book` acceptance test in CI after building with the pinned mdBook version, including authority links and combined-print targets.
 - [x] Exercise a clean build and a live source-edit/rebuild cycle.
@@ -198,7 +198,7 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 
 Independent tests exercise the three behavioral authority criteria through the record API; invalid authority also fails the actual preprocessor without successful partial output. Record the tests and results for the implementation revision.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
 - **Evidence:** Passed locally on Rust 1.88.0 and stable 1.99.1. Review found that earlier tests exercised most authority edges through a decision's requirements rather than an anchor's authorities. `tests/authority_criteria.rs` now covers each criterion through the record API with fixtures built from the criteria: `required-authority` accepts an anchor citing only a requirement or only a decision and rejects a missing or empty list with a located invalid-definition diagnostic; `resolved-authority` rejects missing, wrong-kind, invalid, and ambiguous anchor targets, each at the reference's source text and with no inventory; `compatible-status` checks all eight combinations of anchor status, target status, and target kind. `tests/rendering.rs` `anchor_authority_failures_reach_the_real_adapter` shows a missing anchor authority and an accepted anchor citing a draft decision failing the actual `anchorbook md` process with no Book JSON. Disabling the wrong-kind check, and separately the status check, in `src/records/authority.rs` each failed a new test; the source was restored. Mutation tools do not reach these `verus!` bodies, so those two manual changes are the sensitivity evidence. Existing `tests/records.rs` cases remain for decision edges, duplicates, and repeated references.
 
 #### Local preview {#record-rendering-3-local-preview}
@@ -212,7 +212,7 @@ Clean builds and live source-edit/rebuild cycles use the record adapter successf
 
 Engine compilation and fixture tests remain runnable with an invalid Book; separate current-Book acceptance reports invalid input usefully and must pass before rendering and publishing the same revision.
 
-- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `protocol-and-independence` — Partial: independence and failure reporting in CI
+- **Anchor coverage:** [A-render-validated-records](../design/record-rendering.md#A-render-validated-records) · `protocol-and-independence` — Partial: independence and failure reporting in CI
 - **Evidence:** [Structural Checking milestone 3](structural-checker.md#structural-checking-3-evidence) owns the shared gate implementation and evidence. Book now calls the reusable Engine workflow and requires its success before rendering; the Anchor Book preprocessor checks structure before rendering, so ordinary `mdbook build` refuses a failed or incomplete check. Local failure experiments pass. On GitHub, valid main revisions ran Engine checks before Build mdBook, and deliberately broken Books in throwaway PR #9 failed acceptance with useful diagnostics while independent tests passed and rendering was skipped. The evidence is recorded there, and that milestone is accepted.
 
 #### Published build {#record-rendering-3-published-build}
@@ -249,7 +249,7 @@ Complete on 2026-11-10: authority coverage, local preview, CI ordering, publicat
 
 **Dependencies:** Record Rendering milestone 2 and the converted roadmaps.
 
-**Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering), [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones), and the [roadmap format](index.md#defining-the-work).
+**Design basis:** [Roadmap rendering](../design/record-rendering.md#roadmap-rendering), [A-render-roadmap-milestones](../design/record-rendering.md#A-render-roadmap-milestones), and the [roadmap format](index.md#defining-the-work).
 
 **Tasks**
 
@@ -265,14 +265,14 @@ Complete on 2026-11-10: authority coverage, local preview, CI ordering, publicat
 
 Independent fixtures with duplicate milestone or criterion identifiers, malformed fields, and anchor-coverage references to missing anchors or criteria fail preprocessing with located diagnostics; this Book's roadmaps pass.
 
-- **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-validation` — Full
+- **Anchor coverage:** [A-render-roadmap-milestones](../design/record-rendering.md#A-render-roadmap-milestones) · `roadmap-validation` — Full
 - **Evidence:** Passed locally: `tests/roadmaps.rs` and the module's unit tests cover malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicates across chapters located in the repeating chapter, coverage citing a missing anchor, a requirement, or a missing criterion, section ends, and examples in code blocks. All of this Book's roadmaps pass.
 
 #### Rendered view {#record-rendering-4-rendered-view}
 
 This Book's rendered roadmaps show criterion details that expand and collapse, are readable without JavaScript, and print expanded; every existing fragment still resolves, and the Markdown sources are unchanged.
 
-- **Anchor coverage:** [render-roadmap-milestones](../design/record-rendering.md#render-roadmap-milestones) · `roadmap-presentation` — Full
+- **Anchor coverage:** [A-render-roadmap-milestones](../design/record-rendering.md#A-render-roadmap-milestones) · `roadmap-presentation` — Full
 - **Evidence:** Tests passed locally: the actual `anchorbook md` process renders the roadmaps role and its nested chapters, leaves other chapters and source files unchanged, and refuses an invalid roadmap with no output; rendering tests assert a complete milestone card, explained statuses, task progress, evidence, and that each card closes before the next opens. This Book renders 28 milestone cards with balanced sections; every local link resolves and the print view has no duplicate identifiers. Source review on 2026-11-10 of this branch's rendered roadmaps: tasks, criteria, and milestone evidence are native `<details>` elements rendered `open`, so they read without JavaScript and collapse through their `<summary>`, which browsers make keyboard-operable; `theme/records.css` gives summaries a visible focus outline. Criterion headings sit inside their summaries with their fragment `id`, so a link still reaches a collapsed criterion; `record-rendering-4-rendered-view` resolves once in its chapter and once in `print.html`. Printing expands closed sections through `theme/records.js` on `beforeprint` and in `print.html`, restoring the reader's choices afterwards, and through a print rule on `::details-content` for browsers that support it. A heading inside `<summary>` may lose its heading role in some screen readers. These styles and the print script have since moved into the engine, in `src/rendering/assets/`, and are delivered inline with each rendered chapter, unchanged except for a guard that runs the script once per page. The published site renders these cards; see [Record Rendering milestone 3](#record-rendering-3-published-build).
 
 ### Evidence {#record-rendering-4-evidence}

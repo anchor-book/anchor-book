@@ -4,103 +4,29 @@
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "records-valid-authority"
-title = "Every anchor resolves to valid authority"
-status = "draft"
-property = '''
-The engine validates an anchor only when it cites at least one requirement or
-decision and every authority reference resolves unambiguously to a valid
-record of the declared kind. An accepted anchor may cite only accepted
-authorities. Invalid authority relationships produce diagnostics rather than a
-successfully validated inventory.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-traceable-properties" },
-]
+> **`A-records-valid-authority`** (draft): **Every anchor resolves to valid authority**
+> Property: The engine validates an anchor only when it cites at least one requirement or decision and every authority reference resolves unambiguously to a valid record of the declared kind. An accepted anchor may cite only accepted authorities. Invalid authority relationships produce diagnostics rather than a successfully validated inventory.
+> Authority: `R-traceable-properties`
+> - Criterion `required-authority` [test]: Accept anchors with a valid requirement or decision reference; reject missing or empty authority lists with an invalid-definition diagnostic.
+> - Criterion `resolved-authority` [test]: Use independent fixtures with missing, wrong-kind, invalid, and ambiguous authority targets; return the expected located diagnostics and no validated inventory.
+> - Criterion `compatible-status` [test]: Accept draft anchors citing draft or accepted authorities and accepted anchors citing accepted authorities; reject accepted anchors citing draft authorities with an incompatible-status diagnostic.
+> - Criterion `formal-authority` [proof]: The production authority validator reports no violations if and only if every successfully decoded record satisfies the authority rules: nonempty anchor authority, distinct references, unique valid targets of the declared kind, and compatible acceptance states, including requirements cited by uncited decisions.
+>   - Domain: The complete typed candidate collection, including empty authority lists, duplicates, missing or invalid targets, unknown identities, and incompatible statuses. Invalid relationships must not be excluded from the domain.
+>   - Boundary: Executable authority-presence checks, target lookup, and validation across all records and references used by the engine.
+>   - Assumptions: The verifier, solver, compiler, and standard-library contracts are trusted. No precondition may assume valid authority relationships. Decoding and conversion fidelity are integration obligations outside this proof.
+>   - Exclusions: Parsing, candidate conversion, global identity checks, diagnostic classification and locations, inventory construction, and adapter failure propagation are covered by `production-integration` through tests and review.
+> - Criterion `production-integration` [test, review]: The engine executes the verified authority-validation functions. Tests and review establish faithful parsing and candidate conversion, preserving identities, kinds, statuses, references, and invalid candidates. Global identity checks remain enforced; authority failures produce the expected located diagnostics and prevent a successful inventory or Book JSON. A successful inventory preserves the checked records and relationships. These integration boundaries are tested and reviewed, not formally proved; required-authority, resolved-authority, and compatible-status provide additional behavioral tests.
 
-[[criteria]]
-id = "required-authority"
-verification = ["test"]
-statement = "Accept anchors with a valid requirement or decision reference; reject missing or empty authority lists with an invalid-definition diagnostic."
-
-[[criteria]]
-id = "resolved-authority"
-verification = ["test"]
-statement = "Use independent fixtures with missing, wrong-kind, invalid, and ambiguous authority targets; return the expected located diagnostics and no validated inventory."
-
-[[criteria]]
-id = "compatible-status"
-verification = ["test"]
-statement = "Accept draft anchors citing draft or accepted authorities and accepted anchors citing accepted authorities; reject accepted anchors citing draft authorities with an incompatible-status diagnostic."
-
-[[criteria]]
-id = "formal-authority"
-verification = ["proof"]
-statement = '''
-Claim: The production authority validator reports no violations if and only if
-every successfully decoded record satisfies the authority rules: nonempty anchor
-authority, distinct references, unique valid targets of the declared kind, and
-compatible acceptance states, including requirements cited by uncited decisions.
-
-Domain: The complete typed candidate collection, including empty authority lists,
-duplicates, missing or invalid targets, unknown identities, and incompatible
-statuses. Invalid relationships must not be excluded from the domain.
-
-Boundary: Executable authority-presence checks, target lookup, and validation
-across all records and references used by the engine.
-
-Assumptions: The verifier, solver, compiler, and standard-library contracts are
-trusted. No precondition may assume valid authority relationships. Decoding and
-conversion fidelity are integration obligations outside this proof.
-
-Exclusions: Parsing, candidate conversion, global identity checks, diagnostic
-classification and locations, inventory construction, and adapter failure
-propagation are covered by production-integration through tests and review.
-'''
-
-[[criteria]]
-id = "production-integration"
-verification = ["test", "review"]
-statement = "The engine executes the verified authority-validation functions. Tests and review establish faithful parsing and candidate conversion, preserving identities, kinds, statuses, references, and invalid candidates. Global identity checks remain enforced; authority failures produce the expected located diagnostics and prevent a successful inventory or Book JSON. A successful inventory preserves the checked records and relationships. These integration boundaries are tested and reviewed, not formally proved; required-authority, resolved-authority, and compatible-status provide additional behavioral tests."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-shared-typed-results"
-title = "Agents and Rust callers receive consistent format findings"
-status = "accepted"
-property = '''
-Engineers, agents, CI, and Rust integrations receive equivalent structural
-findings for the same Book inputs, so choosing an interface does not change the
-required repairs or whether the check passes. The library owns checking behavior
-and exposes findings, locations, scope, and errors as typed data; callers can
-distinguish structural failure from incomplete evaluation without parsing display
-text. The CLI and the mdBook preprocessor handle invocation and presentation
-through that library. Malformed user input does not cause the library to print,
-exit, or panic.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-shared-checker" },
-  { kind = "decision", id = "decision-typed-check-results" },
-]
-
-[[criteria]]
-id = "equivalent-callers"
-verification = ["test"]
-statement = "Exercise the library, the actual CLI process, and the actual anchorbook md preprocessor process on the same passing, failing, and incomplete fixtures; assert equivalent outcomes, codes, locations, and evaluated scope against independent expectations."
-
-[[criteria]]
-id = "library-boundary"
-verification = ["test", "review"]
-statement = "Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic."
-```
+> **`A-check-shared-typed-results`** (accepted): **Agents and Rust callers receive consistent format findings**
+> Property: Engineers, agents, CI, and Rust integrations receive equivalent structural findings for the same Book inputs, so choosing an interface does not change the required repairs or whether the check passes. The library owns checking behavior and exposes findings, locations, scope, and errors as typed data; callers can distinguish structural failure from incomplete evaluation without parsing display text. The CLI and the mdBook preprocessor handle invocation and presentation through that library. Malformed user input does not cause the library to print, exit, or panic.
+> Authority: `R-shared-checker`; `D-typed-check-results`
+> - Criterion `equivalent-callers` [test]: Exercise the library, the actual CLI process, and the actual anchorbook md preprocessor process on the same passing, failing, and incomplete fixtures; assert equivalent outcomes, codes, locations, and evaluated scope against independent expectations.
+> - Criterion `library-boundary` [test, review]: Inspect errors through public types and preserved causes; exercise malformed inputs through a library caller and verify returned errors with no output, process exit, or panic.
 
 ## Authority proof
 
 Verus proves the `formal-authority` criterion of
-[`records-valid-authority`](#records-valid-authority) over the production
+[`A-records-valid-authority`](#A-records-valid-authority) over the production
 validator. The general method is in [Verification](verification.md#proofs-that-match-the-design);
 this section records the engine's claim and boundary.
 
@@ -136,7 +62,7 @@ execute the bodies Verus verifies, and there is no proof-only validator.
 | Boundary | Treatment |
 | --- | --- |
 | Authority lookup and validation | Proved: the seven executable functions in `src/records/authority.rs` against the specification, including collection traversal and every authority edge. |
-| Markdown/TOML decoding and candidate conversion | Tested and reviewed under `production-integration`: identity, kind, status, references, invalid candidates, and existing errors are represented faithfully. Parser correctness is not proved. |
+| Line-grammar reading and candidate conversion | Tested and reviewed under `production-integration`: identity, kind, status, references, invalid candidates, and existing errors are represented faithfully. Parser correctness is not proved. |
 | Inventory construction, duplicate-identity diagnostics, backlinks, and failure classification | Tested and reviewed: validation failures cannot become success, and located diagnostics and the all-or-nothing inventory are preserved. Which failure kind is reported, its wording, and its location are not proved. |
 | Public library and mdBook adapter | Tested through the real API and process with independent valid and invalid fixtures: no successful partial inventory or Book JSON on invalid authority. |
 
@@ -226,8 +152,7 @@ src/
   records.rs              Public record capability interface
   records/
     model.rs              Record types and chapter input
-    markdown.rs           Canonical block recognition
-    schema.rs             TOML decoding and schema validation
+    lines.rs              Line-grammar record reader, proof scope, and line accounting
     inventory.rs          Identity, reference resolution, and backlinks
     diagnostics.rs        Record-specific findings and source locations
 ```
@@ -313,15 +238,15 @@ The pinned Verus toolchain remains independent.
 
 | Dependency | Purpose |
 | --- | --- |
-| `pulldown-cmark` 0.13 | Parse Markdown events and source offsets; recognize definitions without regex extraction |
-| `toml_edit` 0.25, with `parse` and `serde` | Preserve TOML forms and spans, enforce inline authorities and `[[criteria]]`, and decode the same document into typed records |
+| `pulldown-cmark` 0.13 | Find code blocks the record reader skips, and render the inline subset of record field text; records are read by a line scanner, never by regular expressions over chapters |
+| `toml_edit` 0.25, with `parse` and `serde` | Read `anchorbook.toml` with spans and decode it into the private configuration schema |
 | `serde` 1.0 | Decode private schemas with required fields and rejection of unknown fields |
 | `serde_json` 1.0 | Decode and encode mdBook protocol data while preserving unknown metadata |
 | `mdbook-summary` =0.5.4 | Parse mdBook navigation behind the private checking adapter |
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
 | `syn` 2.0, with `full` and `parsing` only | Parse Rust sources to attach evidence-link doc comments to their functions; no proc-macro, printing, or Verus dependency |
 | `proc-macro2` 1.0, with `span-locations` only | Source line numbers for links and findings |
-| `vstd` =0.0.0-2026-10-18-0147, optional | Verus specifications for production authority validation, enabled only by the `verus` feature that `cargo verus verify` uses; ordinary builds and consuming projects do not build it, as the [isolation decision](../authority/decisions.md#decision-isolate-engine-verification) requires |
+| `vstd` =0.0.0-2026-10-18-0147, optional | Verus specifications for production authority validation, enabled only by the `verus` feature that `cargo verus verify` uses; ordinary builds and consuming projects do not build it, as the [isolation decision](../authority/decisions.md#D-isolate-engine-verification) requires |
 
 `Cargo.lock` records the exact tested dependency versions. The adapter targets
 only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects

@@ -37,7 +37,7 @@ fn run(args: &[&str], input: &str) -> Output {
         .unwrap();
     process.wait_with_output().unwrap()
 }
-/// anchorbook: render-records-in-context#preservation-and-escaping
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
 #[test]
 fn renders_all_fields_and_preserves_unrelated_content() {
     let prefix = "# Chapter\n\nProse remains.\n\n```mermaid\ngraph LR\nA-->B\n```\n\n";
@@ -75,11 +75,11 @@ fn renders_all_fields_and_preserves_unrelated_content() {
     ] {
         assert!(output.contains(field), "missing {field}");
     }
-    assert!(output.contains("href=\"#preserve-input\""));
-    assert!(output.contains("href=\"#immutable-input\""));
+    assert!(output.contains("href=\"#R-preserve-input\""));
+    assert!(output.contains("href=\"#A-immutable-input\""));
     for (identity, heading) in [
-        ("immutable-input", "Authority"),
-        ("pure-reader", "Requirements"),
+        ("A-immutable-input", "Authority"),
+        ("D-pure-reader", "Requirements"),
     ] {
         let section = output
             .split(&format!("id=\"{identity}\""))
@@ -91,7 +91,7 @@ fn renders_all_fields_and_preserves_unrelated_content() {
         assert!(section.contains(&format!("<h4>{heading}</h4>")));
     }
 }
-/// anchorbook: render-records-in-context#preservation-and-escaping
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
 #[test]
 fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
     let text = RECORDS
@@ -99,11 +99,11 @@ fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
             "Preserve input",
             "<script>alert('x')</script> & <img onerror='x'>",
         )
-        .replace("requirements = [\"preserve-input\"]", "requirements = []")
-        .replace("status = \"accepted\"", "status = \"draft\"")
+        .replace("> Requirements: `R-preserve-input`", "> Requirements: none")
+        .replace("(accepted)", "(draft)")
         .replace(
-            "source = \"The reader is observational.\"",
-            "source = '''line one\n\n**not Markdown**\n<script>bad()</script>'''",
+            "> Source: The reader is observational.",
+            "> Source: line one\n> # not a heading\n> <script>bad()</script>",
         );
     let response = preprocess(&request(vec![chapter("a.md", "a.md", &text)]).to_string()).unwrap();
     let book: Value = serde_json::from_str(&response).unwrap();
@@ -115,14 +115,63 @@ fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
     assert!(!html.contains("<img"));
     assert!(html.contains("&lt;script&gt;"));
     assert!(html.contains("&amp;"));
-    assert!(html.contains("&#10;&#10;**not Markdown**"));
+    assert!(
+        html.contains(
+            "line one&#10;&#10;# not a heading&#10;&#10;&lt;script&gt;bad()&lt;/script&gt;"
+        )
+    );
     assert!(html.contains("No recorded requirements."));
     assert!(html.contains(">Draft<"));
 }
-/// anchorbook: render-records-in-context#relationship-navigation
+/// anchorbook: A-render-records-in-context#inline-text
+#[test]
+fn field_text_renders_inline_markdown_and_links_record_identifiers() {
+    let text = RECORDS.replace(
+        "> Statement: Reading leaves the supplied source unchanged.",
+        "> Statement: Reading leaves `the source` *unchanged*, **always**; see [the guide](guide/intro.md#start), [the site](https://example.com/a?b=1), and <https://example.org>.\n> It serves `D-pure-reader` and `A-immutable-input#source-comparison`, not `R-unknown` or `A-missing#x`.\n> Raw <b>bold</b>, ~~struck~~, ![an image](x.png), [a script](javascript:alert(1)), [rooted](/abs.md), and \\*escaped\\* stay literal; AT&amp;T is one entity.",
+    );
+    let output = run(
+        &["md"],
+        &request(vec![
+            chapter("a.md", "a.md", &text),
+            chapter("guide/intro.md", "guide/intro.md", "# Guide"),
+        ])
+        .to_string(),
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let book: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let html = book["items"][0]["Chapter"]["content"].as_str().unwrap();
+    let field = html
+        .split("<h4>Requirement</h4>")
+        .nth(1)
+        .unwrap()
+        .split("</div>")
+        .next()
+        .unwrap();
+    for expected in [
+        "Reading leaves <code>the source</code> <em>unchanged</em>, <strong>always</strong>; see ",
+        "<a href=\"guide/intro.html#start\">the guide</a>",
+        "<a href=\"https://example.com/a?b=1\">the site</a>",
+        "<a href=\"https://example.org\">https://example.org</a>",
+        "&#10;&#10;It serves <a class=\"ab-record-link\" href=\"#D-pure-reader\" title=\"Use an in-memory reader\"><code>D-pure-reader</code></a> and ",
+        "<a class=\"ab-record-link\" href=\"#A-immutable-input\" title=\"Inputs do not change\"><code>A-immutable-input#source-comparison</code></a>",
+        ", not <code>R-unknown</code> or <code>A-missing#x</code>.",
+        "Raw &lt;b&gt;bold&lt;/b&gt;, ~~struck~~, ![an image](x.png), [a script](javascript:alert(1)), [rooted](/abs.md), and *escaped* stay literal; AT&amp;T is one entity.",
+    ] {
+        assert!(field.contains(expected), "missing {expected}\n{field}");
+    }
+    assert!(!field.contains("<b>") && !field.contains("<img"));
+    assert!(!field.contains("href=\"javascript:") && !field.contains("href=\"/abs"));
+}
+
+/// anchorbook: A-render-records-in-context#relationship-navigation
 #[test]
 fn nested_chapters_routes_and_metadata_survive_process_boundary() {
-    let split = RECORDS.find("```anchorbook-decision").unwrap();
+    let split = RECORDS.find("> **`D-pure-reader`").unwrap();
     let mut parent = chapter("original.md", "authority/é & rules.md", &RECORDS[..split]);
     parent["Chapter"]["sub_items"] = json!([chapter(
         "child-source.md",
@@ -144,11 +193,11 @@ fn nested_chapters_routes_and_metadata_survive_process_boundary() {
     assert!(result.stderr.is_empty());
     let mut actual: Value = serde_json::from_slice(&result.stdout).unwrap();
     let first = actual["items"][2]["Chapter"]["content"].as_str().unwrap();
-    assert!(first.contains("href=\"../design/nested/anchor.html#immutable-input\""));
+    assert!(first.contains("href=\"../design/nested/anchor.html#A-immutable-input\""));
     let second = actual["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"]
         .as_str()
         .unwrap();
-    assert!(second.contains("href=\"../../authority/%C3%A9%20%26%20rules.html#preserve-input\""));
+    assert!(second.contains("href=\"../../authority/%C3%A9%20%26%20rules.html#R-preserve-input\""));
     actual["items"][2]["Chapter"]["content"] = input[1]["items"][2]["Chapter"]["content"].clone();
     actual["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"] =
         input[1]["items"][2]["Chapter"]["sub_items"][0]["Chapter"]["content"].clone();
@@ -213,7 +262,7 @@ fn protocol_failure_has_no_partial_output() {
         request(vec![chapter(
             "a.md",
             "a.md",
-            &RECORDS.replace("schema-version = 1", "schema-version = 9"),
+            &RECORDS.replace("(accepted)", "(final)"),
         )])
         .to_string(),
     );
@@ -222,8 +271,8 @@ fn protocol_failure_has_no_partial_output() {
             "a.md",
             "a.md",
             &RECORDS.replace(
-                "requirements = [\"preserve-input\"]",
-                "requirements = [\"missing\"]",
+                "> Requirements: `R-preserve-input`",
+                "> Requirements: `R-missing`",
             ),
         )])
         .to_string(),
@@ -261,11 +310,8 @@ fn capability_probe_and_arguments_have_defined_statuses() {
 #[test]
 fn renders_required_methods_per_criterion_without_claiming_results() {
     let text = RECORDS.replace(
-        "verification = [\"test\"]",
-        "verification = [\"review\", \"proof\", \"test\"]",
-    ).replace(
-        "statement = \"Compare input before and after validation.\"",
-        "statement = \"Compare input before and after validation.\"\n\n[[criteria]]\nid = \"second\"\nstatement = \"Review the assumptions.\"\nverification = [\"review\"]",
+        "> - Criterion `source-comparison` [test]: Compare input before and after validation.",
+        "> - Criterion `source-comparison` [review, proof, test]: Compare input before and after validation.\n>   - Domain: Every *input*.\n>   - Boundary: The reader.\n>   - Assumptions: None.\n>   - Exclusions: Review, covered by `second`.\n> - Criterion `second` [review]: Review the assumptions.",
     );
     let output = run(
         &["md"],
@@ -275,8 +321,8 @@ fn renders_required_methods_per_criterion_without_claiming_results() {
     assert!(output.stderr.is_empty());
     let book: Value = serde_json::from_slice(&output.stdout).unwrap();
     let html = book["items"][0]["Chapter"]["content"].as_str().unwrap();
-    assert!(html.contains("<li><code>source-comparison</code><div class=\"ab-text\">Compare input before and after validation.</div><p>Required verification: review, proof, test</p></li>"));
-    assert!(html.contains("<li><code>second</code><div class=\"ab-text\">Review the assumptions.</div><p>Required verification: review</p></li>"));
+    assert!(html.contains("<li><code class=\"ab-criterion-id\">source-comparison</code><div class=\"ab-text\">Compare input before and after validation.</div><dl class=\"ab-proof-scope\"><dt>Domain</dt><dd>Every <em>input</em>.</dd><dt>Boundary</dt><dd>The reader.</dd><dt>Assumptions</dt><dd>None.</dd><dt>Exclusions</dt><dd>Review, covered by <code>second</code>.</dd></dl><p>Required verification: review, proof, test</p></li>"), "{html}");
+    assert!(html.contains("<li><code class=\"ab-criterion-id\">second</code><div class=\"ab-text\">Review the assumptions.</div><p>Required verification: review</p></li>"));
     assert!(!html.contains("Verified"));
     assert!(!html.contains("Passed"));
     assert!(html.contains(">Accepted<"));
@@ -284,13 +330,8 @@ fn renders_required_methods_per_criterion_without_claiming_results() {
 
 #[test]
 fn invalid_verification_fails_preprocessing_without_success_json() {
-    for replacement in [
-        "",
-        "verification = []",
-        "verification = [\"test\", \"test\"]",
-        "verification = [\"verus\"]",
-    ] {
-        let text = RECORDS.replace("verification = [\"test\"]", replacement);
+    for replacement in ["", "[]", "[test, test]", "[verus]"] {
+        let text = RECORDS.replace("[test]", replacement);
         let output = run(
             &["md"],
             &request(vec![chapter("a.md", "a.md", &text)]).to_string(),
@@ -306,16 +347,16 @@ fn invalid_verification_fails_preprocessing_without_success_json() {
     }
 }
 
-/// anchorbook: records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
 fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     let source = RECORDS
-        .split("```anchorbook-anchor")
+        .split("> **`A-immutable-input`")
         .next()
         .unwrap()
         .replace(
-            "requirements = [\"preserve-input\"]",
-            "requirements = [\"missing\"]",
+            "> Requirements: `R-preserve-input`",
+            "> Requirements: `R-missing`",
         );
     let result = run(
         &["md"],
@@ -325,21 +366,21 @@ fn uncited_decision_authority_failure_reaches_the_real_adapter() {
     assert!(result.stdout.is_empty());
     let diagnostics = String::from_utf8_lossy(&result.stderr);
     assert!(diagnostics.contains("record.invalid-reference"));
-    assert!(diagnostics.contains("missing: authority definition does not exist"));
+    assert!(diagnostics.contains("R-missing: authority definition does not exist"));
 }
 
-/// anchorbook: records-valid-authority#production-integration
-/// anchorbook: records-valid-authority#resolved-authority
-/// anchorbook: records-valid-authority#compatible-status
+/// anchorbook: A-records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#resolved-authority
+/// anchorbook: A-records-valid-authority#compatible-status
 #[test]
 fn anchor_authority_failures_reach_the_real_adapter() {
     let missing = RECORDS.replace(
-        "{ kind = \"requirement\", id = \"preserve-input\" }",
-        "{ kind = \"requirement\", id = \"absent\" }",
+        "> Authority: `R-preserve-input`;",
+        "> Authority: `R-absent`;",
     );
     let draft_decision = RECORDS.replacen(
-        "id = \"pure-reader\"\ntitle = \"Use an in-memory reader\"\nstatus = \"accepted\"",
-        "id = \"pure-reader\"\ntitle = \"Use an in-memory reader\"\nstatus = \"draft\"",
+        "> **`D-pure-reader`** (accepted)",
+        "> **`D-pure-reader`** (draft)",
         1,
     );
     assert_ne!(draft_decision, RECORDS);
@@ -359,7 +400,7 @@ fn anchor_authority_failures_reach_the_real_adapter() {
     }
 }
 
-/// anchorbook: project-no-imposed-dependencies#renderer-versions
+/// anchorbook: A-project-no-imposed-dependencies#renderer-versions
 #[test]
 fn undeclared_mdbook_versions_are_rejected_naming_the_supported_ones() {
     use anchor_book::adapters::mdbook::SUPPORTED_MDBOOK_VERSIONS;

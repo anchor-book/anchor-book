@@ -34,9 +34,9 @@ fn codes(report: &CheckReport) -> Vec<&'static str> {
     report.findings().iter().map(|f| f.code).collect()
 }
 
-/// anchorbook: check-truthful-results#report-scope
-/// anchorbook: check-truthful-results#outcomes-and-precedence
-/// anchorbook: check-observation-only#file-preservation
+/// anchorbook: A-check-truthful-results#report-scope
+/// anchorbook: A-check-truthful-results#outcomes-and-precedence
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn real_cli_and_library_agree_for_pass_failure_and_incomplete_with_preserved_files() {
     let book = Book::new();
@@ -67,8 +67,8 @@ fn real_cli_and_library_agree_for_pass_failure_and_incomplete_with_preserved_fil
     }
 }
 
-/// anchorbook: check-navigation-conformance#chapter-inventory
-/// anchorbook: check-actionable-diagnostics#diagnostic-content
+/// anchorbook: A-check-navigation-conformance#chapter-inventory
+/// anchorbook: A-check-actionable-diagnostics#diagnostic-content
 #[test]
 fn missing_and_non_file_chapters_are_located_and_correctable() {
     let book = Book::new();
@@ -95,8 +95,8 @@ fn missing_and_non_file_chapters_are_located_and_correctable() {
     assert_eq!(report(&book).outcome(), Outcome::Passed);
 }
 
-/// anchorbook: check-navigation-conformance#required-roles
-/// anchorbook: check-actionable-diagnostics#diagnostic-content
+/// anchorbook: A-check-navigation-conformance#required-roles
+/// anchorbook: A-check-actionable-diagnostics#diagnostic-content
 #[test]
 fn required_roles_must_be_local_top_level_entries_not_titles_drafts_or_external_links() {
     let book = Book::new();
@@ -137,8 +137,8 @@ fn required_roles_must_be_local_top_level_entries_not_titles_drafts_or_external_
     }
 }
 
-/// anchorbook: check-truthful-results#blocked-evaluation
-/// anchorbook: check-navigation-conformance#chapter-inventory
+/// anchorbook: A-check-truthful-results#blocked-evaluation
+/// anchorbook: A-check-navigation-conformance#chapter-inventory
 #[test]
 fn missing_prerequisites_block_dependents_without_cascaded_missing_roles() {
     let book = Book::new();
@@ -166,7 +166,7 @@ fn missing_prerequisites_block_dependents_without_cascaded_missing_roles() {
     assert_eq!(codes(&report(&book)), ["structure.source-invalid"]);
 }
 
-/// anchorbook: check-navigation-conformance#grammar-boundary
+/// anchorbook: A-check-navigation-conformance#grammar-boundary
 #[test]
 fn malformed_and_ignored_navigation_is_incomplete_while_empty_navigation_is_structurally_missing_roles()
  {
@@ -198,8 +198,8 @@ fn malformed_and_ignored_navigation_is_incomplete_while_empty_navigation_is_stru
     assert_eq!(codes(&r), ["structure.role-missing"; 3]);
 }
 
-/// anchorbook: check-renderer-alignment#renderer-input
-/// anchorbook: check-actionable-diagnostics#diagnostic-content
+/// anchorbook: A-check-renderer-alignment#renderer-input
+/// anchorbook: A-check-actionable-diagnostics#diagnostic-content
 #[test]
 fn renderer_alignment_uses_defaults_resolved_paths_and_file_settings_only() {
     let book = Book::new();
@@ -239,9 +239,9 @@ fn renderer_alignment_uses_defaults_resolved_paths_and_file_settings_only() {
     assert_eq!(report(&book).outcome(), Outcome::Passed);
 }
 
-/// anchorbook: check-truthful-results#outcomes-and-precedence
-/// anchorbook: check-shared-typed-results#library-boundary
-/// anchorbook: check-configuration-validity#schema-rejection
+/// anchorbook: A-check-truthful-results#outcomes-and-precedence
+/// anchorbook: A-check-shared-typed-results#library-boundary
+/// anchorbook: A-check-configuration-validity#schema-rejection
 #[test]
 fn invalid_configuration_and_mixed_failures_never_pass_and_preserve_causes() {
     let book = Book::new();
@@ -274,8 +274,8 @@ fn invalid_configuration_and_mixed_failures_never_pass_and_preserve_causes() {
     assert!(error.source().is_some());
 }
 
-/// anchorbook: check-observation-only#no-execution
-/// anchorbook: check-observation-only#file-preservation
+/// anchorbook: A-check-observation-only#no-execution
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn external_links_drafts_and_configured_commands_do_not_execute_or_create_anything() {
     let book = Book::new();
@@ -327,7 +327,7 @@ fn alternative_layouts_and_invocation_directories_keep_the_same_rules() {
     }
 }
 
-/// anchorbook: check-truthful-results#report-scope
+/// anchorbook: A-check-truthful-results#report-scope
 #[test]
 fn invalid_check_invocations_only_write_stderr_and_exit_two() {
     for args in [
@@ -350,7 +350,7 @@ fn invalid_check_invocations_only_write_stderr_and_exit_two() {
     }
 }
 
-/// anchorbook: check-truthful-results#report-scope
+/// anchorbook: A-check-truthful-results#report-scope
 #[test]
 fn passing_report_has_the_documented_scope_and_complete_group_results() {
     let book = Book::new();
@@ -379,8 +379,8 @@ fn passing_report_has_the_documented_scope_and_complete_group_results() {
     }
 }
 
-/// anchorbook: check-navigation-conformance#required-roles
-/// anchorbook: check-navigation-conformance#chapter-inventory
+/// anchorbook: A-check-navigation-conformance#required-roles
+/// anchorbook: A-check-navigation-conformance#chapter-inventory
 #[test]
 fn every_role_and_chapter_depth_is_checked_and_display_titles_do_not_define_roles() {
     let book = Book::new();
@@ -425,8 +425,8 @@ fn every_role_and_chapter_depth_is_checked_and_display_titles_do_not_define_role
     assert_eq!(report(&book).outcome(), Outcome::Passed);
 }
 
-/// anchorbook: check-navigation-conformance#grammar-boundary
-/// anchorbook: check-actionable-diagnostics#diagnostic-content
+/// anchorbook: A-check-navigation-conformance#grammar-boundary
+/// anchorbook: A-check-actionable-diagnostics#diagnostic-content
 #[test]
 fn unicode_reference_links_spaces_and_literal_fragments_keep_precise_locations() {
     let book = Book::new();
@@ -450,7 +450,7 @@ fn unicode_reference_links_spaces_and_literal_fragments_keep_precise_locations()
     assert_eq!(report(&book).outcome(), Outcome::Passed);
 }
 
-/// anchorbook: check-actionable-diagnostics#stable-presentation
+/// anchorbook: A-check-actionable-diagnostics#stable-presentation
 #[test]
 fn findings_are_stably_sorted_and_control_characters_do_not_reach_terminal_output() {
     let book = Book::new();
@@ -479,7 +479,7 @@ fn findings_are_stably_sorted_and_control_characters_do_not_reach_terminal_outpu
     assert!(String::from_utf8_lossy(&output.stderr).contains("\\u{1b}"));
 }
 
-/// anchorbook: check-navigation-conformance#chapter-inventory
+/// anchorbook: A-check-navigation-conformance#chapter-inventory
 #[cfg(unix)]
 #[test]
 fn chapter_escapes_symlinks_and_summary_aliases_cannot_hide_invalid_structure() {
@@ -532,7 +532,7 @@ fn chapter_escapes_symlinks_and_summary_aliases_cannot_hide_invalid_structure() 
     assert_eq!(state(&r, Group::Roles), State::Blocked);
 }
 
-/// anchorbook: check-truthful-results#outcomes-and-precedence
+/// anchorbook: A-check-truthful-results#outcomes-and-precedence
 #[cfg(unix)]
 #[test]
 fn access_failure_is_incomplete_and_keeps_known_structural_findings() {
@@ -563,7 +563,7 @@ fn access_failure_is_incomplete_and_keeps_known_structural_findings() {
     assert!(error.source().is_some());
 }
 
-/// anchorbook: check-actionable-diagnostics#diagnostic-content
+/// anchorbook: A-check-actionable-diagnostics#diagnostic-content
 #[test]
 fn unreadable_input_bytes_and_non_file_inputs_are_not_reported_as_missing() {
     for input in ["docs/SUMMARY.md", "book.toml"] {
@@ -589,7 +589,7 @@ fn phase_changes_do_not_skip_structural_rules_or_imply_anchor_verification() {
         book.write("docs/SUMMARY.md", SUMMARY);
         book.write(
             "docs/design.md",
-            "```anchorbook-anchor\ninvalid record content\n```\n",
+            "> **`A-invalid`** (draft): invalid record content\n",
         );
         assert_eq!(report(&book).outcome(), Outcome::Passed);
         book.write(
@@ -600,7 +600,7 @@ fn phase_changes_do_not_skip_structural_rules_or_imply_anchor_verification() {
     }
 }
 
-/// anchorbook: check-navigation-conformance#grammar-boundary
+/// anchorbook: A-check-navigation-conformance#grammar-boundary
 #[test]
 fn inline_code_outside_navigation_is_incomplete_but_link_label_code_is_supported() {
     let book = Book::new();
@@ -626,7 +626,7 @@ fn inline_code_outside_navigation_is_incomplete_but_link_label_code_is_supported
     assert!(String::from_utf8_lossy(&output.stderr).contains("input.unsupported"));
 }
 
-/// anchorbook: check-renderer-alignment#renderer-input
+/// anchorbook: A-check-renderer-alignment#renderer-input
 #[test]
 fn renderer_configuration_in_a_subdirectory_resolves_paths_from_its_own_directory() {
     let book = Book::new();

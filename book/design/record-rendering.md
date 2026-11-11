@@ -9,102 +9,25 @@ literal code examples. Rendering does not establish implementation or verificati
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "render-records-in-context"
-title = "Structured records become readable linked content"
-status = "draft"
-property = '''
-The rendered Book presents each authored anchor, requirement, and decision in
-its chapter with its complete statement, identity, acceptance status, and the
-supporting fields defined for its kind. Authority links and derived backlinks
-resolve to the corresponding record. Literal schema examples remain code.
-Rendering preserves source files and does not imply implementation or verification.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-readable-records" },
-  { kind = "decision", id = "decision-shared-record-rendering" },
-]
+> **`A-render-records-in-context`** (draft): **Structured records become readable linked content**
+> Property: The rendered Book presents each authored anchor, requirement, and decision in its chapter with its complete statement, identity, acceptance status, and the supporting fields defined for its kind. Authority links and derived backlinks resolve to the corresponding record. Literal schema examples remain code. Rendering preserves source files and does not imply implementation or verification.
+> Authority: `R-readable-records`; `D-shared-record-rendering`
+> - Criterion `record-presentation` [test, review]: Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation.
+> - Criterion `relationship-navigation` [test]: Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record.
+> - Criterion `preservation-and-escaping` [test]: Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved.
+> - Criterion `inline-text` [test]: Through the actual adapter, fixture fields with code spans, emphasis, strong emphasis, and relative and external links render formatted, with chapter links resolved; code-spanned identifiers of records in the inventory link to those records, and unknown ones stay code; other Markdown and raw HTML render as literal text.
 
-[[criteria]]
-id = "record-presentation"
-verification = ["test", "review"]
-statement = "Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation."
+> **`A-render-validated-records`** (draft): **Rendering uses one validated record inventory**
+> Property: The library parses the canonical record formats and resolves typed authority relationships before the mdBook adapter emits transformed Book JSON. Invalid definitions or relationships fail preprocessing with located diagnostics; they cannot be skipped to produce a successful partial Book. Rendering and reference validation use the same record identities and model.
+> Authority: `R-readable-records`; `D-shared-record-rendering`
+> - Criterion `invalid-inventory` [test]: Independent fixtures cover malformed record lines, missing and unknown fields, duplicate IDs across kinds, dangling/wrong-kind/repeated references, and accepted records citing drafts; each fails with the expected located diagnostic.
+> - Criterion `protocol-and-independence` [test, review]: Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book.
 
-[[criteria]]
-id = "relationship-navigation"
-verification = ["test"]
-statement = "Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record."
-
-[[criteria]]
-id = "preservation-and-escaping"
-verification = ["test"]
-statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
-
-[[criteria]]
-id = "inline-text"
-verification = ["test"]
-statement = "Through the actual adapter, fixture fields with code spans, emphasis, strong emphasis, and relative and external links render formatted, with chapter links resolved; code-spanned identifiers of records in the inventory link to those records, and unknown ones stay code; other Markdown and raw HTML render as literal text."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "render-validated-records"
-title = "Rendering uses one validated record inventory"
-status = "draft"
-property = '''
-The library parses the canonical record formats and resolves typed authority
-relationships before the mdBook adapter emits transformed Book JSON. Invalid
-definitions or relationships fail preprocessing with located diagnostics; they
-cannot be skipped to produce a successful partial Book. Rendering and reference
-validation use the same record identities and model.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-readable-records" },
-  { kind = "decision", id = "decision-shared-record-rendering" },
-]
-
-[[criteria]]
-id = "invalid-inventory"
-verification = ["test"]
-statement = "Independent fixtures cover malformed fences/TOML, missing and unknown fields, duplicate IDs across kinds, dangling/wrong-kind/repeated references, and accepted records citing drafts; each fails with the expected located diagnostic."
-
-[[criteria]]
-id = "protocol-and-independence"
-verification = ["test", "review"]
-statement = "Exercise the actual adapter process with valid and malformed mdBook input and supported/unsupported renderer probes. Success returns valid complete Book JSON; preprocessing failure returns nonzero with stderr diagnostics and no success JSON. Build and fixture tests work without a valid or rendered Book."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "render-roadmap-milestones"
-title = "Roadmaps are validated and rendered from compact Markdown"
-status = "draft"
-property = '''
-Before rendering, the preprocessor validates every milestone in the chapters of
-the Book's implementation-roadmaps role: milestone headings and required fields
-follow the roadmap format, milestone and criterion identifiers are unique, and
-each anchor-coverage reference names an existing anchor and its criteria.
-Invalid roadmaps fail preprocessing with located diagnostics and no rendered
-Book. Valid roadmaps render each milestone as a card with its status, identifier,
-and fields, and its tasks, criteria, and evidence as open, collapsible sections
-whose headings keep their fragments. Sources are unchanged, and text in code
-blocks is never roadmap structure.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-checkable-roadmaps" },
-]
-
-[[criteria]]
-id = "roadmap-validation"
-verification = ["test"]
-statement = "Independent fixtures with malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicate identifiers across chapters, coverage citing a missing anchor, a non-anchor record, or a missing criterion, and coverage with a missing level or a qualified Full each produce the expected located diagnostic; format examples in code blocks are ignored, and this Book's roadmaps pass."
-
-[[criteria]]
-id = "roadmap-presentation"
-verification = ["test"]
-statement = "Through the actual adapter, roadmap chapters render each milestone as a card with its status and fields, and its tasks, criteria, and evidence as open details sections with their fragments and visible identifiers; other chapters are not treated as roadmaps, and sources are unchanged."
-```
+> **`A-render-roadmap-milestones`** (draft): **Roadmaps are validated and rendered from compact Markdown**
+> Property: Before rendering, the preprocessor validates every milestone in the chapters of the Book's implementation-roadmaps role: milestone headings and required fields follow the roadmap format, milestone and criterion identifiers are unique, and each anchor-coverage reference names an existing anchor and its criteria. Invalid roadmaps fail preprocessing with located diagnostics and no rendered Book. Valid roadmaps render each milestone as a card with its status, identifier, and fields, and its tasks, criteria, and evidence as open, collapsible sections whose headings keep their fragments. Sources are unchanged, and text in code blocks is never roadmap structure.
+> Authority: `R-checkable-roadmaps`
+> - Criterion `roadmap-validation` [test]: Independent fixtures with malformed milestone and criterion headings, missing fields, a mismatched identifier, an unknown status, duplicate identifiers across chapters, coverage citing a missing anchor, a non-anchor record, or a missing criterion, and coverage with a missing level or a qualified Full each produce the expected located diagnostic; format examples in code blocks are ignored, and this Book's roadmaps pass.
+> - Criterion `roadmap-presentation` [test]: Through the actual adapter, roadmap chapters render each milestone as a card with its status and fields, and its tasks, criteria, and evidence as open details sections with their fragments and visible identifiers; other chapters are not treated as roadmaps, and sources are unchanged.
 
 ## Approach
 
@@ -122,7 +45,7 @@ the transformed Book to mdBook for normal HTML generation.
 ```mermaid
 flowchart TB
     mdbook["mdBook chapter input"] --> adapter["anchorbook md adapter"]
-    adapter --> reader["Markdown block reader and TOML decoding"]
+    adapter --> reader["Line-grammar record reader"]
     reader --> model["Typed record inventory and source locations"]
     model --> validation["Schema and authority-reference validation"]
     validation --> renderer["Record HTML and derived links"]

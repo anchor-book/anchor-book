@@ -1,5 +1,5 @@
-//! Independent record-schema and relationship fixtures.
-use std::{error::Error, path::Path};
+//! Independent record-syntax and relationship fixtures.
+use std::path::Path;
 
 use anchor_book::records::{
     Chapter, DiagnosticCode, Problem, RecordData, RecordErrors, RecordKind, Status,
@@ -7,10 +7,13 @@ use anchor_book::records::{
 };
 
 const FIXTURE: &str = include_str!("fixtures/records.md");
+const CRITERION: &str =
+    "> - Criterion `source-comparison` [test]: Compare input before and after validation.";
+const SCOPE: &str = ">   - Domain: Every input.\n>   - Boundary: The reader.\n>   - Assumptions: None.\n>   - Exclusions: None.";
 
 fn requirement() -> String {
     FIXTURE
-        .split("```anchorbook-decision")
+        .split("> **`D-pure-reader`")
         .next()
         .unwrap()
         .to_owned()
@@ -59,7 +62,7 @@ fn snapshot(errors: &RecordErrors) -> Vec<String> {
         .collect()
 }
 
-/// anchorbook: records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
 fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
     let original = FIXTURE.to_owned();
@@ -68,9 +71,9 @@ fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
     assert!(!inventory.is_empty());
     assert_eq!(
         inventory.records().map(|r| r.id()).collect::<Vec<_>>(),
-        ["immutable-input", "preserve-input", "pure-reader"]
+        ["A-immutable-input", "D-pure-reader", "R-preserve-input"]
     );
-    let anchor = inventory.get("immutable-input").unwrap();
+    let anchor = inventory.get("A-immutable-input").unwrap();
     assert_eq!(anchor.kind(), RecordKind::Anchor);
     assert_eq!(anchor.status(), Status::Accepted);
     assert_eq!(anchor.title(), "Inputs do not change");
@@ -86,34 +89,40 @@ fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
         data.criteria[0].statement,
         "Compare input before and after validation."
     );
-    assert_eq!(data.authorities[0].id, "preserve-input");
+    assert_eq!(data.criteria[0].scope, None);
+    assert_eq!(data.authorities[0].id, "R-preserve-input");
     assert_eq!(
-        inventory.backlinks("preserve-input"),
-        ["immutable-input", "pure-reader"]
+        inventory.backlinks("R-preserve-input"),
+        ["A-immutable-input", "D-pure-reader"]
     );
-    assert_eq!(inventory.backlinks("pure-reader"), ["immutable-input"]);
-    assert!(inventory.backlinks("immutable-input").is_empty());
+    assert_eq!(inventory.backlinks("D-pure-reader"), ["A-immutable-input"]);
+    assert!(inventory.backlinks("A-immutable-input").is_empty());
     assert!(inventory.get("not-present").is_none());
     let block = &original[anchor.location().range()];
-    assert!(block.starts_with("```anchorbook-anchor\n"));
-    assert!(block.trim_end_matches('\n').ends_with("\n```"));
+    assert!(block.starts_with("> **`A-immutable-input`** (accepted)"));
+    assert!(block.ends_with("validation.\n"));
     let body = &original[anchor.body_location().range()];
-    assert!(body.starts_with("schema-version = 1\n"));
-    assert!(!body.contains("```"));
+    assert!(body.starts_with("> Property: "));
+    assert!(!body.contains("**`A-"));
     for reference in anchor.references() {
         assert_eq!(
             &original[reference.location.range()],
-            format!("\"{}\"", reference.id)
+            format!("`{}`", reference.id)
         );
     }
-    let RecordData::Requirement(req) = inventory.get("preserve-input").unwrap().data() else {
+    let RecordData::Requirement(req) = inventory.get("R-preserve-input").unwrap().data() else {
         panic!()
     };
+    assert_eq!(
+        req.statement,
+        "Reading leaves the supplied source unchanged."
+    );
     assert_eq!(req.source, "The reader is observational.");
-    let RecordData::Decision(decision) = inventory.get("pure-reader").unwrap().data() else {
+    let RecordData::Decision(decision) = inventory.get("D-pure-reader").unwrap().data() else {
         panic!()
     };
     assert_eq!(decision.choice, "Accept supplied chapters.");
+    assert_eq!(decision.requirements[0].id, "R-preserve-input");
     assert_eq!(decision.rationale, "Separate acquisition from validation.");
     assert_eq!(decision.alternatives, ["Read paths inside the validator."]);
     assert_eq!(
@@ -123,8 +132,62 @@ fn reads_typed_records_preserves_ranges_and_derives_direct_backlinks() {
     assert_eq!(original, FIXTURE);
 }
 
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
-fn parses_all_supported_line_endings_and_fence_at_eof() {
+fn paragraphs_proof_scope_and_explicit_none_are_read_as_authored() {
+    let text = FIXTURE
+        .replace(
+            "> Property: Parsing observes the input without changing it.",
+            "> Property: Parsing observes the input.\n> It never changes it.\n>\n> Not even *once*.",
+        )
+        .replace(
+            CRITERION,
+            &format!(
+                "{CRITERION}\n> - Criterion `formal` [proof, test]: The reader returns its input.\n{}",
+                SCOPE.replace(
+                    "Exclusions: None.",
+                    "Exclusions: Conversion, covered by `source-comparison`."
+                )
+            ),
+        )
+        .replace("> Requirements: `R-preserve-input`", "> Requirements: none");
+    let inventory = inspect(&text).unwrap();
+    let RecordData::Anchor(anchor) = inventory.get("A-immutable-input").unwrap().data() else {
+        panic!()
+    };
+    assert_eq!(
+        anchor.property,
+        "Parsing observes the input.\n\nIt never changes it.\n\nNot even *once*."
+    );
+    let formal = &anchor.criteria[1];
+    assert_eq!(formal.statement, "The reader returns its input.");
+    assert_eq!(
+        formal.verification,
+        [VerificationMethod::Proof, VerificationMethod::Test]
+    );
+    let scope = formal.scope.as_ref().unwrap();
+    assert_eq!(scope.domain, "Every input.");
+    assert_eq!(scope.boundary, "The reader.");
+    assert_eq!(scope.assumptions, "None.");
+    assert_eq!(
+        scope.exclusions,
+        "Conversion, covered by `source-comparison`."
+    );
+    assert_eq!(scope.covered_by.len(), 1);
+    assert_eq!(scope.covered_by[0].anchor, "A-immutable-input");
+    assert_eq!(scope.covered_by[0].criterion, "source-comparison");
+    assert_eq!(
+        &text[scope.covered_by[0].location.range()],
+        "`source-comparison`"
+    );
+    let RecordData::Decision(decision) = inventory.get("D-pure-reader").unwrap().data() else {
+        panic!()
+    };
+    assert!(decision.requirements.is_empty());
+}
+
+#[test]
+fn parses_all_supported_line_endings_and_a_record_at_eof() {
     for text in [
         FIXTURE.to_owned(),
         FIXTURE.replace('\n', "\r\n"),
@@ -138,23 +201,24 @@ fn parses_all_supported_line_endings_and_fence_at_eof() {
 fn verification_methods_are_explicit_typed_obligations_in_authored_order() {
     use VerificationMethod::{Proof, Review, Test};
     for (authored, expected) in [
-        (r#"["proof"]"#, vec![Proof]),
-        (r#"["test"]"#, vec![Test]),
-        (r#"["review"]"#, vec![Review]),
-        (r#"["review", "proof", "test"]"#, vec![Review, Proof, Test]),
+        ("proof", vec![Proof]),
+        ("test", vec![Test]),
+        ("review", vec![Review]),
+        ("review, proof, test", vec![Review, Proof, Test]),
     ] {
-        let text = FIXTURE.replace(
-            r#"verification = ["test"]"#,
-            &format!("verification = {authored}"),
-        );
+        let mut criterion = CRITERION.replace("[test]", &format!("[{authored}]"));
+        if authored.contains("proof") {
+            criterion = format!("{criterion}\n{SCOPE}");
+        }
+        let text = FIXTURE.replace(CRITERION, &criterion);
         let inventory = inspect(&text).unwrap();
-        let RecordData::Anchor(anchor) = inventory.get("immutable-input").unwrap().data() else {
+        let RecordData::Anchor(anchor) = inventory.get("A-immutable-input").unwrap().data() else {
             panic!()
         };
         assert_eq!(anchor.criteria[0].verification, expected);
         // Selecting a proof method does not require proof artifacts or change design status.
         assert_eq!(
-            inventory.get("immutable-input").unwrap().status(),
+            inventory.get("A-immutable-input").unwrap().status(),
             Status::Accepted
         );
     }
@@ -162,32 +226,30 @@ fn verification_methods_are_explicit_typed_obligations_in_authored_order() {
 
 #[test]
 fn rejects_invalid_verification_on_each_criterion_with_located_diagnostics() {
-    let original = "verification = [\"test\"]";
     for replacement in [
-        "",
-        "verification = []",
-        "verification = [\"proof\", \"proof\"]",
-        "verification = [\"test\", \"test\"]",
-        "verification = [\"review\", \"proof\", \"review\"]",
-        "verification = [\"verus\"]",
-        "verification = [\"Proof\"]",
-        "verification = [\"\"]",
-        "verification = [\" test\"]",
-        "verification = [\"test\", false]",
-        "verification = \"test\"",
-        "verification = true",
-        "verification = { test = true }",
-        "methods = [\"test\"]",
-        "verification = [\"test\"]\nverification = [\"review\"]",
+        "[]",
+        "[proof, proof]",
+        "[test, test]",
+        "[review, proof, review]",
+        "[verus]",
+        "[Proof]",
+        "[ test]",
+        "[test,review]",
+        "[test , review]",
+        "[test, ]",
+        "test",
+        "[test] ",
     ] {
         for second in [false, true] {
             let text = if second {
                 FIXTURE.replace(
-                    "statement = \"Compare input before and after validation.\"",
-                    &format!("statement = \"Compare input before and after validation.\"\n\n[[criteria]]\nid = \"second\"\nstatement = \"Another obligation.\"\n{replacement}"),
+                    CRITERION,
+                    &format!(
+                        "{CRITERION}\n> - Criterion `second` {replacement}: Another obligation."
+                    ),
                 )
             } else {
-                FIXTURE.replace(original, replacement)
+                FIXTURE.replace(CRITERION, &CRITERION.replace("[test]", replacement))
             };
             let errors = failures(&text);
             assert_eq!(errors.diagnostics().len(), 1, "{text}\n{errors:?}");
@@ -195,7 +257,15 @@ fn rejects_invalid_verification_on_each_criterion_with_located_diagnostics() {
             assert_eq!(diagnostic.code(), DiagnosticCode::InvalidDefinition);
             assert_eq!(diagnostic.problem(), Problem::InvalidDefinition);
             assert_eq!(diagnostic.location().path(), Path::new("fixture.md"));
-            assert!(diagnostic.location().range().start >= text.find("[[criteria]]").unwrap());
+            let line = if second {
+                "> - Criterion `second`"
+            } else {
+                "> - Criterion "
+            };
+            assert_eq!(
+                diagnostic.location().range().start,
+                text.find(line).unwrap()
+            );
             assert!(!diagnostic.message().is_empty());
         }
     }
@@ -204,34 +274,39 @@ fn rejects_invalid_verification_on_each_criterion_with_located_diagnostics() {
 #[test]
 fn only_real_definitions_enter_inventory() {
     let examples = format!(
-        "# Examples\n\n````text\n{FIXTURE}\n````\n\n```rust\n{{anchor}}`example`\n```\n\n`{{anchor}}` is a literal.\n\n    ordinary code\n"
+        "# Examples\n\n````text\n{FIXTURE}\n````\n\n```markdown\n{FIXTURE}```\n\n    > **`R-indented-code`** (draft): **Code**\n\n> A note quoting **`R-not-a-heading`**.\n> Still a note.\n\n`{{anchor}}` is a literal, and so is `> **`.\n"
     );
     assert!(inspect(&examples).unwrap().is_empty());
     assert!(inspect("# prose\n\nNo records here.").unwrap().is_empty());
     assert!(read_records(&[]).unwrap().is_empty());
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: A-render-validated-records#invalid-inventory
 #[test]
-fn rejects_noncanonical_fences_and_nesting() {
+fn rejects_noncanonical_records_and_nesting() {
     let base = requirement();
+    let source = "> Source: The reader is observational.\n";
+    let toml = "```anchorbook-requirement\nschema-version = 1\nid = \"requirement-x\"\ntitle = \"X\"\nstatus = \"draft\"\nstatement = \"S.\"\nsource = \"S.\"\n```\n";
     let mutations = [
-        base.replace("```anchorbook-requirement", "````anchorbook-requirement"),
-        base.replace("```", "~~~"),
-        base.replace("```anchorbook-requirement", "``` anchorbook-requirement"),
-        base.replace(
-            "```anchorbook-requirement",
-            "```anchorbook-requirement extra",
-        ),
-        base.replace("```anchorbook-requirement", "```anchorbook-requirement "),
-        base.replace("\n```\n", "\n````\n"),
-        base.replace("\n```\n", "\n``` \n"),
-        base.replace("\n```\n", "\n"),
+        toml.to_owned(),
+        format!("> Note:\n>\n{}", prefix_lines(toml, "> ")),
+        format!("- item\n\n{}", prefix_lines(toml, "  ")),
         prefix_lines(&base, "> "),
         prefix_lines(&base, "  "),
-        prefix_lines(&base, "    "),
         format!("- item\n\n{}", prefix_lines(&base, "  ")),
-        base.replace("anchorbook-requirement", "anchorbook-unknown"),
+        format!(
+            "> A note.\n{}",
+            base.trim_start_matches("# A tiny independent specification\n\n")
+        ),
+        base.replace("> Statement:", ">Statement:"),
+        base.replace(source, &format!("{source}A lazy continuation.\n")),
+        base.replace(
+            source,
+            &format!(
+                "{source}> **`R-second`** (draft): **Second**\n> Statement: S.\n> Source: S.\n"
+            ),
+        ),
+        base.replace(source, &format!("{source}> > Quoted.\n")),
         "{anchor}`old-name`".to_owned(),
     ];
     for text in mutations {
@@ -239,31 +314,58 @@ fn rejects_noncanonical_fences_and_nesting() {
     }
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: A-render-validated-records#invalid-inventory
 #[test]
-fn rejects_missing_unknown_duplicate_wrong_type_and_empty_fields() {
+fn rejects_malformed_headings_and_missing_repeated_misordered_or_empty_fields() {
     let base = requirement();
+    let heading = "> **`R-preserve-input`** (accepted): **Preserve input**";
+    let statement = "> Statement: Reading leaves the supplied source unchanged.";
+    let source = "> Source: The reader is observational.";
     let mutations = [
-        base.replace("schema-version = 1\n", ""),
-        base.replace("schema-version = 1", "schema-version = 2"),
-        base.replace("schema-version = 1", "schema-version = \"1\""),
-        base.replace("schema-version = 1", "schema-version = true"),
-        base.replace("schema-version = 1", "schema-version = 1\nunknown = 2"),
-        base.replace("title = \"Preserve input\"", "title = \"\""),
-        base.replace("title = \"Preserve input\"", "title = \"  \""),
-        base.replace("title = \"Preserve input\"", "title = 10"),
-        base.replace("status = \"accepted\"", "status = \"complete\""),
-        base.replace("id = \"preserve-input\"", "id = \"Uppercase\""),
-        base.replace("id = \"preserve-input\"", "id = \"bad--id\""),
-        base.replace("id = \"preserve-input\"", "id = \"2-start\""),
-        base.replace("id = \"preserve-input\"", "id = \"trailing-\""),
-        base.replace("id = \"preserve-input\"", "id = \"nön-ascii\""),
-        base.replace("id = \"preserve-input\"", "id = \"x\"\nid = \"y\""),
-        base.replace("source = \"The reader is observational.\"", ""),
-        base.replace("source = \"The reader is observational.\"", "source = \"\""),
         base.replace(
-            "statement = \"Reading leaves the supplied source unchanged.\"",
-            "statement = \"\t\"",
+            heading,
+            "> **`R-preserve-input`** (complete): **Preserve input**",
+        ),
+        base.replace(heading, "> **`R-preserve-input`** (accepted): ****"),
+        base.replace(heading, "> **`R-preserve-input`** (accepted): **  **"),
+        base.replace(
+            heading,
+            "> **`R-preserve-input`** (accepted): Preserve input",
+        ),
+        base.replace(
+            heading,
+            "> **`R-preserve-input`** accepted: **Preserve input**",
+        ),
+        base.replace(
+            heading,
+            "> **`R-preserve-input` (accepted): **Preserve input**",
+        ),
+        base.replace("R-preserve-input", "R-Uppercase"),
+        base.replace("R-preserve-input", "R-bad--id"),
+        base.replace("R-preserve-input", "R-2-start"),
+        base.replace("R-preserve-input", "R-trailing-"),
+        base.replace("R-preserve-input", "R-nön-ascii"),
+        base.replace("R-preserve-input", "preserve-input"),
+        base.replace(&format!("{statement}\n"), ""),
+        base.replace(&format!("{source}\n"), ""),
+        base.replace(source, "> Source: "),
+        base.replace(source, "> Source:"),
+        base.replace(statement, "> Statement: \t"),
+        base.replace(source, &format!("{source}\n{statement}")),
+        base.replace(
+            &format!("{statement}\n{source}"),
+            &format!("{source}\n{statement}"),
+        ),
+        base.replace(
+            source,
+            &format!("{source}\n> Choice: Not a requirement field."),
+        ),
+        base.replace(source, &format!("{source}\n>  indented")),
+        base.replace(source, &format!("{source}\n>  ")),
+        base.replace(source, &format!("{source}\n> - A list item.")),
+        base.replace(
+            source,
+            &format!("{source}\n> - Criterion `x` [test]: Not here."),
         ),
     ];
     for text in mutations {
@@ -271,76 +373,80 @@ fn rejects_missing_unknown_duplicate_wrong_type_and_empty_fields() {
     }
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: A-render-validated-records#invalid-inventory
 #[test]
-fn rejects_anchor_and_decision_schema_errors() {
+fn rejects_anchor_and_decision_field_errors() {
+    let authority = "> Authority: `R-preserve-input`; `D-pure-reader`";
+    let requirements = "> Requirements: `R-preserve-input`";
+    let alternative = "> - Read paths inside the validator.";
     let mutations = [
-        FIXTURE.replace("kind = \"decision\"", "kind = \"anchor\""),
-        FIXTURE.replace("id = \"pure-reader\" },", "id = \"pure-reader\", extra = true },"),
-        FIXTURE.replace("[[criteria]]", "[[criteria]]\nextra = true"),
-        FIXTURE.replace("statement = \"Compare input before and after validation.\"", "statement = \"\""),
-        FIXTURE.replace("alternatives = [\"Read paths inside the validator.\"]", "alternatives = []"),
-        FIXTURE.replace("alternatives = [\"Read paths inside the validator.\"]", "alternatives = [\" \" ]"),
-        FIXTURE.replace("rationale = \"Separate acquisition from validation.\"", "rationale = \"\""),
-        FIXTURE.replace("choice = \"Accept supplied chapters.\"", "choice = \"\""),
-        FIXTURE.replace("reconsider-when = \"A new adapter needs to acquire input differently.\"", "reconsider-when = \"\""),
-        FIXTURE.replace("requirements = [\"preserve-input\"]", ""),
-        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Compare input before and after validation.\"", "criteria = []"),
-        FIXTURE.replace("[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Compare input before and after validation.\"", "criteria = [{id = \"source-comparison\", statement = \"Compare inputs\", verification = [\"test\"]}]"),
-        FIXTURE.replace("statement = \"Compare input before and after validation.\"", "statement = \"Compare inputs\"\n[[criteria]]\nid = \"source-comparison\"\nverification = [\"test\"]\nstatement = \"Duplicate\""),
-        FIXTURE.replace("id = \"source-comparison\"", "id = \"bad_id\""),
+        FIXTURE.replace(authority, "> Authority: R-preserve-input"),
+        FIXTURE.replace(authority, "> Authority: `R-preserve-input` `D-pure-reader`"),
+        FIXTURE.replace(authority, "> Authority: `A-immutable-input`"),
+        FIXTURE.replace(authority, "> Authority: "),
+        FIXTURE.replace(&format!("{authority}\n"), ""),
+        FIXTURE.replace(&format!("\n{CRITERION}"), ""),
+        FIXTURE.replace(CRITERION, &format!("{CRITERION}\n> Property: Again.")),
+        FIXTURE.replace(CRITERION, &format!("{CRITERION}\n> A trailing paragraph.")),
+        FIXTURE.replace(
+            CRITERION,
+            &CRITERION.replace("Compare input before and after validation.", ""),
+        ),
+        FIXTURE.replace(CRITERION, &format!("{CRITERION}\n{CRITERION}")),
+        FIXTURE.replace(CRITERION, &CRITERION.replace("source-comparison", "bad_id")),
+        FIXTURE.replace(
+            CRITERION,
+            &CRITERION.replace("`source-comparison`", "source-comparison"),
+        ),
+        FIXTURE.replace(CRITERION, &CRITERION.replace("]: ", "] ")),
+        FIXTURE.replace(authority, &format!("{authority}\n> Continued.")),
+        FIXTURE.replace("> Alternatives:\n", "> Alternatives: Inline.\n"),
+        FIXTURE.replace(&format!("{alternative}\n"), ""),
+        FIXTURE.replace(alternative, "> - "),
+        FIXTURE.replace(alternative, "> - One.\n> Continued."),
+        FIXTURE.replace(
+            "> Rationale: Separate acquisition from validation.",
+            "> Rationale: ",
+        ),
+        FIXTURE.replace("> Choice: Accept supplied chapters.", "> Choice: "),
+        FIXTURE.replace(
+            "> Reconsider when: A new adapter needs to acquire input differently.",
+            "> Reconsider when: ",
+        ),
+        FIXTURE.replace(&format!("{requirements}\n"), ""),
+        FIXTURE.replace(requirements, "> Requirements: "),
+        FIXTURE.replace(requirements, "> Requirements: `D-pure-reader`"),
+        FIXTURE.replace(requirements, "> Requirements: None"),
     ];
     for text in mutations {
         has_problem(&text, Problem::InvalidDefinition);
     }
-    let start = FIXTURE.find("authorities = [").unwrap();
-    let end = start + FIXTURE[start..].find("]\n").unwrap() + 1;
-    for replacement in [
-        "authorities = []",
-        "[[authorities]]\nkind = \"requirement\"\nid = \"preserve-input\"",
-    ] {
-        let mut text = FIXTURE.to_owned();
-        text.replace_range(start..end, replacement);
-        has_problem(&text, Problem::InvalidDefinition);
-    }
-    assert!(
-        inspect(&FIXTURE.replace("requirements = [\"preserve-input\"]", "requirements = []"))
-            .is_ok()
-    );
+    assert!(inspect(&FIXTURE.replace(requirements, "> Requirements: none")).is_ok());
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: A-render-validated-records#invalid-inventory
 #[test]
 fn validates_all_edges_including_accepted_decisions() {
+    let requirements = "> Requirements: `R-preserve-input`";
     has_problem(
-        &FIXTURE.replace(
-            "requirements = [\"preserve-input\"]",
-            "requirements = [\"missing\"]",
-        ),
+        &FIXTURE.replace(requirements, "> Requirements: `R-missing`"),
         Problem::MissingTarget,
     );
     has_problem(
         &FIXTURE.replace(
-            "requirements = [\"preserve-input\"]",
-            "requirements = [\"immutable-input\"]",
-        ),
-        Problem::WrongTargetKind,
-    );
-    has_problem(
-        &FIXTURE.replace(
-            "requirements = [\"preserve-input\"]",
-            "requirements = [\"preserve-input\", \"preserve-input\"]",
+            requirements,
+            "> Requirements: `R-preserve-input`; `R-preserve-input`",
         ),
         Problem::RepeatedReference,
     );
     has_problem(
         &FIXTURE.replace(
-            "{ kind = \"decision\", id = \"pure-reader\" }",
-            "{ kind = \"requirement\", id = \"preserve-input\" }",
+            "> Authority: `R-preserve-input`; `D-pure-reader`",
+            "> Authority: `R-preserve-input`; `R-preserve-input`",
         ),
         Problem::RepeatedReference,
     );
-    let draft_target = FIXTURE.replacen("status = \"accepted\"", "status = \"draft\"", 1);
+    let draft_target = FIXTURE.replacen("(accepted)", "(draft)", 1);
     let errors = failures(&draft_target);
     assert_eq!(
         errors
@@ -350,21 +456,21 @@ fn validates_all_edges_including_accepted_decisions() {
             .count(),
         2
     );
-    assert!(inspect(&FIXTURE.replace("status = \"accepted\"", "status = \"draft\"")).is_ok());
+    assert!(inspect(&FIXTURE.replace("(accepted)", "(draft)")).is_ok());
     has_problem(
-        &FIXTURE.replace(
-            "requirements = [\"preserve-input\"]",
-            "requirements = [\"bad_id\"]",
-        ),
+        &FIXTURE.replace(requirements, "> Requirements: `R-bad_id`"),
         Problem::InvalidDefinition,
     );
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
-/// anchorbook: records-valid-authority#production-integration
+/// anchorbook: A-render-validated-records#invalid-inventory
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
 fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
-    let duplicated = format!("{FIXTURE}\n{}", requirement());
+    let duplicated = format!(
+        "{FIXTURE}\n{}",
+        requirement().trim_start_matches("# A tiny independent specification\n\n")
+    );
     let errors = failures(&duplicated);
     assert_eq!(
         errors
@@ -372,7 +478,8 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
             .iter()
             .filter(|d| d.problem() == Problem::DuplicateId)
             .count(),
-        2
+        2,
+        "{errors:?}"
     );
     assert!(
         errors
@@ -392,9 +499,13 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
             &[duplicates[1 - index].location().clone()]
         );
     }
-    let cross_kind = FIXTURE.replacen("id = \"pure-reader\"", "id = \"preserve-input\"", 1);
-    has_problem(&cross_kind, Problem::DuplicateId);
-    let invalid = FIXTURE.replacen("source = \"The reader is observational.\"", "", 1);
+    // The kind code is part of the identifier, so equal names of different kinds
+    // are different records.
+    let same_name = format!(
+        "{FIXTURE}\n> **`D-preserve-input`** (draft): **Same name**\n> Choice: C.\n> Requirements: none\n> Rationale: R.\n> Alternatives:\n> - A.\n> Reconsider when: W.\n"
+    );
+    assert_eq!(inspect(&same_name).unwrap().len(), 4);
+    let invalid = FIXTURE.replacen("> Source: The reader is observational.\n", "", 1);
     let errors = failures(&invalid);
     for diagnostic in errors
         .diagnostics()
@@ -409,7 +520,7 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
         assert_eq!(diagnostic.related_locations().len(), 1);
         assert!(
             invalid[diagnostic.related_locations()[0].range()]
-                .starts_with("```anchorbook-requirement")
+                .starts_with("> **`R-preserve-input`**")
         );
     }
     assert!(
@@ -432,7 +543,11 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
             .iter()
             .any(|d| d.problem() == Problem::MissingTarget)
     );
-    let malformed = FIXTURE.replacen("source = \"The reader is observational.\"", "source = [", 1);
+    let malformed = FIXTURE.replacen(
+        "> **`R-preserve-input`** (accepted): **Preserve input**",
+        "> **`R-preserve-input** (accepted): **Preserve input**",
+        1,
+    );
     has_problem(&malformed, Problem::InvalidTarget);
     let errors = failures(&malformed);
     for diagnostic in errors
@@ -449,24 +564,28 @@ fn duplicates_have_no_winner_and_bad_authorities_do_not_look_missing() {
     }
 }
 
-/// anchorbook: records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
-fn diagnostics_have_field_locations_and_preserve_parser_causes() {
-    let text = requirement().replace("status = \"accepted\"", "status = \"wrong\"");
+fn diagnostics_are_located_at_the_offending_line() {
+    let text = requirement().replace("(accepted)", "(wrong)");
     let errors = failures(&text);
     let d = &errors.diagnostics()[0];
     assert_eq!(d.code(), DiagnosticCode::InvalidDefinition);
     assert_eq!(d.location().path(), Path::new("fixture.md"));
-    assert_eq!(d.location().line(), 7);
-    assert!(d.source().is_some());
-    assert!(d.location().range().start >= text.find("status =").unwrap());
+    assert_eq!(d.location().line(), 3);
+    assert_eq!(d.location().column(), 1);
+    let text = requirement().replace("> Source: The reader is observational.", "> Source: ");
+    let errors = failures(&text);
+    let d = &errors.diagnostics()[0];
+    assert_eq!(d.location().line(), 5);
+    assert_eq!(&text[d.location().range()], "> Source: ");
     let text = "é😀\n\n{anchor}`old`";
     let d = failures(text);
     assert_eq!(d.diagnostics()[0].location().line(), 3);
     assert_eq!(d.diagnostics()[0].location().column(), 1);
     let text = FIXTURE.replace(
-        "requirements = [\"preserve-input\"]",
-        "requirements = [\"absent\"]",
+        "> Requirements: `R-preserve-input`",
+        "> Requirements: `R-absent`",
     );
     let err = failures(&text);
     let d = err
@@ -474,13 +593,13 @@ fn diagnostics_have_field_locations_and_preserve_parser_causes() {
         .iter()
         .find(|d| d.problem() == Problem::MissingTarget)
         .unwrap();
-    assert_eq!(&text[d.location().range()], "\"absent\"");
+    assert_eq!(&text[d.location().range()], "`R-absent`");
 }
 
-/// anchorbook: records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#production-integration
 #[test]
 fn chapter_order_does_not_change_records_backlinks_or_diagnostics() {
-    let split = FIXTURE.find("```anchorbook-decision").unwrap();
+    let split = FIXTURE.find("> **`D-pure-reader`").unwrap();
     let chapters = [
         Chapter::new(Path::new("z.md"), &FIXTURE[..split]),
         Chapter::new(Path::new("a.md"), &FIXTURE[split..]),
@@ -492,12 +611,12 @@ fn chapter_order_does_not_change_records_backlinks_or_diagnostics() {
         reverse.records().collect::<Vec<_>>()
     );
     assert_eq!(
-        first.backlinks("preserve-input"),
-        reverse.backlinks("preserve-input")
+        first.backlinks("R-preserve-input"),
+        reverse.backlinks("R-preserve-input")
     );
     let invalid = FIXTURE.replace(
-        "requirements = [\"preserve-input\"]",
-        "requirements = [\"missing\"]",
+        "> Requirements: `R-preserve-input`",
+        "> Requirements: `R-missing`",
     );
     let chapters = [
         Chapter::new(Path::new("z.md"), &invalid),
@@ -528,28 +647,32 @@ fn chapter_identity_is_required_and_unique() {
 }
 
 #[test]
-fn diagnostics_identify_unicode_columns_and_toml_error_ranges() {
+fn diagnostics_identify_unicode_columns_and_toml_blocks() {
     let text = "é😀 **{anchor}**";
     let errors = failures(text);
     let diagnostic = &errors.diagnostics()[0];
     assert_eq!(diagnostic.location().line(), 1);
     assert_eq!(diagnostic.location().column(), 6);
     assert_eq!(&text[diagnostic.location().range()], "{anchor}");
-    assert!(diagnostic.message().contains("canonical definition fence"));
+    assert!(diagnostic.message().contains("legacy {anchor}"));
 
-    let text = "# Context\n\n```anchorbook-requirement\nid = @\n```\n";
+    let text = "# Context é😀\n\n```anchorbook-requirement\nid = \"requirement-x\"\n```\n";
     let errors = failures(text);
+    assert_eq!(errors.diagnostics().len(), 1);
     let diagnostic = &errors.diagnostics()[0];
-    assert_eq!(diagnostic.location().line(), 4);
-    assert_eq!(diagnostic.location().column(), 6);
-    assert_eq!(&text[diagnostic.location().range()], "@");
-    assert!(diagnostic.source().is_some());
+    assert_eq!(diagnostic.location().line(), 3);
+    assert_eq!(diagnostic.location().column(), 1);
+    assert!(
+        diagnostic
+            .message()
+            .contains("TOML record blocks are not supported")
+    );
 }
 
-/// anchorbook: render-validated-records#invalid-inventory
+/// anchorbook: A-render-validated-records#invalid-inventory
 #[test]
 fn accepted_authority_conflicts_have_a_distinct_diagnostic_family() {
-    let text = FIXTURE.replacen("status = \"accepted\"", "status = \"draft\"", 1);
+    let text = FIXTURE.replacen("(accepted)", "(draft)", 1);
     has_problem(&text, Problem::IncompatibleStatus);
 }
 
@@ -557,14 +680,17 @@ fn accepted_authority_conflicts_have_a_distinct_diagnostic_family() {
 fn markdown_containers_and_code_boundaries_keep_their_diagnostic_meaning() {
     let nested = format!(
         "> ```text\n> example\n> ```\n>\n{}",
-        prefix_lines(&requirement(), "> ")
+        prefix_lines(
+            requirement().trim_start_matches("# A tiny independent specification\n\n"),
+            "> "
+        )
     );
     let errors = failures(&nested);
-    assert_eq!(errors.diagnostics().len(), 1);
+    assert_eq!(errors.diagnostics().len(), 1, "{errors:?}");
     assert!(
         errors.diagnostics()[0]
             .message()
-            .contains("must not be nested")
+            .contains("not nested in another quote")
     );
 
     let text = "```text\n{anchor}`literal`\n```\n\n{anchor}`unsupported`\n";
@@ -609,7 +735,7 @@ fn markdown_extensions_preserve_legacy_marker_locations() {
     }
 }
 
-/// anchorbook: check-shared-typed-results#library-boundary
+/// anchorbook: A-check-shared-typed-results#library-boundary
 #[test]
 fn truncated_and_unicode_inputs_never_panic() {
     let text = FIXTURE.replace("Preserve input", "Preserve é😀 input");
@@ -620,14 +746,140 @@ fn truncated_and_unicode_inputs_never_panic() {
         let _ = inspect(&text[..end]);
     }
     for malformed in [
-        "é = [",
-        "title = \"😀",
-        "id = \"x\"\n\0",
-        "id = true\nstatus = [\"é\"]",
+        "> **`",
+        "> **`R-😀",
+        "> **`R-x`** (draft): **😀",
+        "> **`R-x`** (draft): **T**\n> Statement: \0\n> Source:",
+        "> **`A-x`** (draft): **T**\n> Property: é\n> Authority: `R-",
+        "> **`A-x`** (draft): **T**\n> Property: é\n> Authority: `R-x`\n> - Criterion `",
     ] {
-        has_problem(
-            &format!("```anchorbook-requirement\n{malformed}\n```\n"),
-            Problem::InvalidDefinition,
+        has_problem(malformed, Problem::InvalidDefinition);
+    }
+}
+
+/// anchorbook: A-records-valid-authority#production-integration
+#[test]
+fn records_next_to_code_and_indented_prose_are_read_exactly() {
+    let record = requirement().replace("# A tiny independent specification\n\n", "");
+    // A record right after a closing fence, and indented prose and nested list
+    // items, are not code and not records.
+    let text = format!(
+        "```text\n> **`R-in-code`** (draft): **Code**\n```\n{record}\nProse.\n\n    > **`R-indented-code`** (draft): **Indented code**\n\n- A list\n  continued with **`text`**.\n  - Nested.\n"
+    );
+    let inventory = inspect(&text).unwrap();
+    assert_eq!(
+        inventory.records().map(|r| r.id()).collect::<Vec<_>>(),
+        ["R-preserve-input"]
+    );
+    // A record must end before a fence that follows it; the error is at the fence,
+    // not inside the record.
+    let text = format!(
+        "{}>\n```text\nx\n```\n",
+        record.trim_end_matches('\n').to_owned() + "\n"
+    );
+    let errors = failures(&text);
+    let d = &errors.diagnostics()[0];
+    assert!(d.message().contains("leave a blank line after it"), "{d}");
+    assert_eq!(&text[d.location().range()], "```text");
+    // CRLF line endings stay inside the record's range, so rendering replaces
+    // exactly the record.
+    let crlf = FIXTURE.replace('\n', "\r\n");
+    let inventory = inspect(&crlf).unwrap();
+    for record in inventory.records() {
+        let range = record.location().range();
+        assert!(crlf[range.clone()].ends_with("\r\n"), "{}", record.id());
+        assert!(
+            crlf[range.end..].is_empty()
+                || crlf[range.end..].starts_with("\r\n> **`")
+                || crlf[range.end..].starts_with("\r\n")
         );
     }
+}
+
+#[test]
+fn diagnostic_messages_name_the_rule_a_line_breaks() {
+    let base = requirement();
+    let source = "> Source: The reader is observational.";
+    let statement = "> Statement: Reading leaves the supplied source unchanged.";
+    let message = |text: &str| {
+        let errors = failures(text);
+        errors
+            .diagnostics()
+            .iter()
+            .find(|d| d.problem() == Problem::InvalidDefinition)
+            .unwrap()
+            .message()
+            .to_owned()
+    };
+    for (text, expected) in [
+        (
+            base.replace(source, &format!("{source}\n> Property: x")),
+            "`Property:` is not a field of a requirement",
+        ),
+        (
+            base.replace(source, &format!("{source}\n> - Criterion `x` [test]: y")),
+            "criteria belong to anchors, not a requirement",
+        ),
+        (
+            base.replace(&format!("{statement}\n"), ""),
+            "expected `Statement:` here",
+        ),
+        (
+            base.replace(source, &format!("{source}\n{statement}")),
+            "`Statement:` is repeated or out of order",
+        ),
+        (
+            FIXTURE.replace(
+                "> - Read paths inside the validator.",
+                "> - One.\n> Continued.",
+            ),
+            "criteria and alternatives are one line each",
+        ),
+        (
+            FIXTURE.replace(
+                "> Requirements: `R-preserve-input`",
+                "> Requirements: `R-preserve-input`\n> Continued.",
+            ),
+            "`Requirements:` is one line",
+        ),
+        (
+            FIXTURE.replace(CRITERION, &format!("{CRITERION}\n> Continued.")),
+            "criteria and alternatives are one line each",
+        ),
+        (
+            format!(
+                "> A note.\n{}",
+                base.replace("# A tiny independent specification\n\n", "")
+            ),
+            "must start its own blockquote",
+        ),
+        (
+            prefix_lines(
+                &base.replace("# A tiny independent specification\n\n", ""),
+                "> ",
+            ),
+            "not nested in another quote",
+        ),
+        (
+            prefix_lines(
+                &base.replace("# A tiny independent specification\n\n", ""),
+                "  ",
+            ),
+            "not nested in a list or indented",
+        ),
+    ] {
+        let found = message(&text);
+        assert!(found.contains(expected), "{expected}: {found}\n{text}");
+    }
+    // A missing field before the criteria is reported at the first criterion.
+    let text = FIXTURE
+        .replace("> Authority: `R-preserve-input`; `D-pure-reader`\n", "")
+        .replace(
+            CRITERION,
+            &format!("{CRITERION}\n> - Criterion `second` [test]: Another."),
+        );
+    let errors = failures(&text);
+    let d = &errors.diagnostics()[0];
+    assert!(d.message().contains("expected `Authority:` here"), "{d}");
+    assert_eq!(&text[d.location().range()], CRITERION);
 }

@@ -60,7 +60,7 @@ the current inventory and migrate with them when that work is assigned.
 - [x] Connect the runner to `anchorbook verify --config`, preserving the shared scope and exit statuses. Collect code and lockfile content identities and compare input snapshots before and after execution.
 - [x] Exercise changed-input and stale-report cases with the actual runner; neither can produce satisfied evidence.
 - [x] Pin nextest and document installing it in CONTRIBUTING; ordinary `cargo test` and CI test jobs are unchanged.
-- [x] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `check-independent-build#broken-book` can be linked.
+- [x] Wrap `scripts/check-engine-independence.sh` in an ignored integration test so `A-check-independent-build#broken-book` can be linked.
 - [x] Link the test criteria of the `verify-*` anchors, and the tests behind every test criterion this Book [claims](../design/verification-evidence.md#claims-of-completion) through Complete milestones (29 claims when the gate was designed, most of them checker and record criteria), so a whole-Book run passes its test claims; record a build-loop run. Claimed proof and review methods stay unchecked until milestones 2 and 6. Link only a test that exercises its criterion. Where a claimed criterion has none, add the test, or change the claiming milestone's coverage to Partial with its scope, and record the case; never link a loosely related test to clear a claim.
 - [x] Decide how ignored acceptance tests, such as `current_book` and `rendered_book`, which needs a built Book, count when linked: run them with their prerequisites, or report them as no-evidence with the reason. Decided: an ignored test that reads only current sources can be linked; one that reads earlier build output, such as `rendered_book`, cannot, as [Test runner](../design/verification-evidence.md#test-runner) states.
 
@@ -70,28 +70,28 @@ the current inventory and migrate with them when that work is assigned.
 
 Independent fixtures produce every state for the test method; criteria requiring several methods report partial or not evaluated correctly; scoped runs name what they exclude.
 
-- **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method`, `scope-and-limits` — Partial: test method and its execution scope; proof scope is in milestone 2.
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method`, `scope-and-limits` — Partial: test method and its execution scope; proof scope is in milestone 2.
 - **Evidence:** Passed. Fixture tests produce every test-method state from supplied results and through the recording runner: satisfied, failed, skipped and absent as no-evidence, inconclusive for a failed build, a missing report, or changed inputs, and not evaluated for a missing nextest or one not listed in `runners`; a test-and-review criterion is partial; scoped runs give the excluded methods' reasons.
 
 #### Progress report {#verification-evidence-1-progress-report}
 
 For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor by chapter with states, links, and summary counts and exit 0; invalid inputs make the run incomplete; an unbuildable or missing runner affects only its method.
 
-- **Anchor coverage:** [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and retained CI reports in milestone 3.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and retained CI reports in milestone 3.
 - **Evidence:** Passed. The CLI reports every anchor by chapter with states, linked functions, the nextest version, and summary counts; exits 0 with every checked claim holding, 1 with a failing claim, and 2 for invalid inputs; and an unbuildable or missing runner affects only the test method (`tests/verification.rs`).
 
 #### Links {#verification-evidence-1-links}
 
 Fixtures with dangling, mismatched, misplaced, and duplicate links and unlinked criteria produce located findings; corrected fixtures resolve.
 
-- **Anchor coverage:** [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: test links
+- **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: test links
 - **Evidence:** Passed in [milestone 4](#verification-evidence-4-function-links), with the scanner correction recorded there; every link in this Book's sources resolves, with no link findings.
 
 #### Selected runs {#verification-evidence-1-selected-runs}
 
 Recording runners and native nextest runs select exactly the linked tests in scope and identify code and lockfile contents. Before-and-after input snapshots detect changes and make affected evidence inconclusive; earlier reports never count. Linked tests not executed, skipped, or missing have no evidence; the runner preserves Book and source files.
 
-- **Anchor coverage:** [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: native test selection, current inputs, and preservation; proof execution is in milestone 2.
+- **Anchor coverage:** [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: native test selection, current inputs, and preservation; proof execution is in milestone 2.
 - **Evidence:** Passed. The recording runner shows one `cargo nextest run` per package with the exact filter, ignored tests included, and the tool configuration under the output directory, and that only that directory changes. Native runs on this repository select exactly the linked tests; with a passing report from an earlier run planted in the store and a test file that fails to build, the method is inconclusive (exit 101, no report), and a source edited during a whole-Book run makes the evidence inconclusive and the claims fail. Reports include the code identity over sources, manifests, and lockfiles; a lockfile change at the root of a member package changes it.
 
 #### Build loop {#verification-evidence-1-build-loop}
@@ -103,7 +103,7 @@ In this repository, `anchorbook verify --anchor` for a linked anchor reports its
 
 ### Evidence {#verification-evidence-1-evidence}
 
-Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the test suite pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. Linking: every test criterion that a Complete milestone claims has linked tests that exercise it, plus the `verify-*` anchors' criteria. One claim had no such test: Record Rendering milestone 2's `relationship-navigation`, whose site-prefix and print-view checks read previously built output, so its coverage is now Partial with that scope. `check-independent-build#broken-book` is linked to a new ignored test that runs `scripts/check-engine-independence.sh`, and `roadmap-validation` to a new current-Book acceptance test of this Book's roadmaps. Mutation testing on the runner: the first run had 9 survivors, 6 in JUnit index arithmetic, rewritten so none remains, and 3 test gaps, now covered; the repeat run tested 67 mutations: 41 caught, 26 unviable, none missed. Limits: one nextest version; builds use the project's ordinary target directory; reports are read, not retained, until milestone 3.
+Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the test suite pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. Linking: every test criterion that a Complete milestone claims has linked tests that exercise it, plus the `verify-*` anchors' criteria. One claim had no such test: Record Rendering milestone 2's `relationship-navigation`, whose site-prefix and print-view checks read previously built output, so its coverage is now Partial with that scope. `A-check-independent-build#broken-book` is linked to a new ignored test that runs `scripts/check-engine-independence.sh`, and `roadmap-validation` to a new current-Book acceptance test of this Book's roadmaps. Mutation testing on the runner: the first run had 9 survivors, 6 in JUnit index arithmetic, rewritten so none remains, and 3 test gaps, now covered; the repeat run tested 67 mutations: 41 caught, 26 unviable, none missed. Limits: one nextest version; builds use the project's ordinary target directory; reports are read, not retained, until milestone 3.
 
 ### Completion record
 
@@ -117,7 +117,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 **Dependencies:** [Milestone 4](#verification-evidence-4), the existing engine proof, and a scoped native compatibility experiment that settles configuration fields and supported function/target forms before the complete runner is assigned. Nextest completion is not required.
 
-**Design basis:** [Verus runner](../design/verification-evidence.md#verus-runner), [authority proof](../design/rust-engine.md#authority-proof), and [project-verus-evidence](../design/project-integration.md#project-verus-evidence).
+**Design basis:** [Verus runner](../design/verification-evidence.md#verus-runner), [authority proof](../design/rust-engine.md#authority-proof), and [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence).
 
 **Identifier:** `verification-evidence-2`
 
@@ -139,28 +139,28 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 Fixtures cover every proof-method state. Native runs demonstrate a linked failure as failed, a passing linked caller with a failing unlinked lemma as inconclusive, correction as satisfied, and build failure and unavailable tools in their designed states. The engine's `formal-authority` proof method is satisfied for the tested inputs; test and review obligations retain their own states.
 
-- **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: proof method; [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run` — Partial: proof runner; [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: proof links
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: proof method; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: proof runner; [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: proof links
 - **Evidence:** Pending.
 
 #### Report integrity {#verification-evidence-2-report-integrity}
 
 Real and independent fixture reports establish mode-aware, unique function matching and full-target success. Missing, duplicate, skipped, wrong-mode, partial, malformed, zero-coverage, or unsupported-version evidence never satisfies a method. Failures outside a criterion's links make its proof evidence inconclusive and retain the failing obligations and locations.
 
-- **Anchor coverage:** [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: proof modes and result identities; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: proof report interpretation.
+- **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: proof modes and result identities; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: proof report interpretation.
 - **Evidence:** Pending.
 
 #### Current runs {#verification-evidence-2-current-runs}
 
 Recording runners and native runs establish exactly the required targets, actual features and tools, fresh reports, and code and lockfile content identities including dirty sources. Before-and-after input snapshots detect changes and make affected evidence inconclusive. Earlier reports and successful commands without new verification output never count as passing evidence; the runner preserves Book and source files.
 
-- **Anchor coverage:** [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: native proof execution, completing the test-runner scope in milestone 1; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `scope-and-limits` — Partial: proof target scope.
+- **Anchor coverage:** [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: native proof execution, completing the test-runner scope in milestone 1; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: proof target scope.
 - **Evidence:** Pending.
 
 #### Trust policy {#verification-evidence-2-trust-policy}
 
 For the supported verifier, deliberate assumptions and trusted project bodies fail the configured policy. Reports retain trusted dependencies and excluded boundaries; zero errors or a successful linked function cannot override partial-target verification or an unsupported report version.
 
-- **Anchor coverage:** [project-verus-evidence](../design/project-integration.md#project-verus-evidence) · `trusted-assumptions` — Partial: the first supported adapter and engine pilot; independent consumers and their tool selections are in milestone 5.
+- **Anchor coverage:** [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence) · `trusted-assumptions` — Partial: the first supported adapter and engine pilot; independent consumers and their tool selections are in milestone 5.
 - **Evidence:** Pending. Existing engine proof runs do not establish consumer-runner behavior.
 
 ### Completion record
@@ -183,7 +183,7 @@ Pending.
 
 - [ ] Define a versioned artifact schema from the typed report, with current inputs, executed scope, tools, states, assumptions, and limits; review retained fields against public-content guidance.
 - [ ] Run the whole-Book command in CI with supported tools and retain reports for passing, unsatisfied, and incomplete runs. Preserve the progress command's exit policy.
-- [ ] Run the tests once in CI: let `verify` read a nextest report supplied by the project's own CI test run, after checking that the report's recorded inputs match the current checkout, instead of running the linked tests a second time. A report whose inputs differ is no evidence. Local runs keep running the linked tests themselves, as [`decision-verify-runs-linked-checks`](../authority/decisions.md#decision-verify-runs-linked-checks) allows for runs `verify` does not invoke.
+- [ ] Run the tests once in CI: let `verify` read a nextest report supplied by the project's own CI test run, after checking that the report's recorded inputs match the current checkout, instead of running the linked tests a second time. A report whose inputs differ is no evidence. Local runs keep running the linked tests themselves, as [`D-verify-runs-linked-checks`](../authority/decisions.md#D-verify-runs-linked-checks) allows for runs `verify` does not invoke.
 - [ ] Demonstrate an authorized failure/correction cycle and record actual revision-specific workflow results, retention, and runtime.
 
 ### Completion criteria
@@ -192,7 +192,7 @@ Pending.
 
 A versioned artifact preserves the typed report's scope and states, input identities, tools, and limits, with private paths and raw source/proof payloads omitted. Invalid or stale artifacts never become evidence for another run.
 
-- **Anchor coverage:** [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: retained CI presentation; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `scope-and-limits` — Partial: artifact scope and limits.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: retained CI presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: artifact scope and limits.
 - **Evidence:** Pending.
 
 #### CI results {#verification-evidence-3-ci-results}
@@ -233,28 +233,28 @@ Pending.
 
 Independent evidence fixtures produce every method state and correct multi-method, criterion, and anchor aggregation, including linked proof failure versus target failures elsewhere. The review method remains not evaluated until milestone 6, and only all-required-method success satisfies a criterion.
 
-- **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: normalized state model; native test/proof results are in milestones 1 and 2.
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: normalized state model; native test/proof results are in milestones 1 and 2.
 - **Evidence:** Passed. `tests/verification.rs` `every_method_state_comes_from_links_and_this_runs_results` and `the_worst_linked_test_decides_and_reasons_name_the_function` evaluate a fixture plan against supplied results: passed, failed, skipped, and absent tests; unusable and unavailable runners; a linked proof failure outranking failures elsewhere and incompleteness, which are inconclusive; and a verified function without its specification assessment as no-evidence. A criterion with test satisfied and review not evaluated is partial; an unlinked criterion stays unlinked when no runner ran. `states_combine_as_the_design_orders_them` checks aggregation order.
 
 #### Function links {#verification-evidence-4-function-links}
 
 A recorded parser/dependency review identifies supported Rust and Verus forms. Independent source fixtures resolve identities and methods against real inventory IDs, reject invalid links, and distinguish same-named functions by module/package/target. A specification declaration alone supplies no successful proof evidence; unsupported forms have located findings.
 
-- **Anchor coverage:** [verify-links-resolve](../design/verification-evidence.md#verify-links-resolve) · `link-findings` — Partial: source discovery and inventory resolution; result matching is in each runner milestone.
+- **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: source discovery and inventory resolution; result matching is in each runner milestone.
 - **Evidence:** Passed. Parser review: `syn` 2.0.119 with only `full` and `parsing`, and `proc-macro2` 1.0.107 with only `span-locations`; both were already in `Cargo.lock`, add no proc-macro, printing, or Verus dependency, and leave the default tree free of `vstd`. A line scanner finds every `anchorbook:` comment line and `syn` attaches doc-comment links to their functions, so ordinary comments, links on structs, methods, or non-test functions, and links inside macros are located findings. Supported forms are listed in [Evidence links](../design/verification-evidence.md#evidence-links). Fixture tests resolve links against the inventory and report misplaced, malformed, duplicate, dangling, method-mismatched, ambiguous, and unsupported links at their lines; distinguish same-named functions by module, crate target, and package; identify library, binary, binary-module, and integration-test-module targets, block doc comments, direct and `cfg_attr` Verus attributes, and witnesses; and show a corrected link removing its finding. This Book's nine existing links, written in the earlier `//` form, were reported as misplaced and converted.
 
 #### Plans and reports {#verification-evidence-4-plans-and-reports}
 
 Fixture plans identify requested criteria, selected tests/proof targets, excluded scope, criteria/configuration content identities, and Git revision/dirty state, remaining usable without Git. Library and actual CLI reports agree for valid, invalid, and unavailable-runner inputs, preserve sources, and use the designed progress/incomplete exit behavior. The report model includes execution identity fields; native collection and snapshots remain in milestones 1 and 2.
 
-- **Anchor coverage:** [verify-progress-report](../design/verification-evidence.md#verify-progress-report) · `progress-output`, `incomplete-runs`; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `scope-and-limits`; [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: planning and reporting before native execution; milestones 1 and 2 supply native results.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs`; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits`; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run`, `source-preservation` — Partial: planning and reporting before native execution; milestones 1 and 2 supply native results.
 - **Evidence:** Passed. Fixture plans list the tests and proof targets selected for the scope; a run scoped by anchor and method reports excluded methods as not evaluated with the reason. Input identities change with a criterion's statement and not otherwise, and Git revision and dirty state are reported in a repository and absent outside one. The actual CLI prints every anchor with the library's state, exact summary counts, link findings, and claims; exits 2 for unknown or non-anchor scope, a repeated `--config`, an unknown method, a failing structural check, and invalid `[verification]`, records, or roadmaps; and changes no file or directory. An invalid `[verification]` section leaves `check` passing.
 
 #### Claims checked {#verification-evidence-4-claims}
 
 Fixture Books with Complete and other milestones, Full and Partial coverage, and satisfied, unlinked, and failing criteria produce the designed claim failures, exit statuses, and unchecked lists through the library and actual CLI.
 
-- **Anchor coverage:** [verify-claims-evidenced](../design/verification-evidence.md#verify-claims-evidenced) · `claim-failures`, `unchecked-claims` — Partial: fixture results; native runs are in milestones 1 and 2.
+- **Anchor coverage:** [A-verify-claims-evidenced](../design/verification-evidence.md#A-verify-claims-evidenced) · `claim-failures`, `unchecked-claims` — Partial: fixture results; native runs are in milestones 1 and 2.
 - **Evidence:** Passed. A Complete milestone's Full coverage is claimed, including a status with an explanation; In progress milestones and Partial coverage claim nothing, and roadmaps are read from the role chapter and its nested subtree only. A claimed criterion that is unlinked or failing exits 1 naming the claiming criterion and its line; passing linked tests satisfy it; a claim outside the requested anchors, or on review, is unchecked and exits 0. The roadmap reader rejects a qualified Full and a missing level (`tests/roadmaps.rs`). On this Book, `anchorbook verify --config anchorbook.toml` reports 29 anchors, 65 criteria, and 29 claims: 22 unsatisfied, because they are unlinked, and 7 unchecked; it exits 1 until [milestone 1](#verification-evidence-1) links them.
 
 ### Evidence {#verification-evidence-4-evidence}
@@ -276,7 +276,7 @@ Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correctio
 
 **Dependencies:** Deferred until milestones 2, 3, and 6 are complete on this Book, and [Formal Verification milestone 4](formal-verification.md#formal-verification-4). Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.
 
-**Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [project-verus-evidence](../design/project-integration.md#project-verus-evidence), and [verification responsibilities](../design/verification.md#responsibilities).
+**Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence), and [verification responsibilities](../design/verification.md#responsibilities).
 
 **Identifier:** `verification-evidence-5`
 
@@ -294,21 +294,21 @@ Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correctio
 
 Both consumers build the packaged engine without its verifier dependencies and run their configured Verus installations using verification Rust separate from build Rust. A different consumer `vstd` resolves and builds; reports identify the actual tools and supported adapter used.
 
-- **Anchor coverage:** [project-verus-evidence](../design/project-integration.md#project-verus-evidence) · `separate-toolchain` — Full; [project-no-imposed-dependencies](../design/project-integration.md#project-no-imposed-dependencies) · `independent-resolution` — Partial: proof dependencies and consumer `vstd` choice. Other exact pins and general release compatibility remain separate work.
+- **Anchor coverage:** [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence) · `separate-toolchain` — Full; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution` — Partial: proof dependencies and consumer `vstd` choice. Other exact pins and general release compatibility remain separate work.
 - **Evidence:** Pending.
 
 #### Consumer proof {#verification-evidence-5-consumer-proof}
 
 The consumer's own linked functions produce satisfied proof evidence, a deliberate defect fails, and correction passes at new input identities. Assumed/trusted project bodies, partial verification, unsupported versions, and engine proof results cannot satisfy a consumer criterion.
 
-- **Anchor coverage:** [project-verus-evidence](../design/project-integration.md#project-verus-evidence) · `trusted-assumptions` — Full; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: independent consumer proof states.
+- **Anchor coverage:** [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence) · `trusted-assumptions` — Full; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: independent consumer proof states.
 - **Evidence:** Pending.
 
 #### Scope review {#verification-evidence-5-scope-review}
 
 Record the consumer criterion-to-contract assessment, production call path, satisfied preconditions, and test/review coverage of exclusions for the tested revisions. Reports disclose executed targets and any unsatisfied review method; proof success never implies all-method or whole-system verification.
 
-- **Anchor coverage:** [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `scope-and-limits` — Partial: consumer scope presentation. Fixture criterion fidelity and excluded boundaries are reviewed against the consumer's own Book.
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: consumer scope presentation. Fixture criterion fidelity and excluded boundaries are reviewed against the consumer's own Book.
 - **Evidence:** Pending.
 
 #### Consumer guidance {#verification-evidence-5-consumer-guidance}
@@ -328,7 +328,7 @@ Pending. Packaged fixture acceptance does not authorize publication or complete 
 
 **Status:** Proposed
 
-**Dependencies:** Milestones 1 and 2, and the reviewed results of [milestone 7](#verification-evidence-7), which settle the change operators, the witness form, the fingerprint inputs, and the runtime per change. Exclusion coverage in the brief needs the proof-scope items of [Record Line Grammar milestone 2](record-line-grammar.md#record-line-grammar-2); before then the brief shows the statement text.
+**Dependencies:** Milestones 1 and 2, and the reviewed results of [milestone 7](#verification-evidence-7), which settle the change operators, the witness form, the fingerprint inputs, and the runtime per change. Exclusion coverage in the brief uses the proof-scope items the record reader parses since [Record Line Grammar milestone 2](record-line-grammar.md#record-line-grammar-2).
 
 **Design basis:** [Guards](../design/verification.md#guards), [assessment records](../design/verification.md#assessment-records), [proof guards](../design/verification-evidence.md#proof-guards), and the [brief](../design/verification-evidence.md#using-verify).
 
@@ -348,21 +348,21 @@ Pending. Packaged fixture acceptance does not authorize publication or complete 
 
 Native fixtures show an omitted rule as an unclassified survivor that fails the proof method, the strengthened specification rejecting the same change, survivors classified only by failing covering tests or a current equivalent listing, and unviable, safety-only, and timed-out changes in their designed outcomes. Specifications and proofs are never changed.
 
-- **Anchor coverage:** [verify-proof-sensitive](../design/verification.md#verify-proof-sensitive) · `surviving-changes`, `classified-survivors`, `uninformative-changes` — Full
+- **Anchor coverage:** [A-verify-proof-sensitive](../design/verification.md#A-verify-proof-sensitive) · `surviving-changes`, `classified-survivors`, `uninformative-changes` — Full
 - **Evidence:** Pending.
 
 #### Witnesses {#verification-evidence-6-witnesses}
 
 Fixtures with unsatisfiable, unwitnessed, witnessed, and failing-witness preconditions produce the designed proof states.
 
-- **Anchor coverage:** [verify-proof-nonvacuous](../design/verification.md#verify-proof-nonvacuous) · `witness-required` — Full
+- **Anchor coverage:** [A-verify-proof-nonvacuous](../design/verification.md#A-verify-proof-nonvacuous) · `witness-required` — Full
 - **Evidence:** Pending.
 
 #### Assessments {#verification-evidence-6-assessments}
 
 Fixtures show which changes alter the fingerprint and which do not; missing, stale, rejecting, and current assessment records produce the designed proof and review method states; malformed and duplicate records are located findings; `verify` never writes a record.
 
-- **Anchor coverage:** [verify-proof-assessment-current](../design/verification.md#verify-proof-assessment-current) · `fingerprint-coverage`, `assessment-states` — Full; [verify-criterion-states](../design/verification-evidence.md#verify-criterion-states) · `state-per-method` — Partial: the review method; [verify-runs-linked-checks](../design/verification-evidence.md#verify-runs-linked-checks) · `source-preservation` — Partial: assessment records are read only.
+- **Anchor coverage:** [A-verify-proof-assessment-current](../design/verification.md#A-verify-proof-assessment-current) · `fingerprint-coverage`, `assessment-states` — Full; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: the review method; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `source-preservation` — Partial: assessment records are read only.
 - **Evidence:** Pending.
 
 #### Brief {#verification-evidence-6-brief}
@@ -411,14 +411,14 @@ Pending.
 
 Every change tried is recorded with its location, its outcome, the obligation that failed or its classification as a survivor, and its runtime; the accepted-status change fails verification. The commands reproduce the results.
 
-- **Anchor coverage:** None — design experiment; informs [verify-proof-sensitive](../design/verification.md#verify-proof-sensitive)
+- **Anchor coverage:** None — design experiment; informs [A-verify-proof-sensitive](../design/verification.md#A-verify-proof-sensitive)
 - **Evidence:** Passed. `scripts/proof-guards/code_changes.py` lists 29 changes to the executable statements of the seven functions, each with its exact original and replacement text; `scripts/proof-guards/run.py code` applies them one at a time to a disposable copy, verifies the complete crate, and runs the record-API tests against survivors. The accepted-status change (`R7`) fails a postcondition. 23 changes are rejected: 14 by postconditions, 7 by loop invariants, `U1` by both, and `A5` (skipping records) by an invariant and an overflow check. Six survive full verification (15 verified, 0 errors); see the milestone evidence. With Verus 0.2026.10.18.7d82994 built from source and six workers, each change took 1–2 seconds after a first build of about 45 seconds per worker.
 
 #### Witness and fingerprint {#verification-evidence-7-witness-and-fingerprint}
 
 A verified witness for `validate_reference` and the list of fingerprint inputs for `formal-authority` are recorded, with any limits found.
 
-- **Anchor coverage:** None — design experiment; informs [verify-proof-nonvacuous](../design/verification.md#verify-proof-nonvacuous) and [verify-proof-assessment-current](../design/verification.md#verify-proof-assessment-current)
+- **Anchor coverage:** None — design experiment; informs [A-verify-proof-nonvacuous](../design/verification.md#A-verify-proof-nonvacuous) and [A-verify-proof-assessment-current](../design/verification.md#A-verify-proof-assessment-current)
 - **Evidence:** Passed in a disposable copy. **Witness:** an executable function that builds one decoded anchor candidate with one reference and calls `validate_reference(candidates.as_slice(), 0, 0)` verifies; changing the call to reference index 1 fails with "precondition not satisfied", so Verus checks the witness rather than trusting its link. In an ordinary build the function is dead code and trips Clippy's `vec_init_then_push`; gating it with `#[cfg(verus_keep_ghost)]` requires declaring that cfg for `unexpected_cfgs`. A proof-mode witness would need to construct a `Vec` in ghost code and was not pursued. **Fingerprint inputs:** the criterion's statement and proof scope; the signatures and contracts of `has_required_authority`, `matches_identity`, `matches_target_kind`, `lookup`, `has_unknown_identity`, `validate_reference`, and `validate_authorities`; the specification functions their contracts reach: `records_satisfy_authority_rules`, `record_satisfies_authority_rules`, `reference_satisfies_authority_rules`, `reference_is_not_repeated`, `resolves_uniquely_to`, `identified_by`, `target_is_suitable_authority`, `kind_matches`, and `violation_is_located`; the types `Candidate`, `Reference`, `Kind`, `TargetKind`, `Failure`, `Violation`, and `Lookup`; and the `vstd` version, whose string, sequence, and vector specifications the contracts use. `target_is_suitable_authority` is reached through `validate_reference` and through `reference_satisfies_authority_rules`, so a change to it falls inside; changing it (`SR1`, `SR3`, `SR10`) also changed the verification outcome. Loop invariants and proof blocks are excluded, as the design specifies.
 
 #### Assessment {#verification-evidence-7-assessment}

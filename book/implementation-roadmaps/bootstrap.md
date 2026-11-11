@@ -24,7 +24,7 @@ The AI Working Contract (`anchorbook contract`) defines how agents work.
 
 **Dependencies:** None. Acceptance is a design judgment; the built checker and its evidence inform the review but do not establish it.
 
-**Design basis:** [Structural Checking](../design/structural-checking.md), [Checking Diagnostics](../design/check-diagnostics.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md#check-shared-typed-results), [System Overview](../design/system-overview.md#check-independent-build), the [initial checker requirements](../authority/requirements.md#initial-checker-requirements), and [Decisions](../authority/decisions.md).
+**Design basis:** [Structural Checking](../design/structural-checking.md), [Checking Diagnostics](../design/check-diagnostics.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md#A-check-shared-typed-results), [System Overview](../design/system-overview.md#A-check-independent-build), the [initial checker requirements](../authority/requirements.md#initial-checker-requirements), and [Decisions](../authority/decisions.md).
 
 **Identifier:** `engine-bootstrap-1`
 
@@ -37,7 +37,7 @@ The AI Working Contract (`anchorbook contract`) defines how agents work.
 - [x] Settle the APIs, dependencies, and supported tool versions needed for structural checking; [Structural Checking milestones 1 and 2](structural-checker.md#structural-checking-2) record the choices.
 - [x] Assign the Structural Checking milestones as scoped prototypes.
 - [x] Review each of the nine checker anchors as a guarantee supporting the check, repair, and recheck loop: its property, cited authority, retained constraints, and criteria. Make agreed revisions in the design and reconcile affected roadmaps.
-- [x] Review the six checker requirements and the four decisions the anchors cite for whether they justify the properties: `decision-explicit-configuration`, `decision-mdbook-structure`, `decision-separate-check-and-repair`, and `decision-typed-check-results`.
+- [x] Review the six checker requirements and the four decisions the anchors cite for whether they justify the properties: `D-explicit-configuration`, `D-mdbook-structure`, `D-separate-check-and-repair`, and `D-typed-check-results`.
 - [x] Mark the agreed records `accepted`, each requirement and decision no later than the anchors that cite it, and run the structural check and Book build.
 
 ### Completion criteria
@@ -59,7 +59,7 @@ The Book contains the checker design, six checker requirements, four governing d
 
 **Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Merged in PR #25 as `f78f047`.
 
-**Review revisions:** `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `check-configuration-validity` also cites `requirement-truthful-results`; `decision-separate-check-and-repair` is retitled; and `requirement-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
+**Review revisions:** `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `A-check-configuration-validity` also cites `R-truthful-results`; `D-separate-check-and-repair` is retitled; and `R-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
 
 **Checks:** The structural check, `mdbook build` with mdBook 0.5.4, current-Book acceptance, and rendered-Book acceptance passed after acceptance.
 

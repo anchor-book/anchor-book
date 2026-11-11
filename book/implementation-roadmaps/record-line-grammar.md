@@ -11,38 +11,22 @@ or revised on evidence before the migration.
 
 ## Gap
 
-The engine and all of this Book's records use the earlier TOML form:
-
-- **Records.** A top-level fenced block labeled `anchorbook-anchor`,
-  `anchorbook-requirement`, or `anchorbook-decision`, whose TOML body carries
-  `schema-version = 1`, `id`, `title`, `status`, and the kind's fields
-  (`property`, inline-table `authorities`, and `[[criteria]]` with `id`,
-  `statement`, and `verification` for anchors). Proof scope is written as
-  labeled paragraphs inside the statement and is not checked.
-- **Identifiers.** Lowercase, because the reader accepts no kind code:
-  requirements and decisions carry `requirement-` and `decision-` prefixes and
-  anchors have none. Name new records by the
-  [identifier rules](../design/anchor-definitions.md#identifiers) in that form,
-  so the migration only replaces the prefix with the kind code, such as
-  `decision-separate-check-and-repair` becoming `D-separate-check-and-repair`,
-  and adds `A-` to each anchor.
-- **Reader.** `src/records/markdown.rs` and `src/records/schema.rs`. Milestone 2
-  replaces them with the line reader, keeping `toml_edit` for configuration, and
-  migrates the reader, fixtures, records, and identifiers together; TOML record
-  blocks are then rejected as unsupported syntax.
-
-Searches against this Book's sources show what that form costs agents:
+Before [milestone 2](#record-line-grammar-2), the engine and this Book's records
+used an earlier TOML form: each record a fenced block labeled `anchorbook-anchor`,
+`anchorbook-requirement`, or `anchorbook-decision`, with lowercase identifiers
+that carried no kind code and proof scope written as unchecked paragraphs inside
+the statement. Searches against this Book's sources showed what that form cost
+agents:
 
 | Question | Result with TOML records |
 | --- | --- |
-| What cites `requirement-observation-only`? | 6 lines in three shapes: the definition, an anchor citation, a decision citation, and three lines from literal schema examples that look the same without reading the surrounding block |
+| What cites `R-observation-only`? | 6 lines in three shapes: the definition, an anchor citation, a decision citation, and three lines from literal schema examples that look the same without reading the surrounding block |
 | Which records are drafts? | 29 lines of `status = "draft"`, none stating the record's kind or identity |
 | Which criteria require proof? | `verification = ["proof"]`, without its criterion or anchor identifier |
 
-Proof scope is a writing convention inside a statement string that the engine
-cannot check. The renderer needs no change beyond rendering
+The renderer needed no change beyond rendering
 [inline text](../design/record-rendering.md#reader-presentation): it replaces each
-record's source range with HTML from the typed inventory and never reads TOML.
+record's source range with HTML from the typed inventory.
 
 ## Timing
 
@@ -86,7 +70,7 @@ Each variant represents the same records: a recorded comparison shows identical 
 
 For every search task and variant, the recorded searches, matched lines, wrong matches, and further reads are reproducible from committed scripts or listed commands.
 
-- **Anchor coverage:** None — design experiment; informs [records-searchable-lines](../design/anchor-definitions.md#records-searchable-lines)
+- **Anchor coverage:** None — design experiment; informs [A-records-searchable-lines](../design/anchor-definitions.md#A-records-searchable-lines)
 - **Evidence:** Passed. `scripts/record-syntax/searches.py` runs one search per task and variant over the copies, for the tasks in `scripts/record-syntax/tasks.md`, classifies each matched line from the copy's record index, and counts the further lines above a match an agent must read to name the record or criterion. Every search returns its complete answer; the table lists matched lines, then how many are the answer, other record lines, literal examples, and prose, and the further lines read.
 
   | Task | `toml` | `fence` | `lines` |
@@ -127,7 +111,7 @@ A written assessment compares the variants on searches, reads, wrong matches, an
 
 **Assessment.** All three syntaxes let agents answer and edit correctly at this Book's size; they differ in what an agent must read.
 
-1. **TOML costs the most.** Its searches return lines that do not name their record: 41 matches and 148 lines read back for draft anchors, against 21 and none for the others. Claude Code read 2.7 times as many lines as with the line grammar, and Codex wrote a parser to list records, which [`requirement-searchable-records`](../authority/requirements.md#requirement-searchable-records) says agents must not need.
+1. **TOML costs the most.** Its searches return lines that do not name their record: 41 matches and 148 lines read back for draft anchors, against 21 and none for the others. Claude Code read 2.7 times as many lines as with the line grammar, and Codex wrote a parser to list records, which [`R-searchable-records`](../authority/requirements.md#R-searchable-records) says agents must not need.
 2. **The fence line gives most of the gain.** Putting kind, identity, and status on the fence line matches the line grammar for finding definitions and listing records by status, and Claude Code read 451 lines against 388.
 3. **The line grammar gains the rest.** Tracing a match back to its record or criterion takes 4 lines instead of 15 for references and 6 instead of 31 for proof criteria, because each criterion is one line. It matches more prose (4 mentions for one requirement), since identifiers in prose are spelled as in records; those lines are references the design means a search to find.
 4. **Unmeasured differences.** Only the line grammar gives proof scope a checked form, identifiers a kind code, and references one spelling. The trials do not measure these, and its migration is larger: a new reader and every identifier renamed, against a change to fence recognition alone.
@@ -146,7 +130,7 @@ Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The 
 
 **Outcome:** The engine's Rust record reader reads the line grammar as the only record format, with validation at least as strict as today; this Book, its fixtures, and its evidence links use kind-coded identifiers; and the preprocessor renders records with formatted inline text and identifiers linked to their records.
 
-**Status:** Proposed
+**Status:** Complete
 
 **Identifier:** `record-line-grammar-2`
 
@@ -156,12 +140,12 @@ Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The 
 
 **Tasks**
 
-- [ ] **Reader:** Replace `src/records/markdown.rs` and `schema.rs` with a Rust line scanner in `src/records/`, keeping the record types, inventory, and diagnostic codes, and using Markdown parsing only to find code regions.
-- [ ] **Validation:** Enforce line accounting, the identifier forms, the kind codes each reference field accepts, proof-scope items, and the criteria exclusions name. A TOML record block is an invalid definition at its fence that names the line grammar.
-- [ ] **Rendering:** Render the inline-text subset and identifier links in the preprocessor; record and milestone cards are otherwise unchanged.
-- [ ] **Migration:** Convert this Book's records and literal examples and the test fixtures, and rename every identifier to its kind-coded form in Book prose, link fragments, roadmap coverage, evidence links, code comments, and workflow metadata. The conversion is a one-time script outside the engine; the engine's reader validates its result.
-- [ ] **Proof:** Re-verify the authority proof and update the `production-integration` tests and review for the new conversion into candidates.
-- [ ] **Mutation testing:** Run it on the reader and rendering changes, and resolve every survivor.
+- [x] **Reader:** Replace `src/records/markdown.rs` and `schema.rs` with a Rust line scanner in `src/records/`, keeping the record types, inventory, and diagnostic codes, and using Markdown parsing only to find code regions.
+- [x] **Validation:** Enforce line accounting, the identifier forms, the kind codes each reference field accepts, proof-scope items, and the criteria exclusions name. A TOML record block is an invalid definition at its fence that names the line grammar.
+- [x] **Rendering:** Render the inline-text subset and identifier links in the preprocessor; record and milestone cards are otherwise unchanged.
+- [x] **Migration:** Convert this Book's records and literal examples and the test fixtures, and rename every identifier to its kind-coded form in Book prose, link fragments, roadmap coverage, evidence links, code comments, and workflow metadata. The conversion is a one-time script outside the engine; the engine's reader validates its result.
+- [x] **Proof:** Re-verify the authority proof and update the `production-integration` tests and review for the new conversion into candidates.
+- [x] **Mutation testing:** Run it on the reader and rendering changes, and resolve every survivor.
 
 ### Completion criteria
 
@@ -169,51 +153,51 @@ Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The 
 
 For an independent fixture Book, heading searches return exactly the authored records with their kind, identity, status, and title, and a search for each identifier returns its definition and exactly its authored references, each matched line classified from its own text.
 
-- **Anchor coverage:** [records-searchable-lines](../design/anchor-definitions.md#records-searchable-lines) · `heading-search`, `reference-search` — Full
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-records-searchable-lines](../design/anchor-definitions.md#A-records-searchable-lines) · `heading-search`, `reference-search` — Full
+- **Evidence:** Passed. `tests/record_syntax.rs` `a_heading_search_returns_every_record_with_its_kind_identity_status_and_title` applies the heading search line by line to an independent fixture Book of two requirements, two decisions, and two anchors, and reads each record's kind, identity, status, and title from the matched line alone; they equal the inventory's, and a search for draft decisions returns exactly one. `an_identifier_search_returns_its_definition_and_exactly_its_references` classifies every line matching each identifier from its own text: one definition, one reference line per citing record, and the one prose mention the fixture contains.
 
 #### Every line read {#record-line-grammar-2-every-line}
 
 Fixtures with stray, misordered, repeated, unknown, and missing lines, proof-scope faults, exclusions naming missing criteria, and TOML record blocks each produce a located invalid-definition diagnostic and no inventory; the corrected fixtures produce the expected records.
 
-- **Anchor coverage:** [records-every-line](../design/anchor-definitions.md#records-every-line) · `line-accounting`, `proof-scope` — Full
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-records-every-line](../design/anchor-definitions.md#A-records-every-line) · `line-accounting`, `proof-scope` — Full
+- **Evidence:** Passed. `stray_misordered_repeated_unknown_and_missing_lines_are_located` and `proof_criteria_carry_their_scope_and_exclusions_name_real_criteria` in `tests/record_syntax.rs` each produce one invalid-definition diagnostic at the expected line for a stray line, a misordered, repeated, foreign, or missing field, an unexpected indented line, a missing, empty, repeated, or misordered scope item, exclusions naming a missing criterion of the same anchor, of another anchor, or of a missing anchor, a non-criterion code span in exclusions, and scope items on a criterion without proof; the unchanged fixture reads as the expected records. `tests/records.rs` adds TOML record blocks, nested and indented records, a lazy continuation line, two records in one quote, and malformed quote prefixes.
 
 #### Named identifiers {#record-line-grammar-2-identifiers}
 
 Fixtures with missing, unknown, lowercase, and mismatched kind codes, names starting with a digit, and reference fields citing the wrong kind produce located diagnostics; names with digits inside a word are accepted.
 
-- **Anchor coverage:** [records-named-identifiers](../design/anchor-definitions.md#records-named-identifiers) · `identifier-forms`, `reference-codes` — Full
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-records-named-identifiers](../design/anchor-definitions.md#A-records-named-identifiers) · `identifier-forms`, `reference-codes` — Full
+- **Evidence:** Passed. `identifiers_state_their_kind_and_never_a_number` rejects a missing, unknown, and lowercase kind code, an uppercase name, `D-12`, `R-2026-01`, an underscore, and trailing or doubled hyphens at the heading line, rejects a decision code on a requirement's fields at the first foreign field, and accepts `R-utf8-reads`. `reference_fields_accept_only_their_kinds_codes_even_when_the_record_exists` rejects an `Authority:` citing an existing anchor and a `Requirements:` citing an existing decision, each at the reference.
 
 #### Validation kept {#record-line-grammar-2-validation-kept}
 
 The invalid-inventory and authority tests pass against line-grammar fixtures, with every existing diagnostic code still produced for its case.
 
-- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `invalid-inventory` — Full; [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-render-validated-records](../design/record-rendering.md#A-render-validated-records) · `invalid-inventory` — Full; [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
+- **Evidence:** Passed. `tests/records.rs` and `tests/authority_criteria.rs` were rewritten for the line grammar and keep every case: malformed records, missing, repeated, misordered, empty, and foreign fields, duplicate identities, and dangling, invalid, ambiguous, repeated, and status-incompatible references, each with its existing diagnostic code. A reference can no longer name a record of the wrong kind, since the identifier states the kind: a reference with the wrong code reports a missing target, and a reference to a kind the field does not accept is an invalid definition; the validator's own wrong-kind check is unchanged and still proved.
 
 #### Proof and conversion {#record-line-grammar-2-proof}
 
 The authority proof verifies the full crate with all seven functions and zero errors; the `production-integration` tests pass over the new conversion, a recorded review confirms the conversion keeps identities, kinds, statuses, references, and invalid candidates, and mutation testing of the reader leaves no unexplained survivor.
 
-- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Partial: re-verification after the conversion change; `production-integration` — Partial: tests and review of the new conversion.
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Partial: re-verification after the conversion change; `production-integration` — Partial: tests and review of the new conversion.
+- **Evidence:** Passed. The authority proof, `cargo verus verify --fwd-verus-args-to roots --locked --features verus --lib -- --no-cheating`, reports 15 verified and 0 errors for the full crate, and `.github/verus-report.jq` accepts it with all seven functions; `src/records/authority.rs` is unchanged apart from its documentation. The `production-integration` tests in `tests/records.rs`, `tests/authority_criteria.rs`, and `tests/rendering.rs` pass over the new reader. **Review of the conversion** (by the agent that wrote it): the line reader returns one candidate per record and per rejected block; a candidate keeps the identity its heading states even when a later line is invalid, and has none when its heading or identifier is malformed or it is a TOML, nested, or legacy block, so references to it report invalid authority rather than a missing record. A decoded record's kind comes from its identifier's code, its status from its heading, and its references in authored order with their kinds from their codes; `inventory.rs`'s conversion into validator candidates is unchanged except that its kind match now names every kind, so the indices the validator reports still select the right record and reference. The reader calls the verified `has_required_authority` for anchors. **Mutation testing** (cargo-mutants 27.1.0) of `src/records/lines.rs`, `src/records/inventory.rs`, and `src/rendering/html.rs` first found 31 survivors and 5 timeouts: redundant conditions and unreachable match arms, which were removed; loop counters that could only time out, removed by scanning slices; an option mask built with `|`, now built with `insert`; diagnostic messages, CRLF ranges, a record directly after a fence, a proof criterion with no scope items, and exclusion forms that tests did not distinguish, now tested; and one defect, an exclusion naming a requirement's identifier with a criterion counted as found, now fixed. One equivalent change remains, excluded with its reason in `.cargo/mutants.toml`. A changed-lines campaign over the whole change then tested 222 mutations: 191 caught, 31 unviable, none missed or timed out. Limits: the review is by the implementing agent; an assessment record awaits [Verification Evidence milestone 6](verification-evidence.md#verification-evidence-6).
 
 #### Rendered records {#record-line-grammar-2-rendered}
 
 Through the actual adapter, line-grammar records render as the current cards, field text renders the inline subset with identifiers linked to their records and raw HTML inert, and this Book renders and passes rendered-Book acceptance.
 
-- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `inline-text` — Full; `record-presentation` — Partial: line-grammar records keep their presentation.
-- **Evidence:** Pending.
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `inline-text` — Full; `record-presentation` — Partial: line-grammar records keep their presentation.
+- **Evidence:** Passed. Through the actual adapter, `field_text_renders_inline_markdown_and_links_record_identifiers` in `tests/rendering.rs` shows code spans, emphasis, strong emphasis, relative chapter links (rewritten to `.html`), external links, and autolinks formatted; code-spanned identifiers of records, including `<anchor>#<criterion>`, linked to their records with the title as a hint; unknown identifiers left as code; and raw HTML, other Markdown, images, `javascript:` and root-relative links left as literal text. `renders_required_methods_per_criterion_without_claiming_results` checks a proof criterion's scope renders as a labeled list. This Book's 56 records render, and rendered-Book acceptance passes, comparing every record field and proof scope with the inventory and resolving every local link.
 
 #### Book migrated {#record-line-grammar-2-migrated}
 
 This Book and the fixtures contain only line-grammar records and kind-coded identifiers; the structural check, `mdbook build`, and rendered-Book acceptance pass; and a whole-Book `verify` run reports no link findings and every claim it checks satisfied.
 
 - **Anchor coverage:** None — migration acceptance
-- **Evidence:** Pending.
+- **Evidence:** Passed. This Book's 56 records were converted by a one-time script, using the converter milestone 1 validated, and identifiers were renamed in Book prose, link fragments, roadmap coverage, the evidence links in 17 Rust source and test files, the authority module's documentation, and the proof workflow's evidence metadata; one record's link fragment and one exclusion's code span were fixed by hand. The structural check, `mdbook build`, current-Book and rendered-Book acceptance, and `scripts/check-engine-independence.sh` pass. `anchorbook verify --config anchorbook.toml` exits 0 with no link findings: with this milestone Complete, 39 claims, 34 satisfied and 5 unchecked; 67 criteria, 41 satisfied.
 
 ### Completion record
 
-Pending.
+Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The engine reads the line grammar as its only record format, this Book and its fixtures use it with kind-coded identifiers, and records render with formatted inline text and linked identifiers. The conversion review is the implementing agent's.

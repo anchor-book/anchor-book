@@ -27,95 +27,25 @@ covers and what it does not.
 The proof guards below constrain `verify`; the [trust policy](verification-evidence.md#verus-runner)
 and the runner's other states are anchored in
 [Running Verification](verification-evidence.md#anchors) and
-[Project Integration](project-integration.md#project-verus-evidence).
+[Project Integration](project-integration.md#A-project-verus-evidence).
 
-```anchorbook-anchor
-schema-version = 1
-id = "verify-proof-sensitive"
-title = "Proofs reject defects in the code they cover"
-status = "draft"
-property = '''
-For every proof criterion in scope, verify applies deliberate behavioral changes
-to the executable bodies of the criterion's linked functions, one at a time, and
-verifies the complete target for each. Every change that still verifies is
-reported at its source location. The proof method is satisfied only when every
-surviving change is detected by the linked tests of a criterion that its
-exclusions name, or is listed as equivalent in the current specification assessment.
-An unclassified survivor means the specification does not constrain that
-behavior, and the proof method fails.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-proofs-establish-criteria" },
-]
+> **`A-verify-proof-sensitive`** (draft): **Proofs reject defects in the code they cover**
+> Property: For every proof criterion in scope, verify applies deliberate behavioral changes to the executable bodies of the criterion's linked functions, one at a time, and verifies the complete target for each. Every change that still verifies is reported at its source location. The proof method is satisfied only when every surviving change is detected by the linked tests of a criterion that its exclusions name, or is listed as equivalent in the current specification assessment. An unclassified survivor means the specification does not constrain that behavior, and the proof method fails.
+> Authority: `R-proofs-establish-criteria`
+> - Criterion `surviving-changes` [test]: In a fixture whose specification omits one rule, the change that violates that rule verifies and is reported as an unclassified survivor, failing the proof method; once the specification states the rule, the same change fails verification and the method can be satisfied.
+> - Criterion `classified-survivors` [test]: A survivor is classified as excluded only when the linked tests of a criterion named in the exclusions fail against the same change, and as equivalent only when the current accepting specification assessment lists it; a stale assessment classifies nothing. Specifications and proofs are never changed.
+> - Criterion `uninformative-changes` [test]: Changes that do not build are listed as unviable; changes rejected only by overflow, bounds, or termination obligations are reported with the failing obligation; a timed-out run makes the proof method inconclusive. None of these counts as a survivor or as detection by the claim.
 
-[[criteria]]
-id = "surviving-changes"
-verification = ["test"]
-statement = "In a fixture whose specification omits one rule, the change that violates that rule verifies and is reported as an unclassified survivor, failing the proof method; once the specification states the rule, the same change fails verification and the method can be satisfied."
+> **`A-verify-proof-nonvacuous`** (draft): **Proof contracts can be met by some real input**
+> Property: A linked function with preconditions contributes satisfied proof evidence only when a verified witness, linked to the same criterion, establishes those preconditions for at least one input it constructs. A function whose preconditions cannot hold verifies any postcondition, so without a witness its proof method has no evidence, and a witness that fails verification fails the method. Functions without preconditions need no witness.
+> Authority: `R-proofs-establish-criteria`
+> - Criterion `witness-required` [test]: Fixtures with linked functions whose preconditions are unsatisfiable, satisfiable but unwitnessed, and witnessed by a verified witness function produce no-evidence, no-evidence, and satisfied proof methods; a witness that fails verification fails the method.
 
-[[criteria]]
-id = "classified-survivors"
-verification = ["test"]
-statement = "A survivor is classified as excluded only when the linked tests of a criterion named in the exclusions fail against the same change, and as equivalent only when the current accepting specification assessment lists it; a stale assessment classifies nothing. Specifications and proofs are never changed."
-
-[[criteria]]
-id = "uninformative-changes"
-verification = ["test"]
-statement = "Changes that do not build are listed as unviable; changes rejected only by overflow, bounds, or termination obligations are reported with the failing obligation; a timed-out run makes the proof method inconclusive. None of these counts as a survivor or as detection by the claim."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "verify-proof-nonvacuous"
-title = "Proof contracts can be met by some real input"
-status = "draft"
-property = '''
-A linked function with preconditions contributes satisfied proof evidence only
-when a verified witness, linked to the same criterion, establishes those
-preconditions for at least one input it constructs. A function whose
-preconditions cannot hold verifies any postcondition, so without a witness its
-proof method has no evidence, and a witness that fails verification fails the
-method. Functions without preconditions need no witness.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-proofs-establish-criteria" },
-]
-
-[[criteria]]
-id = "witness-required"
-verification = ["test"]
-statement = "Fixtures with linked functions whose preconditions are unsatisfiable, satisfiable but unwitnessed, and witnessed by a verified witness function produce no-evidence, no-evidence, and satisfied proof methods; a witness that fails verification fails the method."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "verify-proof-assessment-current"
-title = "A changed specification needs a fresh assessment"
-status = "draft"
-property = '''
-A proof method is satisfied only when an accepting assessment record matches the
-criterion's current specification fingerprint: the criterion's statement and
-proof scope, the contracts of its linked functions, and every specification
-function and type those contracts reach. Changing any of them makes the assessment
-stale and leaves the method without evidence until it is assessed again; a
-rejecting assessment fails the method. Changing only executable or proof bodies,
-comments, or formatting leaves the assessment current, and reverification covers it.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-proofs-establish-criteria" },
-  { kind = "decision", id = "decision-assessment-records-as-files" },
-]
-
-[[criteria]]
-id = "fingerprint-coverage"
-verification = ["test"]
-statement = "Changing a linked contract, a specification function it reaches transitively, a type it refers to, or the criterion's text changes the fingerprint and makes a matching assessment stale; changing only an executable or proof body, comments, or formatting does not."
-
-[[criteria]]
-id = "assessment-states"
-verification = ["test"]
-statement = "Missing, stale, and rejecting specification assessments leave the proof method no-evidence, no-evidence, and failed; a current accepting record with passing verification and guards satisfies it. An assessment record never satisfies a method whose verification did not pass."
-```
+> **`A-verify-proof-assessment-current`** (draft): **A changed specification needs a fresh assessment**
+> Property: A proof method is satisfied only when an accepting assessment record matches the criterion's current specification fingerprint: the criterion's statement and proof scope, the contracts of its linked functions, and every specification function and type those contracts reach. Changing any of them makes the assessment stale and leaves the method without evidence until it is assessed again; a rejecting assessment fails the method. Changing only executable or proof bodies, comments, or formatting leaves the assessment current, and reverification covers it.
+> Authority: `R-proofs-establish-criteria`; `D-assessment-records-as-files`
+> - Criterion `fingerprint-coverage` [test]: Changing a linked contract, a specification function it reaches transitively, a type it refers to, or the criterion's text changes the fingerprint and makes a matching assessment stale; changing only an executable or proof body, comments, or formatting does not.
+> - Criterion `assessment-states` [test]: Missing, stale, and rejecting specification assessments leave the proof method no-evidence, no-evidence, and failed; a current accepting record with passing verification and guards satisfies it. An assessment record never satisfies a method whose verification did not pass.
 
 ## Methods
 
@@ -247,9 +177,9 @@ assumption.
 | Concern | Guard | Mechanism |
 | --- | --- | --- |
 | The specification expresses the claim | Specification assessment against the criterion's brief, recorded with its fingerprint | Assessment |
-| The specification constrains the code's behavior | [Sensitivity](#verify-proof-sensitive): deliberate changes to linked functions must fail verification | Mechanical |
-| Preconditions can be met | [Witnesses](#verify-proof-nonvacuous) for linked functions with preconditions | Mechanical |
-| The assessed specification is the current one | [Change detection](#verify-proof-assessment-current) by fingerprint | Mechanical |
+| The specification constrains the code's behavior | [Sensitivity](#A-verify-proof-sensitive): deliberate changes to linked functions must fail verification | Mechanical |
+| Preconditions can be met | [Witnesses](#A-verify-proof-nonvacuous) for linked functions with preconditions | Mechanical |
+| The assessed specification is the current one | [Change detection](#A-verify-proof-assessment-current) by fingerprint | Mechanical |
 | No project assumptions | Trust policy: assumptions and trusted bodies fail the method | Mechanical |
 | Production callers meet preconditions and run the verified functions | Specification assessment of the call path and exclusions | Assessment |
 
@@ -293,7 +223,7 @@ the criterion and reached a conclusion. It names:
 | Reviewer and revision | Who reviewed, as the project identifies reviewers, and the revision examined |
 
 Records are files in the project's configured assessment directory, under the
-[assessment-records decision](../authority/decisions.md#decision-assessment-records-as-files).
+[assessment-records decision](../authority/decisions.md#D-assessment-records-as-files).
 `verify` reads them; it never writes or edits them. A record whose fingerprints no
 longer match is stale and counts as no record. Who may assess or review is the project's
 policy; an agent can prepare a record for the reviewer, and the record states who

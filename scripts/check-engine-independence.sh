@@ -49,14 +49,8 @@ test ! -e "$fixture_dir/book"
 restore_book
 cat >> "$fixture_dir/book/introduction.md" <<'RECORD'
 
-```anchorbook-requirement
-schema-version = 999
-id = "deliberately-invalid"
-title = "Deliberate fixture"
-status = "draft"
-statement = "This definition must be rejected."
-source = "Independent negative acceptance experiment."
-```
+> **`R-deliberately-invalid`** (draft): **Deliberate fixture**
+> Statement: This definition must be rejected; it has no source.
 RECORD
 independent_tests "Invalid record"
 acceptance_failure "Invalid record" current_book_records "record.invalid-definition"

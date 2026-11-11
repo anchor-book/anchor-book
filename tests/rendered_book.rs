@@ -16,8 +16,36 @@ fn normalize(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
+/// Field text as a reader sees it: inline code, emphasis, and link markup removed.
+fn plain(text: &str) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    while let Some(open) = rest.find('[') {
+        let (before, after) = rest.split_at(open);
+        out.push_str(before);
+        match after.find("](").zip(after.find(')')) {
+            Some((close, end)) if close < end => {
+                out.push_str(&after[1..close]);
+                rest = &after[end + 1..];
+            }
+            _ => {
+                out.push('[');
+                rest = &after[1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    normalize(&out.replace(['`', '*'], ""))
+}
+
 fn text(element: ElementRef<'_>) -> String {
     normalize(&element.text().collect::<Vec<_>>().join(" "))
+}
+
+/// Text of an element with its inline elements joined as written, so code spans
+/// and links next to punctuation read as they do in the source.
+fn inline_text(element: ElementRef<'_>) -> String {
+    normalize(&element.text().collect::<String>())
 }
 
 fn selector(css: &str) -> Selector {
@@ -70,9 +98,10 @@ fn read_pages(directory: &Path, pages: &mut BTreeMap<PathBuf, Page>) {
 
 fn check_record(record: &Record, element: ElementRef<'_>) {
     let rendered = text(element);
+    let inline = inline_text(element);
     let has = |value: &str| {
         assert!(
-            rendered.contains(&normalize(value)),
+            rendered.contains(&plain(value)) || inline.contains(&plain(value)),
             "record {} missing field: {value}",
             record.id()
         );
@@ -103,14 +132,32 @@ fn check_record(record: &Record, element: ElementRef<'_>) {
                 record.id()
             );
             for (criterion, item) in anchor.criteria.iter().zip(criteria) {
-                let ids: Vec<_> = item.select(&selector("code")).map(text).collect();
+                let ids: Vec<_> = item
+                    .select(&selector("code.ab-criterion-id"))
+                    .map(text)
+                    .collect();
                 assert_eq!(ids, [criterion.id.as_str()], "criterion identity");
-                let statement: Vec<_> = item.select(&selector(".ab-text")).map(text).collect();
+                let statement: Vec<_> = item
+                    .select(&selector(".ab-text"))
+                    .map(inline_text)
+                    .collect();
                 assert_eq!(
                     statement,
-                    [normalize(&criterion.statement)],
+                    [plain(&criterion.statement)],
                     "criterion statement"
                 );
+                let scope: Vec<_> = item
+                    .select(&selector(".ab-proof-scope dd"))
+                    .map(inline_text)
+                    .collect();
+                let expected: Vec<_> = criterion
+                    .scope
+                    .iter()
+                    .flat_map(|s| {
+                        [&s.domain, &s.boundary, &s.assumptions, &s.exclusions].map(|t| plain(t))
+                    })
+                    .collect();
+                assert_eq!(scope, expected, "proof scope of {}", criterion.id);
                 // Independent expected labels, not the production renderer's mapping.
                 let methods = criterion
                     .verification
