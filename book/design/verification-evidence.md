@@ -19,142 +19,34 @@ working on after each change, and CI, reporting the whole Book. It complements
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "verify-criterion-states"
-title = "Every criterion has an honest evidence state"
-status = "draft"
-property = '''
-For every anchor criterion in the evaluated scope, and each verification method
-it requires, verify reports exactly one state from a closed set. A criterion is
-satisfied only when every required method has passing evidence from the current
-run. Failed, inconclusive, missing, unlinked, or unevaluated evidence never counts
-as satisfied, and a satisfied criterion is reported as linked tests or proofs
-passing, not as proof that they are sufficient.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-criterion-evidence" },
-]
+> **`A-verify-criterion-states`** (draft): **Every criterion has an honest evidence state**
+> Property: For every anchor criterion in the evaluated scope, and each verification method it requires, verify reports exactly one state from a closed set. A criterion is satisfied only when every required method has passing evidence from the current run. Failed, inconclusive, missing, unlinked, or unevaluated evidence never counts as satisfied, and a satisfied criterion is reported as linked tests or proofs passing, not as proof that they are sufficient.
+> Authority: `R-criterion-evidence`
+> - Criterion `state-per-method` [test]: Independent fixtures produce each state for test and proof methods, including criteria requiring several methods with only some satisfied; assert the per-method and per-criterion states and that only fully satisfied criteria are satisfied.
+> - Criterion `scope-and-limits` [test]: A run scoped to fewer methods or anchors reports the excluded parts as not evaluated, never as satisfied, and every report states what a satisfied criterion does not establish.
 
-[[criteria]]
-id = "state-per-method"
-verification = ["test"]
-statement = "Independent fixtures produce each state for test and proof methods, including criteria requiring several methods with only some satisfied; assert the per-method and per-criterion states and that only fully satisfied criteria are satisfied."
+> **`A-verify-progress-report`** (draft): **Verify reports progress, not failure, for a Book in progress**
+> Property: A completed verify run reports every anchor in scope, grouped by design chapter, with each criterion's state and its linked tests or proofs, and summary counts of satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and unlinked criteria are reported as progress and do not make the run fail, unless the Book [claims](#A-verify-claims-evidenced) them; the run is incomplete only when it cannot evaluate the scope, such as invalid configuration, an invalid Book, or invalid records.
+> Authority: `R-criterion-evidence`
+> - Criterion `progress-output` [test]: For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor under its chapter with the expected states, links, and summary counts, and the CLI exits 0.
+> - Criterion `incomplete-runs` [test]: Invalid configuration, structure, or records make the run incomplete with a located diagnostic and a nonzero exit; a runner that cannot build or start makes only its method inconclusive.
 
-[[criteria]]
-id = "scope-and-limits"
-verification = ["test"]
-statement = "A run scoped to fewer methods or anchors reports the excluded parts as not evaluated, never as satisfied, and every report states what a satisfied criterion does not establish."
-```
+> **`A-verify-links-resolve`** (draft): **Links between code and criteria cannot drift silently**
+> Property: Every evidence link in the configured sources names an existing anchor criterion that requires the link's method, and every criterion requiring a linkable method has at least one link or is reported as unlinked. A link naming an unknown anchor or criterion, or a criterion that does not require its method, is reported at the link's source location.
+> Authority: `R-criterion-evidence`; `D-evidence-links-in-code`
+> - Criterion `link-findings` [test]: Fixtures with dangling anchor and criterion links, method mismatches, misplaced and duplicate links, and unlinked criteria each produce the expected located finding; correcting them removes it.
 
-```anchorbook-anchor
-schema-version = 1
-id = "verify-progress-report"
-title = "Verify reports progress, not failure, for a Book in progress"
-status = "draft"
-property = '''
-A completed verify run reports every anchor in scope, grouped by design chapter,
-with each criterion's state and its linked tests or proofs, and summary counts of
-satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and
-unlinked criteria are reported as progress and do not make the run fail, unless
-the Book [claims](#verify-claims-evidenced) them; the run is incomplete only when
-it cannot evaluate the scope, such as invalid configuration, an invalid Book, or
-invalid records.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-criterion-evidence" },
-]
+> **`A-verify-runs-linked-checks`** (draft): **Verify runs linked checks in their declared scope and changes no sources**
+> Property: Verify runs only the configured runners, selecting linked test functions and the complete proof targets required by criteria in scope, and reports what actually ran. It reads only results from that run, so its states describe the current inputs. A linked function absent, ambiguous, or skipped in the results has no evidence. Verify changes no Book or source files; runner output is written only under the configured output directory.
+> Authority: `D-verify-runs-linked-checks`
+> - Criterion `selected-run` [test]: With fixture runners that record their invocation, a scoped run selects exactly the linked tests and only the complete proof targets required by criteria in scope. The report identifies requested criteria, executed targets and features, and current inputs; earlier reports or changed inputs cannot produce satisfied evidence.
+> - Criterion `source-preservation` [test]: Compare Book and source file contents and directory entries before and after passing, failing, and incomplete runs; they are unchanged, and runner output appears only under the output directory.
 
-[[criteria]]
-id = "progress-output"
-verification = ["test"]
-statement = "For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor under its chapter with the expected states, links, and summary counts, and the CLI exits 0."
-
-[[criteria]]
-id = "incomplete-runs"
-verification = ["test"]
-statement = "Invalid configuration, structure, or records make the run incomplete with a located diagnostic and a nonzero exit; a runner that cannot build or start makes only its method inconclusive."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "verify-links-resolve"
-title = "Links between code and criteria cannot drift silently"
-status = "draft"
-property = '''
-Every evidence link in the configured sources names an existing anchor criterion
-that requires the link's method, and every criterion requiring a linkable method
-has at least one link or is reported as unlinked. A link naming an unknown anchor
-or criterion, or a criterion that does not require its method, is reported at the
-link's source location.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-criterion-evidence" },
-  { kind = "decision", id = "decision-evidence-links-in-code" },
-]
-
-[[criteria]]
-id = "link-findings"
-verification = ["test"]
-statement = "Fixtures with dangling anchor and criterion links, method mismatches, misplaced and duplicate links, and unlinked criteria each produce the expected located finding; correcting them removes it."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "verify-runs-linked-checks"
-title = "Verify runs linked checks in their declared scope and changes no sources"
-status = "draft"
-property = '''
-Verify runs only the configured runners, selecting linked test functions and the
-complete proof targets required by criteria in scope, and reports what actually
-ran. It reads only results from that run, so its states describe the current
-inputs. A linked function absent, ambiguous, or skipped in the results has no
-evidence. Verify changes no Book or source files; runner output is written only
-under the configured output directory.
-'''
-authorities = [
-  { kind = "decision", id = "decision-verify-runs-linked-checks" },
-]
-
-[[criteria]]
-id = "selected-run"
-verification = ["test"]
-statement = "With fixture runners that record their invocation, a scoped run selects exactly the linked tests and only the complete proof targets required by criteria in scope. The report identifies requested criteria, executed targets and features, and current inputs; earlier reports or changed inputs cannot produce satisfied evidence."
-
-[[criteria]]
-id = "source-preservation"
-verification = ["test"]
-statement = "Compare Book and source file contents and directory entries before and after passing, failing, and incomplete runs; they are unchanged, and runner output appears only under the output directory."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "verify-claims-evidenced"
-title = "Work the Book records as done must have current evidence"
-status = "draft"
-property = '''
-When a roadmap milestone has status Complete, each anchor criterion that one of
-its completion criteria covers in full is claimed. Verify fails the run when a
-claimed criterion in its scope is not satisfied, naming the claiming milestone
-and the criterion's state, so work cannot be recorded as done while its evidence
-is missing, stale, or failing. Partial or no coverage claims nothing. A claimed
-method the run does not evaluate is reported as unchecked, never as satisfied.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-criterion-evidence" },
-  { kind = "decision", id = "decision-completion-claims-checked" },
-]
-
-[[criteria]]
-id = "claim-failures"
-verification = ["test"]
-statement = "In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run."
-
-[[criteria]]
-id = "unchecked-claims"
-verification = ["test"]
-statement = "A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim."
-```
+> **`A-verify-claims-evidenced`** (draft): **Work the Book records as done must have current evidence**
+> Property: When a roadmap milestone has status Complete, each anchor criterion that one of its completion criteria covers in full is claimed. Verify fails the run when a claimed criterion in its scope is not satisfied, naming the claiming milestone and the criterion's state, so work cannot be recorded as done while its evidence is missing, stale, or failing. Partial or no coverage claims nothing. A claimed method the run does not evaluate is reported as unchecked, never as satisfied.
+> Authority: `R-criterion-evidence`; `D-completion-claims-checked`
+> - Criterion `claim-failures` [test]: In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run.
+> - Criterion `unchecked-claims` [test]: A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim.
 
 ## Using verify
 
@@ -245,7 +137,7 @@ function's mode. A misplaced link, or a link on an unsupported function form, is
 a located finding.
 
 **Witnesses.** A verified function whose link line ends with `witness <function>`
-is the [vacuity witness](verification.md#verify-proof-nonvacuous) for the named
+is the [vacuity witness](verification.md#A-verify-proof-nonvacuous) for the named
 linked function of the same criterion. It constructs an input and calls that
 function with it, so Verus checks the call against the function's preconditions;
 a witness whose input cannot meet them fails verification. The runner confirms
@@ -450,7 +342,7 @@ The Book makes a claim about evidence in one place: a roadmap milestone with
 status **Complete** whose completion criterion lists an anchor criterion with
 **Full** coverage. Recording that milestone as done asserts that the criterion is
 established, so `verify` checks it, under the
-[completion-claims decision](../authority/decisions.md#decision-completion-claims-checked).
+[completion-claims decision](../authority/decisions.md#D-completion-claims-checked).
 
 - A claimed criterion that is satisfied in the run passes.
 - A claimed criterion in any other state, including `unlinked`, fails the run with

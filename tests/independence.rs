@@ -1,7 +1,7 @@
 //! The engine stays buildable and testable when this Book is broken.
 use std::process::Command;
 
-/// anchorbook: check-independent-build#broken-book
+/// anchorbook: A-check-independent-build#broken-book
 #[test]
 #[ignore = "copies the engine and runs its tests several times; run explicitly with --ignored"]
 fn the_engine_builds_and_tests_with_a_broken_or_absent_book() {

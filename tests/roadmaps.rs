@@ -17,33 +17,15 @@ mod fixture;
 
 const RECORDS: &str = r#"# Design
 
-```anchorbook-requirement
-schema-version = 1
-id = "requirement-fixture"
-title = "Fixture requirement"
-status = "draft"
-statement = "Fixture."
-source = "Fixture."
-```
+> **`R-fixture`** (draft): **Fixture requirement**
+> Statement: Fixture.
+> Source: Fixture.
 
-```anchorbook-anchor
-schema-version = 1
-id = "fixture-anchor"
-title = "Fixture anchor"
-status = "draft"
-property = "Fixture."
-authorities = [{ kind = "requirement", id = "requirement-fixture" }]
-
-[[criteria]]
-id = "first"
-verification = ["test"]
-statement = "First."
-
-[[criteria]]
-id = "second"
-verification = ["test"]
-statement = "Second."
-```
+> **`A-fixture-anchor`** (draft): **Fixture anchor**
+> Property: Fixture.
+> Authority: `R-fixture`
+> - Criterion `first` [test]: First.
+> - Criterion `second` [test]: Second.
 "#;
 
 fn milestone(id: &str, criterion: &str, coverage: &str) -> String {
@@ -52,7 +34,7 @@ fn milestone(id: &str, criterion: &str, coverage: &str) -> String {
     )
 }
 
-const COVERAGE: &str = "[fixture-anchor](design.md#fixture-anchor) · `first`, `second` — Full; `fixture-anchor` · `first` — Partial: x";
+const COVERAGE: &str = "[A-fixture-anchor](design.md#A-fixture-anchor) · `first`, `second` — Full; `A-fixture-anchor` · `first` — Partial: x";
 
 fn codes(roadmaps: &[(&str, &str)]) -> Vec<(String, usize, String)> {
     let records = read_records(&[Chapter::new(Path::new("design.md"), RECORDS)]).unwrap();
@@ -98,7 +80,7 @@ fn valid_milestones_resolve_their_identifiers_and_coverage() {
     assert!(text[end..].starts_with("### Completion record"));
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn malformed_headings_and_fields_are_located() {
     let good = milestone("road-1", "works", COVERAGE);
@@ -124,7 +106,7 @@ fn malformed_headings_and_fields_are_located() {
     assert_eq!(only(&prefix), [("roadmap.invalid-milestone".into(), 15)]);
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn statuses_may_carry_an_explanation() {
     let text = milestone("road-1", "works", COVERAGE).replacen(
@@ -135,7 +117,7 @@ fn statuses_may_carry_an_explanation() {
     assert!(only(&text).is_empty());
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn identifiers_are_unique_across_chapters() {
     let first = milestone("road-1", "works", COVERAGE);
@@ -155,7 +137,7 @@ fn identifiers_are_unique_across_chapters() {
     );
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn milestones_end_at_the_next_section_heading() {
     let records = read_records(&[Chapter::new(Path::new("design.md"), RECORDS)]).unwrap();
@@ -177,12 +159,12 @@ fn milestones_end_at_the_next_section_heading() {
     assert!(milestones[0].criteria[0].heading.start < second);
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn coverage_must_cite_existing_anchors_and_criteria() {
     let missing_anchor = milestone("road-1", "works", "`no-such-anchor` · `first` — Full");
-    let wrong_kind = milestone("road-1", "works", "`requirement-fixture` · `first` — Full");
-    let missing_criterion = milestone("road-1", "works", "`fixture-anchor` · `third` — Full");
+    let wrong_kind = milestone("road-1", "works", "`R-fixture` · `first` — Full");
+    let missing_criterion = milestone("road-1", "works", "`A-fixture-anchor` · `third` — Full");
     for (text, message) in [
         (missing_anchor, "not a record"),
         (wrong_kind, "not an anchor"),
@@ -198,7 +180,7 @@ fn coverage_must_cite_existing_anchors_and_criteria() {
     assert!(only(&none).is_empty());
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn coverage_levels_are_read_and_full_takes_no_qualifier() {
     use anchor_book::roadmaps::CoverageLevel;
@@ -224,14 +206,14 @@ fn coverage_levels_are_read_and_full_takes_no_qualifier() {
         [
             (
                 "road-1-works",
-                "fixture-anchor",
+                "A-fixture-anchor",
                 vec!["first".to_owned(), "second".to_owned()],
                 CoverageLevel::Full,
                 19
             ),
             (
                 "road-1-works",
-                "fixture-anchor",
+                "A-fixture-anchor",
                 vec!["first".to_owned()],
                 CoverageLevel::Partial,
                 19
@@ -239,8 +221,8 @@ fn coverage_levels_are_read_and_full_takes_no_qualifier() {
         ]
     );
     for qualified in [
-        "`fixture-anchor` · `first` — Full for the declared versions",
-        "`fixture-anchor` · `first` — Full. Limited to one case.",
+        "`A-fixture-anchor` · `first` — Full for the declared versions",
+        "`A-fixture-anchor` · `first` — Full. Limited to one case.",
     ] {
         let found = codes(&[("roadmap.md", &milestone("road-1", "works", qualified))]);
         assert_eq!(found.len(), 1, "{found:?}");
@@ -256,12 +238,12 @@ fn coverage_levels_are_read_and_full_takes_no_qualifier() {
     }
     let missing = codes(&[(
         "roadmap.md",
-        &milestone("road-1", "works", "`fixture-anchor` · `first`"),
+        &milestone("road-1", "works", "`A-fixture-anchor` · `first`"),
     )]);
     assert_eq!(missing[0].0, "roadmap.invalid-coverage");
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn examples_in_code_blocks_are_not_roadmap_structure() {
     let example = format!(
@@ -291,7 +273,7 @@ fn render(roadmap: bool, text: &str) -> Result<Vec<String>, RenderError> {
 
 const CRITERION_OPEN: &str = "<details class=\"ab-details ab-roadmap-criterion\" open>\n<summary><h4 id=\"road-1-works\">It <code>works</code> <span class=\"ab-link-id\">road-1-works</span></h4></summary>\n";
 
-/// anchorbook: render-roadmap-milestones#roadmap-presentation
+/// anchorbook: A-render-roadmap-milestones#roadmap-presentation
 #[test]
 fn milestones_render_as_cards_with_fields_and_open_sections() {
     let text = milestone("road-1", "works", COVERAGE);
@@ -323,7 +305,7 @@ fn milestones_render_as_cards_with_fields_and_open_sections() {
     assert!(presentation.ends_with("</script>\n"));
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-presentation
+/// anchorbook: A-render-roadmap-milestones#roadmap-presentation
 #[test]
 fn explained_statuses_tasks_and_evidence_render_in_order() {
     let text = milestone("road-1", "works", COVERAGE)
@@ -362,7 +344,7 @@ fn explained_statuses_tasks_and_evidence_render_in_order() {
     );
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-presentation
+/// anchorbook: A-render-roadmap-milestones#roadmap-presentation
 #[test]
 fn chapters_outside_the_roadmaps_role_are_not_read_as_roadmaps() {
     let invalid = milestone("road-1", "works", "`no-such-anchor` · `first` — Full");
@@ -409,8 +391,8 @@ fn adapter(book: &fixture::Book, roadmap: &str, nested: &str) -> std::process::O
     process.wait_with_output().unwrap()
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-presentation
-/// anchorbook: render-records-in-context#preservation-and-escaping
+/// anchorbook: A-render-roadmap-milestones#roadmap-presentation
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
 #[test]
 fn the_adapter_renders_the_roadmaps_role_and_its_nested_chapters() {
     let book = fixture::Book::new();
@@ -435,17 +417,17 @@ fn the_adapter_renders_the_roadmaps_role_and_its_nested_chapters() {
     assert_eq!(book.snapshot(), before);
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 fn the_adapter_refuses_invalid_roadmaps_without_output() {
     let book = fixture::Book::new();
-    let invalid = milestone("road-1", "works", "`fixture-anchor` · `third` — Full");
+    let invalid = milestone("road-1", "works", "`A-fixture-anchor` · `third` — Full");
     let output = adapter(&book, &invalid, "# Nested\n");
     assert!(!output.status.success());
     assert!(output.stdout.is_empty());
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        stderr.contains("roadmap.invalid-reference: roadmap.md:19: anchor `fixture-anchor` has no criterion `third`"),
+        stderr.contains("roadmap.invalid-reference: roadmap.md:19: anchor `A-fixture-anchor` has no criterion `third`"),
         "{stderr}"
     );
 }

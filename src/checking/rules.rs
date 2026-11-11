@@ -312,7 +312,7 @@ mod tests {
         assert_eq!(book.snapshot(), before);
     }
 
-    /// anchorbook: check-truthful-results#blocked-evaluation
+    /// anchorbook: A-check-truthful-results#blocked-evaluation
     #[test]
     fn unknown_targets_only_block_role_conclusions_that_are_not_already_established() {
         let book = fixture::Book::new();

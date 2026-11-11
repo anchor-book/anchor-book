@@ -13,82 +13,23 @@ records readably.
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "records-searchable-lines"
-title = "A record's identifying facts are on one line"
-status = "draft"
-property = '''
-Every record's heading line states its identifier, status, and title; the
-identifier's kind code states its kind; and every reference to a record is its
-code-spanned identifier. A text search for a record's identifier returns its
-definition and every reference to it, and the matched line alone distinguishes
-the definition from a reference.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-searchable-records" },
-]
+> **`A-records-searchable-lines`** (draft): **A record's identifying facts are on one line**
+> Property: Every record's heading line states its identifier, status, and title; the identifier's kind code states its kind; and every reference to a record is its code-spanned identifier. A text search for a record's identifier returns its definition and every reference to it, and the matched line alone distinguishes the definition from a reference.
+> Authority: `R-searchable-records`
+> - Criterion `heading-search` [test]: For an independent fixture Book, a search for record headings returns exactly the authored records with their kind, identity, status, and title.
+> - Criterion `reference-search` [test]: For each fixture record, a search for its identifier returns its definition and exactly its authored references, and each matched line is classified correctly from its own text.
 
-[[criteria]]
-id = "heading-search"
-verification = ["test"]
-statement = "For an independent fixture Book, a search for record headings returns exactly the authored records with their kind, identity, status, and title."
+> **`A-records-every-line`** (draft): **No line in a record is silently ignored**
+> Property: Each line of a record is read as its heading, a field, a continuation paragraph, a list item, a proof-scope item, or a blank quoted line. Any other line, and any missing, repeated, unknown, or misordered field, is an invalid definition reported at its source line, so a mistyped record cannot pass as valid. A criterion that requires proof carries its four scope items, each nonempty, and its exclusions name only criteria that exist.
+> Authority: `R-readable-records`
+> - Criterion `line-accounting` [test]: Fixtures with stray, misordered, repeated, unknown, and missing lines each produce the expected located diagnostic and no inventory; the corrected fixture produces the expected record.
+> - Criterion `proof-scope` [test]: Proof criteria with a missing, empty, repeated, or misordered scope item, and exclusions naming a missing criterion of the same or another anchor, each produce a located invalid-definition diagnostic and no inventory; a criterion without proof that carries scope items is also invalid.
 
-[[criteria]]
-id = "reference-search"
-verification = ["test"]
-statement = "For each fixture record, a search for its identifier returns its definition and exactly its authored references, and each matched line is classified correctly from its own text."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "records-every-line"
-title = "No line in a record is silently ignored"
-status = "draft"
-property = '''
-Each line of a record is read as its heading, a field, a continuation paragraph,
-a list item, a proof-scope item, or a blank quoted line. Any other line, and any
-missing, repeated, unknown, or misordered field, is an invalid definition reported
-at its source line, so a mistyped record cannot pass as valid.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-readable-records" },
-]
-
-[[criteria]]
-id = "line-accounting"
-verification = ["test"]
-statement = "Fixtures with stray, misordered, repeated, unknown, and missing lines each produce the expected located diagnostic and no inventory; the corrected fixture produces the expected record."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "records-named-identifiers"
-title = "Record identifiers state their kind and name their meaning"
-status = "draft"
-property = '''
-Every anchor, requirement, and decision identifier is its kind code, a hyphen,
-and a name that starts with a letter, so an identifier seen alone in a
-reference, evidence link, fragment, diagnostic, or search result states its
-record's kind and cannot be a sequence number. Each reference field accepts only
-the codes of the kinds it may cite. An identifier or reference violating these
-forms is an invalid definition reported at its source line.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-searchable-records" },
-  { kind = "decision", id = "decision-identifier-kind-codes" },
-]
-
-[[criteria]]
-id = "identifier-forms"
-verification = ["test"]
-statement = "Fixtures with a missing, unknown, or lowercase kind code, a code that does not match the record's kind, and names starting with a digit, such as D-12 or R-2026-01, each produce a located invalid-definition diagnostic and no inventory; names with digits inside a word, such as D-utf8-paths, are accepted."
-
-[[criteria]]
-id = "reference-codes"
-verification = ["test"]
-statement = "An Authority field citing an anchor identifier and a Requirements field citing a decision identifier each produce a located invalid-definition diagnostic, even when the cited record exists."
-```
+> **`A-records-named-identifiers`** (draft): **Record identifiers state their kind and name their meaning**
+> Property: Every anchor, requirement, and decision identifier is its kind code, a hyphen, and a name that starts with a letter, so an identifier seen alone in a reference, evidence link, fragment, diagnostic, or search result states its record's kind and cannot be a sequence number. Each reference field accepts only the codes of the kinds it may cite. An identifier or reference violating these forms is an invalid definition reported at its source line.
+> Authority: `R-searchable-records`; `D-identifier-kind-codes`
+> - Criterion `identifier-forms` [test]: Fixtures with a missing, unknown, or lowercase kind code, a code that does not match the record's kind, and names starting with a digit, such as D-12 or R-2026-01, each produce a located invalid-definition diagnostic and no inventory; names with digits inside a word, such as D-utf8-paths, are accepted.
+> - Criterion `reference-codes` [test]: An Authority field citing an anchor identifier and a Requirements field citing a decision identifier each produce a located invalid-definition diagnostic, even when the cited record exists.
 
 ## Record syntax
 
@@ -187,6 +128,11 @@ this order, with no defaults:
 field above as a new paragraph. Blank quoted lines (`>`) are allowed and carry no
 meaning.
 
+**Inline text.** Field text, criterion statements, and list items may use code
+spans, emphasis, strong emphasis, and links. Other Markdown and raw HTML are
+literal text. A code-spanned identifier outside a reference field is ordinary
+text, not a reference.
+
 **References.** A reference is a code-spanned identifier, such as
 `` `R-observation-only` ``. `Authority:` accepts `R-` and `D-` identifiers, each of
 which must resolve to a record of that kind in the same Book. Duplicate
@@ -282,14 +228,14 @@ four nested items, in order:
 
 Exclusions name each covering criterion by its code-spanned identifier: the
 criterion identifier alone for one of the same anchor, or
-`<anchor-id>#<criterion-id>` for another anchor's. The engine checks that the four
-items are present and nonempty and that each named criterion exists; it does not
+`<anchor-id>#<criterion-id>` for another anchor's. A criterion that does not list `proof` has no nested items.
+The engine checks that the four items are present and nonempty and that each named criterion exists; it does not
 assess whether the scope is adequate or whether evidence satisfies it. The
 [brief](verification-evidence.md#using-verify) lists exclusions that name no
 criterion as gaps. Keep formal syntax,
 tool versions, commands, and function/file associations in the implementing
 codebase and verification design. Exclusions must not silently remove part of the
-anchor's property. The [authority anchor](rust-engine.md#records-valid-authority)
+anchor's property. The [authority anchor](rust-engine.md#A-records-valid-authority)
 demonstrates this: `formal-authority` requires a proof of the authority algorithm,
 while `production-integration` requires tests and review of the surrounding boundaries.
 
@@ -358,14 +304,3 @@ interpretation of the source.
 It does not mean implemented, tested, or proven. Keep implementation associations,
 executed results, and roadmap completion outside the authored definition.
 Reports derive progress from those records.
-
-## Open questions
-
-1. **Inline Markdown in fields.** Whether field text renders a defined subset
-   (code spans, emphasis, links) with raw HTML kept inert, or stays escaped text.
-2. **Property label.** Whether `Property:` is required or the first unlabeled line
-   after the heading is the property.
-3. **Proof-scope shape.** Whether the statement as Claim and four nested items fit
-   real proof criteria.
-4. **Example matches.** Whether literal examples matching record searches mislead
-   agents, and if so whether examples need a visibly distinct form.

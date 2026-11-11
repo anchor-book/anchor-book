@@ -1,6 +1,6 @@
 //! Production authority checks and their Verus specification.
 //!
-//! Anchor: records-valid-authority; criterion: formal-authority.
+//! Anchor: A-records-valid-authority; criterion: formal-authority.
 //!
 //! Read the rule specifications first, then `validate_authorities` and its helpers.
 //! `spec fn` defines what must hold; ordinary `fn` contains executable Rust.
@@ -16,7 +16,7 @@
 //! the exact failure classifications, messages, and locations are tested separately.
 //! The Book's Rust Engine chapter states the claim, domain, and boundary.
 //!
-//! Call path: `schema.rs` calls `has_required_authority` while decoding anchor
+//! Call path: `lines.rs` calls `has_required_authority` while reading anchor
 //! authorities, and `inventory.rs` passes the complete candidate collection to
 //! `validate_authorities`. `read_records` keeps every existing diagnostic and
 //! builds no inventory when any exists. Ordinary builds run these same bodies;
@@ -377,7 +377,7 @@ fn validate_reference(
         forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
             violation_is_located(candidates@, violations[violation_index]),
 ))]
-/// anchorbook: records-valid-authority#formal-authority
+/// anchorbook: A-records-valid-authority#formal-authority
 pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
     let mut violations: Vec<Violation> = Vec::new();
     let mut record_index: usize = 0;

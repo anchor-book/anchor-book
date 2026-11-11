@@ -82,21 +82,21 @@ retains review of the resulting edits and preserved obligations.
 
 Resolve the actual Book and equivalent docs/ and md/ layouts correctly, including different invocation directories and display titles.
 
-- **Anchor coverage:** [check-book-selection](../design/configuration.md#check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: configuration selection, resolved paths, and roles. Milestone 2 verifies equivalent structural findings across invocation directories and layouts.
+- **Anchor coverage:** [A-check-book-selection](../design/configuration.md#A-check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: configuration selection, resolved paths, and roles. Milestone 2 verifies equivalent structural findings across invocation directories and layouts.
 - **Evidence:** Passed locally: `tests/configuration.rs` loads book/docs/md layouts and every required role from independent fixtures. Separate subprocesses use different working directories to select the same configuration and resolved paths; a symlinked configuration uses the actual file location. Current-project acceptance loads the real repository configuration.
 
 #### Configuration validation {#structural-checking-1-configuration-validation}
 
 Reject invalid fields, versions, phases, mappings, escapes, overlaps, and symlink aliases with located findings and expected conditions. Corrected configuration permits evaluation; allow a resolvable separate nonexistent output and distinguish missing from unresolvable paths.
 
-- **Anchor coverage:** [check-configuration-validity](../design/configuration.md#check-configuration-validity) · `schema-rejection`, `path-boundaries` — Full; `missing-paths` — Partial: missing-source observations and resolution errors; milestone 2 turns those observations into structural findings.
+- **Anchor coverage:** [A-check-configuration-validity](../design/configuration.md#A-check-configuration-validity) · `schema-rejection`, `path-boundaries` — Full; `missing-paths` — Partial: missing-source observations and resolution errors; milestone 2 turns those observations into structural findings.
 - **Evidence:** Passed locally: schema unit tests cover required and unknown fields, invalid types, duplicate TOML keys, unsupported versions, and all phase values. Filesystem tests cover escapes, overlaps, resolved duplicate roles, symlink aliases/loops/dangling links, non-directory ancestors, and inaccessible descendants. Corrected fixtures resolve successfully; missing and non-directory sources remain explicit observations for milestone 2.
 
 #### Configuration preservation {#structural-checking-1-configuration-preservation}
 
 Configuration operations preserve file contents and directory entries on success and failure, including nonexistent output paths; tests make any attempted write observable.
 
-- **Anchor coverage:** [check-observation-only](../design/structural-checking.md#check-observation-only) · `file-preservation` — Partial: configuration operations only
+- **Anchor coverage:** [A-check-observation-only](../design/structural-checking.md#A-check-observation-only) · `file-preservation` — Partial: configuration operations only
 - **Evidence:** Passed locally: fixture snapshots compare all contents and directory entries before and after successful and failing loads. Missing output/source directories are not created. Source/path review confirms only read/metadata operations; permission and error-classification cases exercise failure handling.
 
 #### Phase handoff {#structural-checking-1-phase-handoff}
@@ -110,7 +110,7 @@ The reader exposes the phase from the real repository configuration. Project gui
 
 Cargo build, formatting, Clippy, and configuration/API tests pass without rendering or validating the current Book.
 
-- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `broken-book` — Partial: engine build and fixture tests; current-Book checking follows
+- **Anchor coverage:** [A-check-independent-build](../design/system-overview.md#A-check-independent-build) · `broken-book` — Partial: engine build and fixture tests; current-Book checking follows
 - **Evidence:** Passed locally: tests and Clippy pass on Rust 1.85.0 and local stable 1.90.0. The independence experiment passes with no Book and with an invalid Book; explicit Book acceptance rejects the invalid input. Configuration fixtures do not read the repository Book or configuration.
 
 ### Evidence {#structural-checking-1-evidence}
@@ -160,44 +160,44 @@ Complete and merged: configuration loading, validation, preservation, and phase 
 
 The actual Book passes. Independent fixtures cover source and summary prerequisites, chapter targets, required roles, and supported and unsupported navigation. Assert located findings and expected structure; correcting seeded format defects produces a pass. Grammar-boundary tests use the supported mdBook version (0.5.4) and include ignored prose/code/headings, valid comments and reference links, duplicates, drafts, external destinations, encoded spaces, and source locations. Parser success alone cannot satisfy this criterion.
 
-- **Anchor coverage:** [check-navigation-conformance](../design/structural-checking.md#check-navigation-conformance) · `chapter-inventory`, `required-roles`, `grammar-boundary` — Full
-- **Anchor coverage:** [check-configuration-validity](../design/configuration.md#check-configuration-validity) · `missing-paths` — Partial: a resolvable missing source produces the expected structural violation; resolution failures prevent a pass. Configuration-resolution evidence is in milestone 1.
+- **Anchor coverage:** [A-check-navigation-conformance](../design/structural-checking.md#A-check-navigation-conformance) · `chapter-inventory`, `required-roles`, `grammar-boundary` — Full
+- **Anchor coverage:** [A-check-configuration-validity](../design/configuration.md#A-check-configuration-validity) · `missing-paths` — Partial: a resolvable missing source produces the expected structural violation; resolution failures prevent a pass. Configuration-resolution evidence is in milestone 1.
 - **Evidence:** Local tests pass in `checking::navigation::tests` and `tests/checking.rs`: hierarchy, reference links, drafts, roles, malformed/ignored input, missing files, and correction/recheck cases. The current Book passes its explicit structural acceptance test. A trial on another project's Book later found that multi-line HTML comments, which mdBook accepts, were reported as unsupported input; [PR #15](https://github.com/anchor-book/anchor-book/pull/15) fixed this with regression tests against mdBook's parser. Other mdBook-parsable constructs remain unhandled; see the [navigation parser](../design/structural-checking.md#navigation-parser) design.
 
 #### Renderer alignment {#structural-checking-2-renderer-alignment}
 
 Report differing renderer settings and expected locations without editing files. Handle defaults, equivalent paths, missing configuration, and malformed or unreadable input; aligning seeded mismatches produces a pass.
 
-- **Anchor coverage:** [check-renderer-alignment](../design/structural-checking.md#check-renderer-alignment) · `renderer-input` — Full; `resolved-comparison` — Partial: every case except a `book.toml` in a subdirectory of the configuration directory, which the criterion added later and [Project Integration milestone 1](project-integration.md#project-integration-1-mdbook-location) covers.
+- **Anchor coverage:** [A-check-renderer-alignment](../design/structural-checking.md#A-check-renderer-alignment) · `renderer-input` — Full; `resolved-comparison` — Partial: every case except a `book.toml` in a subdirectory of the configuration directory, which the criterion added later and [Project Integration milestone 1](project-integration.md#project-integration-1-mdbook-location) covers.
 - **Evidence:** Local tests cover mdBook defaults, equivalent relative and absolute paths, missing/invalid renderer input, and corrected mismatches. A CLI test sets an environment override and confirms only file settings are checked. The implementation uses pure mdbook-core deserialization; it never runs the renderer or configured commands. These tests predate the subdirectory case and do not cover it.
 
 #### Typed results {#structural-checking-2-typed-results}
 
 Library and actual CLI results agree against independent expectations, including equivalent configured layouts and invocations from different working directories. Library errors preserve causes without printing, exiting, or panicking.
 
-- **Anchor coverage:** [check-shared-typed-results](../design/rust-engine.md#check-shared-typed-results) · `library-boundary` — Full; `equivalent-callers` — Partial: the library and CLI callers; the criterion later added the `anchorbook md` preprocessor, which [Project Integration milestone 1](project-integration.md#project-integration-1-entry-points) covers.
-- **Anchor coverage:** [check-book-selection](../design/configuration.md#check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: equivalent structural findings across layouts and caller directories, completing milestone 1 selection evidence.
+- **Anchor coverage:** [A-check-shared-typed-results](../design/rust-engine.md#A-check-shared-typed-results) · `library-boundary` — Full; `equivalent-callers` — Partial: the library and CLI callers; the criterion later added the `anchorbook md` preprocessor, which [Project Integration milestone 1](project-integration.md#project-integration-1-entry-points) covers.
+- **Anchor coverage:** [A-check-book-selection](../design/configuration.md#A-check-book-selection) · `invocation-directory`, `alternative-layout` — Partial: equivalent structural findings across layouts and caller directories, completing milestone 1 selection evidence.
 - **Evidence:** Actual-process tests compare CLI output with library reports for pass, structural failure, and incomplete evaluation, plus independent expected fields and a complete passing report. Alternative layouts and caller directories are exercised. Source review confirms the CLI calls the shared library, findings retain typed locations and causes, and parser types remain private. The final GitHub mutation campaign has no survivors; see milestone evidence.
 
 #### Truthful results {#structural-checking-2-truthful-results}
 
 Verify documented exit statuses, incomplete and mixed failures, blocked checks, evaluated scope, and stdout/stderr behavior.
 
-- **Anchor coverage:** [check-truthful-results](../design/check-diagnostics.md#check-truthful-results) · `outcomes-and-precedence`, `blocked-evaluation`, `report-scope` — Full
+- **Anchor coverage:** [A-check-truthful-results](../design/check-diagnostics.md#A-check-truthful-results) · `outcomes-and-precedence`, `blocked-evaluation`, `report-scope` — Full
 - **Evidence:** Local tests verify exit 0/1/2, complete stdout versus incomplete stderr, preserved partial findings, explicit blockers, and operational-error precedence. Model tests reject an empty unevaluated report as a pass. Missing prerequisites do not generate invented missing-role findings.
 
 #### Diagnostics {#structural-checking-2-diagnostics}
 
 For each seeded format defect, assert that findings identify the affected location, expected and observed structure, and useful repair guidance without weakening requirements. Verify documented fields, stable order, and readable output without styling; do not invent unavailable observations.
 
-- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `diagnostic-content`, `stable-presentation` — Full
+- **Anchor coverage:** [A-check-actionable-diagnostics](../design/check-diagnostics.md#A-check-actionable-diagnostics) · `diagnostic-content`, `stable-presentation` — Full
 - **Evidence:** Local tests assert independently specified codes, locations, related declarations, expected/found fields, guidance, and deterministic ordering. Unicode positions and terminal-control escaping are exercised. Guidance preserves intended configuration and required roles; the real agent usability demonstration remains in milestone 4.
 
 #### Observation only {#structural-checking-2-observation-only}
 
 Passing, failing, and incomplete checks preserve contents and directory entries; execution traps establish no subprocess, network, preprocessor, or verifier activity.
 
-- **Anchor coverage:** [check-observation-only](../design/structural-checking.md#check-observation-only) · `file-preservation`, `no-execution` — Full
+- **Anchor coverage:** [A-check-observation-only](../design/structural-checking.md#A-check-observation-only) · `file-preservation`, `no-execution` — Full
 - **Evidence:** Fixture snapshots preserve all contents and directory entries across pass, failure, and incomplete runs. Missing chapters remain absent even when mdBook create-missing is enabled. Configured preprocessor/renderer command traps remain unexecuted, and external URLs produce no local-target failures. Source review confirms inspection uses file reads/metadata and pure parser calls, with no process or network-fetch path.
 
 #### Acceptance cases {#structural-checking-2-acceptance-cases}
@@ -252,21 +252,21 @@ milestone 3; its other criteria remain separate.
 
 With deliberately broken navigation and no rendered output, engine compilation and fixture tests pass while current-Book acceptance reports the known failure.
 
-- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `broken-book` — Full
+- **Anchor coverage:** [A-check-independent-build](../design/system-overview.md#A-check-independent-build) · `broken-book` — Full
 - **Evidence:** Passed locally and on GitHub. `scripts/check-engine-independence.sh` runs independent tests in a disposable checkout without rendered output, with no Book, an invalid record, a missing navigation target, and unsupported summary prose; separate acceptance rejects each with its expected diagnostic. The PR #9 runs below repeat the missing-chapter and unsupported-navigation cases on GitHub.
 
 #### CI order {#structural-checking-3-ci-order}
 
 Record actual CI showing engine checks, structural Book acceptance, then rendering for a valid revision. Broken or unprocessable Book input produces useful findings and prevents rendering; independent engine tests remain runnable.
 
-- **Anchor coverage:** [check-independent-build](../design/system-overview.md#check-independent-build) · `ci-order` — Full.
+- **Anchor coverage:** [A-check-independent-build](../design/system-overview.md#A-check-independent-build) · `ci-order` — Full.
 - **Evidence:** The criterion now requires `review`; the recorded runs below are its subject, and an assessment record for them is pending the [assessment records](verification-evidence.md#verification-evidence-6) support. Passed on GitHub: valid revisions ran both Engine jobs, then Build mdBook, then Publish Book on main; broken and unprocessable Books failed current-Book acceptance with useful findings, independent tests passed, and rendering was skipped. Locally, `mdbook build` also refuses a structural failure (exit 1) and incomplete input (exit 2) through the preprocessor. See milestone evidence.
 
 #### No repair {#structural-checking-3-no-repair}
 
 The acceptance check performs no source repair; a valid Book renders after acceptance.
 
-- **Anchor coverage:** [check-observation-only](../design/structural-checking.md#check-observation-only) · `file-preservation` — Partial: CI acceptance invocation
+- **Anchor coverage:** [A-check-observation-only](../design/structural-checking.md#A-check-observation-only) · `file-preservation` — Partial: CI acceptance invocation
 - **Evidence:** Passed locally: source trees, files, and directory entries are unchanged by passing, failing, and incomplete acceptance invocations, and acceptance creates no rendered output. `build_gate` renders a valid fixture Book and produces no rendered JSON for rejected ones. On GitHub, valid revisions render and publish after acceptance; file preservation was not observed in CI.
 
 #### CI evidence {#structural-checking-3-ci-evidence}
@@ -282,7 +282,7 @@ Record the tested revision, actual workflow results, and local commands; local s
 
 **Revision and integration:** Implementation `7e81db1`, merged as `9ecd950` (PR #8). PR #10 (`613cb4d`, merged as `2aaf496`) runs current-Book acceptance before the failure experiments so a broken Book is reported directly.
 
-**Implementation:** `book.yml` calls `engine.yml` as a local reusable workflow; Build mdBook requires both Rust jobs, which include current-Book acceptance. `[preprocessor.anchorbook] config` names `anchorbook.toml`, and `anchorbook md` stops on a failed or incomplete check before rendering any chapter. Rendered-output acceptance precedes upload and publication. The [native tool integration decision](../authority/decisions.md#decision-native-tool-integration) records why the check runs in the preprocessor. Proof and mutation workflows and merge rules are unchanged.
+**Implementation:** `book.yml` calls `engine.yml` as a local reusable workflow; Build mdBook requires both Rust jobs, which include current-Book acceptance. `[preprocessor.anchorbook] config` names `anchorbook.toml`, and `anchorbook md` stops on a failed or incomplete check before rendering any chapter. Rendered-output acceptance precedes upload and publication. The [native tool integration decision](../authority/decisions.md#D-native-tool-integration) records why the check runs in the preprocessor. Proof and mutation workflows and merge rules are unchanged.
 
 **Local failure experiments:** `build_gate` runs `anchorbook md` on fixture Books: broken navigation (exit 1) and unsupported navigation, invalid configuration, or missing configuration (exit 2) produce the check report, no rendered JSON, and unchanged snapshots. Real `mdbook build` runs on disposable copies of this Book reject unsupported summary prose (`input.unsupported`) and a renderer path mismatch (`structure.renderer-path-mismatch`) and render nothing; mdBook itself rejects a missing chapter before preprocessing because `create-missing` is false. Under `mdbook watch`, a failing rebuild keeps the previous output and a restored summary rebuilds.
 
@@ -322,21 +322,21 @@ Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evid
 
 Recorded agent runs repair seeded defects and reach a passing check. Independent review confirms intended repairs, unrelated content preservation, no weakened requirements, and any human assistance.
 
-- **Anchor coverage:** [check-actionable-diagnostics](../design/check-diagnostics.md#check-actionable-diagnostics) · `agent-repair` — Full.
+- **Anchor coverage:** [A-check-actionable-diagnostics](../design/check-diagnostics.md#A-check-actionable-diagnostics) · `agent-repair` — Full.
 - **Evidence:** The criterion now requires only `review`; the recorded runs and independent review below are its subject, and an assessment record is pending the [assessment records](verification-evidence.md#verification-evidence-6) support. Passed. Two fresh Codex sessions worked on throwaway branches of this Book, given only the repository bootstrap and an engineer request. Run 1 seeded a link typo, a required role turned into a targetless draft, and a navigation entry for a chapter that never existed. Run 2 seeded unsupported summary prose, renderer output drift, a required role nested under another, and a navigation entry for a chapter that never existed. Both runs repaired every defect whose intent was clear, leaving only the nonexistent chapter for the engineer; in run 2 the engineer removed that entry and the check passed. Independent review diffed each result against its baseline revision: run 1 matched exactly apart from the unresolved entry, and run 2 matched except for keeping the prose as an HTML comment. Neither run changed `anchorbook.toml` or engine code. Human assistance: in run 1 the agent reported the failures and stopped, repairing only after the engineer asked whether it had read the contract. That guidance gap was fixed before run 2, whose only input was the request to run the check.
 
 #### Separate edits {#structural-checking-4-separate-edits}
 
 Each checker invocation remains read-only; agent edits are separately identifiable.
 
-- **Anchor coverage:** [check-observation-only](../design/structural-checking.md#check-observation-only) · `file-preservation` — Partial: invocations during the agent workflow
+- **Anchor coverage:** [A-check-observation-only](../design/structural-checking.md#A-check-observation-only) · `file-preservation` — Partial: invocations during the agent workflow
 - **Evidence:** Passed. Every check invocation in both runs reported `files changed by check: none`. Each run's working-tree diff against its baseline contained only the agent's edits; in run 2 the defects were committed beforehand, so the diff isolated the agent's changes.
 
 #### Unresolved cases {#structural-checking-4-unresolved-cases}
 
 Cases outside the assignment or the agent’s ability produce an explicit explanation rather than a false completion claim; record versions and assistance.
 
-- **Anchor coverage:** [check-truthful-results](../design/check-diagnostics.md#check-truthful-results) · `report-scope` — Partial: reported scope and limits during the workflow
+- **Anchor coverage:** [A-check-truthful-results](../design/check-diagnostics.md#A-check-truthful-results) · `report-scope` — Partial: reported scope and limits during the workflow
 - **Evidence:** Passed. In both runs the agent found that the entry's chapter had no file and no Git history, treated its intent as unclear, and neither invented the chapter nor removed the entry. It asked the engineer with concrete options and cited the contract, reporting the check as failed until the entry was resolved. Agent versions were not recorded; see the milestone evidence.
 
 ### Evidence {#structural-checking-4-evidence}

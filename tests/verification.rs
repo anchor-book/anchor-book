@@ -12,42 +12,42 @@ mod fixture;
 
 const VERIFICATION: &str = "\n[verification]\nsources = [\"src\", \"tests\", \"other\"]\noutput = \"target/verify\"\nrunners = [\"nextest\"]\n";
 
-fn record(kind: &str, body: &str) -> String {
-    format!("```anchorbook-{kind}\nschema-version = 1\n{body}```\n\n")
-}
-
+/// A line-grammar anchor citing `R-r`; methods are written as in the record, such
+/// as `test, review`, and a criterion requiring proof gets its four scope items.
 fn anchor(id: &str, criteria: &[(&str, &str)]) -> String {
-    let mut body = format!(
-        "id = \"{id}\"\ntitle = \"Anchor {id}\"\nstatus = \"draft\"\nproperty = \"A property.\"\nauthorities = [{{ kind = \"requirement\", id = \"requirement-r\" }}]\n"
+    let mut out = format!(
+        "> **`{id}`** (draft): **Anchor {id}**\n> Property: A property.\n> Authority: `R-r`\n"
     );
     for (criterion, methods) in criteria {
-        body.push_str(&format!(
-            "\n[[criteria]]\nid = \"{criterion}\"\nverification = [{methods}]\nstatement = \"Criterion {criterion}.\"\n"
+        out.push_str(&format!(
+            "> - Criterion `{criterion}` [{methods}]: Criterion {criterion}.\n"
         ));
+        if methods.contains("proof") {
+            out.push_str(
+                ">   - Domain: All inputs.\n>   - Boundary: The function.\n>   - Assumptions: The verifier is trusted.\n>   - Exclusions: None.\n",
+            );
+        }
     }
-    record("anchor", &body)
+    out.push('\n');
+    out
 }
 
 fn design() -> String {
     format!(
         "# Fixture design\n\n{}{}{}",
         anchor(
-            "a-tests",
-            &[
-                ("one", "\"test\""),
-                ("two", "\"test\""),
-                ("both", "\"test\", \"review\"")
-            ]
+            "A-tests",
+            &[("one", "test"), ("two", "test"), ("both", "test, review")]
         ),
         anchor(
-            "a-proof",
-            &[("formal", "\"proof\""), ("checked", "\"test\", \"proof\"")]
+            "A-proof",
+            &[("formal", "proof"), ("checked", "test, proof")]
         ),
-        anchor("a-unlinked", &[("none", "\"test\"")]),
+        anchor("A-unlinked", &[("none", "test")]),
     )
 }
 
-const AUTHORITY: &str = "# Authority\n\n```anchorbook-requirement\nschema-version = 1\nid = \"requirement-r\"\ntitle = \"A requirement\"\nstatus = \"draft\"\nstatement = \"Something must hold.\"\nsource = \"A fixture.\"\n```\n";
+const AUTHORITY: &str = "# Authority\n\n> **`R-r`** (draft): **A requirement**\n> Statement: Something must hold.\n> Source: A fixture.\n";
 
 fn milestone(number: u32, status: &str, coverage: &str) -> String {
     format!(
@@ -57,18 +57,18 @@ fn milestone(number: u32, status: &str, coverage: &str) -> String {
 
 const LIB: &str = r#"//! Fixture library.
 
-/// anchorbook: a-proof#formal
+/// anchorbook: A-proof#formal
 #[cfg_attr(feature = "verus", verus_spec(r => ensures r == 1))]
 pub fn verified() -> u32 {
     1
 }
 
-/// anchorbook: a-tests#one
+/// anchorbook: A-tests#one
 pub fn not_a_test() {}
 
 pub struct Thing;
 impl Thing {
-    /// anchorbook: a-tests#one
+    /// anchorbook: A-tests#one
     #[test]
     fn method() {}
 }
@@ -76,29 +76,29 @@ impl Thing {
 #[cfg(test)]
 mod tests {
     /// Ordinary documentation may surround a link.
-    /// anchorbook: a-tests#one
+    /// anchorbook: A-tests#one
     #[test]
     fn same_name() {}
 
     mod inner {
-        /// anchorbook: a-tests#two
+        /// anchorbook: A-tests#two
         #[test]
         fn same_name() {}
     }
 }
 "#;
 
-const TESTS: &str = r#"// anchorbook: a-tests#one
+const TESTS: &str = r#"// anchorbook: A-tests#one
 #[test]
 fn ordinary_comment() {}
 
-/// anchorbook: a-tests#one
-/// anchorbook: a-tests#both
+/// anchorbook: A-tests#one
+/// anchorbook: A-tests#both
 #[tokio::test]
 async fn linked_twice() {}
 
-/// anchorbook: a-tests#one
-/// anchorbook: a-tests#one
+/// anchorbook: A-tests#one
+/// anchorbook: A-tests#one
 #[test]
 fn duplicate() {}
 
@@ -106,28 +106,28 @@ fn duplicate() {}
 #[test]
 fn dangling_anchor() {}
 
-/// anchorbook: a-tests#missing
+/// anchorbook: A-tests#missing
 #[test]
 fn dangling_criterion() {}
 
-/// anchorbook: a-proof#formal
+/// anchorbook: A-proof#formal
 #[test]
 fn method_mismatch() {}
 
-/// anchorbook: a-tests#one extra
+/// anchorbook: A-tests#one extra
 #[test]
 fn malformed() {}
 
-/// anchorbook: a-proof#checked
+/// anchorbook: A-proof#checked
 #[test]
 fn checked_by_test() {}
 
 some_macro! {
-    /// anchorbook: a-tests#one
+    /// anchorbook: A-tests#one
     fn inside() {}
 }
 
-/// anchorbook: a-tests#two
+/// anchorbook: A-tests#two
 #[test]
 fn same_name() {}
 "#;
@@ -154,7 +154,7 @@ fn book(roadmap: &str) -> fixture::Book {
     );
     book.write(
         "other/tests/it.rs",
-        "/// anchorbook: a-tests#two\n#[test]\nfn same_name() {}\n",
+        "/// anchorbook: A-tests#two\n#[test]\nfn same_name() {}\n",
     );
     book
 }
@@ -191,7 +191,7 @@ fn state(report: &Report, anchor: &str, criterion: &str) -> (State, Vec<State>) 
     )
 }
 
-/// anchorbook: verify-links-resolve#link-findings
+/// anchorbook: A-verify-links-resolve#link-findings
 #[test]
 fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     let book = book("");
@@ -211,31 +211,31 @@ fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     links.sort();
     let lib = |module: &[&str], name: &str| function(Target::Lib, module, name);
     let mut expected = vec![
-        ("a-proof".into(), "formal".into(), lib(&[], "verified"), 3),
+        ("A-proof".into(), "formal".into(), lib(&[], "verified"), 3),
         (
-            "a-proof".into(),
+            "A-proof".into(),
             "checked".into(),
             it("checked_by_test"),
             31,
         ),
         (
-            "a-tests".into(),
+            "A-tests".into(),
             "one".into(),
             lib(&["tests"], "same_name"),
             22,
         ),
         (
-            "a-tests".into(),
+            "A-tests".into(),
             "two".into(),
             lib(&["tests", "inner"], "same_name"),
             27,
         ),
-        ("a-tests".into(), "one".into(), it("linked_twice"), 5),
-        ("a-tests".into(), "both".into(), it("linked_twice"), 6),
-        ("a-tests".into(), "one".into(), it("duplicate"), 10),
-        ("a-tests".into(), "two".into(), it("same_name"), 40),
+        ("A-tests".into(), "one".into(), it("linked_twice"), 5),
+        ("A-tests".into(), "both".into(), it("linked_twice"), 6),
+        ("A-tests".into(), "one".into(), it("duplicate"), 10),
+        ("A-tests".into(), "two".into(), it("same_name"), 40),
         (
-            "a-tests".into(),
+            "A-tests".into(),
             "two".into(),
             FunctionId {
                 package: "other".into(),
@@ -306,13 +306,13 @@ fn links_resolve_to_functions_and_every_misplaced_or_invalid_link_is_located() {
     );
 }
 
-/// anchorbook: verify-links-resolve#link-findings
+/// anchorbook: A-verify-links-resolve#link-findings
 #[test]
 fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     let book = book("");
     book.write(
         "tests/twice.rs",
-        "/// anchorbook: a-tests#two\n#[cfg(unix)]\n#[test]\nfn twice() {}\n\n/// anchorbook: a-tests#two\n#[cfg(not(unix))]\n#[test]\nfn twice() {}\n",
+        "/// anchorbook: A-tests#two\n#[cfg(unix)]\n#[test]\nfn twice() {}\n\n/// anchorbook: A-tests#two\n#[cfg(not(unix))]\n#[test]\nfn twice() {}\n",
     );
     let plan = whole(&book);
     let twice = function(Target::Test("twice".into()), &[], "twice");
@@ -326,7 +326,7 @@ fn identities_defined_twice_are_ambiguous_and_produce_no_link() {
     assert_eq!(ambiguous, [1, 6]);
 }
 
-/// anchorbook: verify-criterion-states#state-per-method
+/// anchorbook: A-verify-criterion-states#state-per-method
 #[test]
 fn every_method_state_comes_from_links_and_this_runs_results() {
     let book = book("");
@@ -344,36 +344,36 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
     use State::*;
     let report = evaluate(&plan, &ran(&passing));
     assert_eq!(
-        state(&report, "a-tests", "one"),
+        state(&report, "A-tests", "one"),
         (Satisfied, vec![Satisfied])
     );
     // A linked test absent from the results has no evidence.
     assert_eq!(
-        state(&report, "a-tests", "two"),
+        state(&report, "A-tests", "two"),
         (NoEvidence, vec![NoEvidence])
     );
     // Two required methods with one satisfied: the criterion is partial.
     assert_eq!(
-        state(&report, "a-tests", "both"),
+        state(&report, "A-tests", "both"),
         (Partial, vec![Satisfied, NotEvaluated])
     );
     assert_eq!(
-        state(&report, "a-unlinked", "none"),
+        state(&report, "A-unlinked", "none"),
         (Unlinked, vec![Unlinked])
     );
     let anchor = |id: &str| report.anchors().find(|a| a.id == id).unwrap().state;
-    assert_eq!(anchor("a-tests"), Partial);
-    assert_eq!(anchor("a-unlinked"), Unlinked);
+    assert_eq!(anchor("A-tests"), Partial);
+    assert_eq!(anchor("A-unlinked"), Unlinked);
 
     let mut failing = passing.to_vec();
     failing[2].1 = TestOutcome::Failed;
     assert_eq!(
-        state(&evaluate(&plan, &ran(&failing)), "a-tests", "one").0,
+        state(&evaluate(&plan, &ran(&failing)), "A-tests", "one").0,
         Failed
     );
     failing[2].1 = TestOutcome::Skipped;
     assert_eq!(
-        state(&evaluate(&plan, &ran(&failing)), "a-tests", "one").0,
+        state(&evaluate(&plan, &ran(&failing)), "A-tests", "one").0,
         NoEvidence
     );
 
@@ -385,11 +385,11 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
         &plan,
         &runner(RunnerResult::Unusable("did not build".into())),
     );
-    assert_eq!(state(&unusable, "a-tests", "one").0, Inconclusive);
+    assert_eq!(state(&unusable, "A-tests", "one").0, Inconclusive);
     let not_run = evaluate(&plan, &runner(RunnerResult::NotRun("not installed".into())));
-    assert_eq!(state(&not_run, "a-tests", "one").0, NotEvaluated);
+    assert_eq!(state(&not_run, "A-tests", "one").0, NotEvaluated);
     // A runner that cannot run never hides that a criterion is unlinked.
-    assert_eq!(state(&not_run, "a-unlinked", "none").0, Unlinked);
+    assert_eq!(state(&not_run, "A-unlinked", "none").0, Unlinked);
 
     let proofs = |proofs: ProofResult| RunResults {
         tests: RunnerResult::NotRun("no test runner".into()),
@@ -403,7 +403,7 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
             failures_elsewhere: elsewhere.iter().map(|s| (*s).to_owned()).collect(),
         }))
     };
-    let formal = |results: &RunResults| state(&evaluate(&plan, results), "a-proof", "formal").0;
+    let formal = |results: &RunResults| state(&evaluate(&plan, results), "A-proof", "formal").0;
     assert_eq!(formal(&run(true, Some(ProofOutcome::Failed), &[])), Failed);
     // A linked function's own failure outranks failures elsewhere and incompleteness.
     assert_eq!(
@@ -438,12 +438,12 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
     );
 }
 
-/// anchorbook: verify-criterion-states#scope-and-limits
+/// anchorbook: A-verify-criterion-states#scope-and-limits
 #[test]
 fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     let book = book("");
     let scope = Scope {
-        anchors: vec!["a-tests".into()],
+        anchors: vec!["A-tests".into()],
         methods: vec![VerificationMethod::Test],
     };
     let plan = plan(&book.config(), scope).unwrap();
@@ -452,7 +452,7 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
             .iter()
             .map(|a| a.id.as_str())
             .collect::<Vec<_>>(),
-        ["a-tests"]
+        ["A-tests"]
     );
     let mut tests = plan.tests.clone();
     tests.sort();
@@ -471,7 +471,7 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     assert_eq!(tests, expected);
     assert!(plan.proof_targets.is_empty());
     let report = evaluate(&plan, &RunResults::not_run("none"));
-    let (_, methods) = state(&report, "a-tests", "both");
+    let (_, methods) = state(&report, "A-tests", "both");
     assert_eq!(methods, [State::NotEvaluated, State::NotEvaluated]);
     let reason = &report.anchors().next().unwrap().criteria[2].methods[1].reason;
     assert!(reason.contains("outside the requested scope"), "{reason}");
@@ -483,23 +483,23 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     );
 }
 
-/// anchorbook: verify-claims-evidenced#unchecked-claims
-/// anchorbook: verify-claims-evidenced#claim-failures
+/// anchorbook: A-verify-claims-evidenced#unchecked-claims
+/// anchorbook: A-verify-claims-evidenced#claim-failures
 #[test]
 fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds() {
     let roadmap = [
         milestone(
             1,
             "Complete",
-            "`a-tests` · `one` — Full; `a-tests` · `two` — Partial: one case",
+            "`A-tests` · `one` — Full; `A-tests` · `two` — Partial: one case",
         ),
-        milestone(2, "In progress", "`a-unlinked` · `none` — Full"),
+        milestone(2, "In progress", "`A-unlinked` · `none` — Full"),
         milestone(
             3,
             "Complete — merged",
-            "`a-unlinked` · `none` — Partial: setup",
+            "`A-unlinked` · `none` — Partial: setup",
         ),
-        milestone(4, "Complete", "`a-tests` · `both` — Full"),
+        milestone(4, "Complete", "`A-tests` · `both` — Full"),
     ]
     .concat();
     let book = book(&roadmap);
@@ -519,8 +519,8 @@ fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds
     assert_eq!(
         claimed,
         [
-            ("work-1", "work-1-works", "a-tests", "one"),
-            ("work-4", "work-4-works", "a-tests", "both")
+            ("work-1", "work-1-works", "A-tests", "one"),
+            ("work-4", "work-4-works", "A-tests", "both")
         ]
     );
     let outcome = |report: &Report, criterion: &str| {
@@ -565,7 +565,7 @@ fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds
     assert_eq!(passing.exit_code(), 0);
 
     // An unlinked claimed criterion fails the run even when no runner ran.
-    let book = self::book(&milestone(5, "Complete", "`a-unlinked` · `none` — Full"));
+    let book = self::book(&milestone(5, "Complete", "`A-unlinked` · `none` — Full"));
     let report = evaluate(&whole(&book), &RunResults::not_run("not installed"));
     assert_eq!(
         outcome(&report, "none"),
@@ -573,7 +573,7 @@ fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds
     );
     assert_eq!(report.exit_code(), 1);
     // Outside the requested anchors, the claim is unchecked.
-    let scoped = plan_scoped(&book, "a-tests");
+    let scoped = plan_scoped(&book, "A-tests");
     let report = evaluate(&scoped, &RunResults::not_run("not installed"));
     assert!(
         matches!(outcome(&report, "none"), ClaimOutcome::Unchecked(r) if r.contains("outside"))
@@ -617,12 +617,12 @@ fn cli_with(
     )
 }
 
-/// anchorbook: verify-runs-linked-checks#source-preservation
-/// anchorbook: verify-progress-report#incomplete-runs
-/// anchorbook: verify-progress-report#progress-output
+/// anchorbook: A-verify-runs-linked-checks#source-preservation
+/// anchorbook: A-verify-progress-report#incomplete-runs
+/// anchorbook: A-verify-progress-report#progress-output
 #[test]
 fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
-    let book = book(&milestone(1, "Complete", "`a-unlinked` · `none` — Full"));
+    let book = book(&milestone(1, "Complete", "`A-unlinked` · `none` — Full"));
     let before = book.snapshot();
     let (code, stdout, stderr) = cli(&book, &[]);
     assert_eq!(code, Some(1), "{stderr}");
@@ -631,13 +631,13 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
         "anchorbook verify: claims unsatisfied",
         "scope: all anchors; methods test, proof, review",
         "Fixture design (design.md)",
-        "  a-tests (draft) — not-evaluated, 0 of 3 criteria satisfied",
+        "  A-tests (draft) — not-evaluated, 0 of 3 criteria satisfied",
         "    one [test]: not-evaluated — cargo-nextest is not installed; install it with `cargo install cargo-nextest --version 0.9.151 --locked`",
         "    none [test]: unlinked — no test link names the criterion",
         "      review: not-evaluated — assessment records are not read yet",
         "  verify.link-misplaced: tests/it.rs:1:",
         "claims: 1 claim: 0 satisfied, 1 unsatisfied, 0 unchecked",
-        "  unsatisfied: a-unlinked#none (unlinked), claimed by work-1-works at roadmap.md:",
+        "  unsatisfied: A-unlinked#none (unlinked), claimed by work-1-works at roadmap.md:",
         "no Git revision",
         "files changed: none",
     ] {
@@ -658,14 +658,14 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
             anchor.state.as_str()
         )));
     }
-    let (code, stdout, _) = cli(&book, &["--anchor", "a-tests", "--method", "test"]);
+    let (code, stdout, _) = cli(&book, &["--anchor", "A-tests", "--method", "test"]);
     assert_eq!(code, Some(0));
-    assert!(stdout.contains("scope: anchors a-tests; methods test"));
-    assert!(!stdout.contains("a-unlinked (draft)"));
+    assert!(stdout.contains("scope: anchors A-tests; methods test"));
+    assert!(!stdout.contains("A-unlinked (draft)"));
 
     for (args, message) in [
         (vec!["--anchor", "no-such"], "verify.invalid-scope"),
-        (vec!["--anchor", "requirement-r"], "verify.invalid-scope"),
+        (vec!["--anchor", "R-r"], "verify.invalid-scope"),
         (vec!["--method", "guess"], "Usage"),
     ] {
         let (code, stdout, stderr) = cli(&book, &args);
@@ -690,7 +690,7 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     );
 }
 
-/// anchorbook: verify-progress-report#incomplete-runs
+/// anchorbook: A-verify-progress-report#incomplete-runs
 #[test]
 fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     let book = book("");
@@ -758,14 +758,14 @@ fn verification_configuration_is_validated_by_verify_and_ignored_by_check() {
     assert!(error.contains("needs a [verification] section"), "{error}");
 }
 
-/// anchorbook: verify-links-resolve#link-findings
+/// anchorbook: A-verify-links-resolve#link-findings
 #[test]
 fn every_supported_target_and_function_form_is_identified() {
     let book = book("");
     let link = |criterion: &str, attr: &str, name: &str| {
         format!("/// anchorbook: {criterion}\n{attr}\nfn {name}() {{}}\n")
     };
-    let test = |name: &str| link("a-tests#two", "#[test]", name);
+    let test = |name: &str| link("A-tests#two", "#[test]", name);
     book.write("src/nested.rs", &test("in_file_module"));
     book.write("src/main.rs", &test("in_main"));
     book.write("src/bin/tool.rs", &test("in_bin"));
@@ -777,7 +777,7 @@ fn every_supported_target_and_function_form_is_identified() {
     book.write(
         "src/direct.rs",
         &link(
-            "a-proof#formal",
+            "A-proof#formal",
             "#[verus_spec(r => ensures r == 1)]",
             "direct",
         ),
@@ -786,21 +786,21 @@ fn every_supported_target_and_function_form_is_identified() {
         "src/witness.rs",
         &[
             link(
-                "a-proof#formal witness verified",
+                "A-proof#formal witness verified",
                 "#[cfg_attr(feature = \"verus\", verus_spec)]",
                 "witness_fn",
             ),
-            link("a-tests#two witness verified", "#[test]", "test_witness"),
+            link("A-tests#two witness verified", "#[test]", "test_witness"),
         ]
         .concat(),
     );
     book.write(
         "src/block.rs",
-        "/**\n * anchorbook: a-tests#two\n */\n#[test]\nfn block_doc() {}\n",
+        "/**\n * anchorbook: A-tests#two\n */\n#[test]\nfn block_doc() {}\n",
     );
     book.write(
         "src/misplaced.rs",
-        "/// anchorbook: a-tests#two\npub struct Thing;\n",
+        "/// anchorbook: A-tests#two\npub struct Thing;\n",
     );
     let plan = whole(&book);
     let find = |name: &str| plan.links.iter().find(|l| l.function.name == name);
@@ -867,7 +867,7 @@ fn every_supported_target_and_function_form_is_identified() {
     assert!(plan.tests.iter().any(|f| f.name == "in_main"));
 }
 
-/// anchorbook: verify-claims-evidenced#claim-failures
+/// anchorbook: A-verify-claims-evidenced#claim-failures
 #[test]
 fn roadmaps_are_the_role_chapter_and_its_subtree() {
     let book = book("");
@@ -879,14 +879,14 @@ fn roadmaps_are_the_role_chapter_and_its_subtree() {
         "docs/more.md",
         &format!(
             "# More\n\n{}",
-            milestone(7, "Complete", "`a-unlinked` · `none` — Full")
+            milestone(7, "Complete", "`A-unlinked` · `none` — Full")
         ),
     );
     book.write(
         "docs/deeper.md",
         &format!(
             "# Deeper\n\n{}",
-            milestone(8, "Complete", "`a-tests` · `one` — Full")
+            milestone(8, "Complete", "`A-tests` · `one` — Full")
         ),
     );
     // Outside the role, milestone-like text is ordinary prose, not a malformed milestone.
@@ -899,15 +899,12 @@ fn roadmaps_are_the_role_chapter_and_its_subtree() {
     assert_eq!(milestones, ["work-7", "work-8"]);
 }
 
-/// anchorbook: verify-progress-report#incomplete-runs
+/// anchorbook: A-verify-progress-report#incomplete-runs
 #[test]
 fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     use std::error::Error;
     let book = book("");
-    book.write(
-        "docs/design.md",
-        &design().replace("status = \"draft\"", "status = \"sure\""),
-    );
+    book.write("docs/design.md", &design().replace("(draft)", "(sure)"));
     let error = plan(&book.config(), Scope::default()).unwrap_err();
     assert!(
         error.to_string().starts_with("verify.invalid-records"),
@@ -917,7 +914,7 @@ fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     let book = self::book(&milestone(
         1,
         "Complete",
-        "`a-tests` · `one` — Full for now",
+        "`A-tests` · `one` — Full for now",
     ));
     let error = plan(&book.config(), Scope::default()).unwrap_err();
     assert!(
@@ -927,7 +924,7 @@ fn invalid_records_and_roadmaps_make_the_run_incomplete_with_their_causes() {
     assert!(error.source().is_some());
 }
 
-/// anchorbook: verify-criterion-states#state-per-method
+/// anchorbook: A-verify-criterion-states#state-per-method
 #[test]
 fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     let book = book("");
@@ -986,7 +983,7 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
         );
         report
             .anchors()
-            .find(|a| a.id == "a-proof")
+            .find(|a| a.id == "A-proof")
             .unwrap()
             .criteria[0]
             .methods[0]
@@ -1008,13 +1005,13 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
     );
 }
 
-/// anchorbook: verify-claims-evidenced#unchecked-claims
-/// anchorbook: verify-progress-report#progress-output
+/// anchorbook: A-verify-claims-evidenced#unchecked-claims
+/// anchorbook: A-verify-progress-report#progress-output
 #[test]
 fn the_text_report_counts_states_and_claims() {
     let roadmap = [
-        milestone(1, "Complete", "`a-tests` · `one` — Full"),
-        milestone(2, "Complete", "`a-tests` · `both` — Full"),
+        milestone(1, "Complete", "`A-tests` · `one` — Full"),
+        milestone(2, "Complete", "`A-tests` · `both` — Full"),
     ]
     .concat();
     let book = book(&roadmap);
@@ -1050,7 +1047,7 @@ fn the_text_report_counts_states_and_claims() {
         "{text}"
     );
     assert!(
-        text.contains("  unchecked: a-tests#both (review not evaluated)"),
+        text.contains("  unchecked: A-tests#both (review not evaluated)"),
         "{text}"
     );
     assert!(
@@ -1080,7 +1077,7 @@ fn flags_are_parsed_strictly() {
     assert!(stderr.contains("Usage"));
 }
 
-/// anchorbook: verify-runs-linked-checks#selected-run
+/// anchorbook: A-verify-runs-linked-checks#selected-run
 #[test]
 fn input_identities_follow_the_criteria_and_the_checkout() {
     let book = book("");
@@ -1129,7 +1126,7 @@ fn input_identities_follow_the_criteria_and_the_checkout() {
     assert_eq!(whole(&book).inputs.dirty, Some(true));
 }
 
-/// anchorbook: verify-links-resolve#link-findings
+/// anchorbook: A-verify-links-resolve#link-findings
 #[test]
 fn comment_like_text_inside_string_literals_is_not_a_link() {
     let book = book("");
@@ -1137,17 +1134,17 @@ fn comment_like_text_inside_string_literals_is_not_a_link() {
         "tests/strings.rs",
         concat!(
             "const RAW: &str = r#\"\n",
-            "// anchorbook: a-tests#one\n",
-            "/// anchorbook: a-tests#one\n",
+            "// anchorbook: A-tests#one\n",
+            "/// anchorbook: A-tests#one\n",
             "\"#;\n",
-            "const PLAIN: &str = \"\n// anchorbook: a-tests#one\n\";\n",
-            "const BYTES: &[u8] = b\"\n/// anchorbook: a-tests#one\n\";\n",
+            "const PLAIN: &str = \"\n// anchorbook: A-tests#one\n\";\n",
+            "const BYTES: &[u8] = b\"\n/// anchorbook: A-tests#one\n\";\n",
             "/// A real link after the strings still links.\n",
-            "/// anchorbook: a-tests#two\n",
+            "/// anchorbook: A-tests#two\n",
             "#[test]\n",
             "fn real() {}\n",
-            "fn f() { let _s = \"x\"; // anchorbook: a-tests#one\n}\n",
-            "fn g() {\n    let _ = \"\n// anchorbook: a-tests#one\n\";\n}\n",
+            "fn f() { let _s = \"x\"; // anchorbook: A-tests#one\n}\n",
+            "fn g() {\n    let _ = \"\n// anchorbook: A-tests#one\n\";\n}\n",
         ),
     );
     let plan = whole(&book);
@@ -1226,11 +1223,11 @@ fn recording(book: &fixture::Book, cases: &[(&str, &str, &str)]) -> Recording {
     }
 }
 
-/// anchorbook: verify-runs-linked-checks#source-preservation
-/// anchorbook: verify-runs-linked-checks#selected-run
+/// anchorbook: A-verify-runs-linked-checks#source-preservation
+/// anchorbook: A-verify-runs-linked-checks#selected-run
 #[test]
 fn the_runner_selects_exactly_the_linked_tests_and_reads_only_this_runs_report() {
-    let book = book(&milestone(1, "Complete", "`a-tests` · `one` — Full"));
+    let book = book(&milestone(1, "Complete", "`A-tests` · `one` — Full"));
     let runner = recording(
         &book,
         &[
@@ -1304,14 +1301,14 @@ fn the_runner_selects_exactly_the_linked_tests_and_reads_only_this_runs_report()
     assert!(book.path("target/verify/nextest/fixture.log").is_file());
 }
 
-/// anchorbook: verify-runs-linked-checks#selected-run
-/// anchorbook: verify-progress-report#incomplete-runs
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+/// anchorbook: A-verify-progress-report#incomplete-runs
 #[test]
 fn stale_reports_changed_inputs_and_failed_builds_are_never_evidence() {
     let book = book("");
     let cases = [("fixture::it", "linked_twice", "pass")];
     let state_of_one = |env: &[(&str, std::ffi::OsString)]| {
-        let (code, stdout, _) = cli_with(&book, &["--anchor", "a-tests"], env);
+        let (code, stdout, _) = cli_with(&book, &["--anchor", "A-tests"], env);
         assert_eq!(code, Some(0), "{stdout}");
         stdout
             .lines()
@@ -1349,7 +1346,7 @@ fn stale_reports_changed_inputs_and_failed_builds_are_never_evidence() {
     );
 }
 
-/// anchorbook: verify-criterion-states#scope-and-limits
+/// anchorbook: A-verify-criterion-states#scope-and-limits
 #[test]
 fn the_runner_runs_only_when_configured_and_needed() {
     let book = book("");
@@ -1378,7 +1375,7 @@ fn the_runner_runs_only_when_configured_and_needed() {
     );
 }
 
-/// anchorbook: verify-runs-linked-checks#selected-run
+/// anchorbook: A-verify-runs-linked-checks#selected-run
 /// The build loop against cargo-nextest itself: a passing, a deliberately
 /// failing, and a restored test change the linked criterion's state.
 #[test]
@@ -1391,7 +1388,7 @@ fn native_nextest_follows_a_change_through_the_build_loop() {
     );
     book.write(
         "docs/design.md",
-        &format!("# Design\n\n{}", anchor("a-loop", &[("works", "\"test\"")])),
+        &format!("# Design\n\n{}", anchor("A-loop", &[("works", "test")])),
     );
     book.write("docs/authority.md", AUTHORITY);
     book.write("Cargo.toml", "[package]\nname = \"loop-fixture\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[workspace]\n");
@@ -1405,7 +1402,7 @@ fn native_nextest_follows_a_change_through_the_build_loop() {
     assert!(lock.success());
     let test = |expected: u32| {
         format!(
-            "/// anchorbook: a-loop#works\n#[test]\nfn value_is_right() {{ assert_eq!(loop_fixture::value(), {expected}); }}\n\n#[test]\n#[ignore]\nfn ignored_but_run() {{}}\n"
+            "/// anchorbook: A-loop#works\n#[test]\nfn value_is_right() {{ assert_eq!(loop_fixture::value(), {expected}); }}\n\n#[test]\n#[ignore]\nfn ignored_but_run() {{}}\n"
         )
     };
     let env = [("CARGO", std::ffi::OsString::from(env!("CARGO")))];

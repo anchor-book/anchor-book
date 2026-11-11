@@ -214,7 +214,7 @@ pub(super) fn is_external(target: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn keeps_hierarchy_drafts_and_reference_link_offsets() {
         let source = "# Summary\n\n[Intro](intro.md)\n\n# Part\n\n- [**Design**][design]\n  - [Child](child.md)\n- [Draft]()\n---\n[Appendix](appendix.md)\n\n[design]: design.md\n";
@@ -242,7 +242,7 @@ mod tests {
             assert!(source[entry.offset..].starts_with(label));
         }
     }
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn unsupported_content_never_disappears_into_a_successful_summary() {
         for source in [
@@ -275,7 +275,7 @@ mod tests {
         assert!(comments_only("<!-- a -->\n<!-- b -->"));
         assert!(!comments_only("<!-- a --><script></script><!-- b -->"));
     }
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn multi_line_comments_are_accepted_wherever_mdbook_accepts_them() {
         // Each source parses successfully with mdBook 0.5.4; the expected
@@ -316,7 +316,7 @@ mod tests {
             );
         }
     }
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn multi_line_html_blocks_with_other_content_remain_unsupported_at_their_start() {
         for source in [
@@ -330,7 +330,7 @@ mod tests {
             assert_eq!(offset, source.find('<').unwrap(), "{source}");
         }
     }
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn parser_errors_preserve_causes_and_destinations_keep_mdbook_semantics() {
         let error = parse("- [A](one.md)\n- [B](one.md)").unwrap_err();
@@ -365,7 +365,7 @@ mod tests {
             assert!(!is_external(target), "{target}");
         }
     }
-    /// anchorbook: check-navigation-conformance#grammar-boundary
+    /// anchorbook: A-check-navigation-conformance#grammar-boundary
     #[test]
     fn deeply_nested_input_is_incomplete_instead_of_recursing_without_a_bound() {
         let allowed = (0..128)

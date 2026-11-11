@@ -7,13 +7,12 @@
 mod authority;
 mod diagnostics;
 mod inventory;
-mod markdown;
+mod lines;
 mod model;
-mod schema;
 
 pub use diagnostics::{Diagnostic, DiagnosticCode, Problem, RecordErrors, SourceLocation};
 pub use inventory::{RecordInventory, read_records};
 pub use model::{
-    Anchor, AuthorityKind, AuthorityReference, Chapter, Criterion, Decision, Record, RecordData,
-    RecordKind, Requirement, Status, VerificationMethod,
+    Anchor, AuthorityKind, AuthorityReference, Chapter, Criterion, CriterionReference, Decision,
+    ProofScope, Record, RecordData, RecordKind, Requirement, Status, VerificationMethod,
 };

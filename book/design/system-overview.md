@@ -9,33 +9,11 @@ mdBook supplies the underlying Book structure and rendering.
 
 ## Anchor for developing the engine with this Book
 
-```anchorbook-anchor
-schema-version = 1
-id = "check-independent-build"
-title = "A broken Book remains diagnosable by its own engine"
-status = "accepted"
-property = '''
-Engineers and agents can still build and use the checker to diagnose a broken
-Book while developing Anchor Book with that Book. Engine compilation and
-independent fixture tests do not require a valid or rendered repository Book.
-Checking the current Book is a separate acceptance step before rendering, so
-format defects can be reported without first repairing the Book to build its
-checker.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-independent-engine" },
-]
-
-[[criteria]]
-id = "broken-book"
-verification = ["test"]
-statement = "In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure."
-
-[[criteria]]
-id = "ci-order"
-verification = ["review"]
-statement = "Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it."
-```
+> **`A-check-independent-build`** (accepted): **A broken Book remains diagnosable by its own engine**
+> Property: Engineers and agents can still build and use the checker to diagnose a broken Book while developing Anchor Book with that Book. Engine compilation and independent fixture tests do not require a valid or rendered repository Book. Checking the current Book is a separate acceptance step before rendering, so format defects can be reported without first repairing the Book to build its checker.
+> Authority: `R-independent-engine`
+> - Criterion `broken-book` [test]: In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure.
+> - Criterion `ci-order` [review]: Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it.
 
 ## Components
 
@@ -149,7 +127,7 @@ The [mdBook preprocessor](https://rust-lang.github.io/mdBook/for_developers/prep
 calls shared engine logic on mdBook's input. It runs the read-only structural
 check first and renders nothing if that check fails or is incomplete, so ordinary
 `mdbook build` and `mdbook serve` apply it without a wrapper command; see the
-[native tool integration decision](../authority/decisions.md#decision-native-tool-integration).
+[native tool integration decision](../authority/decisions.md#D-native-tool-integration).
 It does not repair files, run tests, or recursively build the Book. Diagram preprocessors run alongside it.
 [Record Rendering](record-rendering.md) defines the shared-model integration.
 

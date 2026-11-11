@@ -1,7 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::{
-    Chapter, Diagnostic, Problem, Record, RecordErrors, SourceLocation, Status, authority, markdown,
+    Chapter, Diagnostic, Problem, Record, RecordData, RecordErrors, SourceLocation, Status,
+    authority, lines,
 };
 
 /// An immutable, validated collection. Construction is all-or-nothing.
@@ -34,6 +35,45 @@ impl RecordInventory {
     }
 }
 
+/// Every criterion a proof criterion's exclusions name must exist. Exclusions
+/// naming an anchor whose definition is invalid are not reported again.
+fn covering_criteria(candidates: &[lines::Candidate], diagnostics: &mut Vec<Diagnostic>) {
+    let mut anchors: BTreeMap<&str, Option<BTreeSet<&str>>> = BTreeMap::new();
+    for candidate in candidates {
+        let criteria = candidate.record.as_ref().and_then(|r| match r.data() {
+            RecordData::Anchor(a) => Some(a.criteria.iter().map(|c| c.id.as_str()).collect()),
+            _ => None,
+        });
+        if let Some(id) = candidate.id.as_deref().filter(|id| id.starts_with("A-")) {
+            anchors.insert(id, criteria);
+        }
+    }
+    for record in candidates.iter().filter_map(|c| c.record.as_ref()) {
+        let RecordData::Anchor(anchor) = record.data() else {
+            continue;
+        };
+        for criterion in &anchor.criteria {
+            for named in criterion.scope.iter().flat_map(|s| &s.covered_by) {
+                let found = match anchors.get(named.anchor.as_str()) {
+                    Some(Some(criteria)) => criteria.contains(named.criterion.as_str()),
+                    Some(None) => true,
+                    None => false,
+                };
+                if !found {
+                    diagnostics.push(Diagnostic::new(
+                        Problem::InvalidDefinition,
+                        named.location.clone(),
+                        format!(
+                            "exclusions of `{}` name `{}#{}`, which is not a criterion in this Book",
+                            criterion.id, named.anchor, named.criterion
+                        ),
+                    ));
+                }
+            }
+        }
+    }
+}
+
 /// Read the full chapter inventory, validate canonical definitions, and resolve
 /// direct authority edges. Inputs are borrowed; the successful inventory owns
 /// its data and retains definition/body ranges in the supplied sources.
@@ -57,8 +97,9 @@ pub fn read_records(chapters: &[Chapter<'_>]) -> Result<RecordInventory, RecordE
                 "chapter paths must be nonempty and unique",
             ));
         }
-        candidates.extend(markdown::read(*chapter, &mut diagnostics));
+        candidates.extend(lines::read(*chapter, &mut diagnostics));
     }
+    covering_criteria(&candidates, &mut diagnostics);
     let mut identities: BTreeMap<&str, Vec<usize>> = BTreeMap::new();
     for (i, candidate) in candidates.iter().enumerate() {
         if let Some(id) = candidate.id.as_deref() {
@@ -96,10 +137,11 @@ pub fn read_records(chapters: &[Chapter<'_>]) -> Result<RecordInventory, RecordE
             authority::Candidate {
                 id: candidate.id.clone(),
                 decoded: record.is_some(),
+                // An undecoded candidate's kind is never read by the validator.
                 kind: match record.map(Record::kind) {
                     Some(super::RecordKind::Anchor) => authority::Kind::Anchor,
                     Some(super::RecordKind::Decision) => authority::Kind::Decision,
-                    _ => authority::Kind::Requirement,
+                    Some(super::RecordKind::Requirement) | None => authority::Kind::Requirement,
                 },
                 design_accepted: record.is_some_and(|r| r.status() == Status::Accepted),
                 references: record

@@ -12,98 +12,24 @@ passes. The agent performs those edits; the checker remains read-only.
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "check-observation-only"
-title = "Checking preserves the Book for deliberate repair"
-status = "accepted"
-property = '''
-Engineers and agents can inspect a Book's format without changing the project
-or triggering its tools. Passing, failing, and incomplete checks leave project
-content and directory entries unchanged. Checking does not render, fetch
-dependencies, or execute subprocesses, preprocessors, tests, or verifiers.
-Repairs remain separate actions so the engineer or agent controls what changes.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-observation-only" },
-  { kind = "decision", id = "decision-separate-check-and-repair" },
-]
+> **`A-check-observation-only`** (accepted): **Checking preserves the Book for deliberate repair**
+> Property: Engineers and agents can inspect a Book's format without changing the project or triggering its tools. Passing, failing, and incomplete checks leave project content and directory entries unchanged. Checking does not render, fetch dependencies, or execute subprocesses, preprocessors, tests, or verifiers. Repairs remain separate actions so the engineer or agent controls what changes.
+> Authority: `R-observation-only`; `D-separate-check-and-repair`
+> - Criterion `file-preservation` [test]: Compare project file contents and directory entries before and after passing, failing, and incomplete library and CLI checks, including missing source and output; they remain unchanged.
+> - Criterion `no-execution` [test]: Use fixtures with configured execution traps and run with subprocess and network activity denied or observed; checking neither attempts those operations nor requires generated Book output.
 
-[[criteria]]
-id = "file-preservation"
-verification = ["test"]
-statement = "Compare project file contents and directory entries before and after passing, failing, and incomplete library and CLI checks, including missing source and output; they remain unchanged."
+> **`A-check-navigation-conformance`** (accepted): **Navigation findings guide repairs to the configured Book format**
+> Property: The checker identifies where the Book's chapters and required sections differ from its configured structure, and reports the location and expected structure so an engineer or agent can correct the format and recheck. Navigation passes only when the source, chapter targets, and required sections satisfy all defined navigation rules. Unreadable, malformed, or unsupported navigation prevents a pass and is reported as incomplete evaluation, not as an empty valid Book.
+> Authority: `R-repair-feedback`; `R-configured-structure`; `D-mdbook-structure`
+> - Criterion `chapter-inventory` [test]: Use independently specified fixtures for missing source or SUMMARY.md and missing, non-file, or escaping chapter targets at numbered, unnumbered, and nested locations. Assert findings identify the affected location and expected structure, with dependent checks blocked when prerequisites are absent. Correct each seeded defect and recheck; valid navigation passes.
+> - Criterion `required-roles` [test]: Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link. Only distinct configured top-level local chapters satisfy the roles. Assert failures identify the role, relevant declaration, and expected placement; restoring that structure makes the role check pass.
+> - Criterion `grammar-boundary` [test]: Against the documented supported mdBook grammar and version, test valid numbered, unnumbered, and nested navigation, part headings, separators, and targetless drafts outside required roles. Classify external links without fetching them. Malformed, unreadable, or unsupported navigation produces a located incomplete result identifying the input problem and blocked checks, never an empty successful inventory.
 
-[[criteria]]
-id = "no-execution"
-verification = ["test"]
-statement = "Use fixtures with configured execution traps and run with subprocess and network activity denied or observed; checking neither attempts those operations nor requires generated Book output."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-navigation-conformance"
-title = "Navigation findings guide repairs to the configured Book format"
-status = "accepted"
-property = '''
-The checker identifies where the Book's chapters and required sections differ
-from its configured structure, and reports the location and expected structure
-so an engineer or agent can correct the format and recheck. Navigation passes
-only when the source, chapter targets, and required sections satisfy all defined
-navigation rules. Unreadable, malformed, or unsupported navigation prevents a
-pass and is reported as incomplete evaluation, not as an empty valid Book.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-repair-feedback" },
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "decision", id = "decision-mdbook-structure" },
-]
-
-[[criteria]]
-id = "chapter-inventory"
-verification = ["test"]
-statement = "Use independently specified fixtures for missing source or SUMMARY.md and missing, non-file, or escaping chapter targets at numbered, unnumbered, and nested locations. Assert findings identify the affected location and expected structure, with dependent checks blocked when prerequisites are absent. Correct each seeded defect and recheck; valid navigation passes."
-
-[[criteria]]
-id = "required-roles"
-verification = ["test"]
-statement = "Exercise each required role as present, absent, nested, or replaced by a heading, separator, targetless draft, or external link. Only distinct configured top-level local chapters satisfy the roles. Assert failures identify the role, relevant declaration, and expected placement; restoring that structure makes the role check pass."
-
-[[criteria]]
-id = "grammar-boundary"
-verification = ["test"]
-statement = "Against the documented supported mdBook grammar and version, test valid numbered, unnumbered, and nested navigation, part headings, separators, and targetless drafts outside required roles. Classify external links without fetching them. Malformed, unreadable, or unsupported navigation produces a located incomplete result identifying the input problem and blocked checks, never an empty successful inventory."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-renderer-alignment"
-title = "The checked Book and rendered Book use the intended layout"
-status = "accepted"
-property = '''
-The checker detects when mdBook's file-based source or output settings differ
-from the intended Anchor Book layout, so an engineer or agent can align them
-before rendering. Findings identify the differing settings and expected locations
-without changing either configuration. Equivalent resolved locations, including
-mdBook defaults, agree even when spelled differently. This guarantee covers the
-configured book.toml, not environment or command-line overrides.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-repair-feedback" },
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "decision", id = "decision-mdbook-structure" },
-]
-
-[[criteria]]
-id = "resolved-comparison"
-verification = ["test"]
-statement = "Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations, including a book.toml in a subdirectory of the configuration directory. Drift findings identify the relevant settings and expected locations; aligning those settings makes the check pass without the checker editing either file."
-
-[[criteria]]
-id = "renderer-input"
-verification = ["test"]
-statement = "A missing book.toml is a structural violation; malformed or unreadable renderer configuration prevents a pass. Verify neither configuration is changed."
-```
+> **`A-check-renderer-alignment`** (accepted): **The checked Book and rendered Book use the intended layout**
+> Property: The checker detects when mdBook's file-based source or output settings differ from the intended Anchor Book layout, so an engineer or agent can align them before rendering. Findings identify the differing settings and expected locations without changing either configuration. Equivalent resolved locations, including mdBook defaults, agree even when spelled differently. This guarantee covers the configured book.toml, not environment or command-line overrides.
+> Authority: `R-repair-feedback`; `R-configured-structure`; `D-mdbook-structure`
+> - Criterion `resolved-comparison` [test]: Check matching, mismatching, defaulted, and equivalently spelled source/output paths against independent expected locations, including a book.toml in a subdirectory of the configuration directory. Drift findings identify the relevant settings and expected locations; aligning those settings makes the check pass without the checker editing either file.
+> - Criterion `renderer-input` [test]: A missing book.toml is a structural violation; malformed or unreadable renderer configuration prevents a pass. Verify neither configuration is changed.
 
 ## Invocation and flow
 
@@ -146,7 +72,7 @@ sequenceDiagram
     end
 ```
 
-All stages preserve the [observation-only property](#check-observation-only).
+All stages preserve the [observation-only property](#A-check-observation-only).
 Reading configuration must not execute configured preprocessors, and checking
 works without rendered output. Repairs, materialization, and project test runs
 are separate from this operation.

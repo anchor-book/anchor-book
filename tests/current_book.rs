@@ -67,7 +67,9 @@ fn current_book_records() {
             .find(|c| c.path == record.location().path())
             .unwrap()
             .content;
-        assert!(source[record.location().range()].starts_with("```anchorbook-"));
+        assert!(
+            source[record.location().range()].starts_with(&format!("> **`{}`** (", record.id()))
+        );
     }
 }
 
@@ -119,7 +121,7 @@ fn current_book_structure() {
     );
 }
 
-/// anchorbook: render-roadmap-milestones#roadmap-validation
+/// anchorbook: A-render-roadmap-milestones#roadmap-validation
 #[test]
 #[ignore = "current-Book roadmap acceptance; run explicitly with --ignored after independent tests"]
 fn current_book_roadmaps() {

@@ -17,7 +17,7 @@ fn temp(name: &str) -> std::path::PathBuf {
     dir
 }
 
-/// anchorbook: project-agent-bootstrap#contract-retrieval
+/// anchorbook: A-project-agent-bootstrap#contract-retrieval
 #[test]
 fn contract_output_is_the_packaged_text_for_every_project() {
     let empty = temp("empty");

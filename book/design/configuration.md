@@ -7,69 +7,18 @@ choices. Role names describe responsibilities, independently of page titles.
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "check-book-selection"
-title = "Check the intended Book wherever the caller starts"
-status = "accepted"
-property = '''
-An engineer or agent can select the intended Book explicitly and check its
-configured format without relying on conventional directory names or page titles.
-For the same configuration file and filesystem state, the selected Book, source,
-output, and section roles are the same regardless of the caller's working
-directory. Directory names and titles do not determine section roles.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "decision", id = "decision-explicit-configuration" },
-]
+> **`A-check-book-selection`** (accepted): **Check the intended Book wherever the caller starts**
+> Property: An engineer or agent can select the intended Book explicitly and check its configured format without relying on conventional directory names or page titles. For the same configuration file and filesystem state, the selected Book, source, output, and section roles are the same regardless of the caller's working directory. Directory names and titles do not determine section roles.
+> Authority: `R-configured-structure`; `D-explicit-configuration`
+> - Criterion `invocation-directory` [test]: Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings.
+> - Criterion `alternative-layout` [test]: Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent.
 
-[[criteria]]
-id = "invocation-directory"
-verification = ["test"]
-statement = "Invoke from different working directories with arguments naming the same configuration file; compare resolved paths, roles, and findings."
-
-[[criteria]]
-id = "alternative-layout"
-verification = ["test"]
-statement = "Check equivalent fixtures under book, docs, and md with different display titles; role interpretation and conformance are equivalent."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-configuration-validity"
-title = "Configuration problems cannot produce a misleading format check"
-status = "accepted"
-property = '''
-The checker reports invalid or unresolvable configuration so an engineer or
-agent can correct the intended layout before relying on structural findings.
-It never reports a pass from such input. Evaluation requires valid schema fields
-and distinct section mappings, paths within their declared roots, and separate
-source and output locations that neither coincide nor contain one another,
-including through symlink aliases.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-repair-feedback" },
-  { kind = "requirement", id = "requirement-configured-structure" },
-  { kind = "requirement", id = "requirement-truthful-results" },
-  { kind = "decision", id = "decision-explicit-configuration" },
-]
-
-[[criteria]]
-id = "schema-rejection"
-verification = ["test"]
-statement = "Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce configuration errors identifying the affected field and expected form. Correcting the seeded errors permits structural evaluation; invalid configuration never produces a pass."
-
-[[criteria]]
-id = "path-boundaries"
-verification = ["test"]
-statement = "Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment."
-
-[[criteria]]
-id = "missing-paths"
-verification = ["test"]
-statement = "Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors."
-```
+> **`A-check-configuration-validity`** (accepted): **Configuration problems cannot produce a misleading format check**
+> Property: The checker reports invalid or unresolvable configuration so an engineer or agent can correct the intended layout before relying on structural findings. It never reports a pass from such input. Evaluation requires valid schema fields and distinct section mappings, paths within their declared roots, and separate source and output locations that neither coincide nor contain one another, including through symlink aliases.
+> Authority: `R-repair-feedback`; `R-configured-structure`; `R-truthful-results`; `D-explicit-configuration`
+> - Criterion `schema-rejection` [test]: Fixtures with missing or unknown fields, invalid types, unsupported versions, invalid project phases, and duplicate section mappings produce configuration errors identifying the affected field and expected form. Correcting the seeded errors permits structural evaluation; invalid configuration never produces a pass.
+> - Criterion `path-boundaries` [test]: Reject empty or absolute paths, escapes, overlaps, and symlink aliases that violate containment or separation; include both directions of source/output containment.
+> - Criterion `missing-paths` [test]: Accept a resolvable separate output that does not exist without creating it; classify a resolvable missing source as a structural violation and unresolved path relationships as errors.
 
 ## Initial schema
 

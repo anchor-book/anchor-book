@@ -182,7 +182,7 @@ mod tests {
     use super::*;
     const INPUT: &str = include_str!("../../tests/fixtures/configuration.toml");
 
-    /// anchorbook: check-configuration-validity#schema-rejection
+    /// anchorbook: A-check-configuration-validity#schema-rejection
     #[test]
     fn phases_are_explicit_and_preserve_declared_paths() {
         for (name, phase) in [
@@ -203,7 +203,7 @@ mod tests {
         }
     }
 
-    /// anchorbook: check-configuration-validity#schema-rejection
+    /// anchorbook: A-check-configuration-validity#schema-rejection
     #[test]
     fn required_fields_types_and_values_are_not_defaulted() {
         let path = Path::new("anchorbook.toml");
@@ -257,7 +257,7 @@ mod tests {
         assert_eq!(error.field(), Some("schema-version"));
     }
 
-    /// anchorbook: check-configuration-validity#schema-rejection
+    /// anchorbook: A-check-configuration-validity#schema-rejection
     #[test]
     fn syntax_and_unknown_fields_have_distinct_located_errors() {
         use std::error::Error as _;

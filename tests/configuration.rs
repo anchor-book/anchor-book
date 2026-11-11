@@ -90,7 +90,7 @@ fn missing_and_non_directory_sources_are_reportable_structural_observations() {
     );
 }
 
-/// anchorbook: check-configuration-validity#path-boundaries
+/// anchorbook: A-check-configuration-validity#path-boundaries
 #[test]
 fn invalid_paths_are_located_and_corrections_resolve() {
     let f = Fixture::new();
@@ -145,7 +145,7 @@ fn invalid_paths_are_located_and_corrections_resolve() {
     assert!(!f.0.join("unused").exists());
 }
 
-/// anchorbook: check-configuration-validity#schema-rejection
+/// anchorbook: A-check-configuration-validity#schema-rejection
 #[test]
 fn duplicate_roles_are_rejected_after_resolution() {
     let f = Fixture::new();
@@ -172,8 +172,8 @@ fn duplicate_roles_are_rejected_after_resolution() {
     }
 }
 
-/// anchorbook: check-shared-typed-results#library-boundary
-/// anchorbook: check-observation-only#file-preservation
+/// anchorbook: A-check-shared-typed-results#library-boundary
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn filesystem_errors_preserve_causes_and_never_create_missing_paths() {
     let f = Fixture::new();
@@ -207,7 +207,7 @@ fn filesystem_errors_preserve_causes_and_never_create_missing_paths() {
     assert!(!f.0.join("out").exists());
 }
 
-/// anchorbook: check-configuration-validity#path-boundaries
+/// anchorbook: A-check-configuration-validity#path-boundaries
 #[cfg(unix)]
 #[test]
 fn symlinks_preserve_identity_and_do_not_hide_escapes_or_dangling_targets() {
@@ -295,7 +295,7 @@ fn caller_working_directory_does_not_change_the_selected_book() {
     }
 }
 
-/// anchorbook: check-observation-only#file-preservation
+/// anchorbook: A-check-observation-only#file-preservation
 #[test]
 fn loading_preserves_all_fixture_content_and_directory_entries() {
     use std::collections::BTreeMap;
@@ -372,7 +372,7 @@ fn inaccessible_descendants_are_errors_not_missing_paths() {
     }
 }
 
-/// anchorbook: check-configuration-validity#path-boundaries
+/// anchorbook: A-check-configuration-validity#path-boundaries
 #[test]
 fn mdbook_configuration_location_is_required_and_resolved_from_the_configuration() {
     let f = Fixture::new();

@@ -185,7 +185,7 @@ Each roadmap's milestones record their own status and evidence.
 - [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
 - [Formal Verification](formal-verification.md): proving the engine's own authority validation, and making Verus an optional feature so no project needs it.
-- [Record Line Grammar](record-line-grammar.md): measuring whether a line-oriented record syntax serves agents better than TOML.
+- [Record Line Grammar](record-line-grammar.md): measuring the line grammar with agents, then making it the engine's and this Book's only record syntax.
 - [Verification Evidence](verification-evidence.md): shared criterion evidence, test and proof runners, proof guards and assessment records, consumer-owned Verus, and retained CI reports.
 - [Project Integration](project-integration.md): this Book uses the groundwork every project relies on before any project adopts it.
 - [Symposium Integration](symposium-integration.md): Symposium develops with its own Anchor Book, without Verus, and the gaps it exposes become engine work.

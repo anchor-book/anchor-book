@@ -8,31 +8,28 @@ const PATH: &str = "authority.md";
 
 fn requirement(id: &str, status: &str) -> String {
     format!(
-        "```anchorbook-requirement\nschema-version = 1\nid = \"{id}\"\ntitle = \"Requirement {id}\"\n\
-         status = \"{status}\"\nstatement = \"A required outcome.\"\nsource = \"A fixture.\"\n```\n\n"
+        "> **`{id}`** ({status}): **Requirement {id}**\n> Statement: A required outcome.\n> Source: A fixture.\n\n"
     )
 }
 
 fn decision(id: &str, status: &str) -> String {
     format!(
-        "```anchorbook-decision\nschema-version = 1\nid = \"{id}\"\ntitle = \"Decision {id}\"\n\
-         status = \"{status}\"\nchoice = \"A choice.\"\nrequirements = []\nrationale = \"A reason.\"\n\
-         alternatives = [\"Another choice.\"]\nreconsider-when = \"Never in fixtures.\"\n```\n\n"
+        "> **`{id}`** ({status}): **Decision {id}**\n> Choice: A choice.\n> Requirements: none\n\
+         > Rationale: A reason.\n> Alternatives:\n> - Another choice.\n> Reconsider when: Never in fixtures.\n\n"
     )
 }
 
-/// An anchor whose authority field is `authorities`, written verbatim; `None` omits the field.
+/// An anchor whose `Authority:` field is `authorities`, written verbatim; `None` omits the field.
 fn anchor(id: &str, status: &str, authorities: Option<&str>) -> String {
-    let field = authorities.map_or(String::new(), |list| format!("authorities = {list}\n"));
+    let field = authorities.map_or(String::new(), |list| format!("> Authority: {list}\n"));
     format!(
-        "```anchorbook-anchor\nschema-version = 1\nid = \"{id}\"\ntitle = \"Anchor {id}\"\n\
-         status = \"{status}\"\nproperty = \"A property.\"\n{field}\n[[criteria]]\nid = \"check\"\n\
-         verification = [\"test\"]\nstatement = \"Check it.\"\n```\n\n"
+        "> **`{id}`** ({status}): **Anchor {id}**\n> Property: A property.\n{field}\
+         > - Criterion `check` [test]: Check it.\n\n"
     )
 }
 
-fn cite(kind: &str, id: &str) -> String {
-    format!("[{{ kind = \"{kind}\", id = \"{id}\" }}]")
+fn cite(id: &str) -> String {
+    format!("`{id}`")
 }
 
 fn read(text: &str) -> Result<anchor_book::records::RecordInventory, RecordErrors> {
@@ -57,25 +54,25 @@ fn assert_fails(text: &str, expected: &[(Problem, DiagnosticCode, &str)]) {
     assert_eq!(found, expected, "{text}");
 }
 
-/// anchorbook: records-valid-authority#required-authority
+/// anchorbook: A-records-valid-authority#required-authority
 #[test]
 fn anchors_need_a_requirement_or_decision_reference() {
     let authorities = format!(
         "{}{}",
-        requirement("need", "accepted"),
-        decision("choice", "accepted")
+        requirement("R-need", "accepted"),
+        decision("D-choice", "accepted")
     );
-    for list in [cite("requirement", "need"), cite("decision", "choice")] {
+    for list in [cite("R-need"), cite("D-choice")] {
         let text = format!(
             "{authorities}{}",
-            anchor("property", "accepted", Some(&list))
+            anchor("A-property", "accepted", Some(&list))
         );
         let inventory = read(&text).expect("one valid reference suffices");
-        assert!(inventory.get("property").is_some());
+        assert!(inventory.get("A-property").is_some());
     }
 
-    for missing in [None, Some("[]")] {
-        let text = format!("{authorities}{}", anchor("property", "draft", missing));
+    for missing in [None, Some("")] {
+        let text = format!("{authorities}{}", anchor("A-property", "draft", missing));
         let errors = read(&text).expect_err("an anchor without authority is invalid");
         let diagnostic = errors
             .diagnostics()
@@ -83,7 +80,7 @@ fn anchors_need_a_requirement_or_decision_reference() {
             .find(|d| d.problem() == Problem::InvalidDefinition)
             .expect("an invalid-definition diagnostic");
         assert_eq!(diagnostic.code(), DiagnosticCode::InvalidDefinition);
-        let anchor_start = text.find("```anchorbook-anchor").unwrap();
+        let anchor_start = text.find("> **`A-property`**").unwrap();
         assert!(
             diagnostic.location().range().start >= anchor_start,
             "the diagnostic is located in the anchor: {diagnostic}"
@@ -91,35 +88,49 @@ fn anchors_need_a_requirement_or_decision_reference() {
     }
 }
 
-/// anchorbook: records-valid-authority#resolved-authority
+/// anchorbook: A-records-valid-authority#resolved-authority
 #[test]
 fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     use DiagnosticCode::{DuplicateId, InvalidReference};
-    use Problem::{
-        AmbiguousTarget, InvalidDefinition, InvalidTarget, MissingTarget, WrongTargetKind,
-    };
-    let need = requirement("need", "accepted");
-    let choice = decision("choice", "accepted");
+    use Problem::{AmbiguousTarget, InvalidDefinition, InvalidTarget, MissingTarget};
+    let need = requirement("R-need", "accepted");
+    let choice = decision("D-choice", "accepted");
 
     let missing = format!(
         "{need}{}",
-        anchor("property", "draft", Some(&cite("requirement", "absent")))
+        anchor("A-property", "draft", Some(&cite("R-absent")))
     );
-    assert_fails(&missing, &[(MissingTarget, InvalidReference, "\"absent\"")]);
+    assert_fails(&missing, &[(MissingTarget, InvalidReference, "`R-absent`")]);
 
-    let wrong_kind = format!(
+    // An identifier states its kind, so a reference with the wrong kind's code
+    // names a record that does not exist, and the reader rejects a reference to
+    // a kind the field does not accept.
+    let wrong_code = format!(
         "{need}{choice}{}",
-        anchor("property", "draft", Some(&cite("decision", "need")))
+        anchor("A-property", "draft", Some(&cite("D-need")))
+    );
+    assert_fails(
+        &wrong_code,
+        &[(MissingTarget, InvalidReference, "`D-need`")],
+    );
+    let wrong_kind = format!(
+        "{need}{}{}",
+        anchor("A-other", "draft", Some(&cite("R-need"))),
+        anchor("A-property", "draft", Some(&cite("A-other")))
     );
     assert_fails(
         &wrong_kind,
-        &[(WrongTargetKind, InvalidReference, "\"need\"")],
+        &[(
+            InvalidDefinition,
+            DiagnosticCode::InvalidDefinition,
+            "`A-other`",
+        )],
     );
 
-    let invalid_need = need.replace("source = \"A fixture.\"\n", "");
+    let invalid_need = need.replace("> Source: A fixture.\n", "");
     let invalid = format!(
         "{invalid_need}{}",
-        anchor("property", "draft", Some(&cite("requirement", "need")))
+        anchor("A-property", "draft", Some(&cite("R-need")))
     );
     let errors = read(&invalid).expect_err("an invalid target is not usable authority");
     let problems: Vec<_> = errors.diagnostics().iter().map(|d| d.problem()).collect();
@@ -130,16 +141,14 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
         .find(|d| d.problem() == InvalidTarget)
         .expect("the reference reports an invalid target, not a missing one");
     assert_eq!(target.code(), InvalidReference);
-    assert_eq!(&invalid[target.location().range()], "\"need\"");
-    assert!(
-        invalid[target.related_locations()[0].range()].starts_with("```anchorbook-requirement")
-    );
+    assert_eq!(&invalid[target.location().range()], "`R-need`");
+    assert!(invalid[target.related_locations()[0].range()].starts_with("> **`R-need`**"));
     assert!(!problems.contains(&MissingTarget));
 
     let ambiguous = format!(
         "{need}{}{}",
-        requirement("need", "accepted"),
-        anchor("property", "draft", Some(&cite("requirement", "need")))
+        requirement("R-need", "accepted"),
+        anchor("A-property", "draft", Some(&cite("R-need")))
     );
     let errors = read(&ambiguous).expect_err("duplicate identities give no target");
     let reference = errors
@@ -148,7 +157,7 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
         .find(|d| d.problem() == AmbiguousTarget)
         .expect("an ambiguous-target diagnostic");
     assert_eq!(reference.code(), InvalidReference);
-    assert_eq!(&ambiguous[reference.location().range()], "\"need\"");
+    assert_eq!(&ambiguous[reference.location().range()], "`R-need`");
     assert_eq!(
         errors
             .diagnostics()
@@ -159,31 +168,31 @@ fn anchor_authority_must_resolve_to_one_valid_record_of_the_declared_kind() {
     );
 }
 
-/// anchorbook: records-valid-authority#production-integration
-/// anchorbook: records-valid-authority#resolved-authority
+/// anchorbook: A-records-valid-authority#production-integration
+/// anchorbook: A-records-valid-authority#resolved-authority
 #[test]
 fn each_failing_reference_is_reported_at_its_own_location() {
     let authorities = format!(
         "{}{}",
-        requirement("need", "accepted"),
-        decision("choice", "accepted")
+        requirement("R-need", "accepted"),
+        decision("D-choice", "accepted")
     );
-    let list = "[\n  { kind = \"requirement\", id = \"need\" },\n  { kind = \"decision\", id = \"absent\" },\n]";
-    let text = format!("{authorities}{}", anchor("property", "draft", Some(list)));
+    let list = "`R-need`; `D-absent`";
+    let text = format!("{authorities}{}", anchor("A-property", "draft", Some(list)));
     assert_fails(
         &text,
         &[(
             Problem::MissingTarget,
             DiagnosticCode::InvalidReference,
-            "\"absent\"",
+            "`D-absent`",
         )],
     );
 }
 
-/// anchorbook: records-valid-authority#compatible-status
+/// anchorbook: A-records-valid-authority#compatible-status
 #[test]
 fn accepted_anchors_cite_only_accepted_authority() {
-    for (kind, target) in [("requirement", "need"), ("decision", "choice")] {
+    for (kind, target) in [("requirement", "R-need"), ("decision", "D-choice")] {
         for anchor_status in ["draft", "accepted"] {
             for target_status in ["draft", "accepted"] {
                 let authority = if kind == "requirement" {
@@ -193,7 +202,7 @@ fn accepted_anchors_cite_only_accepted_authority() {
                 };
                 let text = format!(
                     "{authority}{}",
-                    anchor("property", anchor_status, Some(&cite(kind, target)))
+                    anchor("A-property", anchor_status, Some(&cite(target)))
                 );
                 if anchor_status == "accepted" && target_status == "draft" {
                     assert_fails(
@@ -201,7 +210,7 @@ fn accepted_anchors_cite_only_accepted_authority() {
                         &[(
                             Problem::IncompatibleStatus,
                             DiagnosticCode::IncompatibleStatus,
-                            &format!("\"{target}\""),
+                            &format!("`{target}`"),
                         )],
                     );
                 } else {

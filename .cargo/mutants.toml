@@ -6,15 +6,12 @@ output = "target"
 timeout_multiplier = 5.0
 minimum_test_timeout = 30.0
 
-# Reviewed equivalent mutations: these three unions combine distinct flags
-# (TABLES=2, FOOTNOTES=4, STRIKETHROUGH=8, TASKLISTS=16 in pulldown-cmark 0.13.4).
-# OR and XOR are identical for disjoint bits. Flag-removal/intersection mutations
-# remain included. Exact locations stop matching when this code moves; re-review
-# these exceptions when the flag expression or parser dependency changes.
 exclude_re = [
-    '^src/records/markdown\.rs:24:9: replace \| with \^ in read$',
-    '^src/records/markdown\.rs:25:9: replace \| with \^ in read$',
-    '^src/records/markdown\.rs:26:9: replace \| with \^ in read$',
+    # Reviewed equivalent mutation: `i + 1` to `i * 1` in a code block's line start
+    # makes its range begin at the previous line's newline, so only an empty
+    # previous line also counts as code, and an empty line is never part of a
+    # record. Re-review when this expression changes.
+    '^src/records/lines\.rs:110:81: replace \+ with \* in code_blocks$',
     # Loop counters in the verified authority functions: `+= 1` to `*= 1` leaves the
     # index at 0, so the loop never ends and tests can only time out. Termination is
     # proved instead: each loop's `decreases` clause rejects these changes under
@@ -22,6 +19,6 @@ exclude_re = [
     '^src/records/authority\.rs:279:25: replace \+= with \*= in lookup$',
     '^src/records/authority\.rs:305:25: replace \+= with \*= in has_unknown_identity$',
     '^src/records/authority\.rs:344:33: replace \+= with \*= in validate_reference$',
-    '^src/records/authority\.rs:436:33: replace \+= with \*= in validate_authorities$',
-    '^src/records/authority\.rs:439:22: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:437:33: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:440:22: replace \+= with \*= in validate_authorities$',
 ]

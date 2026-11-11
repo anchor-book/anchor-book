@@ -8,76 +8,19 @@ observed problem, expected structure, location, and useful next action.
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "check-truthful-results"
-title = "Results tell the agent whether format repairs are complete"
-status = "accepted"
-property = '''
-An engineer or agent can distinguish a Book that conforms to the checked format,
-a Book with known structural defects to repair, and a check that could not finish.
-A pass requires every required check in the declared scope to have passed.
-Reports identify evaluated and blocked checks; operational or invalid-input
-failures remain incomplete even when partial structural findings are available.
-Structural success does not claim anchor verification, implementation, or roadmap
-completion.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-truthful-results" },
-  { kind = "decision", id = "decision-typed-check-results" },
-]
+> **`A-check-truthful-results`** (accepted): **Results tell the agent whether format repairs are complete**
+> Property: An engineer or agent can distinguish a Book that conforms to the checked format, a Book with known structural defects to repair, and a check that could not finish. A pass requires every required check in the declared scope to have passed. Reports identify evaluated and blocked checks; operational or invalid-input failures remain incomplete even when partial structural findings are available. Structural success does not claim anchor verification, implementation, or roadmap completion.
+> Authority: `R-truthful-results`; `D-typed-check-results`
+> - Criterion `outcomes-and-precedence` [test]: Verify CLI exits 0, 1, and 2 for passing, structural-failure, and incomplete cases; mixed violations and operational failure return 2 and retain explicitly partial findings.
+> - Criterion `blocked-evaluation` [test]: Missing prerequisites yield root-cause findings and blocked dependent checks without cascaded invented defects; an empty findings list with incomplete evaluation never passes.
+> - Criterion `report-scope` [test]: Assert evaluated and blocked groups and limits of the passing claim. Completed reports appear on stdout and incomplete reports with partial findings appear together on stderr.
 
-[[criteria]]
-id = "outcomes-and-precedence"
-verification = ["test"]
-statement = "Verify CLI exits 0, 1, and 2 for passing, structural-failure, and incomplete cases; mixed violations and operational failure return 2 and retain explicitly partial findings."
-
-[[criteria]]
-id = "blocked-evaluation"
-verification = ["test"]
-statement = "Missing prerequisites yield root-cause findings and blocked dependent checks without cascaded invented defects; an empty findings list with incomplete evaluation never passes."
-
-[[criteria]]
-id = "report-scope"
-verification = ["test"]
-statement = "Assert evaluated and blocked groups and limits of the passing claim. Completed reports appear on stdout and incomplete reports with partial findings appear together on stderr."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "check-actionable-diagnostics"
-title = "Findings give agents enough information to repair the format"
-status = "accepted"
-property = '''
-An engineer or agent can use each finding to locate a format problem, understand
-what was expected and observed, and choose an appropriate repair within the
-assignment before rechecking. Findings include stable codes, kind, severity,
-relevant locations, and useful next actions. Reports have deterministic order and
-remain readable without color or interactive prompts. Guidance makes uncertainty
-about project intent explicit; it does not authorize edits or suggest weakening
-the intended rules to obtain a pass.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-repair-feedback" },
-  { kind = "decision", id = "decision-separate-check-and-repair" },
-  { kind = "decision", id = "decision-typed-check-results" },
-]
-
-[[criteria]]
-id = "diagnostic-content"
-verification = ["test"]
-statement = "Assert the documented fields and location accuracy for missing chapters, misplaced roles, renderer drift, and invalid input; unavailable observations or source positions are not invented."
-
-[[criteria]]
-id = "stable-presentation"
-verification = ["test"]
-statement = "Repeat checks with filesystem enumeration order varied and terminal styling disabled; diagnostic ordering and essential information remain consistent."
-
-[[criteria]]
-id = "agent-repair"
-verification = ["review"]
-statement = "Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance."
-```
+> **`A-check-actionable-diagnostics`** (accepted): **Findings give agents enough information to repair the format**
+> Property: An engineer or agent can use each finding to locate a format problem, understand what was expected and observed, and choose an appropriate repair within the assignment before rechecking. Findings include stable codes, kind, severity, relevant locations, and useful next actions. Reports have deterministic order and remain readable without color or interactive prompts. Guidance makes uncertainty about project intent explicit; it does not authorize edits or suggest weakening the intended rules to obtain a pass.
+> Authority: `R-repair-feedback`; `D-separate-check-and-repair`; `D-typed-check-results`
+> - Criterion `diagnostic-content` [test]: Assert the documented fields and location accuracy for missing chapters, misplaced roles, renderer drift, and invalid input; unavailable observations or source positions are not invented.
+> - Criterion `stable-presentation` [test]: Repeat checks with filesystem enumeration order varied and terminal styling disabled; diagnostic ordering and essential information remain consistent.
+> - Criterion `agent-repair` [review]: Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance.
 
 ## Information returned
 

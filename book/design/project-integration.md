@@ -18,153 +18,36 @@ situations other projects bring.
 
 ## Anchors
 
-```anchorbook-anchor
-schema-version = 1
-id = "project-native-commands"
-title = "A project applies Anchor Book through its ordinary commands"
-status = "draft"
-property = '''
-After a project adds the crate and its configuration, its own `cargo test`,
-`mdbook build`, and CI apply Anchor Book checking and rendering without wrapper
-scripts or replacement commands. A check run through the project's test suite
-reaches the same outcome and findings as the CLI for the same Book, and a Book
-that fails checking is not rendered.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-project-adoption" },
-  { kind = "decision", id = "decision-native-tool-integration" },
-]
+> **`A-project-native-commands`** (draft): **A project applies Anchor Book through its ordinary commands**
+> Property: After a project adds the crate and its configuration, its own `cargo test`, `mdbook build`, and CI apply Anchor Book checking and rendering without wrapper scripts or replacement commands. A check run through the project's test suite reaches the same outcome and findings as the CLI for the same Book, and a Book that fails checking is not rendered.
+> Authority: `R-project-adoption`; `D-native-tool-integration`
+> - Criterion `consumer-fixture` [test]: A fixture workspace outside this repository depends on the crate as a package dependency. Its integration test and the CLI report the same outcome and findings for passing, failing, and incomplete Books, and its mdbook build with the preprocessor renders only the passing Book.
 
-[[criteria]]
-id = "consumer-fixture"
-verification = ["test"]
-statement = "A fixture workspace outside this repository depends on the crate as a package dependency. Its integration test and the CLI report the same outcome and findings for passing, failing, and incomplete Books, and its mdbook build with the preprocessor renders only the passing Book."
-```
+> **`A-project-one-engine-version`** (draft): **Every entry point in a project runs the declared engine version**
+> Property: A project declares one exact engine version. Its library calls, CLI invocations, and mdBook preprocessor run that version, or stop before evaluating with a diagnostic stating the declared and running versions. A missing, malformed, or non-exact engine declaration, or a Book or configuration declaring an unsupported schema or record-syntax version, produces an incomplete result, never a pass or a partial interpretation.
+> Authority: `R-project-adoption`; `D-library-cli-entry`
+> - Criterion `same-version-entry-points` [test]: In a fixture workspace, a project-local binary built from the library and an installed binary of the same version produce identical reports; an installed binary of a different version stops with the declared and running versions.
+> - Criterion `exact-version-declaration` [test]: Every entry point accepts an exact Cargo version requirement such as =0.2.0 and rejects missing, malformed, or non-exact declarations before evaluation. A different version is rejected even when it would satisfy a broader compatible range.
+> - Criterion `unsupported-versions` [test]: Configurations and Books declaring unsupported schema or record-syntax versions produce incomplete results identifying the declared and supported versions.
 
-```anchorbook-anchor
-schema-version = 1
-id = "project-one-engine-version"
-title = "Every entry point in a project runs the declared engine version"
-status = "draft"
-property = '''
-A project declares one exact engine version. Its library calls, CLI invocations,
-and mdBook preprocessor run that version, or stop before evaluating with a
-diagnostic stating the declared and running versions. A missing, malformed, or
-non-exact engine declaration, or a Book or configuration declaring an unsupported
-schema or record-syntax version, produces an incomplete result, never a pass or
-a partial interpretation.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-project-adoption" },
-  { kind = "decision", id = "decision-library-cli-entry" },
-]
+> **`A-project-no-imposed-dependencies`** (draft): **Depending on the engine does not constrain the project's own tools**
+> Property: Adding the crate as a dependency builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
+> Authority: `R-project-adoption`; `D-isolate-engine-verification`
+> - Criterion `independent-resolution` [test]: A fixture workspace that depends on the crate and on a different vstd version resolves and builds, and the crate's default dependency tree contains no vstd, Verus, or exact-version requirement on shared packages.
+> - Criterion `dependency-review` [review]: Review the published dependency set and features against this property for each release, recording any exact-version requirement with its reason.
+> - Criterion `renderer-versions` [test]: The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions.
 
-[[criteria]]
-id = "same-version-entry-points"
-verification = ["test"]
-statement = "In a fixture workspace, a project-local binary built from the library and an installed binary of the same version produce identical reports; an installed binary of a different version stops with the declared and running versions."
+> **`A-project-agent-bootstrap`** (draft): **A project's agents start from the contract and the project's Book**
+> Property: A project's agent bootstrap directs agents to read the working contract for the project's engine version, then the project's guidance and Book. The contract is retrieved from the engine and contains no project-specific content; project state, paths, commands, and policies stay in the project's Book.
+> Authority: `R-project-adoption`
+> - Criterion `contract-retrieval` [test]: anchorbook contract prints the contract packaged with the running engine version, without reading project files, and the output is identical for different projects.
+> - Criterion `fresh-session` [test, review]: Fresh agent sessions in a fixture project with the documented bootstrap section retrieve the contract, read the project guidance and Book, and identify the phase and supported commands; record agent versions and any assistance.
 
-[[criteria]]
-id = "exact-version-declaration"
-verification = ["test"]
-statement = "Every entry point accepts an exact Cargo version requirement such as =0.2.0 and rejects missing, malformed, or non-exact declarations before evaluation. A different version is rejected even when it would satisfy a broader compatible range."
-
-[[criteria]]
-id = "unsupported-versions"
-verification = ["test"]
-statement = "Configurations and Books declaring unsupported schema or record-syntax versions produce incomplete results identifying the declared and supported versions."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "project-no-imposed-dependencies"
-title = "Depending on the engine does not constrain the project's own tools"
-status = "draft"
-property = '''
-Adding the crate as a dependency builds no formal-verification library and adds
-no exact-version requirement on a package that a project may use for its own
-work, so a project can choose its Verus and vstd versions independently.
-Ordinary builds need neither Verus nor the engine's verification toolchain, and
-the engine builds with a project's pinned toolchain at or above its minimum Rust
-version, including nightly. The mdBook versions the preprocessor supports are
-declared, and an unsupported version fails with a diagnostic naming them.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-project-adoption" },
-  { kind = "decision", id = "decision-isolate-engine-verification" },
-]
-
-[[criteria]]
-id = "independent-resolution"
-verification = ["test"]
-statement = "A fixture workspace that depends on the crate and on a different vstd version resolves and builds, and the crate's default dependency tree contains no vstd, Verus, or exact-version requirement on shared packages."
-
-[[criteria]]
-id = "dependency-review"
-verification = ["review"]
-statement = "Review the published dependency set and features against this property for each release, recording any exact-version requirement with its reason."
-
-[[criteria]]
-id = "renderer-versions"
-verification = ["test"]
-statement = "The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "project-agent-bootstrap"
-title = "A project's agents start from the contract and the project's Book"
-status = "draft"
-property = '''
-A project's agent bootstrap directs agents to read the working contract for the
-project's engine version, then the project's guidance and Book. The contract is
-retrieved from the engine and contains no project-specific content; project
-state, paths, commands, and policies stay in the project's Book.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-project-adoption" },
-]
-
-[[criteria]]
-id = "contract-retrieval"
-verification = ["test"]
-statement = "anchorbook contract prints the contract packaged with the running engine version, without reading project files, and the output is identical for different projects."
-
-[[criteria]]
-id = "fresh-session"
-verification = ["test", "review"]
-statement = "Fresh agent sessions in a fixture project with the documented bootstrap section retrieve the contract, read the project guidance and Book, and identify the phase and supported commands; record agent versions and any assistance."
-```
-
-```anchorbook-anchor
-schema-version = 1
-id = "project-verus-evidence"
-title = "A project's Verus proofs are evidence for its own criteria"
-status = "draft"
-property = '''
-For a project whose criteria require proof, verify runs the project's own Verus
-installation and verification toolchain over the project's code and reports a
-proof method satisfied only when every function linked to the criterion verified
-in a complete run under the configured no-trusted-assumption policy. The
-engine's own proofs never count as evidence for a project's criteria, and a
-Verus version whose report the engine does not support leaves the method
-inconclusive.
-'''
-authorities = [
-  { kind = "requirement", id = "requirement-project-verification" },
-  { kind = "decision", id = "decision-isolate-engine-verification" },
-]
-
-[[criteria]]
-id = "separate-toolchain"
-verification = ["test"]
-statement = "A fixture workspace with its own Verus version and a verification toolchain different from its build toolchain reports satisfied, failed, and inconclusive proof states from that installation."
-
-[[criteria]]
-id = "trusted-assumptions"
-verification = ["test"]
-statement = "Linked functions relying on assumed or trusted bodies, a partial-crate run, and an unsupported report version never produce a satisfied proof method."
-```
+> **`A-project-verus-evidence`** (draft): **A project's Verus proofs are evidence for its own criteria**
+> Property: For a project whose criteria require proof, verify runs the project's own Verus installation and verification toolchain over the project's code and reports a proof method satisfied only when every function linked to the criterion verified in a complete run under the configured no-trusted-assumption policy. The engine's own proofs never count as evidence for a project's criteria, and a Verus version whose report the engine does not support leaves the method inconclusive.
+> Authority: `R-project-verification`; `D-isolate-engine-verification`
+> - Criterion `separate-toolchain` [test]: A fixture workspace with its own Verus version and a verification toolchain different from its build toolchain reports satisfied, failed, and inconclusive proof states from that installation.
+> - Criterion `trusted-assumptions` [test]: Linked functions relying on assumed or trusted bodies, a partial-crate run, and an unsupported report version never produce a satisfied proof method.
 
 ## How a project uses Anchor Book
 
@@ -208,7 +91,7 @@ at its workspace root, mapping its existing Book source, output, and section
 roles as defined in [Configuration](configuration.md). Directory names, titles,
 and the rest of the mdBook configuration remain the project's choices.
 
-The required roles keep the [configured structure](structural-checking.md#check-navigation-conformance)
+The required roles keep the [configured structure](structural-checking.md#A-check-navigation-conformance)
 in every project: each maps to a distinct top-level chapter. An existing Book
 whose design or decision material sits deeper in its navigation adds top-level
 role chapters rather than mapping a role to a nested chapter, so every Anchor

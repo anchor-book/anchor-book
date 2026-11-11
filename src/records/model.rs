@@ -20,7 +20,7 @@ impl<'a> Chapter<'a> {
     }
 }
 
-/// The kind declared by a canonical definition fence.
+/// The kind an identifier's code states: `A`, `R`, or `D`.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum RecordKind {
     /// A property of the intended system.
@@ -99,11 +99,39 @@ impl VerificationMethod {
 pub struct Criterion {
     /// Local identity; pair it with the anchor ID for an unambiguous reference.
     pub id: String,
-    /// What verification must establish.
+    /// What verification must establish; for a proof criterion, its claim.
     pub statement: String,
     /// Nonempty, distinct required methods in authored order; every method is required.
     /// This is verification intent, not evidence that any method has succeeded.
     pub verification: Vec<VerificationMethod>,
+    /// The proof scope, present exactly when the criterion requires proof.
+    pub scope: Option<ProofScope>,
+}
+
+/// What a proof criterion's proof must cover, beyond its claim.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProofScope {
+    /// Inputs, states, conditions, and bounds covered.
+    pub domain: String,
+    /// Production behavior covered.
+    pub boundary: String,
+    /// Caller obligations and trusted components.
+    pub assumptions: String,
+    /// Behavior outside the proof, naming the criteria that cover it.
+    pub exclusions: String,
+    /// The criteria the exclusions name, in source order.
+    pub covered_by: Vec<CriterionReference>,
+}
+
+/// A criterion named by its anchor and its identifier within that anchor.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CriterionReference {
+    /// The anchor's identifier.
+    pub anchor: String,
+    /// The criterion's identifier within that anchor.
+    pub criterion: String,
+    /// Location of the naming code span.
+    pub location: SourceLocation,
 }
 
 /// An anchor's kind-specific fields.
@@ -180,11 +208,11 @@ impl Record {
     pub fn data(&self) -> &RecordData {
         &self.data
     }
-    /// Full definition range, including the fence lines, for later replacement.
+    /// Full definition range: the whole blockquote, for replacement when rendering.
     pub fn location(&self) -> &SourceLocation {
         &self.location
     }
-    /// TOML body range, excluding both fence lines.
+    /// Field lines of the blockquote, excluding its heading line.
     pub fn body_location(&self) -> &SourceLocation {
         &self.body
     }

@@ -1,6 +1,16 @@
 use super::links;
 use crate::records::{Record, RecordData, RecordInventory, RecordKind, Status};
+use pulldown_cmark::{Event, LinkType, Options, Parser, Tag, TagEnd};
 use std::{collections::BTreeMap, fmt::Write, path::Path};
+
+/// What inline text needs to link identifiers: the record it belongs to, the
+/// inventory, and the output route of every chapter.
+#[derive(Clone, Copy)]
+struct Context<'a> {
+    from: &'a Record,
+    inventory: &'a RecordInventory,
+    routes: &'a BTreeMap<&'a Path, Vec<String>>,
+}
 
 fn escape(text: &str) -> String {
     text.replace('&', "&amp;")
@@ -11,22 +21,111 @@ fn escape(text: &str) -> String {
         .replace('\n', "&#10;")
         .replace('\r', "&#13;")
 }
-fn paragraphs(text: &str) -> String {
-    // Authored source wrapping is not a paragraph boundary. Keep blank-line
-    // paragraphs while presenting prose naturally at any viewport width.
+fn paragraphs(text: &str, context: Context<'_>) -> String {
+    // Each paragraph is rendered on its own; the encoded line breaks keep the
+    // paragraphs apart without a blank line ending mdBook's HTML block.
     let text = text
         .trim()
         .split("\n\n")
-        .map(|paragraph| paragraph.split_whitespace().collect::<Vec<_>>().join(" "))
+        .map(|paragraph| inline(paragraph, context))
         .collect::<Vec<_>>()
-        .join("\n\n");
-    format!("<div class=\"ab-text\">{}</div>", escape(&text))
+        .join("&#10;&#10;");
+    format!("<div class=\"ab-text\">{text}</div>")
 }
-fn field(label: &str, text: &str) -> String {
+fn field(label: &str, text: &str, context: Context<'_>) -> String {
     format!(
         "<div class=\"ab-field\"><h4>{label}</h4>{}</div>",
-        paragraphs(text)
+        paragraphs(text, context)
     )
+}
+
+/// A link destination that is safe to emit, with chapter links resolved as
+/// mdBook resolves them in chapter text: `chapter.md#x` becomes `chapter.html#x`.
+fn destination(dest: &str, kind: LinkType) -> Option<String> {
+    if kind == LinkType::Email {
+        return Some(format!("mailto:{dest}"));
+    }
+    if ["http://", "https://", "mailto:"]
+        .iter()
+        .any(|scheme| dest.starts_with(scheme))
+    {
+        return Some(dest.to_owned());
+    }
+    let path_end = dest.find(['?', '#']).unwrap_or(dest.len());
+    if dest.starts_with('/') || dest[..path_end].contains(':') || dest.contains('\\') {
+        return None;
+    }
+    let (path, rest) = dest.split_at(path_end);
+    Some(match path.strip_suffix(".md") {
+        Some(stem) => format!("{stem}.html{rest}"),
+        None => dest.to_owned(),
+    })
+}
+
+/// One paragraph of field text: code spans, emphasis, strong emphasis, and
+/// links are formatted, and a code-spanned identifier of a record links to it;
+/// any other Markdown, and raw HTML, is shown as its literal source text.
+fn inline(text: &str, context: Context<'_>) -> String {
+    let mut out = String::new();
+    let mut literal_until = 0;
+    for (event, range) in Parser::new_ext(text, Options::empty()).into_offset_iter() {
+        if range.start < literal_until {
+            continue;
+        }
+        match event {
+            Event::Start(Tag::Paragraph) | Event::End(TagEnd::Paragraph) => {}
+            Event::Text(t) => out.push_str(&escape(&t)),
+            Event::Code(code) => out.push_str(&code_span(&code, context)),
+            Event::Start(Tag::Emphasis) => out.push_str("<em>"),
+            Event::End(TagEnd::Emphasis) => out.push_str("</em>"),
+            Event::Start(Tag::Strong) => out.push_str("<strong>"),
+            Event::End(TagEnd::Strong) => out.push_str("</strong>"),
+            Event::Start(Tag::Link {
+                link_type,
+                dest_url,
+                ..
+            }) => match destination(&dest_url, link_type) {
+                Some(href) => {
+                    write!(out, "<a href=\"{}\">", escape(&href)).expect("writing to String")
+                }
+                None => {
+                    out.push_str(&escape(&text[range.clone()]));
+                    literal_until = range.end;
+                }
+            },
+            Event::End(TagEnd::Link) => out.push_str("</a>"),
+            // Any other construct, raw HTML included, is shown as its source text.
+            // A paragraph is one line, so no line breaks occur, and the end of a
+            // construct shown literally falls inside its skipped range.
+            Event::Start(_) => {
+                out.push_str(&escape(&text[range.clone()]));
+                literal_until = range.end;
+            }
+            _ => out.push_str(&escape(&text[range])),
+        }
+    }
+    out
+}
+
+/// A code span, linked when it names a record or one of an anchor's criteria.
+fn code_span(code: &str, context: Context<'_>) -> String {
+    let id = code.split_once('#').map_or(code, |(id, _)| id);
+    match context.inventory.get(id) {
+        Some(target) => {
+            let href = links::relative(
+                &context.routes[context.from.location().path()],
+                &context.routes[target.location().path()],
+                target.id(),
+            );
+            format!(
+                "<a class=\"ab-record-link\" href=\"{}\" title=\"{}\"><code>{}</code></a>",
+                escape(&href),
+                escape(target.title()),
+                escape(code)
+            )
+        }
+        None => format!("<code>{}</code>", escape(code)),
+    }
 }
 fn link(from: &Record, target: &Record, routes: &BTreeMap<&Path, Vec<String>>) -> String {
     let href = links::relative(
@@ -65,16 +164,21 @@ pub(super) fn record(
         escape(record.title()),
         record.id()
     );
+    let context = Context {
+        from: record,
+        inventory,
+        routes,
+    };
     match record.data() {
         RecordData::Anchor(anchor) => {
-            out.push_str(&field("Property", &anchor.property));
+            out.push_str(&field("Property", &anchor.property, context));
         }
         RecordData::Requirement(requirement) => {
-            out.push_str(&field("Requirement", &requirement.statement));
-            out.push_str(&field("Source", &requirement.source));
+            out.push_str(&field("Requirement", &requirement.statement, context));
+            out.push_str(&field("Source", &requirement.source, context));
         }
         RecordData::Decision(decision) => {
-            out.push_str(&field("Decision", &decision.choice));
+            out.push_str(&field("Decision", &decision.choice, context));
         }
     }
     if record.kind() != RecordKind::Requirement {
@@ -109,11 +213,25 @@ pub(super) fn record(
                     .map(|method| method.as_str())
                     .collect::<Vec<_>>()
                     .join(", ");
+                let scope = criterion.scope.as_ref().map_or(String::new(), |scope| {
+                    let mut items = String::from("<dl class=\"ab-proof-scope\">");
+                    for (label, text) in [
+                        ("Domain", &scope.domain),
+                        ("Boundary", &scope.boundary),
+                        ("Assumptions", &scope.assumptions),
+                        ("Exclusions", &scope.exclusions),
+                    ] {
+                        write!(items, "<dt>{label}</dt><dd>{}</dd>", inline(text, context))
+                            .expect("writing to String");
+                    }
+                    items.push_str("</dl>");
+                    items
+                });
                 write!(
                     out,
-                    "<li><code>{}</code>{}<p>Required verification: {methods}</p></li>",
+                    "<li><code class=\"ab-criterion-id\">{}</code>{}{scope}<p>Required verification: {methods}</p></li>",
                     escape(&criterion.id),
-                    paragraphs(&criterion.statement)
+                    paragraphs(&criterion.statement, context)
                 )
                 .expect("writing to String");
             }
@@ -121,13 +239,18 @@ pub(super) fn record(
         }
         RecordData::Decision(decision) => {
             out.push_str("<details class=\"ab-details\"><summary>Rationale, alternatives, and reconsideration</summary><div class=\"ab-details-body\">");
-            out.push_str(&field("Rationale", &decision.rationale));
+            out.push_str(&field("Rationale", &decision.rationale, context));
             out.push_str("<div class=\"ab-field\"><h4>Alternatives</h4><ul>");
             for alternative in &decision.alternatives {
-                write!(out, "<li>{}</li>", paragraphs(alternative)).expect("writing to String");
+                write!(out, "<li>{}</li>", paragraphs(alternative, context))
+                    .expect("writing to String");
             }
             out.push_str("</ul></div>");
-            out.push_str(&field("Reconsider when", &decision.reconsider_when));
+            out.push_str(&field(
+                "Reconsider when",
+                &decision.reconsider_when,
+                context,
+            ));
             out.push_str("</div></details>");
         }
         RecordData::Requirement(_) => {}

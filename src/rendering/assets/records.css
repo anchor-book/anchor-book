@@ -11,7 +11,10 @@
 .ab-field { margin-top: 1.4rem; }
 .ab-links, .ab-criteria { padding-inline-start: 1.5rem; margin: .6rem 0 0; }
 .ab-links li + li, .ab-criteria li + li { margin-top: .85rem; }
-.ab-criteria code { display: inline-block; margin-bottom: .35rem; }
+.ab-criteria code.ab-criterion-id { display: inline-block; margin-bottom: .35rem; }
+.ab-proof-scope { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .8rem; margin: .5rem 0 0; }
+.ab-proof-scope dt { font-weight: 600; }
+.ab-proof-scope dd { margin: 0; }
 .ab-backlinks { border-top: 1px solid var(--table-border-color); padding-top: 1.2rem; }
 .ab-details { margin-top: 1.4rem; }
 .ab-details summary { cursor: pointer; color: var(--links); font-weight: 600; padding: .3rem 0; }
