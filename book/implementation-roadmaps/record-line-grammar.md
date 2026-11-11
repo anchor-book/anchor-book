@@ -40,8 +40,8 @@ Searches against this Book's sources show what that form costs agents:
 | Which criteria require proof? | `verification = ["proof"]`, without its criterion or anchor identifier |
 
 Proof scope is a writing convention inside a statement string that the engine
-cannot check. The renderer needs no change beyond the inline-text
-[open question](../design/anchor-definitions.md#open-questions): it replaces each
+cannot check. The renderer needs no change beyond rendering
+[inline text](../design/record-rendering.md#reader-presentation): it replaces each
 record's source range with HTML from the typed inventory and never reads TOML.
 
 ## Timing
@@ -57,7 +57,7 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 
 **Outcome:** Recorded measurements show how many searches, lines read, and wrong matches agents need to answer fixed record questions in the goal line grammar, the current TOML form, and TOML with kind, identity, and status on the fence line, so the goal syntax is confirmed or revised on evidence.
 
-**Status:** In progress
+**Status:** Complete
 
 **Dependencies:** None.
 
@@ -71,7 +71,7 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 - [x] Fix the task set: find a record's definition; list every reference to a requirement; list draft anchors; list criteria requiring proof with their anchor; change one criterion's methods; add one authority reference.
 - [x] For the four search tasks, record the minimal searches for each variant, the lines matched, wrong matches, and further lines read to answer.
 - [x] Run the full task set in fresh Claude Code and Codex sessions against each variant, without engine tools. Record tool versions, tool calls, lines read, correctness, and edits that would fail validation.
-- [ ] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it.
+- [x] Record results and limits, answer or carry forward the design's open questions, and revise the record syntax in the design if the results warrant it.
 
 ### Completion criteria
 
@@ -121,7 +121,7 @@ Fresh-session results for each agent and variant record tool calls, lines read, 
 A written assessment compares the variants on searches, reads, wrong matches, and edit validity, states its limits, and recommends confirming or revising the goal syntax. Any revision is made in the design chapters, not here.
 
 - **Anchor coverage:** None — decision input
-- **Evidence:** Recorded in the milestone evidence below; the decision rests with the engineer.
+- **Evidence:** Recorded in the milestone evidence below. The engineer confirmed the line grammar on 2026-11-11.
 
 ### Evidence {#record-line-grammar-1-evidence}
 
@@ -134,32 +134,86 @@ A written assessment compares the variants on searches, reads, wrong matches, an
 
 **Recommendation.** Confirm the line grammar as the goal syntax. The evidence supports it over TOML clearly and over fence-line TOML modestly; the deciding reasons are the checked proof scope and one spelling per reference, which fence-line TOML cannot give without becoming a new syntax itself. Fence-line TOML is the fallback if the migration's cost outweighs those.
 
-**Open questions.** (1) Inline Markdown in fields and (2) the `Property:` label were not exercised; carried forward. (3) The one proof criterion converted into a statement and the four scope items without loss, supporting the shape. (4) Literal examples matched every search in every variant, 1 to 3 lines each, and no session mistook one for a record; no distinct example form is needed for now.
+**Open questions.** (1) Inline Markdown in fields and (2) the `Property:` label were not exercised; the design now settles both for milestone 2: field text renders a defined inline subset, and `Property:` is required. (3) The one proof criterion converted into a statement and the four scope items without loss, supporting the shape. (4) Literal examples matched every search in every variant, 1 to 3 lines each, and no session mistook one for a record; no distinct example form is needed for now.
 
 **Limits.** One Book of 56 records, one target record per search, one session per agent and variant, and scripts and searches written by one agent.
 
 ### Completion record
 
-Pending the engineer's decision on the recommendation.
+Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The variants, measurements, agent trials, and assessment are recorded, and the engineer confirmed the line grammar as the goal syntax; no syntax revision was needed.
 
-## Milestone 2. The engine and this Book use the chosen syntax {#record-line-grammar-2}
+## Milestone 2. The engine and this Book use the line grammar {#record-line-grammar-2}
 
-**Outcome:** The record reader, renderer, fixtures, and this Book use the goal record syntax as the only record format, with validation at least as strict as today.
+**Outcome:** The engine's Rust record reader reads the line grammar as the only record format, with validation at least as strict as today; this Book, its fixtures, and its evidence links use kind-coded identifiers; and the preprocessor renders records with formatted inline text and identifiers linked to their records.
 
 **Status:** Proposed
 
-**Dependencies:** Record Line Grammar — Milestone 1, with any resulting design revision agreed.
-
-**Design basis:** [Anchor Definitions](../design/anchor-definitions.md), [Authority Definitions](../design/authority-definitions.md), [Record Rendering](../design/record-rendering.md), and [Rust Engine](../design/rust-engine.md)
-
 **Identifier:** `record-line-grammar-2`
+
+**Dependencies:** [Milestone 1](#record-line-grammar-1), complete. The reader, records, identifiers, and evidence links change in one change, since none of them works with the others half migrated.
+
+**Design basis:** [Record syntax](../design/anchor-definitions.md#record-syntax), [Authority Definitions](../design/authority-definitions.md), [reader presentation](../design/record-rendering.md#reader-presentation), [internal boundaries](../design/rust-engine.md#internal-boundaries), and the [authority proof](../design/rust-engine.md#authority-proof).
 
 **Tasks**
 
-- [ ] Replace the TOML record reader with the line scanner, keeping record types and diagnostic codes; decide and implement inline-field presentation.
-- [ ] Enforce the [identifier forms](../design/anchor-definitions.md#identifiers), the kind codes each reference field accepts, and the criterion references named in proof-scope [exclusions](../design/anchor-definitions.md#required-scope-of-a-proof-criterion). Rename every identifier to its kind-coded form in the same change, updating references, link fragments, evidence links, code comments, and workflow metadata that name them.
-- [ ] Migrate this Book's records, literal examples, and test fixtures in the same change, and reject TOML record blocks as unsupported syntax.
-- [ ] Repeat the authority proof's production-integration tests and review for the new conversion, and run mutation testing on the reader.
-- [ ] Define completion criteria against [records-searchable-lines](../design/anchor-definitions.md#records-searchable-lines), [records-every-line](../design/anchor-definitions.md#records-every-line), [records-named-identifiers](../design/anchor-definitions.md#records-named-identifiers), and the existing record anchors before the milestone is assigned.
+- [ ] **Reader:** Replace `src/records/markdown.rs` and `schema.rs` with a Rust line scanner in `src/records/`, keeping the record types, inventory, and diagnostic codes, and using Markdown parsing only to find code regions.
+- [ ] **Validation:** Enforce line accounting, the identifier forms, the kind codes each reference field accepts, proof-scope items, and the criteria exclusions name. A TOML record block is an invalid definition at its fence that names the line grammar.
+- [ ] **Rendering:** Render the inline-text subset and identifier links in the preprocessor; record and milestone cards are otherwise unchanged.
+- [ ] **Migration:** Convert this Book's records and literal examples and the test fixtures, and rename every identifier to its kind-coded form in Book prose, link fragments, roadmap coverage, evidence links, code comments, and workflow metadata. The conversion is a one-time script outside the engine; the engine's reader validates its result.
+- [ ] **Proof:** Re-verify the authority proof and update the `production-integration` tests and review for the new conversion into candidates.
+- [ ] **Mutation testing:** Run it on the reader and rendering changes, and resolve every survivor.
 
-**Completion record:** Pending.
+### Completion criteria
+
+#### Searchable records {#record-line-grammar-2-searchable}
+
+For an independent fixture Book, heading searches return exactly the authored records with their kind, identity, status, and title, and a search for each identifier returns its definition and exactly its authored references, each matched line classified from its own text.
+
+- **Anchor coverage:** [records-searchable-lines](../design/anchor-definitions.md#records-searchable-lines) · `heading-search`, `reference-search` — Full
+- **Evidence:** Pending.
+
+#### Every line read {#record-line-grammar-2-every-line}
+
+Fixtures with stray, misordered, repeated, unknown, and missing lines, proof-scope faults, exclusions naming missing criteria, and TOML record blocks each produce a located invalid-definition diagnostic and no inventory; the corrected fixtures produce the expected records.
+
+- **Anchor coverage:** [records-every-line](../design/anchor-definitions.md#records-every-line) · `line-accounting`, `proof-scope` — Full
+- **Evidence:** Pending.
+
+#### Named identifiers {#record-line-grammar-2-identifiers}
+
+Fixtures with missing, unknown, lowercase, and mismatched kind codes, names starting with a digit, and reference fields citing the wrong kind produce located diagnostics; names with digits inside a word are accepted.
+
+- **Anchor coverage:** [records-named-identifiers](../design/anchor-definitions.md#records-named-identifiers) · `identifier-forms`, `reference-codes` — Full
+- **Evidence:** Pending.
+
+#### Validation kept {#record-line-grammar-2-validation-kept}
+
+The invalid-inventory and authority tests pass against line-grammar fixtures, with every existing diagnostic code still produced for its case.
+
+- **Anchor coverage:** [render-validated-records](../design/record-rendering.md#render-validated-records) · `invalid-inventory` — Full; [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `required-authority`, `resolved-authority`, `compatible-status` — Full
+- **Evidence:** Pending.
+
+#### Proof and conversion {#record-line-grammar-2-proof}
+
+The authority proof verifies the full crate with all seven functions and zero errors; the `production-integration` tests pass over the new conversion, a recorded review confirms the conversion keeps identities, kinds, statuses, references, and invalid candidates, and mutation testing of the reader leaves no unexplained survivor.
+
+- **Anchor coverage:** [records-valid-authority](../design/rust-engine.md#records-valid-authority) · `formal-authority` — Partial: re-verification after the conversion change; `production-integration` — Partial: tests and review of the new conversion.
+- **Evidence:** Pending.
+
+#### Rendered records {#record-line-grammar-2-rendered}
+
+Through the actual adapter, line-grammar records render as the current cards, field text renders the inline subset with identifiers linked to their records and raw HTML inert, and this Book renders and passes rendered-Book acceptance.
+
+- **Anchor coverage:** [render-records-in-context](../design/record-rendering.md#render-records-in-context) · `inline-text` — Full; `record-presentation` — Partial: line-grammar records keep their presentation.
+- **Evidence:** Pending.
+
+#### Book migrated {#record-line-grammar-2-migrated}
+
+This Book and the fixtures contain only line-grammar records and kind-coded identifiers; the structural check, `mdbook build`, and rendered-Book acceptance pass; and a whole-Book `verify` run reports no link findings and every claim it checks satisfied.
+
+- **Anchor coverage:** None — migration acceptance
+- **Evidence:** Pending.
+
+### Completion record
+
+Pending.

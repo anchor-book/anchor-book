@@ -49,7 +49,9 @@ property = '''
 Each line of a record is read as its heading, a field, a continuation paragraph,
 a list item, a proof-scope item, or a blank quoted line. Any other line, and any
 missing, repeated, unknown, or misordered field, is an invalid definition reported
-at its source line, so a mistyped record cannot pass as valid.
+at its source line, so a mistyped record cannot pass as valid. A criterion that
+requires proof carries its four scope items, each nonempty, and its exclusions
+name only criteria that exist.
 '''
 authorities = [
   { kind = "requirement", id = "requirement-readable-records" },
@@ -59,6 +61,11 @@ authorities = [
 id = "line-accounting"
 verification = ["test"]
 statement = "Fixtures with stray, misordered, repeated, unknown, and missing lines each produce the expected located diagnostic and no inventory; the corrected fixture produces the expected record."
+
+[[criteria]]
+id = "proof-scope"
+verification = ["test"]
+statement = "Proof criteria with a missing, empty, repeated, or misordered scope item, and exclusions naming a missing criterion of the same or another anchor, each produce a located invalid-definition diagnostic and no inventory; a criterion without proof that carries scope items is also invalid."
 ```
 
 ```anchorbook-anchor
@@ -187,6 +194,11 @@ this order, with no defaults:
 field above as a new paragraph. Blank quoted lines (`>`) are allowed and carry no
 meaning.
 
+**Inline text.** Field text, criterion statements, and list items may use code
+spans, emphasis, strong emphasis, and links. Other Markdown and raw HTML are
+literal text. A code-spanned identifier outside a reference field is ordinary
+text, not a reference.
+
 **References.** A reference is a code-spanned identifier, such as
 `` `R-observation-only` ``. `Authority:` accepts `R-` and `D-` identifiers, each of
 which must resolve to a record of that kind in the same Book. Duplicate
@@ -282,8 +294,8 @@ four nested items, in order:
 
 Exclusions name each covering criterion by its code-spanned identifier: the
 criterion identifier alone for one of the same anchor, or
-`<anchor-id>#<criterion-id>` for another anchor's. The engine checks that the four
-items are present and nonempty and that each named criterion exists; it does not
+`<anchor-id>#<criterion-id>` for another anchor's. A criterion that does not list `proof` has no nested items.
+The engine checks that the four items are present and nonempty and that each named criterion exists; it does not
 assess whether the scope is adequate or whether evidence satisfies it. The
 [brief](verification-evidence.md#using-verify) lists exclusions that name no
 criterion as gaps. Keep formal syntax,
@@ -358,14 +370,3 @@ interpretation of the source.
 It does not mean implemented, tested, or proven. Keep implementation associations,
 executed results, and roadmap completion outside the authored definition.
 Reports derive progress from those records.
-
-## Open questions
-
-1. **Inline Markdown in fields.** Whether field text renders a defined subset
-   (code spans, emphasis, links) with raw HTML kept inert, or stays escaped text.
-2. **Property label.** Whether `Property:` is required or the first unlabeled line
-   after the heading is the property.
-3. **Proof-scope shape.** Whether the statement as Claim and four nested items fit
-   real proof criteria.
-4. **Example matches.** Whether literal examples matching record searches mislead
-   agents, and if so whether examples need a visibly distinct form.

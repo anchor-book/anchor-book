@@ -40,6 +40,11 @@ statement = "Exercise direct links and derived backlinks across nested chapters,
 id = "preservation-and-escaping"
 verification = ["test"]
 statement = "Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved."
+
+[[criteria]]
+id = "inline-text"
+verification = ["test"]
+statement = "Through the actual adapter, fixture fields with code spans, emphasis, strong emphasis, and relative and external links render formatted, with chapter links resolved; code-spanned identifiers of records in the inventory link to those records, and unknown ones stay code; other Markdown and raw HTML render as literal text."
 ```
 
 ```anchorbook-anchor
@@ -193,11 +198,12 @@ and in mdBook's combined print view; the print view must link to the matching
 record in that view. Preserve existing public record fragment names when replacing
 the temporary HTML targets.
 
-The renderer treats record text as escaped text with paragraph breaks, not raw
-HTML. Text resembling tags or scripts must stay inert. Whether field text
-renders an inline Markdown subset is an
-[open question](anchor-definitions.md#open-questions); until it is decided, field
-text stays escaped.
+Field text renders paragraph breaks and the [inline text](anchor-definitions.md#anchor-fields)
+subset: code spans, emphasis, strong emphasis, and links. Everything else,
+including raw HTML, renders as escaped text, so text resembling tags or scripts
+stays inert. A code-spanned identifier of a record in the inventory renders as a
+link to that record, in prose fields as in reference fields. Relative links to
+chapters resolve as mdBook resolves links in chapter text.
 
 Use mdBook theme variables for light and dark themes, visible keyboard focus,
 wrapping identifiers, and narrow layouts. Expandable details use keyboard-accessible
