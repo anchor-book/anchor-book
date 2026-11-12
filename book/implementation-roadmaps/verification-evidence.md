@@ -121,7 +121,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 **Outcome:** The engine owns configured Verus execution and report interpretation through one shared runner, and its Authority proof CI uses that path with a strict proof-target gate. The existing authority proof is the pilot; criterion reports preserve outstanding assessment and guard obligations.
 
-**Status:** In progress — shared runner and local validation complete; GitHub demonstration pending
+**Status:** In progress — GitHub proof failure/correction demonstrated; mutation corrections awaiting CI
 
 **Dependencies:** [Milestone 4](#verification-evidence-4) and the existing engine proof, both complete. The native compatibility experiment settled the supported configuration and CI interface in the design. This milestone precedes the next Symposium development trial.
 
@@ -141,7 +141,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 - [x] **Trust policy:** Demonstrate native rejection of deliberate assumptions and trusted project bodies for the supported version.
 - [x] **CI encapsulation:** Switch the existing Authority proof job from its direct verifier command and `.github/verus-report.jq` interpretation to the engine's shared runner and proof-target gate. Tool installation remains pinned and explicit; report parsing and expected function selection live in the engine. Retain the existing proof boundary, required check, public-safe artifacts, and independent engine tests.
 - [x] **Strict gate:** Require a nonempty scope and a current complete result for every required proof target, with the expected verifier and linked functions. Failed, absent, stale, unsupported, skipped, or incomplete results fail the CI gate. Do not use the progress command's exit 0 as evidence, since it permits unchecked claims. A target passing its contracts does not satisfy a criterion whose assessment or guards are outstanding.
-- [ ] **CI demonstration:** Exercise a deliberate proof failure and correction through the shared path on GitHub; test unavailable tools and unusable reports through the actual gate, and record the revision-specific results.
+- [x] **CI demonstration:** Exercise a deliberate proof failure and correction through the shared path on GitHub; test unavailable tools and unusable reports through the actual gate, and record the revision-specific results.
 - [x] **Acceptance:** Record native failure/correction results, report fixtures, commands, runtime, scope, assumptions, and limits.
 
 ### Completion criteria
@@ -187,17 +187,17 @@ still enforced. Passing the target gate never labels outstanding criterion guard
 or assessments satisfied.
 
 - **Anchor coverage:** [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: shared native proof execution in CI; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: target-gate success distinguished from criterion satisfaction.
-- **Evidence:** Local implementation and native gate checks passed. `.github/workflows/proof.yml` now calls `anchorbook proof` and the native fixture acceptance; the separate jq parser is removed, and expected functions come from source links. The job name, pinned installation, ordinary engine tests, and selected public artifact remain. GitHub failure/correction runs and required-check results for this change are pending.
+- **Evidence:** Passed locally and on GitHub. `.github/workflows/proof.yml` calls `anchorbook proof` and native fixture acceptance; expected functions come from source links. The deliberate-defect run rejects `has_required_authority`, and the restored revision passes with all seven linked functions. The job name, pinned installation, ordinary engine tests, retained public artifact, and required-check rule remain. Revision-specific runs are recorded below; mutation validation is pending.
 
 ### Local validation
 
-**Tested checkout:** `main` based on `1b8274ec2460b63419e9b310606ef67de04efbbe`, with uncommitted implementation and Book changes on 2026-11-12. These results are local; the changes are not integrated or validated by GitHub.
+**Tested checkout:** The local implementation was developed from `1b8274ec2460b63419e9b310606ef67de04efbbe` and committed as `263531b`; the review branch is `codex/verus-runner-ci`. Follow-up assertions cover report paths, ordering, configuration boundaries, selection across multiple packages, and stale target results. GitHub results identify their tested revisions below; the branch is not integrated into `main`.
 
 **Native experiment:** Verus 0.2026.10.18.7d82994 and Z3 4.16.0, built from their pinned source tags on Linux, with Rust 1.99.1. The initial fresh Authority run took about 34 seconds and verified the existing production contract. Ordinary Rust contract attributes and `#[verifier::proof]` supply executable and proof identities without parsing `verus!` macros. Cargo's Verus options must precede forwarded Cargo options such as `--lib`; the native runner follows that order.
 
-**Checks:** The independent suite passes on Rust 1.88.0 and stable (158 tests including doctests, with eight optional acceptance tests ignored); Clippy and formatting pass. The native failure/correction acceptance passes in about 327 seconds for ten fresh target runs. The strict Authority gate reports a complete target with all seven linked functions. Structural checking, five current/rendered Book acceptance tests, and the absent/invalid/incomplete Book independence experiments pass. Existing proof-loop mutation exclusions were relocated for the added doc comments and checked against the mutation list; no local mutation campaign was run.
+**Checks:** The independent suite passes on Rust 1.88.0 and stable (164 tests including doctests after the additional review assertions, with eight optional acceptance tests ignored); Clippy and formatting pass. The native failure/correction acceptance passes in about 327 seconds for ten fresh target runs. The strict Authority gate reports a complete target with all seven linked functions. Structural checking, five current/rendered Book acceptance tests, and the absent/invalid/incomplete Book independence experiments pass. Existing proof-loop mutation exclusions were relocated for the added doc comments and checked against the mutation list; no local mutation campaign was run.
 
-**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, proof guards, and assessment records retain their planned scope. Target success does not satisfy the complete proof criterion. Required GitHub checks, mutation results, and the revision-specific CI failure/correction demonstration remain pending. Publishing or merging is not established by these local results.
+**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, proof guards, and assessment records retain their planned scope. Target success does not satisfy the complete proof criterion. The revision-specific GitHub proof failure/correction demonstration is complete. Mutation validation and required checks for the final revision remain pending; these results do not establish merge readiness.
 
 **Whole-Book progress:** The local run evaluates 70 criteria across 30 anchors:
 41 satisfied, two partial, one no-evidence, 23 unlinked, and three not evaluated.
@@ -206,9 +206,21 @@ no-evidence pending its assessment and guards, and four review claims are
 unchecked. The target itself is complete. `verify` therefore exits 1 while the
 strict proof-target gate passes; neither result replaces the other.
 
+### GitHub proof validation
+
+[PR #38](https://github.com/anchor-book/anchor-book/pull/38) contains the implementation on `codex/verus-runner-ci`; it is not integrated into `main`.
+
+| Revision and run | Result |
+| --- | --- |
+| Deliberate defect `429649027d78a8397d81cd87c9a5d80c06bd57e3`, [run 43135338173](https://github.com/anchor-book/anchor-book/actions/runs/43135338173) | Returning `true` from `has_required_authority` fails ordinary tests and the strict proof gate. The retained report identifies that executable function as failed and `complete: false`; independent native fixture acceptance still passes. |
+| Restored head `5536505b8f6d1ba64b86b0464879ebe73731626a`, tested merge `8071e9e1d2e4190783b6b3d8882a6fa35e7f576a`, [run 43135464616](https://github.com/anchor-book/anchor-book/actions/runs/43135464616) | The entire Authority proof job passes using the pinned release archive. The artifact records a clean checkout, complete target evidence, and all seven expected functions verified exactly once in executable mode. Native fixture acceptance passes in about 546 seconds. |
+| Restored head, [Book run 43135464714](https://github.com/anchor-book/anchor-book/actions/runs/43135464714) | Rust 1.88.0 and stable engine checks, Book build, and installed-engine acceptance pass. |
+
+Both proof runs retain `authority-proof-results` with revision, tool selection, ordinary-test exit status, and normalized proof evidence. Raw source and proof-note payloads are excluded. The active **Protect main** ruleset still requires both engine checks, Build mdBook, Installed engine, Authority proof, and Mutation tests. The [full mutation campaign](https://github.com/anchor-book/anchor-book/actions/runs/43135464769) on that restored head tested 1,235 mutations: 1,006 caught, 22 missed, 207 unviable, and no timeouts. It failed, so it does not establish merge readiness. The survivors exposed missing assertions for duplicate CLI options, planning-time input changes, configuration/tool boundaries, qualified attributes, selection across packages, incomplete or contradictory proof evidence, diagnostic paths, failure display, and criterion-link identity. Follow-up tests cover those cases; the planning-time input check is isolated for deterministic filesystem tests. No new exclusions were added. Corrected mutation and required-check results remain pending.
+
 ### Completion record
 
-In progress. Native execution, report interpretation, source links, and the strict gate are implemented and locally exercised. Complete the GitHub demonstration and inspect required checks before recording this milestone Complete.
+In progress. Native execution, report interpretation, source links, and the strict gate are implemented and exercised locally and on GitHub. Finish mutation validation and inspect all required checks before recording this milestone Complete.
 
 ## Milestone 3. CI reports progress for every revision {#verification-evidence-3}
 

@@ -22,10 +22,14 @@ pub fn lemma() { }
 "#;
 
 fn book() -> fixture::Book {
+    book_with_anchors(&["A-exec", "A-lemma"])
+}
+
+fn book_with_anchors(anchors: &[&str]) -> fixture::Book {
     let b = fixture::Book::new();
     b.write("docs/authority.md", "# Authority\n\n> **`R-goal`** (draft): **Goal**\n> Statement: A verified function respects its contract.\n> Source: Independent fixture.\n");
     let mut design = "# Design\n\n".to_string();
-    for id in ["A-exec", "A-lemma"] {
+    for id in anchors {
         design.push_str(&format!("> **`{id}`** (draft): **A verified function**\n> Property: It respects its contract.\n> Authority: `R-goal`\n> - Criterion `formal` [proof]: The function respects its contract.\n>   - Domain: All inputs.\n>   - Boundary: The function.\n>   - Assumptions: Supported tools.\n>   - Exclusions: None.\n\n"));
     }
     b.write("docs/design.md", &design);
@@ -110,7 +114,15 @@ fn bad(b: &fixture::Book, value: &Value) {
         "{}",
         String::from_utf8_lossy(&output.stdout)
     );
-    assert_eq!(report(&output)["complete"], false);
+    let result = report(&output);
+    assert_eq!(result["complete"], false);
+    assert!(
+        result["targets"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|t| t["complete"] == false)
+    );
 }
 
 /// anchorbook: A-verify-runs-linked-checks#selected-run
@@ -125,7 +137,9 @@ fn gate_uses_current_targets_links_modes_and_native_arguments() {
     assert_eq!(out.status.code(), Some(0), "{r}");
     assert_eq!(r["complete"], true);
     assert_eq!(r["schema_version"], 1);
+    assert_eq!(r["reasons"], json!([]));
     assert_eq!(r["targets"].as_array().unwrap().len(), 1);
+    assert_eq!(r["targets"][0]["reasons"], json!([]));
     assert_eq!(
         r["targets"][0]["expected"],
         json!(["modes::lemma (proof)", "modes::linked (exec)"])
@@ -136,6 +150,7 @@ fn gate_uses_current_targets_links_modes_and_native_arguments() {
         "--no-cheating\n",
         "--lib\n",
         "--package\nmodes\n",
+        "--manifest-path\nCargo.toml\n",
         "--features\nverus\n",
         "--fwd-verus-args-to\nroots\n",
         "--output-json\n",
@@ -144,6 +159,29 @@ fn gate_uses_current_targets_links_modes_and_native_arguments() {
         assert!(args.contains(expected), "{args}");
     }
     assert_eq!(args.matches("verify\n").count(), 1);
+    let recorded: Vec<_> = args.lines().collect();
+    let target_index = recorded.iter().position(|a| *a == "--target-dir").unwrap() + 1;
+    let target_dir = std::path::Path::new(recorded[target_index]);
+    assert!(target_dir.starts_with("target/proof"));
+    assert!(b.root.join(target_dir).is_dir());
+    assert_eq!(
+        r["targets"][0]["command"],
+        serde_json::to_value(
+            std::iter::once("cargo")
+                .chain(recorded.iter().copied())
+                .collect::<Vec<_>>()
+        )
+        .unwrap()
+    );
+    let after = b.snapshot();
+    for path in after.keys().filter(|p| !before.contains_key(*p)) {
+        assert!(
+            path == std::path::Path::new("target")
+                || path.starts_with("target/proof")
+                || path == std::path::Path::new("tools/calls"),
+            "unexpected write outside output: {path:?}"
+        );
+    }
     for (path, value) in before {
         assert_eq!(
             b.snapshot().get(&path),
@@ -177,26 +215,30 @@ fn gate_uses_current_targets_links_modes_and_native_arguments() {
 fn linked_failure_supporting_failure_and_trust_have_distinct_states() {
     let b = book();
     recording(&b);
-    for (raw, state, diagnostic) in [
+    for (raw, state, diagnostic, failed_function) in [
         (
             include_str!("fixtures/verus/linked-failure.json"),
             "failed",
             "",
+            Some("modes::linked (exec)"),
         ),
         (
             include_str!("fixtures/verus/supporting-failure.json"),
             "inconclusive",
             "",
+            Some("modes::lemma (proof)"),
         ),
         (
             include_str!("fixtures/verus/assumption.json"),
             "failed",
             "error: assume/admit not allowed with --no-cheating",
+            None,
         ),
         (
             include_str!("fixtures/verus/trusted-body.json"),
             "failed",
             "error: external_body/assume_specification not allowed with --no-cheating",
+            None,
         ),
     ] {
         b.write("tools/report.json", raw);
@@ -208,6 +250,15 @@ fn linked_failure_supporting_failure_and_trust_have_distinct_states() {
             .unwrap();
         let text = String::from_utf8(out.stdout).unwrap();
         assert!(text.contains(&format!("formal [proof]: {state}")), "{text}");
+        let displayed_failures = text
+            .lines()
+            .filter_map(|line| line.trim().strip_prefix("failed: "))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            displayed_failures,
+            failed_function.into_iter().collect::<Vec<_>>(),
+            "{text}"
+        );
         let gate = command(&b, "proof")
             .args(["--anchor", "A-exec"])
             .env("STATUS", "1")
@@ -330,6 +381,13 @@ fn stale_changed_missing_and_unavailable_evidence_fails_the_gate() {
             String::from_utf8_lossy(&changed.stdout)
         );
         assert!(report(&changed)["reasons"].to_string().contains("changed"));
+        assert!(
+            report(&changed)["targets"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|t| t["complete"] == false)
+        );
         b.write(path, &original);
     }
     assert_eq!(
@@ -398,6 +456,15 @@ fn empty_scope_bad_links_and_invalid_configuration_cannot_remove_obligations() {
         );
         assert!(out.stdout.is_empty());
     }
+    let b = book_with_anchors(&["A-exec", "A-lemma", "A-unlinked"]);
+    recording(&b);
+    let out = run(&b);
+    assert_eq!(out.status.code(), Some(1));
+    assert!(
+        report(&out)["reasons"]
+            .to_string()
+            .contains("no resolved evidence links")
+    );
 }
 
 #[test]
@@ -413,10 +480,12 @@ fn renamed_libraries_and_attribute_modes_are_resolved_from_sources() {
         "tools/report.json",
         &PASS.replace("modes::", "actual_library::"),
     );
-    let source = LIB.replace(
-        "#[verifier::proof]",
-        "#[cfg_attr(feature = \"verus\", verifier::proof)]",
-    );
+    let source = LIB
+        .replace("verus_spec(r", "vstd::prelude::verus_spec(r")
+        .replace(
+            "#[verifier::proof]",
+            "#[cfg_attr(feature = \"verus\", verifier::proof)]",
+        );
     b.write("src/lib.rs", &source);
     let out = run(&b);
     assert_eq!(
@@ -428,7 +497,7 @@ fn renamed_libraries_and_attribute_modes_are_resolved_from_sources() {
     let p = anchor_book::verification::plan(&b.config(), Default::default()).unwrap();
     assert!(p.links.iter().any(|l| l.function.name == "lemma" && l.mode == anchor_book::verification::Mode::Proof));
     let fake = source.replace(
-        "#[cfg_attr(feature = \"verus\", verus_spec(r => ensures r == 1))]",
+        "#[cfg_attr(feature = \"verus\", vstd::prelude::verus_spec(r => ensures r == 1))]",
         "#[cfg_attr(feature = \"verus\", doc = \"verus_spec verifier :: proof\")]",
     );
     b.write("src/lib.rs", &fake);
@@ -447,6 +516,211 @@ fn renamed_libraries_and_attribute_modes_are_resolved_from_sources() {
             .code(),
         Some(2)
     );
+}
+
+#[test]
+fn partial_targets_and_trust_violations_override_passing_function_results() {
+    let b = book();
+    recording(&b);
+    let mut partial: Value = serde_json::from_str(PASS).unwrap();
+    partial["verification-results"]["is-verifying-entire-crate"] = json!(false);
+    b.write("tools/report.json", &partial.to_string());
+    let gate = run(&b);
+    assert_eq!(gate.status.code(), Some(1));
+    let r = report(&gate);
+    assert_eq!(r["targets"][0]["complete"], false);
+    assert!(
+        r["targets"][0]["reasons"]
+            .to_string()
+            .contains("target verification is incomplete or failed")
+    );
+    let out = command(&b, "verify").output().unwrap();
+    let text = String::from_utf8(out.stdout).unwrap();
+    assert!(text.contains("formal [proof]: inconclusive"), "{text}");
+    b.write("tools/report.json", PASS);
+    for operation in ["proof", "verify"] {
+        let out = command(&b, operation)
+            .env(
+                "DIAGNOSTIC",
+                "error: assume/admit not allowed with --no-cheating",
+            )
+            .output()
+            .unwrap();
+        if operation == "proof" {
+            assert_eq!(out.status.code(), Some(1));
+            assert_eq!(report(&out)["targets"][0]["complete"], false);
+        } else {
+            let text = String::from_utf8(out.stdout).unwrap();
+            assert!(text.contains("formal [proof]: failed"), "{text}");
+        }
+    }
+}
+
+#[test]
+fn report_order_and_locations_are_stable_and_safe_to_retain() {
+    let b = book();
+    recording(&b);
+    let mut reversed: Value = serde_json::from_str(PASS).unwrap();
+    reversed
+        .pointer_mut("/times-ms/smt/smt-run-module-times/0/function-breakdown")
+        .unwrap()
+        .as_array_mut()
+        .unwrap()
+        .reverse();
+    b.write("tools/report.json", &reversed.to_string());
+    let out=command(&b,"proof").env("DIAGNOSTIC","error: a diagnostic\n --> src/lib.rs:5:2\n --> /private/source.rs:4:1\n | private source payload").output().unwrap();
+    assert!(out.status.success());
+    let r = report(&out);
+    let names = r["targets"][0]["functions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|f| f["function"].as_str().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(names, ["modes::lemma", "modes::linked"]);
+    assert_eq!(r["targets"][0]["locations"], json!(["src/lib.rs:5:2"]));
+    assert!(!String::from_utf8_lossy(&out.stdout).contains("/private"));
+    assert!(!String::from_utf8_lossy(&out.stdout).contains("private source payload"));
+    for log in r["targets"][0]["logs"].as_array().unwrap() {
+        let path = std::path::Path::new(log.as_str().unwrap());
+        assert!(path.starts_with("target/proof"));
+        assert!(b.root.join(path).is_file());
+    }
+}
+
+#[test]
+fn each_selected_package_runs_once_and_one_failure_prevents_gate_success() {
+    let b = book();
+    recording(&b);
+    b.write(
+        "src/lib.rs",
+        &LIB.replace("/// anchorbook: A-lemma#formal\n", ""),
+    );
+    b.write(
+        "other/src/lib.rs",
+        &LIB.replace("/// anchorbook: A-exec#formal\n", ""),
+    );
+    let manifest = fs::read_to_string(b.path("Cargo.toml")).unwrap();
+    b.write(
+        "other/Cargo.toml",
+        &manifest.replace("name = \"modes\"", "name = \"other\""),
+    );
+    let config = fs::read_to_string(b.config()).unwrap();
+    b.write("anchorbook.toml", &config
+        .replace("sources = [\"src\"]", "sources = [\"src\", \"other/src\"]")
+        .replace("features = [\"verus\"]}]", "features = [\"verus\"]}, {manifest = \"other/Cargo.toml\", package = \"other\", target = \"lib\", features = []}]"));
+    let cargo = fs::read_to_string(b.path("tools/cargo")).unwrap();
+    executable(&b, "tools/cargo", &cargo.replace("cat \"$REPORT\"", "case \" $* \" in *' --package other '*) cat \"$REPORT.other\";; *) cat \"$REPORT\";; esac"));
+    b.write(
+        "tools/report.json.other",
+        &PASS.replace("modes::", "other::"),
+    );
+    let out = run(&b);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stdout)
+    );
+    let r = report(&out);
+    let targets = r["targets"].as_array().unwrap();
+    assert_eq!(targets.len(), 2);
+    assert_eq!(targets[0]["expected"], json!(["modes::linked (exec)"]));
+    assert_eq!(targets[1]["expected"], json!(["other::lemma (proof)"]));
+    assert_eq!(targets[1]["features"], json!([]));
+    let calls = fs::read_to_string(b.path("tools/calls")).unwrap();
+    assert_eq!(calls.matches("verify\n").count(), 2);
+    assert_eq!(calls.matches("--features\n").count(), 1);
+    assert_eq!(calls.matches("--package\nmodes\n").count(), 1);
+    assert_eq!(calls.matches("--package\nother\n").count(), 1);
+    b.write("tools/calls", "");
+    let selected = command(&b, "proof")
+        .args(["--anchor", "A-exec"])
+        .output()
+        .unwrap();
+    assert!(selected.status.success());
+    assert_eq!(report(&selected)["targets"].as_array().unwrap().len(), 1);
+    assert!(
+        !fs::read_to_string(b.path("tools/calls"))
+            .unwrap()
+            .contains("other")
+    );
+    b.write("tools/report.json.other", "");
+    let failed = run(&b);
+    assert_eq!(failed.status.code(), Some(1));
+    let r = report(&failed);
+    assert_eq!(r["complete"], false);
+    assert_eq!(r["targets"][0]["complete"], true);
+    assert_eq!(r["targets"][1]["complete"], false);
+}
+
+#[test]
+fn configuration_and_actual_tool_versions_are_both_enforced() {
+    let b = book();
+    recording(&b);
+    let repeated = command(&b, "proof")
+        .arg("--config")
+        .arg(b.config())
+        .output()
+        .unwrap();
+    assert_eq!(repeated.status.code(), Some(2));
+    assert!(repeated.stdout.is_empty());
+    assert!(!b.path("tools/calls").exists());
+    let config = fs::read_to_string(b.config()).unwrap();
+    for (from, to, status) in [
+        (
+            "version = \"0.2026.10.18.7d82994\"",
+            "version = \"future\"",
+            1,
+        ),
+        (
+            "rust-toolchain = \"1.99.1\"",
+            "rust-toolchain = \"future\"",
+            1,
+        ),
+        ("version = \"0.2026.10.18.7d82994\"", "version = \"\"", 2),
+        ("rust-toolchain = \"1.99.1\"", "rust-toolchain = \"\"", 2),
+        ("installation = \"tools\"", "installation = \"\"", 2),
+        ("features = [\"verus\"]", "features = [\"\"]", 2),
+        ("features = [\"verus\"]", "features = [\"a,b\"]", 2),
+        ("features = [\"verus\"]", "features = [\"a b\"]", 2),
+        (
+            "targets = [{manifest = \"Cargo.toml\", package = \"modes\", target = \"lib\", features = [\"verus\"]}]",
+            "targets = []",
+            2,
+        ),
+    ] {
+        b.write("anchorbook.toml", &config.replace(from, to));
+        let out = run(&b);
+        assert_eq!(
+            out.status.code(),
+            Some(status),
+            "{to}: {}",
+            String::from_utf8_lossy(&out.stdout)
+        );
+    }
+    b.write("anchorbook.toml", &config);
+    for name in ["z3", "rustc"] {
+        let path = format!("tools/{name}");
+        let original = fs::read_to_string(b.path(&path)).unwrap();
+        executable(&b, &path, "#!/bin/sh\necho 'unsupported version'\n");
+        assert_eq!(run(&b).status.code(), Some(1));
+        executable(&b, &path, &original);
+    }
+}
+
+#[test]
+fn only_the_measured_dependency_summary_may_surround_a_report() {
+    let b = book();
+    recording(&b);
+    for line in [
+        "verification results::  verified, 0 errors",
+        "verification results:: x verified, 0 errors",
+        "verification results:: 1 verified, 1 errors",
+        "verification results:: -1 verified, 0 errors",
+    ] {
+        b.write("tools/report.json", &format!("{line}\n{PASS}"));
+        assert_eq!(run(&b).status.code(), Some(1), "{line}");
+    }
 }
 
 #[test]

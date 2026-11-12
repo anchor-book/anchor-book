@@ -515,13 +515,12 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         proof_inputs,
         proof_snapshot,
     };
-    if identity::snapshot(&plan.proof_inputs) != plan.proof_snapshot
-        || fs::read(configuration.path()).ok() != initial_config
-    {
-        return Err(VerifyError::Read(
-            "Book or configuration changed while planning; rerun on stable inputs".into(),
-        ));
-    }
+    check_planning_inputs(
+        configuration.path(),
+        &initial_config,
+        &plan.proof_inputs,
+        &plan.proof_snapshot,
+    )?;
     plan.inputs = identity::inputs(
         &configuration,
         &plan.criteria,
@@ -529,6 +528,22 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         &nextest::input_paths(&plan),
     );
     Ok(plan)
+}
+
+// Configuration is first read before structural checking; the Book snapshot is
+// captured later, before reading records. Both intervals must stay unchanged.
+fn check_planning_inputs(
+    config: &Path,
+    initial_config: &Option<Vec<u8>>,
+    paths: &[PathBuf],
+    snapshot: &str,
+) -> Result<(), VerifyError> {
+    if identity::snapshot(paths) != snapshot || &fs::read(config).ok() != initial_config {
+        return Err(VerifyError::Read(
+            "Book or configuration changed while planning; rerun on stable inputs".into(),
+        ));
+    }
+    Ok(())
 }
 
 type Planned = (
@@ -846,6 +861,38 @@ pub fn verify(config_path: &Path, scope: Scope) -> Result<Report, VerifyError> {
 #[cfg(test)]
 mod tests {
     use super::{State, combine};
+
+    #[test]
+    fn planning_rejects_book_edits_and_configuration_edits_before_the_book_snapshot() {
+        use super::{check_planning_inputs, identity};
+        use std::fs;
+        let directory =
+            std::env::temp_dir().join(format!("anchorbook-plan-inputs-{}", std::process::id()));
+        fs::create_dir(&directory).unwrap();
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(directory.clone());
+        let config = directory.join("anchorbook.toml");
+        let book = directory.join("chapter.md");
+        fs::write(&config, "configuration before structural checking").unwrap();
+        fs::write(&book, "original criterion").unwrap();
+        let initial_config = fs::read(&config).ok();
+        let paths = vec![config.clone(), book.clone()];
+        let snapshot = identity::snapshot(&paths);
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_ok());
+        fs::write(&book, "changed criterion").unwrap();
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+        fs::write(&config, "configuration changed before records are read").unwrap();
+        let later_snapshot = identity::snapshot(&paths);
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &later_snapshot).is_err());
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+        fs::remove_file(&config).unwrap();
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+    }
 
     #[test]
     fn states_combine_as_the_design_orders_them() {
