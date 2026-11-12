@@ -4,65 +4,55 @@
 
 ## Goal
 
-The first major milestone is upstream Symposium adopting Anchor Book for real
-development. Its agents start from the contract and its Book, then use current
-build reports to implement and correct assigned work. Ordinary commands and CI
-check the Book and present the same evidence in its rendered view, maintaining the relationship
-between design and code. The engine's own project and Symposium are the test
-subjects for developing that workflow. Symposium does not use Verus.
+Enable engineers and coding agents to build Symposium from the system definition
+in its Anchor Book. For an assigned milestone, agents use the design, governing
+records, and criteria to change code and project-owned tests, consume current
+engine findings and test results, correct the work, and reconcile Book progress
+and evidence. [Milestone 7](#symposium-integration-7) demonstrates this development
+workflow; [milestone 8](#symposium-integration-8) completes upstream adoption.
+Symposium does not use Verus.
 
 Symposium keeps its existing user Book in `md/`. The Anchor Book is separate, with
-its own `book.toml`, and is adapted from Symposium's design chapters, tenets, and
-requests for discussion (RFDs). Any provisional anchor markup is dropped and
-replaced with Anchor Book records, not migrated.
+its own `book.toml`, and adapts design chapters, tenets, and requests for discussion
+(RFDs). Intended behavior comes from that definition, not from copying whatever
+the implementation currently does. Content stays draft for maintainer review;
+scoped prototyping assignments can use it without accepting the entire design.
 
-[Project Integration](../design/project-integration.md) defines the goal design;
-the [Project Integration roadmap](project-integration.md) builds the shared
-groundwork in this Book first.
+[Project Integration](../design/project-integration.md) supplies the shared engine
+setup. The engineer's fork is the trial workspace; integration into Symposium
+upstream and final design-document ownership are its maintainers' decisions.
 
 ## Sequence and scope
 
-**This Book first.** Each mechanism Symposium relies on is implemented and in use
-in this Book before a Symposium milestone depends on it: the shared groundwork in
-[Project Integration milestone 1](project-integration.md#project-integration-1),
-the test runner in [Verification Evidence milestone 1](verification-evidence.md#verification-evidence-1),
-retained reports in [milestone 3](verification-evidence.md#verification-evidence-3),
-and the current build results for agents and readers in
-[milestone 9](verification-evidence.md#verification-evidence-9).
-A gap found in Symposium is fixed and exercised here before Symposium relies on
-the fix, or recorded as engine work in the relevant roadmap.
+Follow the [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book).
+The existing Book, bootstrap, and assessed configuration loop from milestones 1,
+3, and 4 are enough to begin a bounded development assignment in milestone 7.
+Its first case uses the current `check`, project tests, and `verify --anchor`
+commands; it does not wait for all design areas, CI retention, or rendered evidence.
+The baseline records what the current tools actually enable and what is missing.
 
-**The engine is the subject.** Symposium is the first real project to exercise
-the engine's checking, rendering, and `verify` at scale and with agents building
-in it. Its Book's content is ported in Anchor Book's format with light review and
-stays draft for its maintainers to review when it is integrated; the trial's
-findings concern the engine, not Symposium's design.
+**Engine capabilities are exercised here first.** Implement each needed correction
+or new reporting capability in Anchor Book with independent fixtures and this
+Book's acceptance before relying on it in Symposium. The initial Symposium trial
+uses already-exercised tools. [Verification Evidence milestone 3](verification-evidence.md#verification-evidence-3)
+supplies the versioned report; [milestone 9](verification-evidence.md#verification-evidence-9)
+adds the shared agent/build/rendering workflow. Repeat the early assignment with
+that reporting and complete milestone 7's other cases before claiming the full
+workflow demonstrated. Early trial evidence alone does not complete milestone 7.
 
-Follow the [agreed sequence](index.md#first-major-milestone-symposium-adopts-anchor-book).
-[Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2)
-first encapsulates Verus and fixes the engine's proof CI. That work belongs to
-the engine; it adds no Verus requirement to Symposium.
+Milestone 2 adapts the next design area before an assignment changes it; milestone
+4 extends evidence links alongside that work. The full design port remains
+milestone 2's outcome, but it does not delay work within an already defined area.
+The project owns its tests and outcomes, including the no-agent behavior. The
+engine execution-report proposal is [retired](verification-evidence.md#verification-evidence-10).
+Review support in [milestone 8](verification-evidence.md#verification-evidence-8)
+is needed only when the assignment relies on a declared review method.
 
-Milestone 4 has assessed the configuration-loading loop, using the Book and
-bootstrap established by milestones 1 and 3. Correct engine gaps here and repeat
-their Symposium cases before relying on the results. The no-agent finding is
-a Symposium test-semantics issue: Anchor Book trusts the current result reported
-by the project's runner. The engine execution-report proposal is
-[retired](verification-evidence.md#verification-evidence-10). Review support, where
-a criterion requires it, is in [milestone 8](verification-evidence.md#verification-evidence-8),
-independent of the broader proof guards. Verification Evidence milestones 3 and 9
-then supply the shared current build report and rendered evidence. Milestone 2 ports the remaining design
-with light review, while milestone 4 extends test links to each area. Milestone 7
-exercises real agent assignments through the Book, checks, and build reports.
-
-Milestone 5 adopts the shared version alignment, native commands, and retained
-test reports in Symposium's CI. Milestone 8 completes upstream integration and
-contributor setup. The contract plugin in milestone 6 is deferred beyond this
-first major milestone unless an adoption finding establishes that it is needed.
-
-Work happens on branches of the engineer's Symposium fork. Changes to Symposium
-itself, including where its Anchor Book lives and which files it adds, are its
-maintainers' decisions.
+Milestone 5 and Project Integration milestone 4 make the tested workflow part of
+ordinary commands, pinned setup, and CI. Milestone 8 completes upstream adoption.
+The contract plugin in milestone 6 remains deferred unless actual use establishes
+that it is needed. Broader proof work is separate from this test-only adoption;
+the engine's existing proof checks continue to protect its own implementation.
 
 ## Milestone 1. Symposium checks and renders a first Anchor Book {#symposium-integration-1}
 
@@ -106,7 +96,7 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 ## Milestone 2. Symposium's design is ported into Anchor Book's format {#symposium-integration-2}
 
-**Outcome:** Symposium's Anchor Book holds its whole design in Anchor Book's format, so the engine's checks and `verify` have a full-size project to work on: each design chapter with its anchors and criteria, and requirements and decisions adapted from its accepted and completed RFDs. Content is ported with light review and stays draft.
+**Outcome:** Symposium's Anchor Book defines the intended system for development: each design area has its anchors and criteria, grounded in requirements and decisions adapted from its accepted and completed RFDs. Areas are adapted before the next assignment needs them, with whole-design coverage required for completion. Content is ported with light review and stays draft.
 
 **Status:** Proposed
 
@@ -118,7 +108,7 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 **Tasks**
 
-- [ ] **Design areas:** Port each design chapter in Symposium's contribution guide, such as sync, init, state, hooks, agents, subcommands, telemetry, and the report layer, keeping its text largely as written. Put anchors at the top of each chapter, stating the properties the chapter already describes.
+- [ ] **Design areas:** Adapt each design area in Symposium's contribution guide, such as sync, init, state, hooks, agents, subcommands, telemetry, and the report layer, prioritizing the next development assignment. Preserve intended behavior, identify unresolved choices, and put anchors at the top of each chapter. Do not redefine the goal merely to match current code.
 - [ ] **Tenets:** Carry Symposium's tenets into the design overview as prose. A tenet becomes a requirement's source or a decision's rationale where a record needs it; tenets are not records themselves.
 - [ ] **Authority:** Adapt accepted and completed RFDs into the requirements and decisions they establish, each naming its RFD; draft RFDs stay out until accepted.
 - [ ] **Methods:** Give each criterion its required methods, `test` or `review`; no criterion requires `proof`.
@@ -391,45 +381,67 @@ Pending.
 
 ## Milestone 7. Agents build in Symposium through its Anchor Book {#symposium-integration-7}
 
-**Outcome:** Recorded sessions show whether agents assigned real Symposium changes keep its design, records, code, and tests consistent by working from the contract, the Book, and current build results, using `anchorbook check` and the `verify --anchor` build loop. The engine gaps they expose become work in this Book.
+**Outcome:** Recorded coding sessions implement assigned Symposium behavior from the Book's system definition, keep design, governing records, code, and tests consistent within the assigned scope, and use current engine findings and evidence to correct the work. The complete workflow includes shared agent and rendered results; an earlier current-tools baseline identifies what engine support is needed.
 
 **Status:** Proposed
 
 **Identifier:** `symposium-integration-7`
 
-**Dependencies:** [Milestone 3](#symposium-integration-3), milestone 4's assessed configuration loop and required engine corrections, and enough ported design from [milestone 2](#symposium-integration-2) to state the three assignments. Full Book coverage is not required to begin a bounded assignment. Review records from [Verification Evidence milestone 8](verification-evidence.md#verification-evidence-8) are required where an assignment relies on the review method.
+**Dependencies:** Milestone 3's bootstrap, milestone 4's assessed configuration loop, and enough design from milestone 2 to define each assignment. These allow the current-tools baseline to begin on assignment. Full Book coverage, shared build reports, native CI integration, and unrelated proof work do not block that baseline. Completion of the full workflow additionally needs [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9), exercised in the engine's Book first. Review records are required only for assignments that depend on a declared review method.
 
-The current build report and rendering from [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9) must work in the engine's Book first and be available in the trial's local workflow; Symposium's CI integration follows in milestone 5.
-
-**Design basis:** The contract's build-and-verify guidance (`anchorbook contract`, "Work with the engineer" and "Develop verification with the code"), [using verify](../design/verification-evidence.md#using-verify), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
+**Design basis:** The [agent workflow](../design/system-overview.md#working-through-agents), the contract's build-and-verify guidance, [using verify](../design/verification-evidence.md#using-verify), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
 
 **Tasks**
 
-- [ ] Choose at least three assignments with independently stated expected results: adding tests for an unlinked criterion, a behavior change within an anchored area, and a design change that must update the design chapter, its records, and the roadmap together.
-- [ ] Run each in a fresh agent session on a disposable branch, given only the bootstrap and the assignment. Record agent versions, tool calls, the checks it ran, and any human assistance.
-- [ ] Have agents read Markdown sources and consume current CLI or machine-readable build results, then act on located findings and evidence gaps. Record correction and reassessment after changes, and confirm that rendered evidence agrees without requiring agents to inspect HTML.
-- [ ] Review each result against its expected result: the structural check and `verify` pass, links exercise their criteria, design and records describe the changed code, and nothing was weakened to obtain a pass.
-- [ ] Record where the checks caught drift, where they missed it, and where their output misled the agent; fix each engine gap in this Book first, or add it to the relevant roadmap.
+- [ ] Run the first bounded assignment with current tools: add coverage for `A-config-unreadable-run-continues#hooks-continue`, whose hook output must agree for an unparseable and a missing configuration. Use isolated project fixtures, link the test, run the project's checks and scoped `verify`, and record evidence and remaining work in the configuration roadmap. Treat this as a scoped prototyping assignment, without accepting the whole draft design or deciding relative `SYMPOSIUM_HOME` behavior.
+- [ ] Record the baseline's commands, results, assistance, and missing engine support. A report-reading exercise alone does not count: the agent must produce a reviewed change to project tests or implementation from the stated criterion.
+- [ ] Define at least three assignments before execution: adding tests for an unlinked criterion, implementing an agreed behavior that the code does not yet provide, and changing the design with the engineer before updating its records, roadmap, implementation, and tests. The first assignment above may serve as the test case.
+- [ ] Run each in a fresh coding-agent session on an isolated branch, given the bootstrap and scoped assignment. Record versions, tools, source revisions, checks, and human assistance. Symposium's own agent-mode tests are not the subject of these sessions.
+- [ ] After the shared report is available, repeat the baseline and complete the other cases using current CLI or machine-readable results. Act on located findings and evidence gaps, and confirm that rendered evidence agrees; agents need not inspect HTML.
+- [ ] Review the changes against independently stated intended results. Check that the assigned behavior meets its criteria, relevant tests report correctly, and Book records and progress reflect the result. Preserve unimplemented goal scope and its remaining work; no criterion or check may be weakened to obtain a pass.
+- [ ] Classify findings by responsibility. Fix engine diagnostics, selection, result identity, or presentation gaps here first, then repeat the project case. Project test behavior and outcomes remain Symposium's responsibility.
 
 ### Completion criteria
 
+#### Current-tools baseline {#symposium-integration-7-current-tools}
+
+A fresh coding session starts from the Book and assignment, produces a reviewed
+change for the stated criterion, runs the existing project and engine commands,
+and updates evidence and remaining work. The record identifies what the current
+tools enabled, any failures and corrections, and missing engine support. It
+makes no claim about shared or rendered evidence that is not yet available.
+
+- **Anchor coverage:** None — early acceptance of the development loop and input to engine work.
+- **Evidence:** Pending. The configuration loop and readiness-report trials established prerequisites, not completion of a coding assignment from the Book.
+
 #### Assigned changes {#symposium-integration-7-assigned-changes}
 
-Each assignment ends with the structural check passing and current build evidence reporting the affected criteria consistently to agents and the rendered Book. Agents use the results to identify and correct gaps. Independent review confirms the Book, code, and tests are consistent, unrelated content is preserved, and no criterion or check was weakened; assistance is recorded.
+All three assignments complete through the full workflow. Structural checks pass,
+project test results support the assigned criteria, and current build evidence
+agrees between agent and rendered views. Agents use findings to correct the work.
+Review confirms that implementation meets the agreed definition within scope,
+Book records and progress are reconciled, unrelated content is preserved, and
+criteria and checks are not weakened. Assistance and remaining gaps are recorded.
+The early baseline is repeated with shared reports; it cannot by itself complete
+this criterion.
 
-- **Anchor coverage:** None — trial of the engine in a project; informs [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) and [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve).
+- **Anchor coverage:** None — trial of the engine in a project; informs [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report), [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve), and [A-build-current-evidence](../design/system-overview.md#A-build-current-evidence).
 - **Evidence:** Pending.
 
 #### Findings recorded {#symposium-integration-7-findings}
 
-Every inconsistency the checks missed or misreported has a fix with evidence in this Book or an entry in the relevant roadmap.
+Every inconsistency the engine checks missed or misreported has a correction
+with evidence here or scoped remaining work in its owning roadmap. Project test
+findings retain their project owner. Open findings that invalidate an assignment's
+claimed result prevent that assignment from being recorded as complete.
 
 - **Anchor coverage:** None — trial record.
 - **Evidence:** Pending.
 
 ### Completion record
 
-Pending.
+Pending. Early current-tools evidence and the complete shared-report development
+workflow are separate criteria; both remain outstanding.
 
 ## Milestone 8. Symposium adopts Anchor Book upstream {#symposium-integration-8}
 

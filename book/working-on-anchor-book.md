@@ -125,6 +125,16 @@ to pass before satisfying the proof method. They test Anchor Book's reporting
 logic; simulated outcomes supply no evidence for a project's proof. The native
 runner supplies no guard results until milestone 6 implements the actual checks.
 
+## Development priority
+
+The [current sequence](implementation-roadmaps/index.md#first-major-milestone-symposium-adopts-anchor-book)
+centers on agents building Symposium from its Book's system definition. An early
+scoped coding assignment uses the existing commands to identify needed engine
+support. Versioned reports and shared agent/rendered evidence follow, then
+reproducible commands, CI, and upstream adoption. The first assignment remains
+proposed; a readiness report and the earlier verification trial do not establish
+that the full development workflow has been demonstrated.
+
 ## Public content
 
 This repository is public. Keep private reference material, credentials, personal
