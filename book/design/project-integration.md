@@ -206,6 +206,11 @@ copy is checked in. Project-specific instructions belong in the guidance chapter
 not in the contract or a modified copy of it. Other agent integrations, such as a
 skill that retrieves the contract, follow the same three steps.
 
+After reading, agents use the contract's required readiness-report template to
+show the Book's state, every open milestone, its completion criteria and evidence
+gaps, and what can be assigned. The contract owns the report's format and detail;
+projects do not maintain a separate template in their bootstrap instructions.
+
 The engine documents the section as a template that the project adds by hand;
 whether initialization writes it is [open question 3](#open-questions).
 
