@@ -86,6 +86,39 @@ Criterion-level required methods are supported by
 the record parser and renderer; they declare obligations without executing any
 verification tool or consuming results.
 
+## Proof verification today
+
+The shared native Verus runner and its trust policy are implemented. Both
+commands below use that runner; they report different levels of evidence:
+
+```mermaid
+%%{init: {"flowchart": {"useMaxWidth": false, "nodeSpacing": 25, "padding": 12}}}%%
+flowchart TD
+    request["Agent or CI:<br/>proof or verify"] --> run["Shared Verus runner<br/>with --no-cheating"]
+    run --> complete{"Target gate passes?"}
+    complete -->|No| gap["Report failed, missing,<br/>or incomplete evidence"]
+    complete -->|Yes| gate["proof:<br/>target gate passes"]
+    complete -->|Yes| progress["verify:<br/>target contracts passed<br/>Proof: no-evidence<br/>Further checks pending"]
+```
+
+The gate passes only when current complete target evidence verifies every
+required function. The proof method still needs its assessment and further guards.
+
+The [full workflow](design/proof-guards.md) additionally
+checks witnesses and current specification assessments and runs sensitivity
+changes through Verus. Those operations belong to
+[Verification Evidence milestone 6](implementation-roadmaps/verification-evidence.md#verification-evidence-6).
+They are not performed by the current runner. The existing native failure tests
+demonstrate specific defects and trust-policy rejections; they are not the
+automatic sensitivity guard for arbitrary project proofs.
+
+[Milestone 2](implementation-roadmaps/verification-evidence.md#verification-evidence-2-proof-states)
+still needs fixtures that exercise proof-state handling using simulated guard
+outcomes, such as a missing assessment or a timed-out sensitivity run. They test
+Anchor Book's reporting logic; simulated outcomes supply no evidence for a
+project's proof. These fixtures can precede the actual guard implementations in
+milestone 6.
+
 ## Public content
 
 This repository is public. Keep private reference material, credentials, personal

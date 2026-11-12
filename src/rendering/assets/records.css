@@ -19,6 +19,15 @@
 .ab-details { margin-top: 1.4rem; }
 .ab-details summary { cursor: pointer; color: var(--links); font-weight: 600; padding: .3rem 0; }
 .ab-details-body { padding-bottom: .3rem; }
+.ab-anchor-details { margin-top: 0; }
+.ab-anchor-details > summary { display: flex; gap: .8rem; color: var(--fg); padding: 0; list-style: none; }
+.ab-anchor-details > summary::-webkit-details-marker { display: none; }
+.ab-anchor-details > summary::before { content: "\25b8"; color: var(--links); }
+.ab-anchor-details[open] > summary::before { content: "\25be"; }
+.ab-anchor-details[open] > summary { padding-bottom: 1rem; border-bottom: 1px solid var(--table-border-color); }
+.ab-anchor-details > summary h3 { flex: 1; min-width: 0; margin: 0; font-size: 1em; }
+.ab-anchor-title { display: block; margin: .65rem 0 .4rem; font-size: 1.2em; }
+.ab-anchor-details .ab-permalink { font-weight: normal; }
 .ab-record a:focus-visible, .ab-details summary:focus-visible { outline: 2px solid var(--links); outline-offset: 3px; }
 .ab-record:target { outline: 2px solid var(--links); outline-offset: 3px; }
 @media (max-width: 500px) { .ab-record { padding: 1rem; } }
