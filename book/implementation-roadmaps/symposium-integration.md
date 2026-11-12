@@ -222,7 +222,7 @@ commands, results, and limits; recording a gap is not evidence of its correction
 Every link in Symposium's sources resolves to a criterion requiring `test`, misplaced or dangling links are reported at their location, and unlinked criteria are listed. Every ported area's test criteria have reviewed links or an explicit missing-coverage entry; review identifies what the assertions cover and the remaining gaps.
 
 - **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: a multi-crate project workspace.
-- **Evidence:** Configuration area assessed: eight tests link to six of seven criteria, with no link findings; `hooks-continue` is unlinked. The [fork's coverage map](https://github.com/kwdev/symposium/blob/4e2158b89461d17496ff07c5d2a0ebf2619abfe3/anchor-book/src/implementation-roadmaps/configuration-loading.md#configuration-loading-1-trial) records each assertion boundary and missing case. Full design coverage and links across other member packages remain pending.
+- **Evidence:** Configuration area assessed: eight tests link to six of seven criteria, with no link findings; `hooks-continue` is unlinked. The [fork's coverage map](https://github.com/kwdev/symposium/blob/4e2158b89461d17496ff07c5d2a0ebf2619abfe3/anchor-book/src/implementation-roadmaps/configuration-loading.md) records each assertion boundary and missing case. Full design coverage and links across other member packages remain pending.
 
 #### Honest test states {#symposium-integration-4-honest-states}
 
