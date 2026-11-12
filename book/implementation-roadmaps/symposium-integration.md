@@ -291,6 +291,12 @@ the no-agent correction remain outside this assessment's evidence. The Windows
 auto-update test is ignored in ordinary Cargo runs, while verify requests ignored
 tests too; that link needs platform treatment before it is used there.
 
+The engine acceptance-test correction and this assessment were tested in
+`71d9c41`, based on `b7bcd33`, on branch `codex/symposium-configuration-trial`.
+[PR #41](https://github.com/anchor-book/anchor-book/pull/41) tracks the required
+revision-specific checks and integration of that work. Symposium's trial commit
+is pushed to the engineer's fork; no upstream adoption is claimed.
+
 ### Completion record
 
 Pending. The configuration-loop assessment is complete; design expansion,
