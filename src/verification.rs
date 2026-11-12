@@ -23,7 +23,7 @@ pub use verus::{FunctionEvidence, ProofReport, TargetEvidence, VERUS_VERSION, pr
 use crate::checking::{self, Outcome};
 use crate::configuration::{self, SectionRole};
 use crate::records::{
-    Chapter, RecordData, RecordInventory, Status, VerificationMethod, read_records,
+    Chapter, RecordData, RecordInventory, SourceLocation, Status, VerificationMethod, read_records,
 };
 use crate::roadmaps::{CoverageLevel, Milestone, read_roadmaps};
 use std::{
@@ -180,6 +180,8 @@ pub struct PlannedCriterion {
     pub anchor: String,
     /// Criterion identifier.
     pub criterion: String,
+    /// Authored criterion statement, not inferred from test behavior.
+    pub statement: String,
     /// Required methods, in authored order.
     pub methods: Vec<VerificationMethod>,
 }
@@ -210,6 +212,8 @@ pub struct PlannedAnchor {
     pub status: Status,
     /// Source-relative chapter path.
     pub chapter: PathBuf,
+    /// Anchor definition in its Book chapter.
+    pub location: SourceLocation,
 }
 
 /// What a run evaluates and the evidence links it found, before any runner.
@@ -237,6 +241,8 @@ pub struct Plan {
     pub inputs: Inputs,
     /// The configuration's directory, the base of displayed paths.
     pub base: PathBuf,
+    /// Book source directory relative to the configuration directory.
+    pub book_source: PathBuf,
     /// The validated `[verification]` settings.
     pub settings: Settings,
     /// The manifest of each package with links in scope.
@@ -263,6 +269,8 @@ pub struct MethodReport {
 pub struct CriterionReport {
     /// Criterion identifier.
     pub id: String,
+    /// What the linked evidence is intended to establish.
+    pub statement: String,
     /// Combined state of its required methods.
     pub state: State,
     /// Each required method.
@@ -274,6 +282,8 @@ pub struct CriterionReport {
 pub struct AnchorReport {
     /// Anchor identifier.
     pub id: String,
+    /// Anchor definition in its Book chapter.
+    pub location: SourceLocation,
     /// Design acceptance status.
     pub status: Status,
     /// Combined state of its criteria.
@@ -328,6 +338,10 @@ pub struct Report {
     pub inputs: Inputs,
     /// Base of displayed paths.
     pub base: PathBuf,
+    /// Book source directory relative to the configuration directory.
+    pub book_source: PathBuf,
+    /// Source associations and locations behind the method results.
+    pub links: Vec<Link>,
     /// Versions of the runners that ran.
     pub tools: Vec<String>,
     /// Native proof-target evidence, separate from criterion assessments and guards.
@@ -517,6 +531,11 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
             dirty: None,
         },
         base,
+        book_source: configuration
+            .source()
+            .strip_prefix(configuration.path().parent().unwrap_or(Path::new(".")))
+            .unwrap_or(configuration.source())
+            .to_owned(),
         settings,
         manifests,
         proof_inputs,
@@ -594,11 +613,13 @@ fn planned_records(
                 id: record.id().to_owned(),
                 status: record.status(),
                 chapter: path.clone(),
+                location: record.location().clone(),
             });
             for criterion in &anchor.criteria {
                 criteria.push(PlannedCriterion {
                     anchor: record.id().to_owned(),
                     criterion: criterion.id.clone(),
+                    statement: criterion.statement.clone(),
                     methods: criterion.verification.clone(),
                 });
             }
@@ -767,6 +788,7 @@ pub fn evaluate(plan: &Plan, results: &RunResults) -> Report {
             (criterion.anchor.as_str(), criterion.criterion.as_str()),
             CriterionReport {
                 id: criterion.criterion.clone(),
+                statement: criterion.statement.clone(),
                 state: combine(methods.iter().map(|m| m.state)),
                 methods,
             },
@@ -790,6 +812,7 @@ pub fn evaluate(plan: &Plan, results: &RunResults) -> Report {
             .collect();
         let report = AnchorReport {
             id: anchor.id.clone(),
+            location: anchor.location.clone(),
             status: anchor.status,
             state: combine(reports.iter().map(|c| c.state)),
             criteria: reports,
@@ -816,6 +839,8 @@ pub fn evaluate(plan: &Plan, results: &RunResults) -> Report {
         claims,
         inputs: plan.inputs.clone(),
         base: plan.base.clone(),
+        book_source: plan.book_source.clone(),
+        links: plan.links.clone(),
         tools: Vec::new(),
         proofs: None,
     }

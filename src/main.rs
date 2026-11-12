@@ -137,9 +137,9 @@ fn check(args: &[std::ffi::OsString]) -> ExitCode {
 
 fn verify(args: &[std::ffi::OsString]) -> ExitCode {
     use anchor_book::{VerificationMethod, verification};
-    let usage =
-        "Usage: anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]...";
+    let usage = "Usage: anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]... [--format text|json]";
     let mut config = None;
+    let mut format = None;
     let mut scope = verification::Scope::default();
     let mut rest = args.iter();
     while let Some(flag) = rest.next() {
@@ -150,6 +150,9 @@ fn verify(args: &[std::ffi::OsString]) -> ExitCode {
         match (flag.to_str(), value) {
             (Some("--config"), Some(path)) if config.is_none() => config = Some(path.to_owned()),
             (Some("--anchor"), Some(id)) => scope.anchors.push(id.to_owned()),
+            (Some("--format"), Some(value @ ("text" | "json"))) if format.is_none() => {
+                format = Some(value);
+            }
             (Some("--method"), Some(method)) => match method {
                 "test" => scope.methods.push(VerificationMethod::Test),
                 "proof" => scope.methods.push(VerificationMethod::Proof),
@@ -169,7 +172,29 @@ fn verify(args: &[std::ffi::OsString]) -> ExitCode {
         let _ = writeln!(io::stderr().lock(), "{usage}");
         return ExitCode::from(2);
     };
-    match verification::verify(std::path::Path::new(&config), scope) {
+    let result = verification::verify(std::path::Path::new(&config), scope.clone());
+    if format == Some("json") {
+        let (value, code) = match result {
+            Ok(report) => (
+                anchor_book::adapters::verify::json_report(&report),
+                report.exit_code(),
+            ),
+            Err(error) => {
+                let absolute =
+                    std::path::absolute(&config).unwrap_or_else(|_| config.clone().into());
+                let base = absolute.parent().unwrap_or(std::path::Path::new(""));
+                (
+                    anchor_book::adapters::verify::json_error(&error, &scope, base),
+                    2,
+                )
+            }
+        };
+        return match serde_json::to_string_pretty(&value) {
+            Ok(text) if writeln!(io::stdout().lock(), "{text}").is_ok() => ExitCode::from(code),
+            _ => ExitCode::from(2),
+        };
+    }
+    match result {
         Ok(report) => {
             let text = anchor_book::adapters::verify::format_report(&report);
             if io::stdout().lock().write_all(text.as_bytes()).is_err() {

@@ -26,18 +26,16 @@ cases; new Symposium tests or coding trials are not prerequisites. Milestone 2's
 native proof runner and engine CI remain in place for their recorded scope;
 Symposium's work uses tests and requires no Verus.
 
-The next reporting increment is milestone 3's versioned representation of the
-current results, exercised locally through the real CLI and fixtures. That
-interface lets milestone 9 compose structural findings, criterion results, and
-completion claims for agents and rendering. Milestone 3's native CI retention
-remains required for its completion and for Symposium's CI adoption, but it does
-not prevent developing milestone 9's local report integration.
+Milestone 3 exposes current results directly to agents through the library and
+CLI. Milestone 9 then exercises correction from those results and connects
+structural findings, criterion results, and completion claims to rendering.
+Retention is separate: current-result transport needs no archive, and optional CI
+artifacts need an explicit purpose and expiration policy. Durable completion
+summaries remain in the Book.
 
 Exercise each engine capability in this Book before Symposium relies on it.
-Symposium later compares its current-tools baseline with the shared-report
-workflow; those trials assess project adoption and return findings to the engine.
-Existing project results may inform development, but report implementation and
-acceptance do not depend on adding a project test or running a new coding trial.
+Symposium trials later assess adoption and return findings to the engine; new
+project tests and coding trials do not gate this reporting increment.
 
 Milestone 8 implements assessment records where criteria require review. It is
 not a prerequisite for Symposium's current test-only assignments or for composing
@@ -49,7 +47,7 @@ They are separate from the Symposium test-only workflow.
 
 Milestone 4 records criteria/configuration identities and Git context; milestones
 1 and 2 add code/lockfile identities and current-run checks. Milestones 3 and 9
-preserve and present those results, trusting project test outcomes. The retired
+present those results, trusting project test outcomes. The retired
 [execution-report proposal](#verification-evidence-10) is not required.
 General command/version alignment and contributor setup remain in
 [Project Integration](project-integration.md); registry release is separate.
@@ -89,7 +87,7 @@ Independent fixtures produce every state for the test method; criteria requiring
 
 For a fixture Book with satisfied, partial, failing, and unlinked anchors, the library and actual CLI report every anchor by chapter with states, links, and summary counts and exit 0; invalid inputs make the run incomplete; an unbuildable or missing runner affects only its method.
 
-- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and retained CI reports in milestone 3.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: native test progress; shared reporting is in milestone 4, proof results in milestone 2, and shared structured results in milestone 3.
 - **Evidence:** Passed. The CLI reports every anchor by chapter with states, linked functions, the nextest version, and summary counts; exits 0 with every checked claim holding, 1 with a failing claim, and 2 for invalid inputs; and an unbuildable or missing runner affects only the test method (`tests/verification.rs`).
 
 #### Links {#verification-evidence-1-links}
@@ -115,7 +113,7 @@ In this repository, `anchorbook verify --anchor` for a linked anchor reports its
 
 ### Evidence {#verification-evidence-1-evidence}
 
-Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the test suite pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. Linking: every test criterion that a Complete milestone claims has linked tests that exercise it, plus the `verify-*` anchors' criteria. One claim had no such test: Record Rendering milestone 2's `relationship-navigation`, whose site-prefix and print-view checks read previously built output, so its coverage is now Partial with that scope. `A-check-independent-build#broken-book` is linked to a new ignored test that runs `scripts/check-engine-independence.sh`, and `roadmap-validation` to a new current-Book acceptance test of this Book's roadmaps. Mutation testing on the runner: the first run had 9 survivors, 6 in JUnit index arithmetic, rewritten so none remains, and 3 test gaps, now covered; the repeat run tested 67 mutations: 41 caught, 26 unviable, none missed. Limits: one nextest version; builds use the project's ordinary target directory; reports are read, not retained, until milestone 3.
+Branch `verification`, 2026-11-10, after PR #34. Formatting, Clippy, and the test suite pass on Rust 1.88.0 and stable; the structural check, `mdbook build`, and current-Book and rendered-Book acceptance pass. Linking: every test criterion that a Complete milestone claims has linked tests that exercise it, plus the `verify-*` anchors' criteria. One claim had no such test: Record Rendering milestone 2's `relationship-navigation`, whose site-prefix and print-view checks read previously built output, so its coverage is now Partial with that scope. `A-check-independent-build#broken-book` is linked to a new ignored test that runs `scripts/check-engine-independence.sh`, and `roadmap-validation` to a new current-Book acceptance test of this Book's roadmaps. Mutation testing on the runner: the first run had 9 survivors, 6 in JUnit index arithmetic, rewritten so none remains, and 3 test gaps, now covered; the repeat run tested 67 mutations: 41 caught, 26 unviable, none missed. Limits: one nextest version; builds use the project's ordinary target directory; runner results are read for the current run; shared structured output belongs to milestone 3.
 
 ### Completion record
 
@@ -236,62 +234,45 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 
 **Mutation evidence:** cargo-mutants 27.1.0, one worker, a 120-second build timeout, and a ten-minute campaign budget, limited to `ProofGuards::state` and `method_state`: 16 mutations in 29 seconds, 13 caught, three unviable, none missed or timed out. The three unviable replacements require a nonexistent Default implementation and establish no fault detection. The tool generates no useful mutations inside the new guard match arms. Six deliberate changes in a disposable source copy therefore additionally omit each of the three obligations, reverse failure precedence, reuse another criterion's guards, or treat absent guards as satisfied. Every change fails `cargo test --locked --test proof_states`; unmodified and restored baselines pass. No exclusions were added. Full required GitHub results are tracked in [PR #40](https://github.com/anchor-book/anchor-book/pull/40); the local results above do not substitute for them.
 
-## Milestone 3. CI reports progress for every revision {#verification-evidence-3}
+## Milestone 3. Agents consume current verification results without report storage {#verification-evidence-3}
 
-**Outcome:** Each pull request and main revision retains a versioned whole-Book evidence report, and a project using only tests obtains the same reporting without installing Verus or waiting for proof guards.
+**Outcome:** The library and `verify --format json` expose the same current verification results as readable output, with criterion context and locations agents can act on. Results can be consumed directly; report files, history, and CI retention are optional.
 
-**Status:** Proposed
+**Status:** In progress
 
-**Dependencies:** Milestones 1 and 4, complete, for the test-only path. Define the local report's schema and invocation before implementation, using independent engine fixtures and this Book. No new Symposium tests or coding trial are required. Native CI retention remains a separate completion criterion. Include milestone 2's available proof results without waiting for broader guards or consumer proof support. This Book exercises report retention before Symposium's CI adopts it.
+**Dependencies:** Milestones 1 and 4, complete. Use independent engine fixtures and this Book. New Symposium tests, project coding trials, proof guards, and report retention do not block the work.
 
-**Design basis:** [Running Verification](../design/verification-evidence.md)
+**Design basis:** [Structured output and retention](../design/verification-evidence.md#structured-output-and-retention), [evidence states](../design/verification-evidence.md#evidence-states), and [claims of completion](../design/verification-evidence.md#claims-of-completion).
 
 **Identifier:** `verification-evidence-3`
 
-**Next engine increment:** Implement the local versioned report and its validation.
-This produces the retained-report criterion below and the interface milestone 9
-needs; it does not complete this milestone's separate CI criterion. Settle the
-artifact format, CLI option, and incomplete-run representation as part of the
-bounded design work before coding. Existing evidence states, claim checks, and
-the progress command's exit policy govern the new representation.
-
 **Tasks**
 
-- [ ] Define the versioned representation and CLI invocation for existing verification results, including incomplete evaluation. Preserve current inputs, selected scope, tools, states, source locations, claims, and limits; review retained fields against public-content guidance and reconcile the report design before implementation.
-- [ ] Implement report writing, reading, and validation in the library and expose output through the actual CLI. A reader rejects malformed, unsupported, or mismatched reports; earlier success cannot stand in for a new run. Keep evaluation separate from serialization and preserve source files and existing exit behavior.
-- [ ] Exercise the local interface with independent fixtures and this Book. Cover passing results, unclaimed failures, unsatisfied completion claims, incomplete evaluation, excluded methods, and changed inputs; include dirty and non-Git workspaces. Verify that states agree with the existing report and private paths are omitted. These engine cases provide acceptance without new Symposium tests.
-- [ ] Run the whole-Book command in CI with supported tools and retain reports for passing, unsatisfied, and incomplete runs. Preserve the progress command's exit policy.
-- [ ] Exercise a test-only fixture with no Verus installation and only nextest configured. Start this Book's retained CI progress report with `--method test`, explicitly listing unchecked proof and review claims, while the separate Authority proof gate from milestone 2 remains required. A full-method report must preserve unsatisfied claims until their assessments and guards exist; a retained progress report never replaces the strict gate.
-- [ ] Include configured review results when milestone 8 is available. Keep excluded methods and their claims explicit in the artifact consumed by milestone 9; a successful scoped run never becomes a whole-Book verification badge.
-- [ ] Run the tests once in CI: let `verify` read a nextest report supplied by the project's own CI test run, after checking that the report's recorded inputs match the current checkout, instead of running the linked tests a second time. A report whose inputs differ is no evidence. Local runs keep running the linked tests themselves, as [`D-verify-runs-linked-checks`](../authority/decisions.md#D-verify-runs-linked-checks) allows for runs `verify` does not invoke.
-- [ ] Demonstrate an authorized failure/correction cycle and record actual revision-specific workflow results, retention, and runtime.
+- [x] Define JSON output on standard output, its version, fields, incomplete-result behavior, and existing exit policy. Separate current result transport from retention.
+- [ ] Expose the current typed evaluation through a reusable library projection and `verify --format json`, preserving default readable output, criterion states, and completion claims. Include criterion statements, source locations, scope, input identities, and evidence limits.
+- [ ] Exercise independent fixtures through the actual CLI: passing and failing tests, missing evidence, excluded methods, unchecked claims, incomplete input, changed inputs, and non-Git/dirty workspaces. Demonstrate correction and confirm that JSON output creates no report history or source edits.
+- [ ] Exercise this Book with the implemented command and record the result and limits. Update contribution guidance with a directly usable coding command.
 
 ### Completion criteria
 
-#### Retained report {#verification-evidence-3-retained-report}
+#### Shared current result {#verification-evidence-3-retained-report}
 
-Independent fixtures and the actual CLI produce and validate a versioned artifact
-that preserves scope and states, input identities, source locations, claims,
-tools, and limits. Passing, unclaimed failing, unsatisfied-claim, and incomplete
-runs retain their existing meaning and exit behavior. Dirty and non-Git inputs
-remain identifiable. Private paths and raw source/proof payloads are omitted.
-Malformed, unsupported, or stale artifacts never become current evidence. This
-Book exercises the local interface, which milestone 9 can use before CI retention
-or a new Symposium trial is complete.
+The library and actual CLI expose a versioned current result with scope, states,
+criterion statements, linked functions and locations, inputs, claims, counts,
+and limits. Independent cases establish passing, failing, missing, excluded, and
+incomplete behavior with unchanged exit meaning; changes cannot reuse earlier
+passing runner evidence. Output can be consumed directly and creates no report
+history. This Book exercises the interface. Native proof results remain separate
+from outstanding criterion obligations. The fragment retains its original identity;
+the outcome requires no artifact retention or report importer.
 
-- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: versioned report presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: artifact scope and limits.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: structured current-result presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: structured scope and limits.
 - **Evidence:** Pending.
-
-#### CI results {#verification-evidence-3-ci-results}
-
-Actual runs identify the tested checkout and demonstrate passing, failing-evidence, and incomplete outcomes, followed by correction at a new revision. A test-only fixture needs no Verus or proof guards. Unclaimed unsatisfied evidence remains progress; a checked unsatisfied completion claim retains exit 1. The engine's strict proof gate remains separate. Milestone 9 consumes these reports for the Book build and agent workflow.
-
-- **Anchor coverage:** None — CI execution, artifact retention, and correction workflow.
-- **Evidence:** Pending; local results alone cannot complete this criterion.
 
 ### Completion record
 
-Pending.
+Pending. Renderer consumption and saved-input validation remain in milestone 9.
+CI retention is optional and requires a concrete use and expiration policy.
 
 ## Milestone 4. Both runners share criterion evidence and report behavior {#verification-evidence-4}
 
@@ -603,12 +584,13 @@ Pending.
 
 **Identifier:** `verification-evidence-9`
 
-**Dependencies:** Milestone 3's local versioned-report interface and the existing structural checker and record renderer. Native CI retention is required for later CI adoption, not for implementing the local shared report. Add milestone 8's assessments where required review methods are evaluated; test-only reports remain usable before that support, with unsupported methods and claims explicit. The engine's proof gate remains separate.
+**Dependencies:** Milestone 3's structured current-result interface and the existing structural checker and record renderer. Report retention is optional. Add milestone 8's assessments where required review methods are evaluated; test-only reports remain usable before that support, with unsupported methods and claims explicit. The engine's proof gate remains separate.
 
 **Design basis:** [Agent workflow](../design/system-overview.md#working-through-agents), [Book build evidence](../design/verification-evidence.md#book-build-evidence), and [Record Rendering](../design/record-rendering.md).
 
 **Tasks**
 
+- [ ] Focus the next increment on the coding experience: use the current structured result to locate a deliberately failing criterion, correct its implementation or test from the Book definition, and rerun. Record where context, locations, or feedback need improvement before designing further integration.
 - [ ] Use independent engine fixtures and this Book to settle the native build configuration, report handoff, artifact compatibility, input identities, and actionable diagnostics. Existing Symposium findings can inform the work; a new project test or coding trial is not a prerequisite. Implement the test-only path using existing runner outcomes, reconcile design and fixtures, and keep the engine usable with a broken Book.
 - [ ] Compose structural findings, evidence states, and completion-claim results through shared library models. Expose stable record and criterion identities, source locations, scope, and limits through the CLI and versioned artifact so agents can act without HTML or handwritten result labels.
 - [ ] Connect native project verification to rendering without duplicate test execution or recursive builds. Validate inputs before and after evaluation and rendering, including dirty working trees and assessment changes; reject missing, invalid, unsupported, and mismatched handoffs.
@@ -645,6 +627,16 @@ rendered Book agree. Record-only rendering makes its unevaluated scope explicit.
 Pending.
 
 ## Retired work
+
+### Mandatory CI report retention {#verification-evidence-3-ci-results}
+
+The requirement to archive a whole-Book report for every PR and main revision is
+retired. Current results can be consumed directly; retaining every run is not
+required to enable coding. CI integration and avoiding duplicate test execution
+remain in milestone 9 and Project Integration. Optional retained artifacts need
+a concrete diagnostic or evidence purpose and an explicit expiration policy.
+This criterion identifier is reserved and its former outcome is not claimed complete.
+
 
 ### Execution-report protocol {#verification-evidence-10}
 

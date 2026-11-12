@@ -219,9 +219,9 @@ The engine's existing proof CI stays in place; Symposium requires no proofs.
 
 | Order | Work and owning milestone | Observable outcome |
 | --- | --- | --- |
-| 1. Save the engine's current verification results | Build the local report increment in [Verification Evidence 3](verification-evidence.md#verification-evidence-3-retained-report), using independent fixtures and this Book. Define the schema and CLI invocation, then implement report writing, reading, and validation. | Agents and tools can consume a versioned report of current results. Scope, states, claims, source locations, and input identities are preserved; invalid or stale reports cannot supply current evidence. |
-| 2. Share findings and evidence with agents and readers | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) composes structural findings, criterion states, and claims, then connects them to rendering. Exercise the complete workflow in this Book. | The CLI and rendered Book present the same current evidence, with locations an agent can use to correct the work. Rendering does not rerun tests. |
-| 3. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 3](verification-evidence.md#verification-evidence-3-ci-results) retains reports in CI and consumes current project-run results without duplicate tests. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
+| 1. Expose current verification results directly | [Verification Evidence 3](verification-evidence.md#verification-evidence-3-retained-report) supplies structured library/CLI output using independent fixtures and this Book. | Agents can read criterion context, current states, claims, and locations without report files or history. |
+| 2. Exercise the coding experience, then connect rendering | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) starts with an agent locating and correcting a failure from current feedback, then connects the shared results to rendering. | The agent uses the Book and evidence to correct work; the rendered Book presents the same current state without rerunning tests. |
+| 3. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 9](verification-evidence.md#verification-evidence-9) integrates current project-run results without duplicate tests. Retention is optional and needs an explicit purpose and expiration policy. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
 | 4. Define each project area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority for the next project assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
 | 5. Demonstrate and adopt the development workflow in Symposium | [Symposium Integration 7](symposium-integration.md#symposium-integration-7) exercises missing tests, an implementation change, and a design change, comparing current tools with the shared-report workflow. [Milestone 5](symposium-integration.md#symposium-integration-5) applies the native commands and CI integration. | The Book guides implementation; code, tests, records, and progress agree after each change. Agents and readers receive current evidence from the same engine workflow. |
 | 6. Integrate the proven workflow upstream | [Symposium Integration 8](symposium-integration.md#symposium-integration-8) resolves maintainer review and design-document ownership and verifies the adopted contributor workflow. | Symposium uses the Book and engine for ordinary development upstream; a fork trial alone does not complete adoption. |
@@ -236,12 +236,13 @@ is not a prerequisite. Review-record support in
 when the assigned criteria depend on that method; unsupported methods and their
 claims remain explicit rather than being counted as satisfied.
 
-**Next engine increment:** [Verification Evidence 3's local report](verification-evidence.md#verification-evidence-3-retained-report).
-Settle its schema and CLI invocation, expose the existing verification results,
-and demonstrate passing, unsatisfied, incomplete, and invalid or stale report cases
-through independent fixtures and the actual CLI. Preserve project test outcomes,
-current evidence states, and exit behavior. CI retention completes the wider
-milestone later; shared rendering belongs to milestone 9.
+**Assigned engine increment:** [Verification Evidence 3's structured result](verification-evidence.md#verification-evidence-3-retained-report).
+Expose existing verification results directly through `verify --format json`,
+using independent fixtures and the actual CLI. Preserve project test outcomes,
+criterion states, claims, and exit behavior. Results need no stored history.
+The next focus is the coding experience: use the Book and current findings to
+locate, correct, and reassess work. Saved-input validation and shared rendering
+remain in milestone 9; durable retention is separate from this workflow.
 
 Symposium's missing hook-continuation test remains a proposed project assignment
 in [milestone 7](symposium-integration.md#symposium-integration-7). Neither that

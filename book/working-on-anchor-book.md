@@ -43,7 +43,8 @@ The record library, configuration loader, structural checker, and `anchorbook md
 preprocessor are implemented. Run `anchorbook check --config anchorbook.toml` to
 inspect this Book's format; the checker reports findings without repairing files.
 The binary also supports `anchorbook md supports html`, `anchorbook contract`,
-`anchorbook verify --config anchorbook.toml`, help, and version. `verify` reports
+`anchorbook verify --config anchorbook.toml`, help, and version. `verify --format json` emits structured current results on standard output; text
+remains the default, and neither format creates report history. `verify` reports
 each anchor criterion's evidence state and checks the Book's claims of completion;
 it runs linked tests with cargo-nextest and configured library proofs with Verus,
 which CONTRIBUTING describes installing. `anchorbook proof --config anchorbook.toml`
@@ -129,9 +130,11 @@ runner supplies no guard results until milestone 6 implements the actual checks.
 
 The [current sequence](implementation-roadmaps/index.md#first-major-milestone-symposium-adopts-anchor-book)
 centers on agents building Symposium from its Book's system definition. The next
-engine increment is the local versioned verification report, using independent
-fixtures and this Book for acceptance. Shared agent/rendered evidence follows,
-then reproducible commands and CI. New Symposium tests and coding trials belong
+engine increment exposes current verification results directly, using independent
+fixtures and this Book for acceptance. The next focus is the coding experience:
+using the Book and current feedback to locate, correct, and reassess work. Shared
+rendering, reproducible commands, and CI follow; durable report retention is
+optional. New Symposium tests and coding trials belong
 to later project adoption and do not block this engine work. A readiness report
 and the earlier verification trial do not establish that the full development
 workflow has been demonstrated.

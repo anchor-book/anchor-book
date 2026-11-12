@@ -42,7 +42,7 @@ records the engine's proof CI encapsulation and proof-state coverage. The
 [Symposium configuration-loading trial](symposium-integration.md#symposium-integration-4-evidence)
 has assessed the verification commands; later coding trials exercise
 implementation from the Book's definition. The next engine increment supplies
-the local versioned report using engine fixtures and this Book, without waiting
+direct structured verification results using engine fixtures and this Book, without waiting
 for new project tests. Symposium owns test semantics, and
 Anchor Book trusts current runner outcomes. Milestone 4 below uses those trials
 to settle the minimum setup for reproducible native-command and CI integration.

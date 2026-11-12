@@ -1448,3 +1448,396 @@ fn the_code_identity_covers_a_member_packages_lockfile_at_the_root() {
     book.write("Cargo.lock", "version = 4\n# changed\n");
     assert_ne!(whole(&book).inputs.code, first.inputs.code);
 }
+
+mod structured {
+    use super::*;
+    use anchor_book::adapters::verify::{json_error, json_report};
+    use serde_json::{Value, json};
+
+    fn run(
+        book: &fixture::Book,
+        args: &[&str],
+        env: &[(&str, std::ffi::OsString)],
+    ) -> (i32, Value) {
+        let mut flags = vec!["--format", "json"];
+        flags.extend(args);
+        let (code, stdout, stderr) = cli_with(book, &flags, env);
+        assert!(stderr.is_empty(), "{stderr}");
+        let result: Value = serde_json::from_str(&stdout).expect("one JSON result on stdout");
+        assert_eq!(result["kind"], "anchorbook.verify");
+        assert_eq!(result["schema_version"], 1);
+        assert_eq!(result["exit_code"], code.unwrap());
+        assert!(
+            !stdout.contains(book.root.to_str().unwrap()),
+            "machine root in {stdout}"
+        );
+        (code.unwrap(), result)
+    }
+
+    fn criterion<'a>(result: &'a Value, anchor: &str, criterion: &str) -> &'a Value {
+        result["chapters"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .flat_map(|c| c["anchors"].as_array().unwrap())
+            .find(|a| a["id"] == anchor)
+            .unwrap()["criteria"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|c| c["id"] == criterion)
+            .unwrap()
+    }
+
+    /// anchorbook: A-verify-progress-report#progress-output
+    /// anchorbook: A-verify-criterion-states#scope-and-limits
+    /// anchorbook: A-verify-runs-linked-checks#source-preservation
+    #[test]
+    fn json_reports_context_locations_scope_and_claims_without_creating_files() {
+        let book = book(&milestone(1, "Complete", "`A-unlinked` · `none` — Full"));
+        let env = [("CARGO", "/nonexistent/cargo".into())];
+        let before = book.snapshot();
+        let (code, result) = run(&book, &[], &env);
+        assert_eq!(code, 1);
+        assert_eq!(result["complete"], true);
+        assert_eq!(result["outcome"], "claims-unsatisfied");
+        assert_eq!(result["book_source"], "docs");
+        assert_eq!(
+            result["scope"],
+            json!({"anchors": [], "methods": ["test", "proof", "review"]})
+        );
+        assert_eq!(result["summary"]["criteria"]["total"], 6);
+        // The mixed test/proof criterion also lacks a proof link.
+        assert_eq!(result["summary"]["criteria"]["states"]["unlinked"], 2);
+        assert_eq!(result["summary"]["anchors"]["total"], 3);
+        assert_eq!(result["claims"][0]["outcome"], "unsatisfied");
+        assert_eq!(result["claims"][0]["milestone"], "work-1");
+        assert_eq!(result["claims"][0]["state"], "unlinked");
+        assert_eq!(result["claims"][0]["location"]["path"], "roadmap.md");
+        assert_eq!(result["claims"][0]["location"]["relative_to"], "book");
+        assert_eq!(
+            result["chapters"][0]["anchors"][0]["location"],
+            json!({
+                "path": "design.md", "relative_to": "book", "line": 3, "column": 1
+            })
+        );
+        assert_eq!(
+            criterion(&result, "A-tests", "one")["statement"],
+            "Criterion one."
+        );
+        let link = result["evidence_links"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|l| l["function"]["name"] == "linked_twice")
+            .unwrap();
+        assert_eq!(
+            link["function"]["target"],
+            json!({"kind": "test", "name": "it"})
+        );
+        assert_eq!(link["location"]["path"], "tests/it.rs");
+        assert_eq!(link["location"]["line"], 5);
+        assert_eq!(link["location"]["relative_to"], "configuration");
+        assert!(
+            result["limits"][0]
+                .as_str()
+                .unwrap()
+                .contains("sufficiency")
+        );
+        assert!(result["proof_targets"]["complete"].is_boolean());
+        assert!(result["inputs"]["revision"].is_null());
+        let library = evaluate(&whole(&book), &RunResults::not_run("no runner"));
+        let projected = json_report(&library);
+        assert_eq!(projected["summary"], result["summary"]);
+        assert_eq!(projected["claims"], result["claims"]);
+        assert_eq!(projected["inputs"], result["inputs"]);
+        let (code, scoped) = run(&book, &["--anchor", "A-tests", "--method", "test"], &env);
+        assert_eq!(code, 0);
+        assert_eq!(
+            scoped["scope"],
+            json!({"anchors": ["A-tests"], "methods": ["test"]})
+        );
+        assert_eq!(scoped["summary"]["anchors"]["total"], 1);
+        assert_eq!(scoped["claims"][0]["outcome"], "unchecked");
+        assert!(
+            scoped["claims"][0]["reason"]
+                .as_str()
+                .unwrap()
+                .contains("outside")
+        );
+        assert_eq!(
+            criterion(&scoped, "A-tests", "both")["methods"][1]["state"],
+            "not-evaluated"
+        );
+        assert_eq!(
+            before,
+            book.snapshot(),
+            "formatting creates neither sources nor report history"
+        );
+        let (_, default, _) = cli(&book, &[]);
+        let (_, explicit, _) = cli(&book, &["--format", "text"]);
+        assert_eq!(default, explicit);
+    }
+
+    fn one_test() -> fixture::Book {
+        let book = book("");
+        book.write(
+            "docs/design.md",
+            &format!("# Design\n\n{}", anchor("A-test", &[("works", "test")])),
+        );
+        book.write(
+            "src/lib.rs",
+            "/// anchorbook: A-test#works\n#[test]\nfn behavior() {}\n",
+        );
+        book.write("tests/it.rs", "");
+        book.write("other/tests/it.rs", "");
+        book
+    }
+
+    /// anchorbook: A-verify-criterion-states#state-per-method
+    #[test]
+    fn json_preserves_partial_evidence_and_outstanding_proof_guards() {
+        let book = book("");
+        book.write("docs/design.md", &design().replace("(draft)", "(accepted)"));
+        book.write(
+            "docs/authority.md",
+            &AUTHORITY.replace("(draft)", "(accepted)"),
+        );
+        book.write(
+            "src/bin/tool.rs",
+            "/// anchorbook: A-tests#one\n#[test]\nfn same_name() {}\n",
+        );
+        let plan = whole(&book);
+        let result = evaluate(
+            &plan,
+            &RunResults {
+                tests: RunnerResult::Ran(
+                    plan.tests
+                        .iter()
+                        .cloned()
+                        .map(|f| (f, TestOutcome::Passed))
+                        .collect(),
+                ),
+                proofs: ProofResult::Ran(ProofRun {
+                    complete: true,
+                    functions: plan
+                        .links
+                        .iter()
+                        .filter(|l| l.method == VerificationMethod::Proof)
+                        .map(|l| (l.function.clone(), ProofOutcome::Verified))
+                        .collect(),
+                    failures_elsewhere: vec![],
+                    guards: BTreeMap::new(),
+                }),
+            },
+        );
+        let output = json_report(&result);
+        assert_eq!(output["outcome"], "progress");
+        assert_eq!(output["chapters"][0]["anchors"][0]["status"], "accepted");
+        assert_eq!(criterion(&output, "A-tests", "one")["state"], "satisfied");
+        assert_eq!(criterion(&output, "A-tests", "both")["state"], "partial");
+        assert_eq!(
+            criterion(&output, "A-proof", "formal")["state"],
+            "no-evidence"
+        );
+        assert_eq!(output["summary"]["criteria"]["states"]["satisfied"], 2);
+        assert_eq!(output["summary"]["criteria"]["states"]["partial"], 2);
+        let links = output["evidence_links"].as_array().unwrap();
+        assert!(
+            links
+                .iter()
+                .any(|l| l["function"]["target"] == json!({"kind": "bin", "name": "tool"}))
+        );
+        assert!(links.iter().any(|l| l["function"]["target"]
+            == json!({"kind": "lib", "name": null})
+            && l["mode"] == "exec"));
+    }
+
+    /// anchorbook: A-verify-progress-report#progress-output
+    /// anchorbook: A-verify-claims-evidenced#claim-failures
+    /// anchorbook: A-verify-criterion-states#state-per-method
+    /// anchorbook: A-verify-runs-linked-checks#selected-run
+    #[test]
+    fn json_follows_a_runner_failure_correction_and_input_change_without_an_archive() {
+        let book = one_test();
+        let runner = recording(&book, &[("fixture", "behavior", "fail")]);
+        let (code, failure) = run(&book, &[], &runner.env);
+        assert_eq!(code, 0, "an unclaimed failure is progress");
+        assert_eq!(criterion(&failure, "A-test", "works")["state"], "failed");
+        assert_eq!(failure["summary"]["criteria"]["states"]["failed"], 1);
+        assert!(
+            criterion(&failure, "A-test", "works")["methods"][0]["reason"]
+                .as_str()
+                .unwrap()
+                .contains("behavior")
+        );
+        book.write(
+            "docs/roadmap.md",
+            &format!(
+                "# Work\n\n{}",
+                milestone(1, "Complete", "`A-test` · `works` — Full")
+            ),
+        );
+        assert_eq!(run(&book, &[], &runner.env).0, 1);
+        book.write(
+            "runner/junit.xml",
+            &junit(&[("fixture", "behavior", "pass")]),
+        );
+        let before = book.snapshot();
+        let (code, corrected) = run(&book, &[], &runner.env);
+        assert_eq!(code, 0);
+        assert_eq!(
+            criterion(&corrected, "A-test", "works")["state"],
+            "satisfied"
+        );
+        assert_eq!(corrected["claims"][0]["outcome"], "satisfied");
+        assert!(corrected["claims"][0]["state"].is_null());
+        assert_eq!(corrected["summary"]["criteria"]["states"]["satisfied"], 1);
+        assert_eq!(
+            corrected["tools"],
+            json!(["cargo-nextest 9.9.9 (recording)"])
+        );
+        let after = book.snapshot();
+        assert_eq!(
+            before.keys().collect::<Vec<_>>(),
+            after.keys().collect::<Vec<_>>(),
+            "no new report files per run"
+        );
+        for key in before.keys().filter(|p| {
+            !p.starts_with("target") && p.as_path() != std::path::Path::new("runner/record.txt")
+        }) {
+            assert_eq!(before[key], after[key], "changed {key:?}");
+        }
+        assert_eq!(
+            std::fs::read_to_string(&runner.record)
+                .unwrap()
+                .lines()
+                .filter(|l| l.contains("nextest run"))
+                .count(),
+            3
+        );
+        let mut changed_env = runner.env.clone();
+        changed_env.push(("TOUCH", book.path("src/lib.rs").into()));
+        let (code, changed) = run(&book, &[], &changed_env);
+        assert_eq!(code, 1);
+        assert_eq!(
+            criterion(&changed, "A-test", "works")["state"],
+            "inconclusive"
+        );
+        let mut missing_env = runner.env.clone();
+        missing_env.push(("MODE", "unbuildable".into()));
+        let (_, missing) = run(&book, &[], &missing_env);
+        assert_eq!(
+            criterion(&missing, "A-test", "works")["state"],
+            "inconclusive"
+        );
+        assert_ne!(missing["inputs"]["code"], corrected["inputs"]["code"]);
+        book.write(
+            "runner/junit.xml",
+            &junit(&[("fixture", "behavior", "skip")]),
+        );
+        let (_, skipped) = run(&book, &[], &runner.env);
+        assert_eq!(
+            criterion(&skipped, "A-test", "works")["state"],
+            "no-evidence"
+        );
+    }
+
+    /// anchorbook: A-verify-progress-report#incomplete-runs
+    #[test]
+    fn json_incomplete_results_have_located_findings_and_no_invented_evidence() {
+        for case in ["structure", "records", "roadmap", "configuration", "scope"] {
+            let book = one_test();
+            let mut args = Vec::new();
+            let expected = match case {
+                "structure" => {
+                    book.write("docs/SUMMARY.md", "# Summary\n");
+                    "structure.role-missing"
+                }
+                "records" => {
+                    book.write(
+                        "docs/design.md",
+                        &anchor("A-test", &[("works", "test")]).replace("(draft)", "(bogus)"),
+                    );
+                    "record."
+                }
+                "roadmap" => {
+                    book.write(
+                        "docs/roadmap.md",
+                        &milestone(1, "Complete", "`A-test` · `works` — Full for now"),
+                    );
+                    "roadmap."
+                }
+                "configuration" => {
+                    book.write(
+                        "anchorbook.toml",
+                        &format!(
+                            "{}\n[verification]\nrunners = [\"unknown\"]\n",
+                            fixture::CONFIG
+                        ),
+                    );
+                    "verify.invalid-configuration"
+                }
+                _ => {
+                    args.extend(["--anchor", "A-missing"]);
+                    "verify.invalid-scope"
+                }
+            };
+            let before = book.snapshot();
+            let (code, result) = run(&book, &args, &[("CARGO", "/nonexistent/cargo".into())]);
+            assert_eq!(code, 2);
+            assert_eq!(result["complete"], false);
+            assert_eq!(result["outcome"], "incomplete");
+            assert!(result["inputs"].is_null());
+            assert!(result["summary"].is_null());
+            assert_eq!(result["claims"], json!([]));
+            assert_eq!(result["chapters"], json!([]));
+            let findings = result["findings"].as_array().unwrap();
+            assert!(!findings.is_empty());
+            assert!(
+                findings
+                    .iter()
+                    .any(|f| f["code"].as_str().unwrap().starts_with(expected)),
+                "{case}: {result}"
+            );
+            if matches!(case, "structure" | "records" | "roadmap") {
+                assert!(findings[0]["location"]["path"].is_string());
+                if case != "structure" {
+                    assert!(findings[0]["location"]["line"].as_u64().unwrap() > 0);
+                }
+            }
+            if case == "structure" {
+                assert_eq!(
+                    result["structural_check"]["groups"]
+                        .as_array()
+                        .unwrap()
+                        .len(),
+                    6
+                );
+            }
+            assert_eq!(before, book.snapshot());
+        }
+        let error = anchor_book::verification::VerifyError::Read("inputs changed; rerun".into());
+        let output = json_error(&error, &Scope::default(), std::path::Path::new(""));
+        assert_eq!(output["findings"][0]["code"], "verify.read-failed");
+        assert_eq!(output["findings"][0]["message"], "inputs changed; rerun");
+    }
+
+    #[test]
+    fn json_bad_format_or_arguments_are_usage_errors_without_running_checks() {
+        let book = one_test();
+        let before = book.snapshot();
+        for args in [
+            vec!["--format", "yaml"],
+            vec!["--format"],
+            vec!["--format", "json", "--format", "text"],
+            vec!["--format", "json", "--method", "bogus"],
+        ] {
+            let (code, stdout, stderr) = cli(&book, &args);
+            assert_eq!(code, Some(2));
+            assert!(stdout.is_empty());
+            assert!(stderr.contains("Usage:"));
+        }
+        assert_eq!(before, book.snapshot());
+    }
+}
