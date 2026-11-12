@@ -401,6 +401,7 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
             complete,
             functions: outcome.map(|o| (verified.clone(), o)).into_iter().collect(),
             failures_elsewhere: elsewhere.iter().map(|s| (*s).to_owned()).collect(),
+            guards: BTreeMap::new(),
         }))
     };
     let formal = |results: &RunResults| state(&evaluate(&plan, results), "A-proof", "formal").0;
@@ -978,6 +979,7 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
                     complete: true,
                     functions: functions.into_iter().collect(),
                     failures_elsewhere: Vec::new(),
+                    guards: BTreeMap::new(),
                 }),
             },
         );

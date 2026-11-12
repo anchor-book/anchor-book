@@ -433,6 +433,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
         complete: all_targets_verified,
         functions,
         failures_elsewhere: failures,
+        guards: BTreeMap::new(),
     })
 }
 

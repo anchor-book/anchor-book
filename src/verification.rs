@@ -9,6 +9,7 @@ mod config;
 mod identity;
 mod links;
 mod nextest;
+mod proof_guards;
 mod verus;
 mod verus_report;
 
@@ -16,6 +17,7 @@ pub use config::{Settings, VerusSettings, VerusTarget};
 pub use identity::Inputs;
 pub use links::{FunctionId, Link, LinkFinding, Mode, Target};
 pub use nextest::NEXTEST_VERSION;
+pub use proof_guards::{GuardResult, ProofGuards};
 pub use verus::{FunctionEvidence, ProofReport, TargetEvidence, VERUS_VERSION, proof};
 
 use crate::checking::{self, Outcome};
@@ -135,6 +137,11 @@ pub struct ProofRun {
     pub functions: BTreeMap<FunctionId, ProofOutcome>,
     /// Failing obligations outside the criteria's links, with their locations.
     pub failures_elsewhere: Vec<String>,
+    /// Post-verification results by (anchor ID, criterion ID), for this run only.
+    /// An absent entry leaves the proof method without evidence. The native
+    /// runner supplies no entries until it implements assessments and guards;
+    /// independent fixtures can supply outcomes to exercise aggregation.
+    pub guards: BTreeMap<(String, String), ProofGuards>,
 }
 
 /// What the proof runner produced for this run.
@@ -731,10 +738,16 @@ fn method_state(
                 if !missing.is_empty() {
                     return report(State::NoEvidence, missing.join("; "));
                 }
-                report(
-                    State::NoEvidence,
-                    "linked functions verified; the specification assessment the proof method also needs is not read yet".into(),
-                )
+                match run.guards.get(&(criterion.anchor.clone(), criterion.criterion.clone())) {
+                    Some(guards) => {
+                        let (state, reason) = guards.state();
+                        report(state, reason)
+                    }
+                    None => report(
+                        State::NoEvidence,
+                        "linked functions verified; specification assessment and proof guards have no results".into(),
+                    ),
+                }
             }
         },
         VerificationMethod::Review => unreachable!("handled above"),
