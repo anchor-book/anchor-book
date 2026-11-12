@@ -654,6 +654,41 @@ fn each_selected_package_runs_once_and_one_failure_prevents_gate_success() {
 }
 
 #[test]
+fn a_package_name_cannot_substitute_for_the_linked_manifest_or_target_kind() {
+    let b = book();
+    recording(&b);
+    let config = fs::read_to_string(b.config()).unwrap();
+    let manifest = fs::read_to_string(b.path("Cargo.toml")).unwrap();
+    b.write("shadow/Cargo.toml", &manifest);
+    b.write(
+        "anchorbook.toml",
+        &config.replace(
+            "manifest = \"Cargo.toml\"",
+            "manifest = \"shadow/Cargo.toml\"",
+        ),
+    );
+    let out = run(&b);
+    assert_eq!(out.status.code(), Some(1));
+    assert!(
+        report(&out)["reasons"]
+            .to_string()
+            .contains("no matching configured library target")
+    );
+    assert!(!b.path("tools/calls").exists());
+    b.write("anchorbook.toml", &config);
+    fs::remove_file(b.path("src/lib.rs")).unwrap();
+    b.write("src/main.rs", LIB);
+    let out = run(&b);
+    assert_eq!(out.status.code(), Some(1));
+    assert!(
+        report(&out)["reasons"]
+            .to_string()
+            .contains("no matching configured library target")
+    );
+    assert!(!b.path("tools/calls").exists());
+}
+
+#[test]
 fn configuration_and_actual_tool_versions_are_both_enforced() {
     let b = book();
     recording(&b);
