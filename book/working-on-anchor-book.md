@@ -52,6 +52,12 @@ criterion assessments and guards outstanding. This Book's tests are linked to it
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
+Execution-qualified links and producer reports in [Test Execution](design/test-execution.md)
+are design work in [Verification Evidence milestone 10](implementation-roadmaps/verification-evidence.md#verification-evidence-10).
+The current engine still relies on nextest outcomes and does not accept that
+chapter's new qualifier or configuration fields. The no-agent correction has not
+been implemented.
+
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
 versions and exact commands for tests, formatting, Clippy, builds, and previews.
 The [Rust Engine design](design/rust-engine.md) describes package and API boundaries.

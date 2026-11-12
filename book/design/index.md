@@ -25,6 +25,7 @@ brings those capabilities into other projects.
 | [Verification](verification.md) | Methods, responsibilities, proofs that match their criteria, proof guards, and assessment records |
 | [Proof Guards](proof-guards.md) | When guards run, the original Verus result, and subsequent witness, assessment, and sensitivity checks |
 | [Running Verification](verification-evidence.md) | The verify operation: links from code to criteria, runners, guards, evidence states, and reports |
+| [Test Execution](test-execution.md) | Current execution reports for tests that can return success without doing their required work |
 | [Shipping Verified Code](verified-code-packaging.md) | Publishing verified code without imposing its verifier on dependents |
 | [Project Integration](project-integration.md) | How other Rust projects adopt the crate, run the engine, bootstrap agents, and verify their own code with Verus |
 
