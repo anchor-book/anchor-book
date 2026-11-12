@@ -91,6 +91,117 @@ fn renders_all_fields_and_preserves_unrelated_content() {
         assert!(section.contains(&format!("<h4>{heading}</h4>")));
     }
 }
+/// anchorbook: A-render-records-in-context#record-presentation
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
+#[test]
+fn anchor_headers_control_complete_collapsed_details() {
+    use scraper::{Html, Selector};
+
+    let title = "Inputs & <script>remain inert</script>";
+    let source = RECORDS.replace("Inputs do not change", title);
+    let output = run(
+        &["md"],
+        &request(vec![chapter("a.md", "a.md", &source)]).to_string(),
+    );
+    assert!(output.status.success(), "{:?}", output.stderr);
+    let book: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let html = Html::parse_fragment(book["items"][0]["Chapter"]["content"].as_str().unwrap());
+    let select = |css| Selector::parse(css).unwrap();
+    let anchor = html
+        .select(&select("section#A-immutable-input"))
+        .next()
+        .unwrap();
+    let details = anchor
+        .select(&select("details.ab-anchor-details"))
+        .next()
+        .expect("anchor has a native disclosure");
+    assert!(details.attr("open").is_none(), "collapsed on initial load");
+    assert_eq!(details.parent().map(|node| node.id()), Some(anchor.id()));
+    let summary = details.select(&select("summary")).next().unwrap();
+    assert_eq!(summary.parent().map(|node| node.id()), Some(details.id()));
+    let title_text: String = summary
+        .select(&select(".ab-anchor-title"))
+        .next()
+        .unwrap()
+        .text()
+        .collect();
+    assert_eq!(title_text, title);
+    assert_eq!(summary.select(&select("script")).count(), 0);
+    assert_eq!(
+        summary
+            .select(&select(".ab-status"))
+            .next()
+            .unwrap()
+            .text()
+            .collect::<String>(),
+        "Accepted"
+    );
+    let permalink = summary.select(&select("a.ab-permalink")).next().unwrap();
+    assert_eq!(permalink.attr("href"), Some("#A-immutable-input"));
+    assert_eq!(permalink.text().collect::<String>(), "A-immutable-input");
+    assert_eq!(summary.select(&select(".ab-field")).count(), 0);
+    let content: String = details.text().collect();
+    for field in [
+        "Parsing observes the input without changing it.",
+        "Authority",
+        "R-preserve-input",
+        "D-pure-reader",
+        "Verification criteria",
+        "Compare input before and after validation.",
+        "Required verification: test",
+    ] {
+        assert!(
+            content.contains(field),
+            "missing collapsible field: {field}"
+        );
+    }
+    assert_eq!(details.select(&select("section.ab-record")).count(), 0);
+    assert_eq!(html.select(&select("details.ab-anchor-details")).count(), 1);
+    assert_eq!(html.select(&select("section.ab-record")).count(), 3);
+}
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
+#[test]
+fn record_disclosures_preserve_surrounding_details() {
+    use scraper::{Html, Selector};
+
+    // A permissive HTML parser repairs unmatched closing tags in standalone
+    // records. Inside authored details, an extra closing tag instead closes
+    // the reader's group and moves subsequent records and prose outside it.
+    let source = format!(
+        "<details id=\"authored-group\" open><summary>Related design</summary>\n\n{RECORDS}\n<p id=\"inside-after-records\">Still in the group.</p>\n</details>\n<p id=\"outside-group\">After the group.</p>\n"
+    );
+    let output = run(
+        &["md"],
+        &request(vec![chapter("a.md", "a.md", &source)]).to_string(),
+    );
+    assert!(output.status.success(), "{:?}", output.stderr);
+    let book: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let html = Html::parse_fragment(book["items"][0]["Chapter"]["content"].as_str().unwrap());
+    let select = |css| Selector::parse(css).unwrap();
+    let group = html.select(&select("#authored-group")).next().unwrap();
+    let records: Vec<_> = group
+        .select(&select("section.ab-record"))
+        .map(|record| record.attr("id").unwrap())
+        .collect();
+    assert_eq!(
+        records,
+        ["R-preserve-input", "D-pure-reader", "A-immutable-input"]
+    );
+    let after_records = html
+        .select(&select("#inside-after-records"))
+        .next()
+        .unwrap();
+    assert_eq!(
+        after_records.parent().map(|node| node.id()),
+        Some(group.id())
+    );
+    let after_group = html.select(&select("#outside-group")).next().unwrap();
+    assert_eq!(
+        after_group.parent().map(|node| node.id()),
+        group.parent().map(|node| node.id()),
+        "following prose remains outside the authored disclosure"
+    );
+}
 /// anchorbook: A-render-records-in-context#preservation-and-escaping
 #[test]
 fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {

@@ -12,7 +12,7 @@ literal code examples. Rendering does not establish implementation or verificati
 > **`A-render-records-in-context`** (draft): **Structured records become readable linked content**
 > Property: The rendered Book presents each authored anchor, requirement, and decision in its chapter with its complete statement, identity, acceptance status, and the supporting fields defined for its kind. Authority links and derived backlinks resolve to the corresponding record. Literal schema examples remain code. Rendering preserves source files and does not imply implementation or verification.
 > Authority: `R-readable-records`; `D-shared-record-rendering`
-> - Criterion `record-presentation` [test, review]: Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Review light, dark, narrow, keyboard, and print presentation.
+> - Criterion `record-presentation` [test, review]: Compare the authored inventory and fields with generated records; every definition is represented once per chapter, all fields are accessible, and nested examples remain literal. Anchors start collapsed and can be expanded with their heading control while their title, identity, and status remain visible. Review light, dark, narrow, keyboard, and print presentation.
 > - Criterion `relationship-navigation` [test]: Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record.
 > - Criterion `preservation-and-escaping` [test]: Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved.
 > - Criterion `inline-text` [test]: Through the actual adapter, fixture fields with code spans, emphasis, strong emphasis, and relative and external links render formatted, with chapter links resolved; code-spanned identifiers of records in the inventory link to those records, and unknown ones stay code; other Markdown and raw HTML render as literal text.
@@ -105,14 +105,21 @@ property, enforce project-phase transitions, or run verification criteria.
 ## Reader presentation
 
 Use a consistent visual treatment that fits within ordinary chapter prose.
-Keep the main statement visible and readable at normal text size. Status must
-be conveyed by words, not color alone. Identifiers remain visible but secondary.
+Keep each title visible and the complete statement readable at normal text size
+when expanded. Status must be conveyed by words, not color alone. Identifiers remain visible but secondary.
 
 | Record | Always visible | Supporting detail |
 | --- | --- | --- |
-| Anchor | Title, identifier/permalink, Draft or Accepted, complete property, linked authorities, verification criteria with their required methods | Derived relationships when applicable |
+| Anchor | Title, identifier/permalink, Draft or Accepted | Collapsed by default and expandable: complete property, linked authorities, verification criteria with their required methods, and derived relationships when applicable |
 | Requirement | Title, identifier/permalink, status, requirement statement, source | Derived links to anchors and decisions that cite it |
 | Decision | Title, identifier/permalink, status, choice, linked requirements | Expandable rationale, alternatives, and reconsideration conditions; derived links to citing anchors |
+
+Each anchor uses a native disclosure whose heading is the collapse control.
+Clicking the heading or using Enter or Space while it is focused expands or
+collapses the fields without JavaScript. The permalink remains a separate link
+within that heading, and the record keeps its existing fragment. A link to a
+collapsed anchor still reaches its visible heading. Printing expands all anchor
+fields and restores the reader's disclosure choices afterward.
 
 Render links with readable titles and identifiable targets. An empty decision
 requirements list is shown explicitly as no recorded requirements. Derive
@@ -164,9 +171,9 @@ The engine delivers the presentation itself, so a Book needs no theme files: eac
 chapter that renders a record or milestone ends with one inline `<style>` and
 `<script>` block, compiled into the engine from `src/rendering/assets/`, and other
 chapters are unchanged. A preprocessor cannot add mdBook's `additional-css` files,
-and writing theme files would change the project. The script opens details in the
-combined print view and during browser printing, and runs once per page although
-the print view repeats the block for each chapter. A project's own styles load
+and writing theme files would change the project. The script opens details after
+all chapters have loaded in the combined print view and during browser printing,
+and runs once per page although the print view repeats the block for each chapter. A project's own styles load
 earlier, so they do not override the block's rules of equal specificity.
 No record parsing runs in the browser. Formatting, source wrapping, and repeated
 blank lines within prose are normalized for readable paragraphs.

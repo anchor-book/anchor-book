@@ -285,6 +285,59 @@ This Book's rendered roadmaps show criterion details that expand and collapse, a
 
 Complete on 2026-11-10: roadmap validation and rendering have test evidence and a source review of the rendered markup. The in-browser review was dropped from `roadmap-presentation` as a manual check.
 
+## Milestone 5. Readers can collapse anchor records {#record-rendering-5}
+
+**Outcome:** The shared renderer supplies anchors as initially collapsed records. Readers can expand their fields while retaining identity and status, and printed Books include every field.
+
+**Status:** Complete — local implementation and verification
+
+**Identifier:** `record-rendering-5`
+
+**Dependencies:** Record Rendering milestone 2; the engineer requested collapsible anchors as a presentation refinement.
+
+**Design basis:** [Reader presentation](../design/record-rendering.md#reader-presentation) and [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context). Earlier milestones retain their tested scope; this milestone covers the additional disclosure behavior.
+
+**Tasks**
+
+- [x] Render each anchor with an initially closed native disclosure controlled by its heading; retain the title, identifier, and acceptance status when closed.
+- [x] Keep property, authority links, criteria, and derived relationships inside that disclosure; deliver its styles from the engine.
+- [x] Preserve record fragments, escaped fields, and the existing print expansion and restoration behavior.
+- [x] Exercise the actual adapter with an independent fixture.
+- [x] Review light, dark, narrow, keyboard, no-JavaScript, permalink, and print behavior; run the supported Rust and Book checks.
+
+### Completion criteria
+
+#### Disclosure behavior {#record-rendering-5-disclosures}
+
+Anchors start collapsed. Clicking the heading or pressing Enter or Space on it toggles all fields while title, identity, and acceptance status remain visible. This works without JavaScript and remains readable in light, dark, and narrow layouts.
+
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: collapsible anchor presentation and interaction
+- **Evidence:** The independent `anchor_headers_control_complete_collapsed_details` fixture passes through the actual `anchorbook md` process and checks initially closed native details, summary metadata, fields, inert title text, and isolation from other records. Chromium browser review passes in Light and Coal at 1440 pixels and Light at 390 pixels: clicking, Enter, and Space toggle the fields while the title, status, and permalink remain visible. The narrow case also passes with JavaScript disabled; no document overflow was observed.
+
+#### Navigation and printing {#record-rendering-5-navigation-print}
+
+The existing anchor fragment and permalink still identify its visible heading when collapsed. Printing exposes all fields and restores closed records afterward; the combined print view contains the complete records.
+
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `relationship-navigation` — Partial: anchor permalinks and combined-print targets; `record-presentation` — Partial: disclosure printing
+- **Evidence:** Browser checks pass: the collapsed permalink navigates to the unchanged record fragment without toggling it; before-print expansion reveals all fields, and after-print restoration returns the closed records to their prior state. Print-view expansion waits for all chapters to load; the combined print page contains open anchor details, including records after the first presentation block, and a unique target per anchor. Rendered-Book acceptance passes for all record fields and local links. Physical printer output and other browser engines were not tested.
+
+#### Shared delivery {#record-rendering-5-shared-delivery}
+
+The library and actual adapter supply the disclosure and its presentation without consumer theme files or source changes. Other record kinds retain their presentation, and supported-toolchain and Book checks pass.
+
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `preservation-and-escaping` — Partial: anchor disclosure output and escaped heading
+- **Evidence:** The 14-test rendering suite passes, including source preservation, unrelated content, escaping, and the actual adapter boundary. Formatting and Clippy pass. All 167 independent tests, including the 14 rendering tests and doctests, pass on Rust 1.88.0 and stable, with eight optional acceptance tests ignored. Structural checking, the Book build, and all five current/rendered Book acceptance tests pass separately. The presentation remains embedded in the engine; no consumer theme files are required.
+
+### Mutation validation
+
+The [initial PR campaign](https://github.com/anchor-book/anchor-book/actions/runs/43157732566) at `7b721dff4a6a1c8920596b7c5975386df5cd70c9` tested four changed-line mutations: three caught, one missed, no timeouts or unviable changes. The survivor inverted the condition that closes an anchor's disclosure in `record`. Standalone HTML parsing repaired the malformed output, hiding the defect from the fixture assertions.
+
+`record_disclosures_preserve_surrounding_details` now places all three record kinds inside an authored disclosure and checks that the records and following inner prose remain inside it, while subsequent outer prose stays outside. An extra closing tag closes that authored group early. This exercises the observable containment guarantee without relying on a parser to report malformed HTML. No production behavior, assertions, or mutation exclusions were weakened. Revision-specific rerun results are tracked in [PR #39](https://github.com/anchor-book/anchor-book/pull/39).
+
+### Completion record
+
+Complete locally on 2026-11-12 in the working tree based on `15177478934198254815784fb077e169c3ad5508`. The shared renderer supplies the disclosure; independent adapter tests, supported-toolchain checks, Book acceptance, and the browser checks above pass. Commands: `cargo fmt --all -- --check`, `cargo clippy --all-targets --locked -- -D warnings`, `cargo test --locked` (Clippy and tests also with `+1.88.0`), `cargo run --quiet --locked --bin anchorbook -- check --config anchorbook.toml`, `mdbook build`, and `cargo test --locked --test current_book --test rendered_book -- --ignored`. Rendered acceptance used a separate build destination to avoid the live preview rebuilding its output during the check. The work is on `codex/book-guards-and-collapsible-anchors`, based on that revision, and is not integrated into main. No local mutation campaign was run; required GitHub checks, including mutation testing, must pass before merge readiness is established.
+
 ## Handoff and later work
 
 Reconcile prototype findings with design and records under the

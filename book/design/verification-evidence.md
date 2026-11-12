@@ -341,8 +341,10 @@ projects need no Verus installation or proof gate.
 
 ### Proof guards
 
-The [guards](verification.md#guards) run after the target's own result is
-complete; a target that does not verify gets no guard results.
+The post-verification guard stage starts after a complete successful target
+result; the trust policy is enforced during the original Verus run.
+[Proof Guards](proof-guards.md) shows the timing and execution sequence. The
+following sections define how each check produces evidence.
 
 **Sensitivity.** For each linked executable function, the runner generates
 changes to its executable statements and expressions: negated or constant

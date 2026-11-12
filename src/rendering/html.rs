@@ -155,15 +155,32 @@ pub(super) fn record(
         Status::Accepted => "Accepted",
     };
     let mut out = format!(
-        "\n<section class=\"ab-record ab-{}\" id=\"{}\" aria-label=\"{}\">\n<header class=\"ab-record-header\"><div class=\"ab-record-meta\"><span>{kind}</span><span class=\"ab-status\">{status}</span></div><h3>{}</h3><a class=\"ab-permalink\" href=\"#{}\" aria-label=\"Permalink: {}\">{}</a></header>\n",
+        "\n<section class=\"ab-record ab-{}\" id=\"{}\" aria-label=\"{}\">\n",
         kind.to_lowercase(),
         record.id(),
-        escape(record.title()),
-        escape(record.title()),
+        escape(record.title())
+    );
+    let permalink = format!(
+        "<a class=\"ab-permalink\" href=\"#{}\" aria-label=\"Permalink: {}\">{}</a>",
         record.id(),
         escape(record.title()),
         record.id()
     );
+    if record.kind() == RecordKind::Anchor {
+        writeln!(
+            out,
+            "<details class=\"ab-details ab-anchor-details\"><summary><h3><span class=\"ab-record-meta\"><span>{kind}</span><span class=\"ab-status\">{status}</span></span><span class=\"ab-anchor-title\">{}</span>{permalink}</h3></summary>",
+            escape(record.title())
+        )
+        .expect("writing to String");
+    } else {
+        writeln!(
+            out,
+            "<header class=\"ab-record-header\"><div class=\"ab-record-meta\"><span>{kind}</span><span class=\"ab-status\">{status}</span></div><h3>{}</h3>{permalink}</header>",
+            escape(record.title())
+        )
+        .expect("writing to String");
+    }
     let context = Context {
         from: record,
         inventory,
@@ -273,6 +290,9 @@ pub(super) fn record(
             .expect("writing to String");
         }
         out.push_str("</ul></div>");
+    }
+    if record.kind() == RecordKind::Anchor {
+        out.push_str("</details>");
     }
     out.push_str("</section>\n\n");
     out

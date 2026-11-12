@@ -1,0 +1,15 @@
+/* Give prose, records, tables, and diagrams more room on wide screens. */
+@media screen {
+    :root {
+        --content-max-width: 1200px;
+    }
+
+    /* Keep chapter controls out of the wider text area. */
+    .nav-wide-wrapper {
+        display: none;
+    }
+
+    .nav-wrapper {
+        display: block;
+    }
+}

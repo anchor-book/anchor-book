@@ -19,6 +19,7 @@ covers and what it does not.
 | Chapter | Scope |
 | --- | --- |
 | This chapter | Methods, responsibilities, how tests and proofs correspond to criteria, the guards that check proofs, and assessment records |
+| [Proof Guards](proof-guards.md) | Timing table and sequence diagram for the checks around Verus |
 | [Running Verification](verification-evidence.md) | The `verify` operation: links from code to criteria, runners, evidence states, and reports |
 | [Shipping Verified Code](verified-code-packaging.md) | Publishing a crate containing verified code without imposing its verifier on dependents |
 
@@ -202,6 +203,11 @@ code runs. A **fingerprint** is a hash of what a specification assessment
 examined; when it changes, the assessment is stale.
 [Running Verification](verification-evidence.md#proof-guards) defines how the
 guards run.
+
+### When guards are checked
+
+[Proof Guards](proof-guards.md) gives the timing table and execution diagram,
+from the original Verus run through witness, assessment, and sensitivity checks.
 
 ## Assessment records
 

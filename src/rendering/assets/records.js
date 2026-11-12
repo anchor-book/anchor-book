@@ -11,7 +11,14 @@
         closed.forEach(detail => { detail.open = true; });
     };
     if (location.pathname.endsWith('/print.html')) {
-        document.querySelectorAll('.ab-details').forEach(detail => { detail.open = true; });
+        const expandPrintView = () => {
+            document.querySelectorAll('.ab-details').forEach(detail => { detail.open = true; });
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', expandPrintView, { once: true });
+        } else {
+            expandPrintView();
+        }
     }
     window.addEventListener('beforeprint', expand);
     window.addEventListener('afterprint', () => {

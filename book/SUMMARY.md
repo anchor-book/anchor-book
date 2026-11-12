@@ -14,6 +14,7 @@
   - [Structural Checking](design/structural-checking.md)
     - [Checking Diagnostics](design/check-diagnostics.md)
   - [Verification](design/verification.md)
+    - [Proof Guards](design/proof-guards.md)
     - [Running Verification](design/verification-evidence.md)
     - [Shipping Verified Code](design/verified-code-packaging.md)
   - [Project Integration](design/project-integration.md)
