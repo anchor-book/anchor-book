@@ -24,8 +24,10 @@ records milestone 2 as complete: Verus execution and the engine's Authority proo
 use the shared runner, and independent fixtures cover proof-state aggregation.
 Symposium's configuration-loading trial is assessed in
 [Symposium Integration milestone 4](symposium-integration.md#symposium-integration-4-evidence).
-Its no-agent finding needs the bounded execution-evidence design in milestone 10;
-partial coverage informs milestone 8. The shared model, test runner, and manual
+Its no-agent finding concerns Symposium test semantics, which the project owns;
+Anchor Book trusts its current runner outcomes. The execution-report proposal is
+[retired](#verification-evidence-10). Partial coverage informs project review and
+milestone 8 where a criterion requires review. The shared model, test runner, and manual
 guard experiment are recorded in milestones 4, 1, and 7.
 
 Milestone 3 adds retained CI reports, with a test-only path that needs no Verus.
@@ -628,88 +630,28 @@ rendered Book agree. Record-only rendering makes its unevaluated scope explicit.
 
 Pending.
 
-## Milestone 10. Tests disclose whether their required execution occurred {#verification-evidence-10}
+## Retired work
 
-**Outcome:** A test that returns success without executing the behavior its criterion requires cannot supply satisfied evidence. A defined producer/runner contract identifies current execution and relevant runtime inputs, with unavailable execution reported explicitly.
+### Execution-report protocol {#verification-evidence-10}
 
-**Status:** In progress
-
-**Identifier:** `verification-evidence-10`
-
-**Dependencies:** The native test runner in milestone 1, complete, and the [Symposium no-agent finding](symposium-integration.md#symposium-integration-4-evidence). The assigned design work is underway. Agree on the proposed execution signal, supported producers, input identity, and claim policy before implementation. Exercise the correction in independent engine fixtures before Symposium depends on it.
-
-**Design basis:** [Test Execution](../design/test-execution.md), [D-test-execution-reports](../authority/decisions.md#D-test-execution-reports), [evidence states](../design/verification-evidence.md#evidence-states), and [run identity](../design/verification-evidence.md#run-identity).
-
-**Tasks**
-
-- [x] Draft the producer/runner interface, per-link execution qualifier, configuration, current-run result identity, input observations, and state mapping. Cover disabled agents, an empty agent list, and a configured agent whose test body returns before doing its work.
-- [x] Check the actual nextest producer identity against JUnit in an isolated native probe; record the boundary this establishes below.
-- [ ] Agree on the design, including ordinary-link compatibility, explicit completion points, declared nonsecret runtime inputs, and the distinction between unavailable required execution and an unchecked completion claim.
-- [ ] Implement configuration and qualified links, preserving existing forms. Reject malformed, unknown, duplicated, or incompatible qualifiers without downgrading them to ordinary links; deduplicate execution while retaining every per-link obligation.
-- [ ] Implement the current-run exchange and input observations through the actual CLI and nextest. Keep output isolated across concurrent invocations, disable retries, match exact run/test identities, and retain specific reasons for invalid or unavailable evidence.
-- [ ] Exercise independent fixtures for executed success and failure, unavailable work, early returns, absent/stale/malformed/mismatched reports, mixed simulation and agent requirements, input overrides and changes, and completion-claim exits. No zero-case or partial execution may satisfy its requirement.
-- [ ] Add the producer to the Symposium test harness with explicit completion after agent interaction and assertions. Repeat disabled-agent and enabled-but-empty-list cases, an unsupported-agent early return, and a controlled case that demonstrably executes its required work. Preserve ordinary cargo-test behavior and source files.
-- [ ] Record platform and ignored-test behavior before relying on affected links, including Symposium's Windows-ignored auto-update test. Update engine and Symposium guidance only when the corresponding implementation and validation exist.
-
-### Completion criteria
+`verification-evidence-10` is retired, not completed. The engineer clarified
+that projects own their tests and outcomes, and Anchor Book may trust those
+results, as [D-project-test-results-trusted](../authority/decisions.md#D-project-test-results-trusted)
+records. No execution-report producer protocol, link qualifier, runtime-input
+attestation, or special completion-claim rule is required. The proposed protocol
+was not implemented. This identifier and its criterion identifiers are reserved
+and will not be reused.
 
 #### Execution design {#verification-evidence-10-execution-design}
 
-The engineer agrees on the producer interface, link and configuration forms,
-current-run identity, input boundary, state mapping, and completion-claim policy.
-The design and planned verification cover the observed no-agent and early-return
-cases without imposing a new framework on ordinary tests.
-
-- **Anchor coverage:** None — interface agreement before implementation.
-- **Evidence:** Pending agreement. [Test Execution](../design/test-execution.md) is the concrete draft; the feasibility observations below do not establish implementation or acceptance.
+Retired with the unaccepted producer/runner interface proposal.
 
 #### Current execution {#verification-evidence-10-current-execution}
 
-Independent fixtures and the actual runner distinguish executed success, executed
-failure, unavailable work, and missing, malformed, stale, or mismatched execution
-reports. Qualified links retain every required result while selecting each test
-once. Runtime input observations detect absence, changes, and overrides; concurrent
-runs and retries cannot cross-associate results. Only current complete execution
-can satisfy a declared obligation. Claimed unavailable work fails while unclaimed
-progress and genuinely unchecked methods retain their defined exit behavior.
-
-- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `required-execution` — Full; [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `execution-links` — Full; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `execution-inputs` — Full; [A-verify-claims-evidenced](../design/verification-evidence.md#A-verify-claims-evidenced) · `unavailable-execution-claim` — Full.
-- **Evidence:** Pending. The original trial demonstrates the defect; the native probe below establishes only available runner identities.
+Retired. Existing runner identity, current-result handling, and evidence states
+remain engine responsibilities; internal execution semantics belong to projects.
 
 #### Repeated trial {#verification-evidence-10-repeated-trial}
 
-Symposium's two no-agent cases and an unsupported-agent early return report
-not-evaluated with their reason and no satisfied claim. A controlled case performs
-its required work, passes, fails with a deliberate defect, and passes after
-restoration. Runtime inputs identify changed selection. Ordinary tests preserve
-their behavior and verification changes no sources. Platform and ignored-test
-limitations are recorded explicitly.
-
-- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `required-execution` — Partial: the Symposium producer; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `source-preservation` — Partial: execution-evidence integration.
-- **Evidence:** Pending.
-
-### Design evidence
-
-The proposal is based on engine `3b78e57` and Symposium `c552aa07`. Source review
-confirmed that `with_fixture` returns success without invoking its callback when
-agent testing is disabled or its agent list is empty. A separate callback returns
-success for an unsupported agent before sending a prompt. Therefore neither
-harness entry nor callback success alone is a valid completion signal.
-
-A native feasibility probe on Linux x86_64 with Rust 1.99.1 and cargo-nextest
-0.9.151 ran two isolated Rust tests with `--retries 0`. Both had
-`NEXTEST_ATTEMPT=1` and `NEXTEST_TOTAL_ATTEMPTS=1`; their distinct test names and
-shared binary identity matched the JUnit cases, and `NEXTEST_RUN_ID` matched the
-JUnit root's `uuid`. The variables are documented in [nextest's environment interface](https://nexte.st/docs/configuration/env-vars/).
-Both were reported passed, including the test that performed no required work. These observations support the proposed association mechanism;
-they test no execution-report parser, input comparison, criterion state, or agent.
-
-The new execution-specific anchor criteria have no linked implementation tests
-yet. Earlier completed milestones cover their recorded ordinary test behavior,
-not these additional obligations. The design's qualifier and configuration remain
-unsupported by the current engine until this milestone implements them.
-
-### Completion record
-
-Pending. The design is prepared for agreement; implementation and repeated-trial
-evidence remain outstanding.
+Retired as engine work. Symposium decides whether to change the no-agent test
+outcome and validates any change in its own tests.

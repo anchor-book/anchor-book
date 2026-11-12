@@ -98,6 +98,12 @@ project's installation and reads its report.
 
 ## Tests that match the design
 
+Projects own the behavior and outcome semantics of their tests. The engine
+[trusts current project test results](verification-evidence.md#trusting-project-test-results)
+while validating their identity and association with criteria. The guidance below
+is for authoring and reviewing those tests; it is not an additional engine-run
+inspection or execution-attestation requirement.
+
 A test establishes its criterion only for the cases it exercises, so the cases
 and their assertions must come from the criterion:
 

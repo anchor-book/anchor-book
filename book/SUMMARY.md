@@ -16,7 +16,6 @@
   - [Verification](design/verification.md)
     - [Proof Guards](design/proof-guards.md)
     - [Running Verification](design/verification-evidence.md)
-    - [Test Execution](design/test-execution.md)
     - [Shipping Verified Code](design/verified-code-packaging.md)
   - [Project Integration](design/project-integration.md)
 - [Authority](authority/index.md)

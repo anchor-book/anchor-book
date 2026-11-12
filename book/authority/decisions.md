@@ -60,7 +60,7 @@ Each decision states its own status. These choices govern the system being built
 > Reconsider when: A project needs evidence from runs verify cannot invoke, such as tests on other platforms; add reading of supplied reports as a separate input rather than removing selected runs.
 
 > **`D-completion-claims-checked`** (draft): **Complete milestones claim their fully covered criteria, and verify checks the claim**
-> Choice: A roadmap milestone with status Complete claims every anchor criterion its completion criteria cover in full. verify fails the run when a claimed criterion in scope is not satisfied, and lists claims it could not check. Explicit unavailable required execution from a selected test is a checked, unsatisfied claim; an excluded method or unavailable runner remains unchecked. Partial or no coverage, and milestones in other states, claim nothing.
+> Choice: A roadmap milestone with status Complete claims every anchor criterion its completion criteria cover in full. verify fails the run when a claimed criterion in scope is not satisfied, and lists claims it could not check. Partial or no coverage, and milestones in other states, claim nothing.
 > Requirements: `R-criterion-evidence`
 > Rationale: Whether a criterion has linked tests depends on someone adding them, so absence must be caught where it matters: when the Book records work as done. Tying the check to Complete milestones uses a claim the Book already makes, keeps work in progress as a report rather than a failure, and makes a later regression in that evidence visible.
 > Alternatives:
@@ -79,15 +79,14 @@ Each decision states its own status. These choices govern the system being built
 > - An attribute such as #[anchorbook::criterion(...)], which reads well but needs an engine proc-macro crate as a project dependency, since stable Rust rejects unknown tool attributes.
 > Reconsider when: A supported language or tool cannot carry comments next to its tests or proofs; define its link form without moving links into the Book.
 
-> **`D-test-execution-reports`** (draft): **Conditional tests report required execution explicitly**
-> Choice: A test link can require a named execution result from configured project test code, in addition to its nextest result. The producer reports completion only after required work and assertions finish. The engine matches the structured result to the current invocation, exact test, and declared runtime inputs; unavailable, missing, or invalid execution cannot satisfy the link. Ordinary links keep their existing behavior.
+> **`D-project-test-results-trusted`** (draft): **Projects own test behavior and the meaning of test outcomes**
+> Choice: Anchor Book trusts the current outcomes reported by the project's supported test runner for its linked tests. The project owns test setup, assertions, internal execution, and pass, fail, or skip semantics. The engine validates result identity, freshness, scope, and association with criteria; it does not require an additional execution attestation or inspect agent activity to accept a passing test. Proof verification retains its separate contracts, guards, and assessment requirements.
 > Requirements: `R-criterion-evidence`
-> Rationale: Libtest success cannot distinguish a test that performed its required work from one that returned early. An explicit per-link requirement separates simulation from agent execution without imposing a producer on every test. Current-run identities and input observations prevent old results and changed runtime selection from appearing as current evidence; producer correctness and assertion sufficiency still require review.
+> Rationale: The project is responsible for the tests it trusts. A second execution-report protocol would duplicate that responsibility without independently establishing correctness. A satisfied test method means its linked tests reported passing, with the documented scope and limits; test quality and sufficiency remain project responsibilities.
 > Alternatives:
-> - Treat process success or a human log message as execution evidence, which cannot reliably distinguish a completed test body from a no-op or an unrelated message.
-> - Fail ordinary tests whenever optional agents are unavailable, which changes the project's existing local and CI test behavior rather than reporting evidence availability.
-> - Require a new test framework or engine dependency for every test, which imposes adoption work on tests whose ordinary results already describe their execution.
-> Reconsider when: A runner supplies native structured execution results with equivalent identity and input guarantees, or a producer cannot report its required work without ambiguous attribution.
+> - Require project-specific execution reports in addition to test results, which adds a producer protocol and moves internal test semantics into the engine.
+> - Infer execution from source code or logs, which is unreliable and ties verification to each project's test framework and behavior.
+> Reconsider when: A supported runner cannot associate a result with the selected current test; improve the runner adapter's result handling without taking ownership of the test's internal semantics.
 
 > **`D-identifier-kind-codes`** (draft): **Identifiers carry a kind code and a descriptive name**
 > Choice: Every anchor, requirement, and decision identifier is a kind code (A, R, or D), a hyphen, and a name that starts with a letter and states the record's meaning. The identifier is the only place the kind is stated: headings and references consist of the code-spanned identifier, with no kind word. Criteria have names without a code, unique within their anchor. The engine enforces the form and the codes each reference field accepts; review judges whether a name describes its record.

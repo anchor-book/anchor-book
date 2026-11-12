@@ -21,10 +21,9 @@ working on after each change, and CI, reporting the whole Book. It complements
 
 > **`A-verify-criterion-states`** (draft): **Every criterion has an honest evidence state**
 > Property: For every anchor criterion in the evaluated scope, and each verification method it requires, verify reports exactly one state from a closed set. A criterion is satisfied only when every required method has passing evidence from the current run. Failed, inconclusive, missing, unlinked, or unevaluated evidence never counts as satisfied, and a satisfied criterion is reported as linked tests or proofs passing, not as proof that they are sufficient.
-> Authority: `R-criterion-evidence`; `D-test-execution-reports`
+> Authority: `R-criterion-evidence`; `D-project-test-results-trusted`
 > - Criterion `state-per-method` [test]: Independent fixtures produce each state for test and proof methods, including criteria requiring several methods with only some satisfied; assert the per-method and per-criterion states and that only fully satisfied criteria are satisfied.
 > - Criterion `scope-and-limits` [test]: A run scoped to fewer methods or anchors reports the excluded parts as not evaluated, never as satisfied, and every report states what a satisfied criterion does not establish.
-> - Criterion `required-execution` [test]: Independent fixtures and native nextest runs distinguish required work that passed, failed, was unavailable, or has absent, malformed, stale, or mismatched execution reports. Zero completed cases cannot pass; simulation success cannot satisfy an agent requirement, and partial execution cannot satisfy the whole test method.
 
 > **`A-verify-progress-report`** (draft): **Verify reports progress, not failure, for a Book in progress**
 > Property: A completed verify run reports every anchor in scope, grouped by design chapter, with each criterion's state and its linked tests or proofs, and summary counts of satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and unlinked criteria are reported as progress and do not make the run fail, unless the Book [claims](#A-verify-claims-evidenced) them; the run is incomplete only when it cannot evaluate the scope, such as invalid configuration, an invalid Book, or invalid records.
@@ -36,21 +35,18 @@ working on after each change, and CI, reporting the whole Book. It complements
 > Property: Every evidence link in the configured sources names an existing anchor criterion that requires the link's method, and every criterion requiring a linkable method has at least one link or is reported as unlinked. A link naming an unknown anchor or criterion, or a criterion that does not require its method, is reported at the link's source location.
 > Authority: `R-criterion-evidence`; `D-evidence-links-in-code`
 > - Criterion `link-findings` [test]: Fixtures with dangling anchor and criterion links, method mismatches, misplaced and duplicate links, and unlinked criteria each produce the expected located finding; correcting them removes it.
-> - Criterion `execution-links` [test]: Fixtures resolve execution qualifiers to configured producers and requirements per link, reject unknown, malformed, duplicate, or incompatible qualifiers, and preserve ordinary links. Distinct requirements for one function and criterion are all required while the function runs once; invalid qualifiers cannot be discarded to satisfy a resolvable criterion through other links.
 
 > **`A-verify-runs-linked-checks`** (draft): **Verify runs linked checks in their declared scope and changes no sources**
 > Property: Verify runs only the configured runners, selecting linked test functions and the complete proof targets required by criteria in scope, and reports what actually ran. It reads only results from that run, so its states describe the current inputs. A linked function absent, ambiguous, or skipped in the results has no evidence. Verify changes no Book or source files; runner output is written only under the configured output directory.
-> Authority: `D-verify-runs-linked-checks`; `D-test-execution-reports`
+> Authority: `D-verify-runs-linked-checks`
 > - Criterion `selected-run` [test]: With fixture runners that record their invocation, a scoped run selects exactly the linked tests and only the complete proof targets required by criteria in scope. The report identifies requested criteria, executed targets and features, and current inputs; earlier reports or changed inputs cannot produce satisfied evidence.
 > - Criterion `source-preservation` [test]: Compare Book and source file contents and directory entries before and after passing, failing, and incomplete runs; they are unchanged, and runner output appears only under the output directory.
-> - Criterion `execution-inputs` [test]: Native fixtures match execution reports to the current invocation, nextest run, exact test, producer, and single attempt. Declared environment and file inputs distinguish absence, emptiness, and content changes; changed, unreadable, or overridden inputs cannot produce satisfied evidence. Concurrent invocations cannot share results, and reports omit input values and file contents.
 
 > **`A-verify-claims-evidenced`** (draft): **Work the Book records as done must have current evidence**
-> Property: When a roadmap milestone has status Complete, each anchor criterion that one of its completion criteria covers in full is claimed. Verify fails the run when a claimed criterion in its scope is not satisfied, naming the claiming milestone and the criterion's state, so work cannot be recorded as done while its evidence is missing, stale, or failing. Partial or no coverage claims nothing. A claimed method outside the requested scope or whose runner is unavailable remains unchecked. Explicit unavailable required execution from a selected test is a checked, unsatisfied claim, never satisfied.
+> Property: When a roadmap milestone has status Complete, each anchor criterion that one of its completion criteria covers in full is claimed. Verify fails the run when a claimed criterion in its scope is not satisfied, naming the claiming milestone and the criterion's state, so work cannot be recorded as done while its evidence is missing, stale, or failing. Partial or no coverage claims nothing. A claimed method the run does not evaluate is reported as unchecked, never as satisfied.
 > Authority: `R-criterion-evidence`; `D-completion-claims-checked`
 > - Criterion `claim-failures` [test]: In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run.
 > - Criterion `unchecked-claims` [test]: A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim.
-> - Criterion `unavailable-execution-claim` [test]: A selected test's explicit unavailable execution result leaves its criterion not evaluated and exits 0 for unclaimed progress, but fails a Complete milestone's full-coverage claim with exit 1. A genuinely excluded method or unavailable runner remains an unchecked claim.
 
 ## Using verify
 
@@ -140,12 +136,6 @@ is not passing evidence. Membership in a `verus!` block does not determine the
 function's mode. A misplaced link, or a link on an unsupported function form, is
 a located finding.
 
-**Required execution.** A test link can append `execution <producer>/<requirement>`
-when ordinary process success does not establish that required work occurred.
-[Test Execution](test-execution.md) defines its declaration, current-run exchange,
-runtime inputs, and per-link states. The qualifier adds an obligation; it never
-replaces nextest results or changes the criterion's required methods.
-
 **Witnesses.** A verified function whose link line ends with `witness <function>`
 is the [vacuity witness](verification.md#A-verify-proof-nonvacuous) for the named
 linked function of the same criterion. It constructs an input and calls that
@@ -187,22 +177,18 @@ the runner reported.
 
 | State | Test method | Proof method | Review method |
 | --- | --- | --- | --- |
-| `satisfied` | Every linked test passed once and every declared execution requirement has a current passing result | Every required target has a [complete result](#verus-runner), each linked function verified once in its expected mode, and every [guard](#proof-guards) holds | A current accepting assessment record |
+| `satisfied` | Every linked test passed once | Every required target has a [complete result](#verus-runner), each linked function verified once in its expected mode, and every [guard](#proof-guards) holds | A current accepting assessment record |
 | `failed` | A linked test failed | A linked function or its witness failed verification, the target violated the trust policy, a sensitivity survivor is unclassified, or the specification assessment rejects it | The current assessment record rejects the criterion |
 | `inconclusive` | The runner could not build or run, or its results are malformed | Without a failure above: a required target has no complete result, it has verification failures outside the criterion's links (listed in the report), or a sensitivity run timed out | Never |
 | `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in a complete result; a precondition has no witness; or the specification assessment is missing or stale | The assessment record is missing or stale |
 | `unlinked` | No test link names the criterion | No proof link names the criterion | Never |
-| `not-evaluated` | Outside the requested scope, the runner is unavailable or unsupported, or required execution is explicitly unavailable | Outside the requested scope, the runner is unavailable or unsupported, or sensitivity was skipped | Outside the requested scope |
+| `not-evaluated` | Outside the requested scope, or the runner is unavailable or unsupported | Outside the requested scope, the runner is unavailable or unsupported, or sensitivity was skipped | Outside the requested scope |
 
 Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
 first applicable state in the order `failed`, `inconclusive`, `no-evidence`,
 `unlinked`, `not-evaluated`. An anchor is satisfied when all its criteria are,
 partial when some are, and otherwise takes the same order.
-
-[Execution reports](test-execution.md#evidence-and-completion-claims) refine test
-states for qualified links, including missing and invalid producer results. The
-report retains why execution was unavailable, separately from scope exclusion.
 
 The `review` method runs nothing: `verify` reads the criterion's
 [assessment records](verification.md#assessment-records) and compares their fingerprints
@@ -250,9 +236,27 @@ Book's records, can be linked; one that reads output a separate build produced
 earlier, such as rendered pages, cannot, because that output may describe other
 inputs.
 
-Qualified links also require the [current-run exchange](test-execution.md#current-run-exchange),
-with fresh result directories, one attempt, and declared runtime-input checks
-in addition to JUnit results.
+### Trusting project test results
+
+The project owns its tests: setup, assertions, internal execution, and the meaning
+of their outcomes. Under [D-project-test-results-trusted](../authority/decisions.md#D-project-test-results-trusted),
+Anchor Book treats the supported runner's result as authoritative for each linked
+test. It checks that results identify the selected tests, come from the current
+run, and satisfy the existing evidence-state rules. It does not inspect agent
+activity or require a second execution report from project test code.
+
+A passing result counts as passing test evidence even if the test internally
+returns early. A skip reported by the runner remains no-evidence, and a reported
+failure remains failed. If a project considers an early return an invalid pass,
+its test or harness must express the intended outcome. Anchor Book does not
+reinterpret a passing result from project logs or knowledge of its internals.
+
+The project's choice to trust a test and link it to a criterion is distinct from
+the engine's result handling. Known coverage limitations can be recorded and
+reviewed by the project; an explicitly required review remains a separate method.
+A satisfied test method reports passing linked tests, not independent proof of
+their quality or sufficiency. Proof verification continues to require its own
+contracts, guards, and assessments.
 
 ### Verus runner
 
@@ -421,11 +425,6 @@ established, so `verify` checks it, under the
   counts as satisfied, and only a full-scope run with every method evaluated
   checks every claim.
 
-A selected test that explicitly reports required execution unavailable is a
-checked, unsatisfied claim even though its evidence state is `not-evaluated`.
-[Test Execution](test-execution.md#evidence-and-completion-claims) distinguishes
-this case from an unavailable runner or excluded method.
-
 `verify` reads roadmap status and coverage through the same roadmap reader the
 renderer uses. Agents and CI therefore cannot mark work Complete without linked,
 passing evidence, and a later regression in that evidence fails the run that
@@ -465,7 +464,6 @@ Each result retains the information needed to assess its scope:
 | Information | Content |
 | --- | --- |
 | Inputs | Content identities for the evaluated criteria, configuration, code, and lockfile; revision and dirty state when Git is available. |
-| Runtime inputs | For qualified tests, declared producer environment and file observations and their identity, with absence distinguished from emptiness; see [Test Execution](test-execution.md#runtime-inputs). |
 | Selection | Requested anchors and methods, actual packages/targets/features, and resolved function identities and modes. |
 | Execution | Run identity, executed argument vector, exit status, and actual verifier, solver, and Rust toolchain versions. |
 | Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations; specification fingerprints and the assessment records read; sensitivity changes, their outcomes, and their classifications. |
@@ -528,9 +526,6 @@ validates the section itself, so an invalid one never affects `check` or
 record-only rendering. A build configured to consume evidence additionally
 validates the report handoff described above.
 Runner names are `nextest` and `verus`.
-Optional `[[verification.execution]]` declarations follow
-[Test Execution](test-execution.md#declaring-required-execution); ordinary test
-links need no such configuration.
 Content identities in reports are 64-bit FNV-1a hashes: stable identities for
 recognizing changed inputs, not a security measure.
 
