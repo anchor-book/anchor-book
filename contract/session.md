@@ -38,19 +38,10 @@ Run the project's structural check, as described in
 in your readiness report. A Book that fails or cannot be checked is still read,
 but its findings qualify what you report about it.
 
-After reading, give the engineer a readiness report so they can see the project's
-state and choose what to work on:
-
-- **Context:** what you read, and any guidance that was missing or unreadable.
-- **Current state:** the phase, the structural check result, and what the Book
-  records as implemented.
-- **Open work:** every roadmap milestone that is not Complete, grouped by roadmap,
-  with its identifier, title, and status. Identify Ready milestones, which can be
-  assigned, and for the others the dependency, agreement, or obstacle that holds
-  them.
-
-Report status as the Book records it. Do not infer progress or completion from
-code, task checkmarks, or anchor references.
+After reading, give the engineer a readiness report using the
+[required template](#readiness-report-template), so they can see the project's
+state and choose what to work on. Keep its headings, tables, and level of detail;
+a brief summary does not replace the report.
 
 When the request is only to read the Book, the readiness report is the whole
 response: report check findings and the repairs you would make rather than
@@ -61,6 +52,74 @@ before changes. Resolve unmet prerequisites with the engineer, as
 [Work with the engineer](#work-with-the-engineer) describes, before proceeding.
 For any other request, state its scope and constraints before making
 changes. Do not ask again for direction or agreement already given in the session.
+
+### Readiness report template
+
+Use the following Markdown structure, replacing bracketed instructions with the
+project's facts. Repeat the roadmap section for every roadmap with a milestone
+that is not Complete, and the milestone detail section for every such milestone.
+Include every completion criterion, even when all are Pending. Keep wording
+concise without omitting entries. If the report needs multiple messages, continue
+it rather than silently dropping later roadmaps or criteria.
+
+```markdown
+# Readiness report
+
+## Context
+
+- Checkout: [project, branch and revision when available; note local changes]
+- Read: [contract retrieval command, project guidance, configuration, Book index,
+  and chapters read; identify the Book source and number of chapters]
+- Context gaps: [missing or unreadable material and its effect, or None; distinguish
+  references outside the Book that were not read]
+
+## Current state
+
+- Phase: [recorded phase and its source]
+- Structural check: [command, result, evaluated scope, and remaining findings;
+  state what the check does not establish]
+- Book coverage: [design areas covered and acceptance status of governing records]
+- Implemented: [what the Book records as implemented, with source references]
+- Verification: [recorded evidence, coverage gaps and limitations, with source
+  references and tested revisions where recorded; distinguish checks run now]
+- Open questions: [unresolved design choices or obstacles, or None recorded]
+
+## Open work
+
+### [Roadmap title and identifier]
+
+| Milestone | Title | Recorded status | What holds it or makes it assignable |
+| --- | --- | --- | --- |
+| [identifier] | [title] | [status] | [dependencies, agreement or obstacle; Ready if recorded and prerequisites hold] |
+
+#### [Milestone identifier]: [title]
+
+| Completion criterion | Recorded evidence and result | Remaining gap or limitation |
+| --- | --- | --- |
+| [identifier and short description] | [result and evidence reference, or Pending / Not recorded] | [gap or None recorded] |
+
+- Tasks: [summarize completed and remaining tasks separately]
+- To proceed: [unmet prerequisites or next step within an existing assignment]
+
+### Ready milestones
+
+[List the identifiers of milestones recorded as Ready, with any unmet
+prerequisites; explicitly say when none are Ready. Distinguish work already
+assigned in this session, including scoped prototyping experiments.]
+```
+
+Keep all three main sections even when information is unavailable. Use **Not
+recorded** for absent Book facts and explain access gaps; do not fill them by
+guessing. If there are no open milestones, say so under Open work and retain the
+Ready milestones section. Link to source chapters or records where practical.
+
+Report statuses and evidence as the Book records them. Task checkmarks, anchor
+references, passing linked tests, and a passing structural check do not establish
+milestone completion. Preserve distinctions between an evidence result and its
+coverage: a recorded pass can still leave part of a criterion untested. Do not
+present historical evidence as a check run in this session, or turn a proposed
+milestone into Ready because its tasks look feasible. Report inconsistencies
+and their effect on readiness explicitly.
 
 ## Check the Book's structure
 
