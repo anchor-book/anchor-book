@@ -22,8 +22,11 @@ projects in milestone 5.
 The [first-major-milestone sequence](index.md#first-major-milestone-symposium-adopts-anchor-book)
 records milestone 2 as complete: Verus execution and the engine's Authority proof CI
 use the shared runner, and independent fixtures cover proof-state aggregation.
-The next step is Symposium's configuration-loading trial. The shared model,
-test runner, and manual guard experiment are recorded in milestones 4, 1, and 7.
+Symposium's configuration-loading trial is assessed in
+[Symposium Integration milestone 4](symposium-integration.md#symposium-integration-4-evidence).
+Its no-agent finding needs the bounded execution-evidence design in milestone 10;
+partial coverage informs milestone 8. The shared model, test runner, and manual
+guard experiment are recorded in milestones 4, 1, and 7.
 
 Milestone 3 adds retained CI reports, with a test-only path that needs no Verus.
 Milestone 8 provides criterion review records independently of proof guards, so
@@ -619,6 +622,53 @@ using source locations and evidence in the report; the rebuilt agent report and
 rendered Book agree. Record-only rendering makes its unevaluated scope explicit.
 
 - **Anchor coverage:** [A-build-current-evidence](../design/system-overview.md#A-build-current-evidence) · `independent-pipeline` — Full.
+- **Evidence:** Pending.
+
+### Completion record
+
+Pending.
+
+## Milestone 10. Tests disclose whether their required execution occurred {#verification-evidence-10}
+
+**Outcome:** A test that returns success without executing the behavior its criterion requires cannot supply satisfied evidence. A defined producer/runner contract identifies current execution and relevant runtime inputs, with unavailable execution reported explicitly.
+
+**Status:** Proposed
+
+**Identifier:** `verification-evidence-10`
+
+**Dependencies:** The native test runner in milestone 1, complete, and the [Symposium no-agent finding](symposium-integration.md#symposium-integration-4-evidence). Agree on the execution signal, supported producers, input identity, and states before implementation. Exercise the correction in independent engine fixtures before Symposium depends on it.
+
+**Design basis:** [Evidence states](../design/verification-evidence.md#evidence-states), [test runner](../design/verification-evidence.md#test-runner), and [run identity](../design/verification-evidence.md#run-identity).
+
+**Tasks**
+
+- [ ] Define how a test producer states which required execution occurred, including agent-disabled and empty-agent-list cases. Tie the signal to the exact test and current run; missing, malformed, stale, and mismatched signals must not authorize satisfied evidence. Ordinary success and arbitrary log text do not establish execution.
+- [ ] Reconcile states with the design: the Symposium no-agent case requires not-evaluated with its reason; retain the distinction from a skipped or missing test in a usable runner report. Define how simulation and agent obligations combine when one test supports both.
+- [ ] Include the runtime settings consumed by this contract in the report's identity without publishing credentials or personal configuration. Define the boundary of supported settings instead of claiming to fingerprint every process input.
+- [ ] Implement and exercise the contract through the actual CLI and nextest in independent fixtures: required work executed and passed, executed and failed, unavailable, absent or stale signals, and mixed obligations. Preserve progress versus completion-claim exit behavior and source preservation.
+- [ ] Repeat the disabled-agent and enabled-but-empty-list Symposium cases, then a controlled producer that demonstrably executes its required work. Record platform and ignored-test behavior before relying on affected links, including Symposium's Windows-ignored auto-update test.
+
+### Completion criteria
+
+#### Current execution {#verification-evidence-10-current-execution}
+
+Independent fixtures and the actual runner distinguish executed success, executed
+failure, unavailable work, and missing, malformed, stale, or mismatched execution
+evidence. Only an identified current execution can satisfy an obligation that
+requires it; simulation success cannot stand in for an unexecuted agent obligation.
+
+- **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: execution availability within test results; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: current execution signals matched to linked tests.
+- **Evidence:** Pending. The trial demonstrates the defect, not this correction.
+
+#### Repeated trial {#verification-evidence-10-repeated-trial}
+
+Symposium's two no-agent cases report not-evaluated with their reason and no
+satisfied claim. The declared runtime inputs are identifiable, changing them
+invalidates affected evidence as designed, and executed passing/failing cases
+remain distinguishable. Source files remain unchanged by verification; supported
+platform and ignored-test limitations are recorded explicitly.
+
+- **Anchor coverage:** [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `source-preservation` — Partial: execution-evidence integration; [A-verify-claims-evidenced](../design/verification-evidence.md#A-verify-claims-evidenced) · `unchecked-claims` — Partial: unavailable required execution.
 - **Evidence:** Pending.
 
 ### Completion record

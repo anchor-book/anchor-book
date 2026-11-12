@@ -38,8 +38,10 @@ first, whether or not it verifies its own code; proofs in other projects are
 [deferred](verification-evidence.md#verification-evidence-5).
 
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2)
-records the engine's proof CI encapsulation and proof-state coverage. The next
-work is the Symposium configuration-loading trial. Milestone 4 below supports the
+records the engine's proof CI encapsulation and proof-state coverage. The
+[Symposium configuration-loading trial](symposium-integration.md#symposium-integration-4-evidence)
+has assessed the development loop; its execution-evidence and review findings
+now need bounded engine work. Milestone 4 below supports the
 later native-command and CI integration, using the trials to settle the minimum
 setup a real adopter needs. Registry publication is a separate outcome; a pinned
 Git dependency and installed engine can support the first adoption.
