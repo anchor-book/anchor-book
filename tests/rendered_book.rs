@@ -18,24 +18,29 @@ fn normalize(text: &str) -> String {
 
 /// Field text as a reader sees it: inline code, emphasis, and link markup removed.
 fn plain(text: &str) -> String {
+    use pulldown_cmark::Event;
     let mut out = String::new();
-    let mut rest = text;
-    while let Some(open) = rest.find('[') {
-        let (before, after) = rest.split_at(open);
-        out.push_str(before);
-        match after.find("](").zip(after.find(')')) {
-            Some((close, end)) if close < end => {
-                out.push_str(&after[1..close]);
-                rest = &after[end + 1..];
-            }
-            _ => {
-                out.push('[');
-                rest = &after[1..];
-            }
+    for event in pulldown_cmark::Parser::new(text) {
+        match event {
+            Event::Text(value)
+            | Event::Code(value)
+            | Event::Html(value)
+            | Event::InlineHtml(value) => out.push_str(&value),
+            Event::SoftBreak | Event::HardBreak => out.push(' '),
+            _ => {}
         }
     }
-    out.push_str(rest);
-    normalize(&out.replace(['`', '*'], ""))
+    normalize(&out)
+}
+
+#[test]
+fn field_text_preserves_literal_punctuation() {
+    assert_eq!(
+        plain(
+            "The `XDG_*` variables, `[item](path)`, and 2 * 3 use **strong** and *emphasis* with [a link](https://example.com)."
+        ),
+        "The XDG_* variables, [item](path), and 2 * 3 use strong and emphasis with a link."
+    );
 }
 
 fn text(element: ElementRef<'_>) -> String {

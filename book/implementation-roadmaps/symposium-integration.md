@@ -43,10 +43,11 @@ Follow the [agreed sequence](index.md#first-major-milestone-symposium-adopts-anc
 first encapsulates Verus and fixes the engine's proof CI. That work belongs to
 the engine; it adds no Verus requirement to Symposium.
 
-Milestone 4 then completes the configuration-loading loop, using the Book and
-bootstrap already established by milestones 1 and 3. Correct engine gaps here
-and repeat their Symposium cases before relying on the results. In particular,
-review support is in [Verification Evidence milestone 8](verification-evidence.md#verification-evidence-8),
+Milestone 4 has assessed the configuration-loading loop, using the Book and
+bootstrap established by milestones 1 and 3. Correct engine gaps here and repeat
+their Symposium cases before relying on the results. The no-agent correction is
+proposed in [Verification Evidence milestone 10](verification-evidence.md#verification-evidence-10);
+review support is in [milestone 8](verification-evidence.md#verification-evidence-8),
 independent of the broader proof guards. Verification Evidence milestones 3 and 9
 then supply the shared current build report and rendered evidence. Milestone 2 ports the remaining design
 with light review, while milestone 4 extends test links to each area. Milestone 7
@@ -183,7 +184,7 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 **Outcome:** Symposium's tests carry evidence links to its anchors' criteria, and `anchorbook verify --method test` reports each criterion's state across its workspace in the build loop.
 
-**Status:** Proposed
+**Status:** In progress
 
 **Identifier:** `symposium-integration-4`
 
@@ -193,12 +194,12 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 **Tasks**
 
-- [ ] Add the `[verification]` section to Symposium's `anchorbook.toml`.
-- [ ] Use the current pinned engine and its line grammar in the existing configuration-loading area; preserve any migration already completed on the fork. Record a passing, deliberately failing, and restored `verify --anchor` run before expanding the Book.
+- [x] Add the `[verification]` section to Symposium's `anchorbook.toml`.
+- [x] Use the current pinned engine and its line grammar in the existing configuration-loading area; preserve any migration already completed on the fork. Record a passing, deliberately failing, and restored `verify --anchor` run before expanding the Book.
 - [ ] Link existing tests to the criteria they address, only where a test exercises its criterion, and record the criteria that have none.
-- [ ] Run `verify` over Symposium's workspace, which has several member crates and excludes its evaluation fixtures.
+- [x] Run `verify` over Symposium's workspace, which has several member crates and excludes its evaluation fixtures. The current configuration links select tests in the root package only.
 - [ ] Agent-mode tests report success without running anything when no agent is configured. Make sure `verify` reports such a run as not evaluated, never as satisfied; fix this in the engine and this Book first if it does not.
-- [ ] Symposium runs `cargo test`, and the runner uses nextest. Confirm nextest runs Symposium's tests with the same results on its supported platforms, or record the gap.
+- [x] Symposium runs `cargo test`, and the runner uses nextest. Confirm nextest runs Symposium's tests with the same results on its supported platforms, or record the gap. Linux results agree; Windows and macOS remain unassessed, including the Windows-ignored auto-update link.
 - [ ] Review the assertions behind each link against the whole criterion. Record partial coverage without weakening the criterion, and use [criterion review records](verification-evidence.md#verification-evidence-8) where review is required. Passing linked tests alone never establish sufficiency.
 - [ ] For every engine gap, record the expected behavior, reproducer, and affected design and milestone in this Book. Implement and exercise the correction here before Symposium relies on it, then repeat the original trial. Findings outside the current assignment receive bounded work with completion criteria.
 
@@ -214,29 +215,93 @@ every correction needed before depending on it. The trial records revisions,
 commands, results, and limits; recording a gap is not evidence of its correction.
 
 - **Anchor coverage:** None — first project trial and input to engine corrections.
-- **Evidence:** Pending; the preliminary trial below does not exercise the full loop.
+- **Evidence:** Passed on 2026-11-12 at Symposium `4e2158b8`, using engine `b7bcd33`. The configuration Book checks and renders, eight links resolve, and removing/restoring the save guard produces failed/satisfied states. Partial coverage and both no-agent cases are assessed below, with the remaining corrections assigned proposed scope. This completes the first-loop assessment, not this milestone's broader outcome.
 
 #### Linked tests {#symposium-integration-4-linked-tests}
 
 Every link in Symposium's sources resolves to a criterion requiring `test`, misplaced or dangling links are reported at their location, and unlinked criteria are listed. Every ported area's test criteria have reviewed links or an explicit missing-coverage entry; review identifies what the assertions cover and the remaining gaps.
 
 - **Anchor coverage:** [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: a multi-crate project workspace.
-- **Evidence:** Pending.
+- **Evidence:** Configuration area assessed: eight tests link to six of seven criteria, with no link findings; `hooks-continue` is unlinked. The [fork's coverage map](https://github.com/kwdev/symposium/blob/4e2158b89461d17496ff07c5d2a0ebf2619abfe3/anchor-book/src/implementation-roadmaps/configuration-loading.md) records each assertion boundary and missing case. Full design coverage and links across other member packages remain pending.
 
 #### Honest test states {#symposium-integration-4-honest-states}
 
 A whole-Book run reports every anchor by chapter with its criteria's states; a passing, a deliberately failing, and a restored test change the expected criterion; an agent-mode test that ran no agent is not satisfied evidence. The engine fixes needed for these results have independent cases and evidence in this Book, and the original Symposium cases pass on the corrected revision. Required reviews expose partial coverage and cannot turn missing test evidence into satisfied evidence.
 
 - **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: tests that skip themselves at run time; [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output` — Partial: a second project.
-- **Evidence:** Pending.
+- **Evidence:** Not met. Configuration failures and corrections report correctly, but an agent-only test with no agent reports satisfied. [Verification Evidence milestone 10](verification-evidence.md#verification-evidence-10) owns the proposed execution-evidence correction; [milestone 8](verification-evidence.md#verification-evidence-8) owns current reviews of test sufficiency.
 
 ### Evidence {#symposium-integration-4-evidence}
 
-**Preliminary trial, not completion evidence:** On 2026-11-11, in a disposable worktree of Symposium branch `anchor-book` at `99d12af2`, with the engine at `1b8274e` and cargo-nextest 0.9.151, a `[verification]` section and four links on existing tests (two unit tests in `src/config.rs`, two `#[tokio::test]` integration tests in `tests/init_sync.rs`, one with a Windows-only `cfg_attr` ignore) produced a whole-Book run with no engine change: 7 criteria, 4 satisfied, 3 unlinked, exit 0, in 49 seconds with a warm build cache. Two of the four links covered only part of their criteria: `A-config-unreadable-file-unchanged#commands-refuse` names five commands and its test exercises `init` only, and `A-config-directory-resolution#precedence` names three directories and its test covers the log directory only; both were reported satisfied.
+**Revision and scope:** Symposium `4e2158b89461d17496ff07c5d2a0ebf2619abfe3`,
+branch `codex/configuration-trial`, based on the migrated Book at `99d12af2`;
+engine `b7bcd33d0035fdc6af9790e0fd8568394772afb9`, installed from that exact Git
+revision. Runs used Linux x86_64, Rust 1.99.1, cargo-nextest 0.9.151, mdBook 0.5.4,
+and mdbook-mermaid 0.17.1. This is a fork trial, not upstream adoption.
+
+**Configuration loop:** `anchorbook verify --config anchorbook.toml --anchor
+A-config-unreadable-file-unchanged --method test` reports passing linked tests.
+Removing the `config_error` guard from `Symposium::save_config` makes
+`save-refused` and `commands-refuse` failed; restoring the code restores satisfied
+results. A second deliberate defect, an error omitting the filename, is also
+caught by the strengthened save-refusal tests. All temporary changes were
+restored, and each run preserved its tracked inputs. Warm selected runs took
+about 0.6 seconds, or 7 seconds with recompilation. All exit 0: the Book has no
+Complete milestone claiming these criteria, so the report's states carry the
+failure, as designed.
+
+**Coverage:** A whole-Book test run reports six satisfied criteria and one
+unlinked, with eight tests in the root package. Passing tests cover only part of
+the directory matrix, saving-command set, missing/empty-file behavior, and
+default/warning behavior. In particular, `init` alone cannot establish the five
+commands in `commands-refuse`. The preliminary auto-update link was attached to
+`auto_update_re_execs_on_sync`, which expects an update; the trial replaces it
+with `unparseable_config_never_auto_updates`, which actually exercises the
+criterion's boundary. The fork's coverage map preserves each remaining gap;
+the criteria and required methods were not weakened.
+
+**No-agent defect:** A disposable criterion about consuming the tokio-weather
+skill was linked to `agent_reads_tokio_skill_after_cargo_add`, not to an unrelated
+configuration criterion. With `SYMPOSIUM_ENABLE_AGENT_TESTING` absent, and again
+with it set to `1` and `test-agents.toml` containing `test-agents = []`, nextest
+and cargo test both report success. The direct command
+`cargo test --locked -p symposium --test hook_agent agent_reads_tokio_skill_after_cargo_add -- --exact --nocapture`
+prints `agent-only test ran no agent`; verify nevertheless reports satisfied.
+No agent was started. The reports have identical criteria/configuration/code
+identities despite the different runtime settings. The temporary records and
+link were removed after the experiment. A current, defined execution signal and
+its relevant runtime inputs must be accounted for before relying on these tests;
+milestone 10 defines the bounded proposed correction.
+
+**Rendering acceptance correction:** The rendered Book was correct, but
+`tests/rendered_book.rs` discarded literal asterisks while normalizing expected
+fields, rejecting `XDG_*`. Its helper now reads Markdown text/code events;
+`field_text_preserves_literal_punctuation` detects the original fault. Rendered
+acceptance then passed against Symposium. This changes the acceptance test, not
+the installed engine's rendering behavior.
+
+**Validation and limits:** The structural check and Book build pass. Symposium's
+full `cargo test --workspace --locked` reports 1,713 passed, no failures, and 15
+ignored; agent-only `ok` results still supply no agent evidence. Formatting
+passes, and Clippy exits 0 with eight pre-existing SDK macro warnings and two
+type-complexity warnings in unchanged agent tests. The engine's tests, Clippy,
+and formatting pass on stable and Rust 1.88.0. Actual agent execution, Windows,
+macOS, linked tests in other workspace packages, criterion review records, and
+the no-agent correction remain outside this assessment's evidence. The Windows
+auto-update test is ignored in ordinary Cargo runs, while verify requests ignored
+tests too; that link needs platform treatment before it is used there.
+
+The engine acceptance-test correction and this assessment were tested in
+`71d9c41`, based on `b7bcd33`, on branch `codex/symposium-configuration-trial`.
+[PR #41](https://github.com/anchor-book/anchor-book/pull/41) tracks the required
+revision-specific checks and integration of that work. Symposium's trial commit
+is pushed to the engineer's fork; no upstream adoption is claimed.
 
 ### Completion record
 
-Pending.
+Pending. The configuration-loop assessment is complete; design expansion,
+review records, and the no-agent correction remain before this milestone can
+claim honest evidence across Symposium's Book.
 
 ## Milestone 5. Symposium's tests and CI check its Anchor Book {#symposium-integration-5}
 
