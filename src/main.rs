@@ -12,6 +12,9 @@ fn main() -> ExitCode {
     if args.first().is_some_and(|a| a == "verify") {
         return verify(&args[1..]);
     }
+    if args.first().is_some_and(|a| a == "proof") {
+        return proof(&args[1..]);
+    }
     if args.first().is_some_and(|a| a == "md") {
         return md(&args[1..]);
     }
@@ -47,7 +50,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | md [supports html] | contract | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the AI Working Contract packaged with this engine version.\nMaterialization is not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | verify --config PATH | proof --config PATH | md [supports html] | contract | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the AI Working Contract packaged with this engine version.\nMaterialization is not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS
@@ -179,6 +182,44 @@ fn verify(args: &[std::ffi::OsString]) -> ExitCode {
                 io::stderr().lock(),
                 "anchorbook verify: incomplete\n{error}"
             );
+            ExitCode::from(2)
+        }
+    }
+}
+
+fn proof(args: &[std::ffi::OsString]) -> ExitCode {
+    let mut config = None;
+    let mut anchors = Vec::new();
+    let usage = "Usage: anchorbook proof --config PATH [--anchor ID]...";
+    let mut rest = args.iter();
+    while let Some(flag) = rest.next() {
+        let value = rest
+            .next()
+            .and_then(|v| v.to_str())
+            .filter(|v| !v.is_empty());
+        match (flag.to_str(), value) {
+            (Some("--config"), Some(path)) if config.is_none() => config = Some(path),
+            (Some("--anchor"), Some(id)) => anchors.push(id.into()),
+            _ => {
+                let _ = writeln!(io::stderr().lock(), "{usage}");
+                return ExitCode::from(2);
+            }
+        }
+    }
+    let Some(config) = config else {
+        let _ = writeln!(io::stderr().lock(), "{usage}");
+        return ExitCode::from(2);
+    };
+    match anchor_book::verification::proof(std::path::Path::new(config), anchors) {
+        Ok(report) => {
+            let code = report.exit_code();
+            match serde_json::to_string_pretty(&report) {
+                Ok(text) if writeln!(io::stdout().lock(), "{text}").is_ok() => ExitCode::from(code),
+                _ => ExitCode::from(2),
+            }
+        }
+        Err(error) => {
+            let _ = writeln!(io::stderr().lock(), "anchorbook proof: incomplete\n{error}");
             ExitCode::from(2)
         }
     }

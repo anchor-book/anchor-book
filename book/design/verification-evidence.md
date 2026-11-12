@@ -254,6 +254,22 @@ package, target, and features, including verification beyond the requested
 criteria. Other workspace and target forms require measured support; a
 successful library-target run does not imply them.
 
+The supported configuration is `[verification.verus]` with `version`,
+`rust-toolchain`, an optional `installation` directory, and `targets`. Each target
+declares `manifest`, `package`, `target = "lib"`, and `features`. Manifests resolve
+within the project; an explicit tool installation can be external. Without an
+installation directory the runner finds the tools on PATH. Actual Verus, Rust,
+and Z3 identities are checked and retained. An explicit installation must contain
+`verus`, `cargo-verus`, and `z3`; missing tools cannot fall back to another
+installation on PATH. The first adapter supports Verus
+0.2026.10.18.7d82994, Rust 1.99.1, and Z3 4.16.0. Library names come from the Cargo
+manifest, including an explicit `[lib].name`.
+
+The first proof links use ordinary Rust functions with Verus contract attributes;
+`#[verifier::proof]` identifies proof mode, including inside `cfg_attr`.
+Links inside `verus!` macros remain unsupported and produce findings. This keeps
+function attachment in the Rust parser while supporting both verified modes.
+
 **Complete result.** A target result is complete when the command succeeds and a
 supported report shows full-target verification with nonzero coverage and zero
 verification errors. A successful command that produces no new report is not a
@@ -289,9 +305,39 @@ consumes an earlier report.
 
 **Adapter.** Raw Verus report parsing stays private to the adapter, which
 normalizes results into the typed evidence model used for tests. The expected
-functions come from resolved links, in executable and proof modes. The engine's
-`.github/verus-report.jq`, which checks its own seven executable functions, is a
-starting fixture, not a function inventory for other projects.
+functions come from resolved links, in executable and proof modes. Native report
+fixtures define the supported format; CI uses this adapter and has no separate
+function inventory or result parser.
+
+### CI proof gate
+
+A CI job enforcing required proof targets uses an engine-owned gate backed by
+the same runner as `verify`. Tool installation is explicit and pinned by the
+project; invocation, report interpretation, and resolved function matching belong
+to the engine. The workflow does not maintain another report parser or expected
+function inventory.
+
+`anchorbook proof --config PATH [--anchor ID]...` runs that gate over the selected
+proof criteria. It returns a versioned JSON target report and exits 0 only when
+the gate passes, 1 when the target evidence cannot pass, and 2 for invalid input.
+The report retains input identities, actual tools, target invocations, function
+results, and reasons; it omits raw source and proof-note payloads. Local raw logs
+remain under the verification output directory. `verify` uses the same execution
+and interpretation but retains its criterion-progress exit policy.
+
+The gate succeeds only when every required target has a current complete result
+from the expected verifier, under the trust policy, and each required linked
+function is present exactly once in its expected mode and verified. A failed,
+absent, stale, unsupported, skipped, or incomplete result cannot pass. The gate
+also rejects an empty required scope. Invalid inputs and unavailable tools cannot
+silently remove an obligation.
+
+This gate establishes target verification against its contracts. It reports
+criterion assessments and guards separately: a complete target does not satisfy
+a proof criterion with outstanding obligations. The progress command retains its
+[exit policy](#using-verify), including explicitly unchecked claims; exit 0 from
+that command alone does not establish that the strict proof gate passed. Test-only
+projects need no Verus installation or proof gate.
 
 ### Proof guards
 
@@ -403,6 +449,39 @@ snapshotted before and after execution. Local execution remains usable without
 Git. Retained public artifacts omit private machine paths and raw source or
 proof-note payloads.
 
+### Book build evidence
+
+The Book build supplies agents with the current state of deterministic checks
+and anchor evidence, under
+[A-build-current-evidence](system-overview.md#A-build-current-evidence). The library,
+CLI, versioned machine-readable artifact, and rendered Book present the same
+evaluated model. Results retain stable identifiers, source locations, findings,
+per-method states, scope and limits, and checked or unchecked completion claims.
+The rendered Book shows this evidence beside criteria and keeps it separate from
+authored acceptance and roadmap status.
+
+The native project pipeline checks the Book, evaluates evidence, then hands the
+completed report to rendering. Verification either invokes the configured tools
+or consumes their reports from that pipeline run after validating their inputs
+and executed scope. CI need not run the same tests twice. The mdBook preprocessor
+never starts tests, proofs, or another Book build. Tests that require rendered
+output run afterward and cannot supply evidence to the build they depend on.
+
+The handoff binds results to the current Book inventory, configuration, code,
+evidence links, lockfiles, assessments, and actual tool and selection identities.
+Input snapshots cover uncommitted changes and are compared before and after
+evaluation and rendering. A configured report that is absent, malformed, from an
+unsupported schema, or mismatched makes the current-evidence build incomplete
+with located diagnostics; an earlier successful artifact cannot stand in for it.
+Missing, failed, skipped, and unevaluated methods inside a valid current report
+retain their own states. Rendering does not change the completion-claim exit
+policy or the separate strict proof gate.
+
+Evidence integration is explicit in project build configuration. Record-only
+rendering without that integration stays usable and labels verification as not
+evaluated. It cannot imply that checks or verification ran. Results are derived
+output; neither evaluation nor rendering writes them into authored Book sources.
+
 ## Configuration
 
 ```toml
@@ -419,7 +498,9 @@ are written; `assessments` holds the project's [assessment records](verification
 [path rules](configuration.md#paths). `output` must be separate from the Book, the
 configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
 `verify` and ignored by `check`; its absence makes `verify` incomplete. `verify`
-validates the section itself, so an invalid one never affects `check` or rendering.
+validates the section itself, so an invalid one never affects `check` or
+record-only rendering. A build configured to consume evidence additionally
+validates the report handoff described above.
 Runner names are `nextest` and `verus`.
 Content identities in reports are 64-bit FNV-1a hashes: stable identities for
 recognizing changed inputs, not a security measure.
@@ -440,13 +521,14 @@ above; an explicitly selected tool installation may be outside the project root.
   miss part of a criterion; sufficiency stays a `review` obligation.
 - [Mutation testing](verification.md#tests-that-match-the-design) assesses test
   sensitivity and is not evidence for any method.
-- Results are not written into Book sources. A rendered progress view, if added,
-  is derived from a CI `verify` report at build time.
+- Results are not written into Book sources. Agent reports and rendered evidence
+  are derived from the same current evaluation through the build handoff.
 
 ## Open questions
 
-1. **Rendered progress.** Whether the published Book shows states beside criteria,
-   derived from the CI report.
+1. **Build configuration.** The native configuration and report-handoff interface
+   for [Book build evidence](#book-build-evidence), settled with the artifact schema
+   before implementation.
 2. **Further claims.** [Claims of completion](#claims-of-completion) come from
    Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
    also claims every criterion in the Book, and whether a test with no link should

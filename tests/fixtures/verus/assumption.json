@@ -1,0 +1,57 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": true,
+    "success": false
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.10.18.7d82994"
+    },
+    "num-threads": 1,
+    "total": 518,
+    "estimated-cpu-time": 518,
+    "rust": {
+      "total": 29,
+      "init-and-types": 7,
+      "trait-conflicts": 22,
+      "compile": 0
+    },
+    "verification": {
+      "total": 330,
+      "vir": {
+        "total": 303,
+        "hir": 1,
+        "import": 240,
+        "rust-to-vir": 29
+      }
+    },
+    "total-verify": 22,
+    "total-verify-module-times": [
+      {
+        "module": "",
+        "time": 22
+      }
+    ],
+    "air": {
+      "total": 16,
+      "module-times": [
+        {
+          "module": "",
+          "time": 16
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.10.18.7d82994",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.99.1-x86_64-unknown-linux-gnu",
+    "commit": "7d829946231d6413a398f6e4160cdfe951261dad"
+  }
+}

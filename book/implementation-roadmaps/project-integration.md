@@ -13,6 +13,9 @@ the [Symposium Integration roadmap](symposium-integration.md) is the first.
 [Project Integration](../design/project-integration.md) defines the goal design.
 This roadmap is the shared groundwork that exercises it; it does not replace the
 release work in [later work](index.md#later-work-retained-from-the-design).
+Milestone 4 supplies the remaining native integration and setup needed for the
+[first major milestone](index.md#first-major-milestone-symposium-adopts-anchor-book),
+upstream adoption in Symposium.
 
 ## Sequence and scope
 
@@ -33,6 +36,13 @@ Verus is optional for every project. A project that adds the engine as a Cargo
 dependency needs [Verus as an optional engine feature](formal-verification.md#formal-verification-4)
 first, whether or not it verifies its own code; proofs in other projects are
 [deferred](verification-evidence.md#verification-evidence-5).
+
+The next work is the engine's early proof CI encapsulation in
+[Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
+followed by the Symposium development trials. Milestone 4 below supports the
+later native-command and CI integration, using the trials to settle the minimum
+setup a real adopter needs. Registry publication is a separate outcome; a pinned
+Git dependency and installed engine can support the first adoption.
 
 ## Milestone 1. This Book uses the integration groundwork {#project-integration-1}
 
@@ -87,3 +97,50 @@ The library, the actual CLI process, and the actual `anchorbook md` preprocessor
 ### Completion record
 
 Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, an installed engine at the revision under test checks and renders it with the same results as the in-repository build, the library, CLI, and preprocessor agree, and the supported mdBook versions are declared and enforced. `fresh-session` coverage is from one Claude Code session; a Codex session was not run.
+
+## Milestone 4. Projects use consistent engine entry points and reproducible setup {#project-integration-4}
+
+**Outcome:** This Book and independent consumer fixtures exercise the native entry points, version alignment, and contributor setup that Symposium needs, before its own Cargo and CI integration adopts them.
+
+**Status:** Proposed
+
+**Identifier:** `project-integration-4`
+
+**Dependencies:** Milestone 1, complete; the engine and Symposium trial findings in the [agreed sequence](index.md#first-major-milestone-symposium-adopts-anchor-book). Settle the version and authoring-reference interfaces before implementation. Existing milestone identifiers 2 and 3 remain retired.
+
+**Design basis:** [Running the engine](../design/project-integration.md#running-the-engine), [agent bootstrap](../design/project-integration.md#agent-bootstrap), [A-project-native-commands](../design/project-integration.md#A-project-native-commands), and [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version).
+
+**Tasks**
+
+- [ ] Expose the library CLI entry point and exercise the documented workspace-binary and installed-binary paths. Implement the exact engine-version declaration and mismatch checks; settle configuration and record-syntax version declarations and migration before changing their schema.
+- [ ] Exercise library, CLI, and preprocessor equivalence through independent consumer fixtures, including failing and incomplete Books and mismatched versions. Keep this repository's Book acceptance separate from its ordinary tests so a broken Book cannot prevent building its engine.
+- [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, supported tools, and normal commands. Decide how the engine distributes those references and exercise that delivery here before Symposium relies on it.
+- [ ] Document a full pinned Git revision for dependency and installation before registry publication, with upgrade steps keeping configuration, locked dependency, and invoked binary aligned. Test the setup outside the development checkout without Verus.
+
+### Completion criteria
+
+#### Native entry points {#project-integration-4-native-entry-points}
+
+Consumer fixtures using a package dependency obtain equivalent findings through
+the library, workspace binary, and installed binary. Their ordinary test and
+mdBook commands reject the independently specified broken inputs. Exact version
+declarations are enforced and unsupported schema or syntax versions produce
+incomplete results before evaluation. The engine's own independent tests remain
+usable with a broken Book.
+
+- **Anchor coverage:** [A-project-native-commands](../design/project-integration.md#A-project-native-commands) · `consumer-fixture` — Full; [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version) · `same-version-entry-points`, `exact-version-declaration`, `unsupported-versions` — Full.
+- **Evidence:** Pending.
+
+#### Contributor setup {#project-integration-4-contributor-setup}
+
+A fresh consumer setup retrieves the correct contract and authoring references,
+checks and renders its Book, and runs its documented tests using the pinned engine
+without this development checkout or Verus. Record tools, commands, versions,
+results, and any assistance. General registry release remains separate.
+
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: reproducible bootstrap and versioned references in a consumer fixture.
+- **Evidence:** Pending.
+
+### Completion record
+
+Pending.

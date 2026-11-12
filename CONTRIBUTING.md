@@ -69,6 +69,7 @@ boundaries. `cargo doc --no-deps` builds the public API documentation.
 The binary supports `anchorbook check --config PATH`, `anchorbook md`,
 `anchorbook md supports html`, `anchorbook contract`,
 `anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]...`,
+`anchorbook proof --config PATH [--anchor ID]...`,
 help, and version. The
 adapter targets **mdBook 0.5.4** and its HTML renderer. `anchorbook contract`
 prints the AI Working Contract, whose source is the section files in `contract/`;
@@ -189,7 +190,8 @@ cargo install cargo-nextest --version 0.9.151 --locked
 
 `--anchor <id>` and `--method test` narrow the run for the build loop. Without
 nextest, linked tests show as not evaluated; ordinary `cargo test` and CI do not
-need it. No proof runner exists yet, so linked proofs are not evaluated. Runner
+need it. Configured Verus library targets run through the native proof runner;
+criterion assessments and guards remain outstanding after target success. Runner
 output, including each package's log, is under `target/anchorbook-verify/`.
 `tests/verification.rs` holds the fixture tests, which use a recording stand-in
 for `cargo`; `native_nextest_follows_a_change_through_the_build_loop` is ignored
@@ -230,7 +232,7 @@ Install the verifier's toolchain alongside the normal development toolchains:
 
 ```sh
 rustup toolchain install 1.99.1 --profile minimal --component rustc-dev,llvm-tools
-cargo verus verify --fwd-verus-args-to roots --locked --features verus --lib -- --no-cheating --output-json --time-expanded
+cargo run --quiet --locked --bin anchorbook -- proof --config anchorbook.toml --anchor A-records-valid-authority
 ```
 
 The production functions are ordinary Rust carrying Verus attributes such as
@@ -244,11 +246,15 @@ No Book build or wrapper script is required. `--no-cheating` rejects project
 assumptions and trusted function bodies; the verifier, solver, standard-library
 specifications, and Rust compiler remain trusted dependencies.
 
-Review the report for zero errors and results for `validate_authorities`, `validate_reference`,
-`lookup`, `has_required_authority`, `matches_identity`, `matches_target_kind`, and
-`has_unknown_identity` in `records::authority`. Cargo can reuse verified artifacts;
-to force a fresh engine run after an initial build, run `cargo clean -p anchor-book`
-before verification. This retains dependency artifacts. Reverify after changes to
+The `[verification.verus]` configuration pins the verifier and Rust toolchain,
+manifest, package, library target, and features. Set its optional `installation`
+directory or put the pinned tools on PATH. The engine checks actual Verus, Rust,
+and Z3 identities, then verifies each required target once in a fresh directory
+under `target/anchorbook-verify/`. It selects expected functions from their
+`/// anchorbook:` links and checks modes, unique results, full-target success,
+and current inputs. The JSON report's `complete` field and exit 0 mean target
+contracts verified; missing tools and incomplete evidence fail the gate. Raw
+logs stay in that directory, with their paths in the report. Reverify after changes to
 code, specifications, conversion, or dependencies, and run ordinary tests for the
 unproved integration boundaries.
 
@@ -274,25 +280,27 @@ for PRs targeting `main`, pushes to `main`, and manual dispatch. It uses Ubuntu
 Rust toolchain. Ordinary tests run on Rust 1.88.0 against the same checkout;
 the separate Engine workflow also checks stable Rust. No Book build is required.
 
-Verification uses a fresh target directory without a restored build cache.
-The command must succeed, and `.github/verus-report.jq` requires exactly one
-report from the pinned verifier, full-crate verification, zero errors, a nonzero
-verified count, and successful executable results for all seven authority
-functions. Missing, partial, malformed, or unsuccessful reports fail the job.
-The function list must stay aligned with the agreed proof boundary when it changes.
+The job calls `anchorbook proof` through the checkout's engine. The shared runner
+requires exactly one supported report from each fresh target run, full-crate
+verification, zero errors, nonzero coverage, and each linked function exactly
+once in the expected mode. Missing, partial, malformed, stale, or unsuccessful
+results fail the job. There is no separate workflow parser or function list.
+The job also runs the native fixture acceptance for linked and supporting
+failures, trust violations, and correction. Reproduce it locally with
+`ANCHORBOOK_TEST_VERUS=<tool-directory> cargo test --locked --test proof_runner native_proof_failure_support_failure_trust_and_correction -- --ignored --nocapture`.
 
 The job has a 20-minute budget and retains `authority-proof-results` for 14 days,
 including failures where evidence is available. The artifact identifies the actual
 checkout revision (the merge commit for a PR), run URL, tools, commands, exit codes,
 assumptions, and selected proof results. Raw proof-note payloads are omitted;
-compiler and verifier diagnostics remain in job logs. Cancelled or incomplete
+native diagnostic locations and local log paths are in the report. Raw logs are
+not uploaded. Cancelled or incomplete
 runs are not passing evidence. Review the anchor interpretation and unproved
 boundaries separately; a green job does not establish those review obligations.
 
-The workflow is merged and passes on PRs and main; the
-[Formal Verification roadmap](book/implementation-roadmaps/formal-verification.md#formal-verification-2)
-records tested revisions and results. The deliberate-failure/correction GitHub
-run and merge enforcement remain to be demonstrated.
+The [Verification Evidence roadmap](book/implementation-roadmaps/verification-evidence.md#verification-evidence-2)
+records validation of the shared runner and the remaining CI demonstration.
+Earlier proof-workflow evidence remains in the Formal Verification roadmap.
 
 ## Mutation testing
 

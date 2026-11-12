@@ -178,20 +178,53 @@ for phase-specific responsibilities.
 
 ## Current roadmaps
 
-Each roadmap's milestones record their own status and evidence.
+Each roadmap's milestones record their own status and evidence. Navigation and
+the list below put roadmaps with remaining work first, ordered by their first
+use in the agreed sequence, followed by completed roadmaps. The sequence defines
+dependencies between individual milestones across those chapters.
 
+### First major milestone: Symposium adopts Anchor Book
+
+The engineer has agreed this sequence. Develop Anchor Book with its own Book
+and Symposium as test subjects, then integrate it into Symposium for ordinary
+development. [Symposium Integration milestone 8](symposium-integration.md#symposium-integration-8)
+records completion: upstream integration, agents working from the Book and its
+current build results, native commands and CI, matching rendered evidence, and
+reproducible contributor setup.
+A fork trial alone does not complete that outcome.
+
+| Step | Work and owning milestone |
+| --- | --- |
+| 1. Reconcile this Book's plan | This sequence and the linked roadmaps define the work, dependencies, and completion evidence. |
+| 2. Encapsulate Verus and fix the engine's proof CI | [Verification Evidence 2](verification-evidence.md#verification-evidence-2): settle the runner interface in a bounded native experiment, move execution and report interpretation into the engine, switch its Authority proof job to that path, and demonstrate failure and correction without weakening the gate. This is the active milestone; GitHub validation remains pending. |
+| 3. Complete one Symposium development loop | [Symposium Integration 4](symposium-integration.md#symposium-integration-4), starting with configuration loading: current engine and syntax, linked tests, passing/failing/restored results, and explicit treatment of partial coverage and tests that do not run. |
+| 4. Correct the engine gaps | Record and resolve each trial finding against this Book's design, implement and exercise the correction here, then repeat the Symposium case. [Verification Evidence 8](verification-evidence.md#verification-evidence-8) owns review records; other findings receive bounded work before a dependent trial continues. |
+| 5. Make Book build results usable by agents | [Verification Evidence 3](verification-evidence.md#verification-evidence-3) supplies retained reports; [milestone 9](verification-evidence.md#verification-evidence-9) combines current checks, evidence, and completion claims for agents and the rendered Book, using milestone 8's reviews. Exercise the workflow in this Book first, including stale inputs and correction from reported findings. |
+| 6. Expand the Symposium Book | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) ports the existing design and accepted decisions with light review; milestone 4 extends test links as areas become available. |
+| 7. Exercise real agent development | [Symposium Integration 7](symposium-integration.md#symposium-integration-7): missing tests, a behavior change, and a design change, using the Book and current build reports, with independently specified expectations and review of the resulting Book, code, and evidence. Findings return to step 4. |
+| 8. Integrate ordinary commands and CI | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Symposium Integration 5](symposium-integration.md#symposium-integration-5) applies the shared checks and evidence build to its native commands and CI. Test-only adoption requires no proof guards or consumer Verus support. |
+| 9. Integrate upstream | [Symposium Integration 8](symposium-integration.md#symposium-integration-8): resolve maintainer review and design-document ownership, integrate the changes, and verify the upstream contributor workflow. |
+
+The sequence orders the next work; engine corrections recur throughout it.
+Later milestones remain Proposed until their prerequisites and any trial-driven
+scope changes are settled. Implementation starts on assignment. The existing
+plugin proposal, broader proof guards and consumer proofs, registry release,
+initialization, and materialization are outside this first major milestone unless
+a recorded adoption finding makes a specific part necessary.
+
+- [Verification Evidence](verification-evidence.md): shared criterion evidence, early encapsulation of Verus and the engine's proof CI, review records, and current build results for agents and the rendered Book; broader proof guards and consumer-owned Verus follow.
+- [Symposium Integration](symposium-integration.md): trials of Book development and agent work lead to upstream adoption; engine gaps are corrected here first.
+- [Project Integration](project-integration.md): this Book exercises shared groundwork, version alignment, and adoption guidance before Symposium relies on them.
 - [Engine Bootstrap](bootstrap.md): reviewing and accepting the checker's governing records.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
 - [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
 - [Formal Verification](formal-verification.md): proving the engine's own authority validation, and making Verus an optional feature so no project needs it.
 - [Record Line Grammar](record-line-grammar.md): measuring the line grammar with agents, then making it the engine's and this Book's only record syntax.
-- [Verification Evidence](verification-evidence.md): shared criterion evidence, test and proof runners, proof guards and assessment records, consumer-owned Verus, and retained CI reports.
-- [Project Integration](project-integration.md): this Book uses the groundwork every project relies on before any project adopts it.
-- [Symposium Integration](symposium-integration.md): Symposium develops with its own Anchor Book, without Verus, and the gaps it exposes become engine work.
 
-Drafting is preparation, not milestone completion. Unassigned work remains
-proposed; engine automation is not needed to maintain these roadmaps.
+Drafting is preparation, not milestone completion. Ready work can be assigned;
+readiness alone starts no implementation. Engine automation is not needed to
+maintain these roadmaps.
 
 ## Later work retained from the design
 
@@ -207,11 +240,10 @@ clear design and outcome-based milestones before implementation.
 | Language-specific contract extensions | [Contract delivery](../design/system-overview.md#contract-delivery) | `anchorbook contract` delivers the engine-owned contract through [Project Integration milestone 1](project-integration.md#project-integration-1). Its Rust guidance is built in; extensions for other languages need their own design. |
 | Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are implemented in [Record Rendering milestone 4](record-rendering.md#record-rendering-4), which is Complete; references between roadmaps beyond fragments remain later work. |
 | Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
-| Anchor progress views | [Book concepts](../design/system-overview.md#what-a-book-describes), [Build](../design/system-overview.md#operations) | Provided test surfaces and progress views combining anchor development, `verify` results, and roadmap completion. The [Verification Evidence roadmap](verification-evidence.md) builds evidence evaluation itself; keep verification independent of its consuming Book build. |
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |
 | Automated phase and readiness checks | [Project phase](../design/configuration.md#project-phase) | Define what can establish design readiness or completion and how further iterations preserve a completed baseline. The first configuration reader only exposes the phase. |
 | Crate release | [Rust Engine](../design/rust-engine.md#rust-development-conventions), [Project Integration](../design/project-integration.md) | Registry naming, package contents including the contract, public API and schema compatibility, the declared engine, configuration, and record-syntax versions, and release verification. The package delivers what consuming Books need at run time, as it now does for the contract and the record and milestone presentation, and should leave out repository-only files such as workflows. Publishing is separate from local prototyping. |
-| Remaining project integration | [Project Integration](../design/project-integration.md) | The [Project Integration](project-integration.md) and [Symposium Integration](symposium-integration.md) roadmaps build the groundwork and trial it in one project; their findings refine this work. sage-dev's integration is deferred while its role is unclear. The library CLI entry point and exact engine-version declaration, including validation of exact requirements and rejection of mismatched entry points; other exact dependency pins; declared mdBook versions; the agent bootstrap template; and broader adoption fixtures. Verus is an optional engine feature through [Formal Verification milestone 4](formal-verification.md#formal-verification-4); project proof execution and consumer fixtures in [Verification Evidence milestones 2 and 5](verification-evidence.md#verification-evidence-2). Those fixtures can use a locally packaged candidate; general adoption still needs crate release and contract delivery. Found in [Symposium Integration milestone 1](symposium-integration.md#symposium-integration-1-gaps): projects need versioned authoring references for the record and roadmap forms their engine reads, rather than this Book's chapters at a pinned revision. |
+| Remaining project integration | [Project Integration](../design/project-integration.md) | [Project Integration milestone 4](project-integration.md#project-integration-4) now owns the library CLI entry point, exact engine-version declaration, and reproducible bootstrap and authoring references needed for Symposium. Broader adoption fixtures, other exact dependency pins, additional mdBook versions, and general release compatibility remain later work. sage-dev's integration is deferred while its role is unclear. Verus is optional through [Formal Verification milestone 4](formal-verification.md#formal-verification-4); consumer proof fixtures remain in [Verification Evidence milestone 5](verification-evidence.md#verification-evidence-5). Symposium can adopt a pinned Git revision before registry publication. |
 
 The prototype's mdBook-version, output-format, and plain-text-field limits remain
 documented constraints. Expanding them needs its own design and roadmap change;

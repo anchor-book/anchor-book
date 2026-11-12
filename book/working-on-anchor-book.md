@@ -45,8 +45,10 @@ inspect this Book's format; the checker reports findings without repairing files
 The binary also supports `anchorbook md supports html`, `anchorbook contract`,
 `anchorbook verify --config anchorbook.toml`, help, and version. `verify` reports
 each anchor criterion's evidence state and checks the Book's claims of completion;
-it runs linked tests with cargo-nextest, which CONTRIBUTING describes installing,
-and has no proof runner yet. This Book's tests are linked to its anchors' criteria
+it runs linked tests with cargo-nextest and configured library proofs with Verus,
+which CONTRIBUTING describes installing. `anchorbook proof --config anchorbook.toml`
+uses the same Verus runner as a strict proof-target gate. Target success leaves
+criterion assessments and guards outstanding. This Book's tests are linked to its anchors' criteria
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
 

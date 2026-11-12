@@ -1,0 +1,101 @@
+{
+  "verification-results": {
+    "encountered-error": false,
+    "encountered-vir-error": false,
+    "success": true,
+    "verified": 2,
+    "errors": 0,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.10.18.7d82994"
+    },
+    "num-threads": 1,
+    "total": 541,
+    "estimated-cpu-time": 541,
+    "rust": {
+      "total": 37,
+      "init-and-types": 7,
+      "trait-conflicts": 22,
+      "compile": 7
+    },
+    "verification": {
+      "total": 345,
+      "vir": {
+        "total": 318,
+        "hir": 1,
+        "import": 252,
+        "rust-to-vir": 31
+      }
+    },
+    "total-verify": 22,
+    "total-verify-module-times": [
+      {
+        "module": "",
+        "time": 22
+      }
+    ],
+    "air": {
+      "total": 15,
+      "module-times": [
+        {
+          "module": "",
+          "time": 15
+        }
+      ]
+    },
+    "smt": {
+      "total": 0,
+      "smt-init": 0,
+      "rlimit-init": 20,
+      "smt-init-module-times": [
+        {
+          "module": "",
+          "time": 0,
+          "time-micros": 36,
+          "rlimit": 20
+        }
+      ],
+      "smt-run": 0,
+      "rlimit-run": 4,
+      "smt-run-module-times": [
+        {
+          "module": "",
+          "time": 0,
+          "time-micros": 74,
+          "rlimit": 4,
+          "function-breakdown": [
+            {
+              "function": "modes::lemma",
+              "mode:": "proof",
+              "time": 0,
+              "time-micros": 28,
+              "rlimit": 2,
+              "success": true
+            },
+            {
+              "function": "modes::linked",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 45,
+              "rlimit": 2,
+              "success": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.10.18.7d82994",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.99.1-x86_64-unknown-linux-gnu",
+    "commit": "7d829946231d6413a398f6e4160cdfe951261dad"
+  }
+}

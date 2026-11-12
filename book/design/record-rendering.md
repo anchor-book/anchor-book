@@ -35,6 +35,14 @@ Record parsing and validation are separate from presentation. Canonical record
 definitions define record identities, authority relationships, and verification criteria.
 The shared library collects and validates that inventory before it can be rendered.
 
+When [build evidence](verification-evidence.md#book-build-evidence) is configured,
+the adapter presents the shared report's states beside criteria, with evidence
+links, scope, input identity, and reasons for missing or unevaluated evidence.
+Required methods still describe obligations; acceptance labels and roadmap status
+still describe authored decisions. None is replaced by a result badge. The agent
+report and rendered view use the same evaluated model and freshness checks,
+under [A-build-current-evidence](system-overview.md#A-build-current-evidence).
+
 mdBook invokes `anchorbook md` with chapter input. The adapter calls the library's
 `rendering` operation, which uses `records` to validate the definitions and then
 replaces their source ranges with readable HTML in memory. The adapter returns

@@ -4,16 +4,25 @@
 
 Anchor Book connects a project's intended design, its governing authority, the
 work agreed for implementation, and evidence about the resulting system.
-The engine maintains that structure and makes gaps and progress visible.
-mdBook supplies the underlying Book structure and rendering.
+Agents are the primary consumers: the engineer works with them to maintain the
+Book, and they use its design and agreed roadmaps to build the system. The engine
+checks the deterministic rules and makes evidence and gaps available to that
+work. mdBook presents the same Book and results for people to inspect.
 
-## Anchor for developing the engine with this Book
+## Anchors
 
 > **`A-check-independent-build`** (accepted): **A broken Book remains diagnosable by its own engine**
 > Property: Engineers and agents can still build and use the checker to diagnose a broken Book while developing Anchor Book with that Book. Engine compilation and independent fixture tests do not require a valid or rendered repository Book. Checking the current Book is a separate acceptance step before rendering, so format defects can be reported without first repairing the Book to build its checker.
 > Authority: `R-independent-engine`
 > - Criterion `broken-book` [test]: In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure.
 > - Criterion `ci-order` [review]: Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it.
+
+> **`A-build-current-evidence`** (draft): **Agents and the rendered Book see the same current evidence**
+> Property: A Book build with evidence configured exposes one shared result through the library, agent-facing report, and rendered Book. It identifies the evaluated inputs and scope, structural findings, criterion evidence, and checked or unchecked completion claims. Evidence from different or changed inputs cannot appear as current support. Authored design, acceptance status, and roadmap status remain distinct from these derived results, and sources remain unchanged.
+> Authority: `R-criterion-evidence`; `R-truthful-results`; `D-typed-check-results`
+> - Criterion `consistent-views` [test]: Independently specified fixtures containing satisfied, failed, partial, unlinked, and unevaluated criteria and checked and unchecked completion claims produce equivalent identities, states, scope, and limits in the library, versioned artifact, CLI, and rendered Book; acceptance and roadmap labels do not become evidence states.
+> - Criterion `current-inputs` [test]: Through the actual build integration, current matching evidence is accepted; missing, malformed, unsupported, or mismatched reports and input changes during evaluation or rendering prevent a successful current-evidence build. Cases include edits to criteria, evidence links, code, configuration, lockfiles, and assessment records without a Git revision change.
+> - Criterion `independent-pipeline` [test]: A fixture pipeline runs verification before rendering, without recursive tests or Book builds, preserves source files, and leaves engine compilation and independent tests usable with invalid Book input. A record-only build without evidence configuration explicitly indicates that verification was not evaluated.
 
 ## Components
 
@@ -54,6 +63,25 @@ A design change updates the goal; it does not establish that the change is
 implemented. A roadmap defines agreed implementation work; evidence establishes
 its completion.
 
+### Working through agents
+
+The engineer and agents refine design, anchors, and the implementation roadmap
+together. Agents read the current Markdown sources and the engine's working
+contract, then implement assigned work and develop its tests, proofs, and review
+records. Reading the Book does not require a successful build or rendered HTML.
+
+The build loop returns structured findings and current evidence to the agent,
+which uses them to correct the implementation or propose a design change with
+the engineer. Stable record and criterion identifiers connect findings to source
+locations and evidence. Agents consume the library, CLI, or versioned report;
+they do not need to scrape the rendered Book or maintain result labels by hand.
+
+The engine enforces structure, reference validity, evidence resolution, current
+inputs, and the declared completion rules. Judgments about design intent and
+whether evidence covers a whole criterion remain explicit assessments under the
+project's reviewer policy. A passing deterministic check establishes only its
+declared scope.
+
 A Book can provide authorities for another Book to consume. Consumers need an
 explicit identity and revision for those authorities so changes can be reviewed.
 Dependency identity, distribution, and conflict handling need further design.
@@ -80,7 +108,7 @@ inventory from mdBook and does not require project configuration.
 | Adopt | Map an existing project into Book roles, expose gaps, and apply reviewed changes through materialization | Agreed configuration and managed structure |
 | Materialize | Reconcile required structure, core content, and selected integration settings | Declared managed content |
 | Check | Evaluate the current Book against an explicit rule scope | None |
-| Verify | Run the tests and proofs linked to anchor criteria and report progress by chapter, anchor, and criterion | Runner output only |
+| Verify | Evaluate linked tests, proofs, and recorded reviews; report progress by chapter, anchor, and criterion | Derived evidence reports only |
 | Contract | Return the effective AI Working Contract through a command into agent context | None |
 | Build | Assemble anchor, verification, and roadmap progress and render it using mdBook | Derived reports and rendered output |
 
@@ -93,6 +121,10 @@ Build keeps three views distinct: anchor development, verification evidence,
 and agreed roadmap completion. Missing, failed, stale, or incomplete evidence
 cannot count as successful verification. [Running Verification](verification-evidence.md)
 defines the verify operation that evaluates evidence; Build presents its results.
+The [build evidence handoff](verification-evidence.md#book-build-evidence) checks
+that those results apply to the Book and code being built. Build describes the
+pipeline assembled through native project tools, not an additional wrapper
+command.
 
 ## Contract delivery
 
@@ -129,6 +161,9 @@ check first and renders nothing if that check fails or is incomplete, so ordinar
 `mdbook build` and `mdbook serve` apply it without a wrapper command; see the
 [native tool integration decision](../authority/decisions.md#D-native-tool-integration).
 It does not repair files, run tests, or recursively build the Book. Diagram preprocessors run alongside it.
+When evidence is configured, it validates and presents the completed report from
+the preceding verification step. Record-only rendering remains usable without
+verification configuration and identifies verification as not evaluated.
 [Record Rendering](record-rendering.md) defines the shared-model integration.
 
 ## Developing the engine with this Book
@@ -139,14 +174,19 @@ flowchart TB
     rust["Engine Rust sources"] --> cargo["Cargo build and engine tests"]
     cargo --> check["Check this repository's Book"]
     book["Authored Book and configuration"] --> check
-    check --> render["mdBook render"]
+    check --> verify["Evaluate tests, proofs, and recorded reviews"]
+    cargo --> verify
+    verify --> report["Current shared evidence report"]
+    report --> agent["Agent reads results and corrects work"]
+    report --> render["Validate report inputs and render with mdBook"]
     book --> render
     render --> pages["Published Book"]
 ```
 
 The diagram shows the CI order:
-compile and test the engine, check this repository's Book, then render and publish
-it. Engine compilation and independent fixture tests must not require a valid
+compile and test the engine, check this repository's Book, evaluate evidence,
+then validate its applicability while rendering and publish the Book. Agents can
+read the report before rendering. Engine compilation and independent fixture tests must not require a valid
 or rendered Book. Current-Book acceptance is a separate step, so the engine remains
 usable to diagnose and repair its own Book when that Book is broken.
 

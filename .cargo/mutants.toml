@@ -16,9 +16,9 @@ exclude_re = [
     # index at 0, so the loop never ends and tests can only time out. Termination is
     # proved instead: each loop's `decreases` clause rejects these changes under
     # `cargo verus verify --features verus`. Re-review when these loops change.
-    '^src/records/authority\.rs:279:25: replace \+= with \*= in lookup$',
-    '^src/records/authority\.rs:305:25: replace \+= with \*= in has_unknown_identity$',
-    '^src/records/authority\.rs:344:33: replace \+= with \*= in validate_reference$',
-    '^src/records/authority\.rs:437:33: replace \+= with \*= in validate_authorities$',
-    '^src/records/authority\.rs:440:22: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:283:25: replace \+= with \*= in lookup$',
+    '^src/records/authority\.rs:310:25: replace \+= with \*= in has_unknown_identity$',
+    '^src/records/authority\.rs:350:33: replace \+= with \*= in validate_reference$',
+    '^src/records/authority\.rs:443:33: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:446:22: replace \+= with \*= in validate_authorities$',
 ]
