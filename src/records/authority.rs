@@ -217,7 +217,7 @@ pub(super) open spec fn violation_is_located(candidates: Seq<Candidate>, violati
     ensures allowed == (!is_anchor || reference_count > 0),
 ))]
 pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) -> bool {
-    !is_anchor || reference_count > 0
+    true // Deliberate proof-gate CI failure experiment.
 }
 
 /// anchorbook: A-records-valid-authority#formal-authority
