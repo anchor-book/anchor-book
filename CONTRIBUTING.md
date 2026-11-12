@@ -203,7 +203,8 @@ complete. JSON mode preserves the normal exit codes, including structured
 incomplete results with exit 2; invalid CLI arguments still print usage to stderr.
 Text is the default and can be selected with `--format text`.
 
-Neither format saves result files or report history. Consume output directly;
+Neither output format saves the aggregate result or its history; runners retain
+their configured working output. Consume the result directly;
 redirect it only when the workflow needs a temporary handoff or selected evidence.
 The version names the format, not a history of results. The current command does
 not import reports or attach evidence to rendered pages. Those consumers must

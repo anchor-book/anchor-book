@@ -238,7 +238,7 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 
 **Outcome:** The library and `verify --format json` expose the same current verification results as readable output, with criterion context and locations agents can act on. Results can be consumed directly; report files, history, and CI retention are optional.
 
-**Status:** In progress
+**Status:** Complete
 
 **Dependencies:** Milestones 1 and 4, complete. Use independent engine fixtures and this Book. New Symposium tests, project coding trials, proof guards, and report retention do not block the work.
 
@@ -249,9 +249,9 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 **Tasks**
 
 - [x] Define JSON output on standard output, its version, fields, incomplete-result behavior, and existing exit policy. Separate current result transport from retention.
-- [ ] Expose the current typed evaluation through a reusable library projection and `verify --format json`, preserving default readable output, criterion states, and completion claims. Include criterion statements, source locations, scope, input identities, and evidence limits.
-- [ ] Exercise independent fixtures through the actual CLI: passing and failing tests, missing evidence, excluded methods, unchecked claims, incomplete input, changed inputs, and non-Git/dirty workspaces. Demonstrate correction and confirm that JSON output creates no report history or source edits.
-- [ ] Exercise this Book with the implemented command and record the result and limits. Update contribution guidance with a directly usable coding command.
+- [x] Expose the current typed evaluation through a reusable library projection and `verify --format json`, preserving default readable output, criterion states, and completion claims. Include criterion statements, source locations, scope, input identities, and evidence limits.
+- [x] Exercise independent fixtures through the actual CLI: passing and failing tests, missing evidence, excluded methods, unchecked claims, incomplete input, changed inputs, and non-Git/dirty workspaces. Demonstrate correction and confirm that JSON output creates no report history or source edits.
+- [x] Exercise this Book with the implemented command and record the result and limits. Update contribution guidance with a directly usable coding command.
 
 ### Completion criteria
 
@@ -267,12 +267,17 @@ from outstanding criterion obligations. The fragment retains its original identi
 the outcome requires no artifact retention or report importer.
 
 - **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: structured current-result presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: structured scope and limits.
-- **Evidence:** Pending.
+- **Evidence:** Passed locally on engine revision `108d87b8acfd59e43e760e4a613bc9b7f722e2ea`, 2026-11-12. Five independent `structured::` cases in `tests/verification.rs` exercise the actual CLI and library projection: context and locations, default text compatibility, all relevant evidence states, unchecked and unsatisfied claims, partial methods and missing proof guards, incomplete diagnostics, malformed invocation, correction, changed inputs, and unchanged source/file inventories. The full independent suite and Clippy pass on stable and Rust 1.88.0, with the final structured cases and projection rechecked on both. Engine-independence experiments, the structural check, mdBook build, and all six Book acceptance tests pass.
+
+  Native cargo-nextest 0.9.151 runs of this Book with `verify --config anchorbook.toml --anchor A-verify-progress-report --method test --format json` report both criteria satisfied (four and five linked tests respectively), exit 0, and 39 claims explicitly unchecked outside scope. The committed run identifies revision `108d87b8acfd59e43e760e4a613bc9b7f722e2ea` with `dirty: false`; an earlier working-tree run reports `dirty: true`. Results were consumed in memory. An independent non-Git Rust fixture additionally moves from a reported failure to satisfaction after correcting the implementation, then supports its recorded completion claim; the bounded coding probe below records the limits.
 
 ### Completion record
 
-Pending. Renderer consumption and saved-input validation remain in milestone 9.
-CI retention is optional and requires a concrete use and expiration policy.
+Complete locally on branch `codex/shared-verification-results` for the structured
+current-result interface. The code revision and acceptance above establish that
+scope; GitHub checks and integration are reported on the PR and are not implied
+by local completion. Renderer consumption and saved-input validation remain in
+milestone 9. Retention is optional and needs a concrete purpose and expiration policy.
 
 ## Milestone 4. Both runners share criterion evidence and report behavior {#verification-evidence-4}
 
@@ -590,7 +595,7 @@ Pending.
 
 **Tasks**
 
-- [ ] Focus the next increment on the coding experience: use the current structured result to locate a deliberately failing criterion, correct its implementation or test from the Book definition, and rerun. Record where context, locations, or feedback need improvement before designing further integration.
+- [x] Establish an initial coding-experience probe: use the current structured result to locate a deliberately failing criterion, correct its implementation or test from the Book definition, and rerun. Record where context, locations, or feedback need improvement before designing further integration.
 - [ ] Use independent engine fixtures and this Book to settle the native build configuration, report handoff, artifact compatibility, input identities, and actionable diagnostics. Existing Symposium findings can inform the work; a new project test or coding trial is not a prerequisite. Implement the test-only path using existing runner outcomes, reconcile design and fixtures, and keep the engine usable with a broken Book.
 - [ ] Compose structural findings, evidence states, and completion-claim results through shared library models. Expose stable record and criterion identities, source locations, scope, and limits through the CLI and versioned artifact so agents can act without HTML or handwritten result labels.
 - [ ] Connect native project verification to rendering without duplicate test execution or recursive builds. Validate inputs before and after evaluation and rendering, including dirty working trees and assessment changes; reject missing, invalid, unsupported, and mismatched handoffs.
@@ -622,9 +627,29 @@ rendered Book agree. Record-only rendering makes its unevaluated scope explicit.
 - **Anchor coverage:** [A-build-current-evidence](../design/system-overview.md#A-build-current-evidence) · `independent-pipeline` — Full.
 - **Evidence:** Pending.
 
+### Initial coding probe {#verification-evidence-9-coding-probe}
+
+On 2026-11-12, this coding session used engine revision
+`108d87b8acfd59e43e760e4a613bc9b7f722e2ea` and native nextest 0.9.151 on a separate
+Rust fixture with no Git repository. Its Book stated that incrementing inputs
+0, 2, and 254 must return 1, 3, and 255. The initial implementation returned the
+input unchanged. `verify --anchor A-increment --method test --format json`
+reported `failed`, the criterion statement, the anchor definition location, and
+the linked `tests::adds_one` location. Exit 0 correctly meant unclaimed progress,
+not passing evidence. Reading the linked source and changing the implementation
+to add one produced `satisfied` with a changed code identity. Recording that
+fixture milestone Complete and rerunning produced one satisfied claim.
+
+This establishes a small correction loop using current results, without retaining
+report history. It is not a fresh-session usability study or evidence for the
+renderer/build handoff. The result names the failing test but leaves detailed
+assertion output in the native log; assessing that feedback and how clearly it
+directs the next edit is the next coding-experience focus. The probe covered its
+three stated examples and required no Symposium change.
+
 ### Completion record
 
-Pending.
+Pending. The coding probe does not complete either shared-rendering criterion.
 
 ## Retired work
 
