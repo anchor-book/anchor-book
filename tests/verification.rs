@@ -1840,4 +1840,29 @@ mod structured {
         }
         assert_eq!(before, book.snapshot());
     }
+
+    #[test]
+    fn json_preserves_diagnostic_text_without_guessing_external_locations() {
+        let base = std::path::Path::new("/project");
+        let text = "cannot read /project/file.rs or /project-other/file.rs";
+        let error = anchor_book::verification::VerifyError::Read(text.into());
+        let output = json_error(&error, &Scope::default(), base);
+        assert_eq!(output["findings"][0]["message"], text);
+        assert!(output["findings"][0]["location"].is_null());
+        let book = one_test();
+        let mut report = evaluate(&whole(&book), &RunResults::not_run("fixture"));
+        report
+            .findings
+            .push(anchor_book::verification::LinkFinding {
+                path: std::path::PathBuf::from("/external/file.rs"),
+                line: 7,
+                code: "verify.read-failed",
+                message: text.into(),
+            });
+        let output = json_report(&report);
+        let finding = output["findings"].as_array().unwrap().last().unwrap();
+        assert_eq!(finding["message"], text);
+        assert!(finding["location"]["path"].is_null());
+        assert_eq!(finding["location"]["line"], 7);
+    }
 }

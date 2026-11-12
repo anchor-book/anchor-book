@@ -39,16 +39,6 @@ fn location(
     json!({"relative_to": relative_to, "path": path(source, base), "line": line, "column": column})
 }
 
-fn message(text: &str, base: &Path) -> String {
-    // Normalize the known machine-specific project prefix in engine diagnostics.
-    // Project-authored text is retained and must be reviewed before publication.
-    if base.is_absolute() && base.parent().is_some() {
-        text.replace(base.to_string_lossy().as_ref(), ".")
-    } else {
-        text.to_owned()
-    }
-}
-
 fn function(id: &FunctionId) -> Value {
     let (kind, name) = match &id.target {
         Target::Lib => ("lib", None),
@@ -92,7 +82,7 @@ pub fn json_report(report: &Report) -> Value {
             let criteria: Vec<_> = anchor.criteria.iter().map(|criterion| {
                 let methods: Vec<_> = criterion.methods.iter().map(|method| {
                     json!({"method": method.method.as_str(), "state": method.state.as_str(),
-                        "reason": message(&method.reason, &report.base),
+                        "reason": method.reason,
                         "links": method.links.iter().map(function).collect::<Vec<_>>()})
                 }).collect();
                 json!({"id": criterion.id, "statement": criterion.statement,
@@ -115,7 +105,7 @@ pub fn json_report(report: &Report) -> Value {
             "location": location(&link.path, "configuration", Some(link.line), None, &report.base)})
     }).collect();
     let findings: Vec<_> = report.findings.iter().map(|finding| {
-        json!({"code": finding.code, "message": message(&finding.message, &report.base),
+        json!({"code": finding.code, "message": finding.message,
             "location": location(&finding.path, "configuration", Some(finding.line), None, &report.base)})
     }).collect();
     let claims: Vec<_> = report.claims.iter().map(|claim| {
@@ -146,9 +136,7 @@ pub fn json_report(report: &Report) -> Value {
 /// successful input identity or evidence is invented when planning failed.
 pub fn json_error(error: &VerifyError, requested: &Scope, base: &Path) -> Value {
     let mut structural_check = Value::Null;
-    let simple = |code, text: &str| {
-        vec![json!({"code": code, "message": message(text, base), "location": null})]
-    };
+    let simple = |code, text: &str| vec![json!({"code": code, "message": text, "location": null})];
     let findings = match error {
         VerifyError::Check(report) => {
             let base = report.path_base().unwrap_or(base);
@@ -162,19 +150,19 @@ pub fn json_error(error: &VerifyError, requested: &Scope, base: &Path) -> Value 
                     at["field"] = json!(loc.field);
                     at
                 };
-                json!({"code": finding.code, "message": message(&finding.summary, base),
+                json!({"code": finding.code, "message": finding.summary,
                     "location": at(&finding.location), "related": finding.related.iter().map(at).collect::<Vec<_>>(),
-                    "expected": message(&finding.expected, base), "found": message(&finding.found, base),
-                    "help": message(&finding.help, base)})
+                    "expected": finding.expected, "found": finding.found,
+                    "help": finding.help})
             }).collect()
         }
         VerifyError::Records(errors) => errors.diagnostics().iter().map(|finding| {
             let at = |loc: &crate::SourceLocation| location(loc.path(), "book", Some(loc.line()), Some(loc.column()), base);
-            json!({"code": finding.code().as_str(), "message": message(finding.message(), base),
+            json!({"code": finding.code().as_str(), "message": finding.message(),
                 "location": at(finding.location()), "related": finding.related_locations().iter().map(at).collect::<Vec<_>>()})
         }).collect(),
         VerifyError::Roadmaps(errors) => errors.diagnostics().iter().map(|finding| json!({
-            "code": finding.code(), "message": message(finding.message(), base),
+            "code": finding.code(), "message": finding.message(),
             "location": location(finding.path(), "book", Some(finding.line()), None, base)
         })).collect(),
         VerifyError::Configuration(text) => simple("verify.invalid-configuration", text),

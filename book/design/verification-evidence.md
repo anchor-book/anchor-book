@@ -487,8 +487,10 @@ artifacts under an explicit expiration policy. Durable completion evidence belon
 in the roadmap: tested revisions, checks, outcomes, coverage, and limitations.
 Preserve a full report only when a concrete evidence need justifies it. Report
 history, automatic uploads, and durable storage are not prerequisites for the
-coding workflow. Raw process logs are not embedded; review project-authored text
-and diagnostics before publishing selected results.
+coding workflow. Raw process logs are not embedded. Diagnostic text is preserved, including any
+paths it names; review project-authored text and diagnostics before publishing
+selected results. Structured location fields use the declared relative base,
+with null paths when a location cannot be expressed under that base.
 
 ### Run identity
 
