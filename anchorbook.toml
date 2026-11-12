@@ -17,3 +17,8 @@ implementation-roadmaps = "implementation-roadmaps/index.md"
 sources = ["src", "tests"]
 output = "target/anchorbook-verify"
 runners = ["nextest", "verus"]
+
+[verification.verus]
+version = "0.2026.10.18.7d82994"
+rust-toolchain = "1.99.1"
+targets = [{ manifest = "Cargo.toml", package = "anchor-book", target = "lib", features = ["verus"] }]

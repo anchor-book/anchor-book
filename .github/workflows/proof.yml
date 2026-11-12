@@ -67,26 +67,16 @@ jobs:
       - name: Verify production authority code
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         run: |
-          verus --version
-          z3 --version
-          # No build cache is restored. A separate target directory ensures the
-          # ordinary test build cannot supply a stale or absent proof report.
-          status=0
-          cargo verus verify --fwd-verus-args-to roots --locked --features verus --target-dir target/verus-ci --lib \
-            -- --no-cheating --output-json --time-expanded \
-            > target/proof-results/raw.txt || status=$?
-          jq -n --argjson exit_code "$status" \
-            '{command: "cargo verus verify --fwd-verus-args-to roots --locked --features verus --target-dir target/verus-ci --lib -- --no-cheating --output-json --time-expanded", exit_code: $exit_code}' \
-            > target/proof-results/command.json
-          # Fresh dependency verification emits a plain-text success summary.
-          # Remove only that known line; any other non-JSON output fails parsing.
-          sed '/^verification results:: [0-9][0-9]* verified, 0 errors$/d' \
-            target/proof-results/raw.txt | \
-            jq -s --arg version "$VERUS_VERSION" -f .github/verus-report.jq \
+          cargo +"$TEST_RUST" run --quiet --locked --bin anchorbook -- \
+            proof --config anchorbook.toml --anchor A-records-valid-authority \
             > target/proof-results/verification.json
-          jq . target/proof-results/verification.json
-          jq -e '.complete == true' target/proof-results/verification.json
-          exit "$status"
+      - name: Native proof runner acceptance
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        env:
+          ANCHORBOOK_TEST_VERUS: ${{ runner.temp }}/verus/verus-x86-linux
+        run: |
+          cargo +"$TEST_RUST" test --locked --test proof_runner \
+            native_proof_failure_support_failure_trust_and_correction -- --ignored --nocapture
       - name: Retain proof evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -96,7 +86,6 @@ jobs:
           # selected result fields; compiler/verifier diagnostics stay in job logs.
           path: |
             target/proof-results/revision.json
-            target/proof-results/command.json
             target/proof-results/tests.json
             target/proof-results/verification.json
           if-no-files-found: warn

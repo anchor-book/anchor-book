@@ -212,6 +212,7 @@ pub(super) open spec fn violation_is_located(candidates: Seq<Candidate>, violati
 
 // Used by schema decoding as well as the complete validator: emptiness is not
 // assumed away at the boundary of the proof.
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(allowed =>
     ensures allowed == (!is_anchor || reference_count > 0),
 ))]
@@ -219,6 +220,7 @@ pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) ->
     !is_anchor || reference_count > 0
 }
 
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(yes =>
     ensures yes == identified_by(*candidate, id@),
 ))]
@@ -229,6 +231,7 @@ fn matches_identity(candidate: &Candidate, id: &str) -> bool {
     }
 }
 
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(yes =>
     ensures yes == kind_matches(kind, target),
 ))]
@@ -241,6 +244,7 @@ fn matches_target_kind(kind: Kind, target: TargetKind) -> bool {
 
 // Count identity matches even in undecodable candidates: otherwise an invalid
 // definition could disappear and make an ambiguous authority look unique.
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(result =>
     ensures match result {
         Lookup::Missing => forall|candidate_index: int| #![auto] 0 <= candidate_index < candidates.len() ==>
@@ -285,6 +289,7 @@ fn lookup(candidates: &[Candidate], id: &str) -> Lookup {
 }
 
 // An unrecoverable ID means we cannot describe an unresolved target as simply missing.
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(found =>
     ensures found == (exists|candidate_index: int| #![auto]
         0 <= candidate_index < candidates.len() && candidates[candidate_index].id.is_none()),
@@ -309,6 +314,7 @@ fn has_unknown_identity(candidates: &[Candidate]) -> bool {
 
 // requires supplies only safe indices, not an assumption that the reference is valid.
 // ensures proves both directions: valid references succeed and invalid ones fail.
+/// anchorbook: A-records-valid-authority#formal-authority
 #[cfg_attr(feature = "verus", verus_spec(failure =>
     requires
         record_index < candidates.len(),

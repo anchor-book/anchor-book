@@ -56,7 +56,7 @@ values and their syntax. Every listed method is required.
 | --- | --- | --- |
 | `test` | The stated cases behave as the criterion requires | Linked tests that ran and passed in the current run, with assertions derived from the criterion |
 | `proof` | The claim holds for every input in the stated domain, over the production code | Linked functions verified in a complete run, under the trust policy, with every [guard](#guards) satisfied |
-| `review` | A person's judgment of what neither tests nor proofs can decide | A current accepting [assessment record](#assessment-records) for the criterion |
+| `review` | A recorded judgment under the project's reviewer policy about what tests or proofs do not establish | A current accepting [assessment record](#assessment-records) for the criterion |
 
 Tests sample behavior; their assertions are visible, so a reader can judge what
 they cover. A proof covers every input, but its strength is in the specification,

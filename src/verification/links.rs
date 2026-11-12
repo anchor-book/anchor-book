@@ -67,6 +67,8 @@ pub enum Mode {
     Test,
     /// An executable function with a Verus contract, such as `#[verus_spec]`.
     Verified,
+    /// A ghost proof function with an explicit Verus proof attribute.
+    Proof,
 }
 
 /// A valid link from a function to an anchor criterion.
@@ -276,22 +278,41 @@ fn target_of(
 }
 
 fn mode_of(attrs: &[Attribute]) -> Option<Mode> {
-    let last = |attr: &Attribute| {
-        attr.path()
+    fn has(meta: &Meta, names: &[&str]) -> bool {
+        use syn::parse::Parser;
+        let path: Vec<_> = meta
+            .path()
             .segments
-            .last()
+            .iter()
             .map(|s| s.ident.to_string())
-            .unwrap_or_default()
-    };
-    if attrs.iter().any(|a| last(a) == "test") {
+            .collect();
+        if path.iter().map(String::as_str).eq(names.iter().copied())
+            || (names.len() == 1 && path.last().is_some_and(|s| s == names[0]))
+        {
+            return true;
+        }
+        if meta.path().is_ident("cfg_attr")
+            && let Meta::List(list) = meta
+        {
+            return syn::punctuated::Punctuated::<Meta, syn::Token![,]>::parse_terminated
+                .parse2(list.tokens.clone())
+                .is_ok_and(|items| items.iter().skip(1).any(|m| has(m, names)));
+        }
+        false
+    }
+    if attrs
+        .iter()
+        .any(|a| a.path().segments.last().is_some_and(|s| s.ident == "test"))
+    {
         return Some(Mode::Test);
     }
-    let verified = attrs.iter().any(|attr| match last(attr).as_str() {
-        "verus_spec" | "verus_verify" => true,
-        "cfg_attr" => matches!(&attr.meta, Meta::List(list)
-            if list.tokens.to_string().contains("verus_spec")),
-        _ => false,
-    });
+    let is_proof = attrs.iter().any(|a| has(&a.meta, &["verifier", "proof"]));
+    if is_proof {
+        return Some(Mode::Proof);
+    }
+    let verified = attrs
+        .iter()
+        .any(|attr| has(&attr.meta, &["verus_spec"]) || has(&attr.meta, &["verus_verify"]));
     verified.then_some(Mode::Verified)
 }
 
@@ -456,7 +477,7 @@ impl FileReader<'_> {
             }
             let method = match mode {
                 Mode::Test => VerificationMethod::Test,
-                Mode::Verified => VerificationMethod::Proof,
+                Mode::Verified | Mode::Proof => VerificationMethod::Proof,
             };
             if witness.is_some() && mode != Mode::Verified {
                 self.finding(

@@ -135,6 +135,42 @@ pub fn format_report(report: &Report) -> String {
             let _ = writeln!(out, "  {finding}");
         }
     }
+    if let Some(proof) = &report.proofs {
+        let _ = writeln!(
+            out,
+            "\nproof targets: {}",
+            if proof.complete {
+                "verified against contracts; criterion guards remain outstanding"
+            } else {
+                "not established"
+            }
+        );
+        for reason in &proof.reasons {
+            let _ = writeln!(out, "  {reason}");
+        }
+        for target in &proof.targets {
+            let _ = writeln!(
+                out,
+                "  {} ({}): {}",
+                target.package,
+                target.target,
+                if target.complete {
+                    "complete"
+                } else {
+                    "incomplete or failed"
+                }
+            );
+            for reason in &target.reasons {
+                let _ = writeln!(out, "    {reason}");
+            }
+            for function in target.functions.iter().filter(|f| !f.success) {
+                let _ = writeln!(out, "    failed: {} ({})", function.function, function.mode);
+            }
+            for location in &target.locations {
+                let _ = writeln!(out, "    at {location}");
+            }
+        }
+    }
     if !report.claims.is_empty() {
         let satisfied = report
             .claims

@@ -3,18 +3,20 @@
 //!
 //! [`plan`] reads the Book, its roadmaps, the `[verification]` configuration,
 //! and evidence links in the configured sources. [`evaluate`] combines a plan
-//! with runner results into a [`Report`]. [`verify`] does both; it runs no
-//! runner yet, so linked test and proof methods are reported as not evaluated.
-//! No operation writes files.
+//! with runner results into a [`Report`]. [`verify`] runs the configured native
+//! runners; [`proof`] exposes their strict target gate. Only runner output is written.
 mod config;
 mod identity;
 mod links;
 mod nextest;
+mod verus;
+mod verus_report;
 
-pub use config::Settings;
+pub use config::{Settings, VerusSettings, VerusTarget};
 pub use identity::Inputs;
 pub use links::{FunctionId, Link, LinkFinding, Mode, Target};
 pub use nextest::NEXTEST_VERSION;
+pub use verus::{FunctionEvidence, ProofReport, TargetEvidence, VERUS_VERSION, proof};
 
 use crate::checking::{self, Outcome};
 use crate::configuration::{self, SectionRole};
@@ -232,6 +234,8 @@ pub struct Plan {
     pub settings: Settings,
     /// The manifest of each package with links in scope.
     pub manifests: BTreeMap<String, PathBuf>,
+    proof_inputs: Vec<PathBuf>,
+    proof_snapshot: String,
 }
 
 /// One required method's state, with what it rests on.
@@ -319,6 +323,8 @@ pub struct Report {
     pub base: PathBuf,
     /// Versions of the runners that ran.
     pub tools: Vec<String>,
+    /// Native proof-target evidence, separate from criterion assessments and guards.
+    pub proofs: Option<ProofReport>,
 }
 impl Report {
     /// `1` when a claim evaluated in this run is unsatisfied, otherwise `0`.
@@ -393,6 +399,7 @@ impl Error for VerifyError {
 /// Returns [`VerifyError`] when the check fails, configuration or records are
 /// invalid, or the scope names an anchor the Book does not define.
 pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
+    let initial_config = fs::read(config_path).ok();
     let report = match checking::check(config_path) {
         Ok(report) => report,
         Err(error) => error.into_report(),
@@ -407,6 +414,11 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         .parent()
         .map_or_else(PathBuf::new, Path::to_owned);
     let settings = config::load(&configuration)?;
+    let proof_inputs = vec![
+        configuration.path().to_owned(),
+        configuration.source().to_owned(),
+    ];
+    let proof_snapshot = identity::snapshot(&proof_inputs);
 
     // Chapters in navigation order; roadmaps are the role chapter and its subtree.
     let listed = checking::chapters(&configuration).map_err(VerifyError::Read)?;
@@ -500,7 +512,15 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         base,
         settings,
         manifests,
+        proof_inputs,
+        proof_snapshot,
     };
+    check_planning_inputs(
+        configuration.path(),
+        &initial_config,
+        &plan.proof_inputs,
+        &plan.proof_snapshot,
+    )?;
     plan.inputs = identity::inputs(
         &configuration,
         &plan.criteria,
@@ -508,6 +528,22 @@ pub fn plan(config_path: &Path, scope: Scope) -> Result<Plan, VerifyError> {
         &nextest::input_paths(&plan),
     );
     Ok(plan)
+}
+
+// Configuration is first read before structural checking; the Book snapshot is
+// captured later, before reading records. Both intervals must stay unchanged.
+fn check_planning_inputs(
+    config: &Path,
+    initial_config: &Option<Vec<u8>>,
+    paths: &[PathBuf],
+    snapshot: &str,
+) -> Result<(), VerifyError> {
+    if identity::snapshot(paths) != snapshot || &fs::read(config).ok() != initial_config {
+        return Err(VerifyError::Read(
+            "Book or configuration changed while planning; rerun on stable inputs".into(),
+        ));
+    }
+    Ok(())
 }
 
 type Planned = (
@@ -672,7 +708,10 @@ fn method_state(
                 if !run.complete {
                     return report(
                         State::Inconclusive,
-                        "a required target has no complete result".into(),
+                        format!(
+                            "a required target has no complete result; failing obligations: {}",
+                            run.failures_elsewhere.join("; ")
+                        ),
                     );
                 }
                 if !run.failures_elsewhere.is_empty() {
@@ -765,6 +804,7 @@ pub fn evaluate(plan: &Plan, results: &RunResults) -> Report {
         inputs: plan.inputs.clone(),
         base: plan.base.clone(),
         tools: Vec::new(),
+        proofs: None,
     }
 }
 
@@ -798,27 +838,61 @@ fn claim_outcome(report: Option<&CriterionReport>, scope: &Scope) -> ClaimOutcom
     }
 }
 
-/// Plan `scope`, run its linked tests with cargo-nextest, and evaluate. Runner
-/// output is written only under `[verification] output`. No proof runner exists
-/// yet, so linked proofs are not evaluated.
+/// Plan `scope`, run configured linked tests and proofs, and evaluate. Runner
+/// output is written only under `[verification] output`. Proof assessments and
+/// guards remain explicit outstanding obligations even after target success.
 ///
 /// # Errors
 /// As [`plan`].
 pub fn verify(config_path: &Path, scope: Scope) -> Result<Report, VerifyError> {
     let plan = plan(config_path, scope)?;
     let (tests, version) = nextest::run(&plan);
-    let results = RunResults {
-        tests,
-        proofs: ProofResult::NotRun("the proof runner is not implemented yet".into()),
-    };
+    let (proofs, proof_report) = verus::run(&plan);
+    let results = RunResults { tests, proofs };
     let mut report = evaluate(&plan, &results);
     report.tools.extend(version);
+    report.tools.extend(proof_report.tools.iter().cloned());
+    if !plan.proof_targets.is_empty() {
+        report.proofs = Some(proof_report);
+    }
     Ok(report)
 }
 
 #[cfg(test)]
 mod tests {
     use super::{State, combine};
+
+    #[test]
+    fn planning_rejects_book_edits_and_configuration_edits_before_the_book_snapshot() {
+        use super::{check_planning_inputs, identity};
+        use std::fs;
+        let directory =
+            std::env::temp_dir().join(format!("anchorbook-plan-inputs-{}", std::process::id()));
+        fs::create_dir(&directory).unwrap();
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(directory.clone());
+        let config = directory.join("anchorbook.toml");
+        let book = directory.join("chapter.md");
+        fs::write(&config, "configuration before structural checking").unwrap();
+        fs::write(&book, "original criterion").unwrap();
+        let initial_config = fs::read(&config).ok();
+        let paths = vec![config.clone(), book.clone()];
+        let snapshot = identity::snapshot(&paths);
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_ok());
+        fs::write(&book, "changed criterion").unwrap();
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+        fs::write(&config, "configuration changed before records are read").unwrap();
+        let later_snapshot = identity::snapshot(&paths);
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &later_snapshot).is_err());
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+        fs::remove_file(&config).unwrap();
+        assert!(check_planning_inputs(&config, &initial_config, &paths, &snapshot).is_err());
+    }
 
     #[test]
     fn states_combine_as_the_design_orders_them() {

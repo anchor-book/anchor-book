@@ -10,7 +10,7 @@ use std::{
 };
 
 /// Content identities of a run's inputs, and the Git state when available.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct Inputs {
     /// Identity of the evaluated criteria: their anchors, identifiers, methods, and statements.
     pub criteria: String,
