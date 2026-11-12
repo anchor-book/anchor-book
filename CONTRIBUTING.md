@@ -299,7 +299,8 @@ runs are not passing evidence. Review the anchor interpretation and unproved
 boundaries separately; a green job does not establish those review obligations.
 
 The [Verification Evidence roadmap](book/implementation-roadmaps/verification-evidence.md#verification-evidence-2)
-records validation of the shared runner and the remaining CI demonstration.
+records validation of the shared runner, the CI failure/correction demonstration,
+and proof-state aggregation. The broader proof guards remain in milestone 6.
 Earlier proof-workflow evidence remains in the Formal Verification roadmap.
 
 ## Mutation testing

@@ -113,11 +113,12 @@ demonstrate specific defects and trust-policy rejections; they are not the
 automatic sensitivity guard for arbitrary project proofs.
 
 [Milestone 2](implementation-roadmaps/verification-evidence.md#verification-evidence-2-proof-states)
-still needs fixtures that exercise proof-state handling using simulated guard
-outcomes, such as a missing assessment or a timed-out sensitivity run. They test
-Anchor Book's reporting logic; simulated outcomes supply no evidence for a
-project's proof. These fixtures can precede the actual guard implementations in
-milestone 6.
+includes independent fixtures that exercise proof-state handling using simulated
+guard outcomes, such as a missing assessment or a timed-out sensitivity run. The
+evidence model keeps these results per criterion and requires every obligation
+to pass before satisfying the proof method. They test Anchor Book's reporting
+logic; simulated outcomes supply no evidence for a project's proof. The native
+runner supplies no guard results until milestone 6 implements the actual checks.
 
 ## Public content
 

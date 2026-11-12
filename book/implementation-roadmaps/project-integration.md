@@ -37,9 +37,9 @@ dependency needs [Verus as an optional engine feature](formal-verification.md#fo
 first, whether or not it verifies its own code; proofs in other projects are
 [deferred](verification-evidence.md#verification-evidence-5).
 
-The next work is the engine's early proof CI encapsulation in
-[Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
-followed by the Symposium development trials. Milestone 4 below supports the
+[Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2)
+records the engine's proof CI encapsulation and proof-state coverage. The next
+work is the Symposium configuration-loading trial. Milestone 4 below supports the
 later native-command and CI integration, using the trials to settle the minimum
 setup a real adopter needs. Registry publication is a separate outcome; a pinned
 Git dependency and installed engine can support the first adoption.

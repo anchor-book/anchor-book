@@ -20,8 +20,9 @@ projects in milestone 5.
 ## Sequence and scope
 
 The [first-major-milestone sequence](index.md#first-major-milestone-symposium-adopts-anchor-book)
-puts milestone 2 next: encapsulate Verus and move the engine's Authority proof CI
-onto the shared runner before expanding the Symposium trial. The shared model,
+records milestone 2 as complete: Verus execution and the engine's Authority proof CI
+use the shared runner, and independent fixtures cover proof-state aggregation.
+The next step is Symposium's configuration-loading trial. The shared model,
 test runner, and manual guard experiment are recorded in milestones 4, 1, and 7.
 
 Milestone 3 adds retained CI reports, with a test-only path that needs no Verus.
@@ -121,7 +122,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 **Outcome:** The engine owns configured Verus execution and report interpretation through one shared runner, and its Authority proof CI uses that path with a strict proof-target gate. The existing authority proof is the pilot; criterion reports preserve outstanding assessment and guard obligations.
 
-**Status:** In progress — native runner and CI merged; guard-state fixtures pending
+**Status:** Complete — native runner and CI merged; guard-state aggregation verified locally
 
 **Dependencies:** [Milestone 4](#verification-evidence-4) and the existing engine proof, both complete. The native compatibility experiment settled the supported configuration and CI interface in the design. This milestone precedes the next Symposium development trial.
 
@@ -143,7 +144,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 - [x] **Strict gate:** Require a nonempty scope and a current complete result for every required proof target, with the expected verifier and linked functions. Failed, absent, stale, unsupported, skipped, or incomplete results fail the CI gate. Do not use the progress command's exit 0 as evidence, since it permits unchecked claims. A target passing its contracts does not satisfy a criterion whose assessment or guards are outstanding.
 - [x] **CI demonstration:** Exercise a deliberate proof failure and correction through the shared path on GitHub; test unavailable tools and unusable reports through the actual gate, and record the revision-specific results.
 - [x] **Acceptance:** Record native failure/correction results, report fixtures, commands, runtime, scope, assumptions, and limits.
-- [ ] **State aggregation:** Supply simulated guard and assessment outcomes in independent fixtures and check every proof-method state through the evidence model. This tests state handling before milestone 6 implements the actual checks; simulated outcomes never count as evidence for a project proof.
+- [x] **State aggregation:** Supply simulated guard and assessment outcomes in independent fixtures and check every proof-method state through the evidence model. This tests state handling before milestone 6 implements the actual checks; simulated outcomes never count as evidence for a project proof.
 
 ### Completion criteria
 
@@ -152,7 +153,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 Fixtures cover every proof-method state, supplying guard results only in independent fixtures that exercise aggregation. Native runs demonstrate a linked failure as failed, a passing linked caller with a failing unlinked lemma as inconclusive, and correction as a complete target result. Build failures and unavailable tools retain their designed states. The engine's proof criterion remains unsatisfied while required assessments or guards are missing or not evaluated; milestone 6 establishes the complete proof method. Test and review obligations retain their own states.
 
 - **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: proof method; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: proof runner; [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: proof links
-- **Evidence:** Runner states passed locally and in native CI. The recording-runner fixtures and `native_proof_failure_support_failure_trust_and_correction` exercise the actual CLI: linked failure is failed, a passing caller with a failing supporting lemma is inconclusive, and restored target verification passes. The native test also rejects assumptions and trusted bodies. Successful target results remain no-evidence at the criterion level because specification assessments and guards are outstanding; review remains unevaluated. The guard-dependent aggregation fixtures named by this criterion and their complete state-handling coverage are not implemented. They use simulated outcomes to test the evidence model; actual guard execution remains in milestone 6. This criterion is not yet fully established.
+- **Evidence:** Runner states passed locally and in native CI. The recording-runner fixtures and `native_proof_failure_support_failure_trust_and_correction` exercise the actual CLI: linked failure is failed, a passing caller with a failing supporting lemma is inconclusive, and restored target verification passes. The native test also rejects assumptions and trusted bodies. Successful target results remain no-evidence at the criterion level because specification assessments and guards are outstanding; review remains unevaluated. The guard-dependent fixtures in `tests/proof_states.rs` now establish all six proof-method states, precedence among guard failures and gaps, per-criterion isolation, test/proof/review aggregation, and completion-claim outcomes. They supply simulated outcomes to the evidence model; actual guard execution remains in milestone 6. The completion evidence below records the local results.
 
 #### Report integrity {#verification-evidence-2-report-integrity}
 
@@ -198,14 +199,16 @@ or assessments satisfied.
 
 **Checks:** The independent suite passes on Rust 1.88.0 and stable (165 tests including doctests after the additional review assertions, with eight optional acceptance tests ignored); Clippy and formatting pass. The native failure/correction acceptance passes in about 327 seconds for ten fresh target runs. The strict Authority gate reports a complete target with all seven linked functions. Structural checking, five current/rendered Book acceptance tests, and the absent/invalid/incomplete Book independence experiments pass. Existing proof-loop mutation exclusions were relocated for the added doc comments and checked against the mutation list; no local mutation campaign was run.
 
-**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, proof guards, and assessment records retain their planned scope. Target success does not satisfy the complete proof criterion. The revision-specific GitHub proof failure/correction demonstration and corrected mutation validation are complete. All required checks pass on the tested implementation revision; guard-state aggregation fixtures remain unfinished; the runner and CI are integrated into main through PR #38.
+**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, proof guards, and assessment records retain their planned scope. Target success does not satisfy the complete proof criterion. The revision-specific GitHub proof failure/correction demonstration and corrected mutation validation are complete. All required checks pass on the tested runner implementation revision; the runner and CI are integrated into main through PR #38. The later guard-state aggregation change has separate local evidence below.
 
-**Whole-Book progress:** The local run evaluates 70 criteria across 30 anchors:
-41 satisfied, two partial, one no-evidence, 23 unlinked, and three not evaluated.
-Of 39 completion claims, 34 are satisfied, the Authority proof criterion is
-no-evidence pending its assessment and guards, and four review claims are
-unchecked. The target itself is complete. `verify` therefore exits 1 while the
-strict proof-target gate passes; neither result replaces the other.
+**Whole-Book progress:** The final aggregation-checkout run evaluates 70 criteria
+across 30 anchors with no link findings: 41 satisfied, three partial, one
+no-evidence, 22 unlinked, and three not evaluated. Of 39 completion claims, 34 are
+satisfied, the Authority proof criterion is no-evidence pending its assessment
+and guards, and four review claims are unchecked. The target itself is complete.
+`verify` therefore exits 1 while the strict proof-target gate passes; neither
+result replaces the other. The new fixtures supply evidence for the engine's
+state-reporting tests, never guard evidence for the Authority proof.
 
 ### GitHub proof validation
 
@@ -222,7 +225,13 @@ The proof runs retain `authority-proof-results` with revision, tool selection, o
 
 ### Completion record
 
-In progress. Native execution, report interpretation, source links, and the strict gate are implemented and exercised locally and on GitHub; the corrected implementation passes all required checks. The proof-state criterion still requires guard-dependent aggregation fixtures and complete state-handling coverage. Implement and verify that coverage before recording this milestone Complete; passing target contracts does not satisfy an anchor's outstanding assessments or guards.
+Complete locally on 2026-11-12. Native execution and the strict gate are integrated through PR #38, with the revision-specific CI evidence above. The remaining proof-state aggregation is implemented and verified in the working tree on `codex/proof-state-aggregation`, based on `e5edca6`; that change is not yet integrated and has no GitHub result. Passing target contracts still does not satisfy a criterion's outstanding assessments or guards.
+
+**Aggregation evidence:** `ProofRun` carries normalized witness, specification-assessment, and sensitivity results keyed by anchor and criterion. `evaluate` consults them only after complete target evidence and every linked function passing. Missing entries remain no-evidence; the native runner supplies none. Six independent tests in `tests/proof_states.rs` cover satisfied, failed, inconclusive, no-evidence, unlinked, and not-evaluated proof states; missing and stale assessments; witness failures; sensitivity timeouts and skips; failure precedence and retained reasons; isolation between criteria sharing a function; excluded scope; test/proof/review aggregation; and satisfied, unsatisfied, and unchecked claims. Passing one guard never makes the proof method Partial. These fixtures test engine reporting and are not evidence for a project's proof.
+
+**Checks:** Formatting, all 173 independent tests (including doctests), and Clippy pass on stable and Rust 1.88.0. Structural checking, the mdBook 0.5.4 build, and all five current/rendered Book acceptance tests pass. The actual-process runner fixtures continue to report no-evidence after target success. A native run with the pinned source-built Verus passes `anchorbook proof --anchor A-records-valid-authority` with complete target evidence; `anchorbook verify --anchor A-records-valid-authority --method proof` reports no-evidence and exits 1 for its unsatisfied claim. These runs use `--config anchorbook.toml` through the checkout's binary.
+
+**Mutation evidence:** cargo-mutants 27.1.0, one worker, a 120-second build timeout, and a ten-minute campaign budget, limited to `ProofGuards::state` and `method_state`: 16 mutations in 29 seconds, 13 caught, three unviable, none missed or timed out. The three unviable replacements require a nonexistent Default implementation and establish no fault detection. The tool generates no useful mutations inside the new guard match arms. Six deliberate changes in a disposable source copy therefore additionally omit each of the three obligations, reverse failure precedence, reuse another criterion's guards, or treat absent guards as satisfied. Every change fails `cargo test --locked --test proof_states`; unmodified and restored baselines pass. No exclusions were added. Full required GitHub checks remain pending for this branch.
 
 ## Milestone 3. CI reports progress for every revision {#verification-evidence-3}
 
