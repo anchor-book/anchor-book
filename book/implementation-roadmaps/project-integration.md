@@ -40,11 +40,12 @@ first, whether or not it verifies its own code; proofs in other projects are
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2)
 records the engine's proof CI encapsulation and proof-state coverage. The
 [Symposium configuration-loading trial](symposium-integration.md#symposium-integration-4-evidence)
-has assessed the development loop; its execution-evidence and review findings
-now need bounded engine work. Milestone 4 below supports the
-later native-command and CI integration, using the trials to settle the minimum
-setup a real adopter needs. Registry publication is a separate outcome; a pinned
-Git dependency and installed engine can support the first adoption.
+has assessed the verification commands; the next coding baseline exercises
+implementation from the Book's definition. Symposium owns test semantics, and
+Anchor Book trusts current runner outcomes. Milestone 4 below uses those trials
+to settle the minimum setup for reproducible native-command and CI integration.
+Registry publication is a separate outcome; a pinned Git dependency and installed
+engine can support the first adoption.
 
 ## Milestone 1. This Book uses the integration groundwork {#project-integration-1}
 
@@ -113,7 +114,7 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 
 **Identifier:** `project-integration-4`
 
-**Dependencies:** Milestone 1, complete; the engine and Symposium trial findings in the [agreed sequence](index.md#first-major-milestone-symposium-adopts-anchor-book). Settle the version and authoring-reference interfaces before implementation. Existing milestone identifiers 2 and 3 remain retired.
+**Dependencies:** Milestone 1, complete; findings from the [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book). The existing pinned installed-engine workflow supports early Symposium coding trials. This milestone supplies the version alignment and native contributor setup needed for ordinary-command and upstream adoption, not a prerequisite for that baseline. Settle the version and authoring-reference interfaces before implementation. Existing milestone identifiers 2 and 3 remain retired.
 
 **Design basis:** [Running the engine](../design/project-integration.md#running-the-engine), [agent bootstrap](../design/project-integration.md#agent-bootstrap), [A-project-native-commands](../design/project-integration.md#A-project-native-commands), and [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version).
 

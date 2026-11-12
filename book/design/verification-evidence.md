@@ -21,7 +21,7 @@ working on after each change, and CI, reporting the whole Book. It complements
 
 > **`A-verify-criterion-states`** (draft): **Every criterion has an honest evidence state**
 > Property: For every anchor criterion in the evaluated scope, and each verification method it requires, verify reports exactly one state from a closed set. A criterion is satisfied only when every required method has passing evidence from the current run. Failed, inconclusive, missing, unlinked, or unevaluated evidence never counts as satisfied, and a satisfied criterion is reported as linked tests or proofs passing, not as proof that they are sufficient.
-> Authority: `R-criterion-evidence`
+> Authority: `R-criterion-evidence`; `D-project-test-results-trusted`
 > - Criterion `state-per-method` [test]: Independent fixtures produce each state for test and proof methods, including criteria requiring several methods with only some satisfied; assert the per-method and per-criterion states and that only fully satisfied criteria are satisfied.
 > - Criterion `scope-and-limits` [test]: A run scoped to fewer methods or anchors reports the excluded parts as not evaluated, never as satisfied, and every report states what a satisfied criterion does not establish.
 
@@ -235,6 +235,28 @@ ignored test that reads only current sources, such as an acceptance test of the
 Book's records, can be linked; one that reads output a separate build produced
 earlier, such as rendered pages, cannot, because that output may describe other
 inputs.
+
+### Trusting project test results
+
+The project owns its tests: setup, assertions, internal execution, and the meaning
+of their outcomes. Under [D-project-test-results-trusted](../authority/decisions.md#D-project-test-results-trusted),
+Anchor Book treats the supported runner's result as authoritative for each linked
+test. It checks that results identify the selected tests, come from the current
+run, and satisfy the existing evidence-state rules. It does not inspect agent
+activity or require a second execution report from project test code.
+
+A passing result counts as passing test evidence even if the test internally
+returns early. A skip reported by the runner remains no-evidence, and a reported
+failure remains failed. If a project considers an early return an invalid pass,
+its test or harness must express the intended outcome. Anchor Book does not
+reinterpret a passing result from project logs or knowledge of its internals.
+
+The project's choice to trust a test and link it to a criterion is distinct from
+the engine's result handling. Known coverage limitations can be recorded and
+reviewed by the project; an explicitly required review remains a separate method.
+A satisfied test method reports passing linked tests, not independent proof of
+their quality or sufficiency. Proof verification continues to require its own
+contracts, guards, and assessments.
 
 ### Verus runner
 

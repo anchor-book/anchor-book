@@ -52,6 +52,11 @@ criterion assessments and guards outstanding. This Book's tests are linked to it
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
+The test runner trusts project test outcomes as described in
+[Trusting project test results](design/verification-evidence.md#trusting-project-test-results).
+Symposium owns the semantics of its agent-mode tests. No additional execution
+report protocol or agent instrumentation is required by Anchor Book.
+
 Read `CONTRIBUTING.md` at the repository root for the supported Rust and mdBook
 versions and exact commands for tests, formatting, Clippy, builds, and previews.
 The [Rust Engine design](design/rust-engine.md) describes package and API boundaries.
@@ -119,6 +124,16 @@ evidence model keeps these results per criterion and requires every obligation
 to pass before satisfying the proof method. They test Anchor Book's reporting
 logic; simulated outcomes supply no evidence for a project's proof. The native
 runner supplies no guard results until milestone 6 implements the actual checks.
+
+## Development priority
+
+The [current sequence](implementation-roadmaps/index.md#first-major-milestone-symposium-adopts-anchor-book)
+centers on agents building Symposium from its Book's system definition. An early
+scoped coding assignment uses the existing commands to identify needed engine
+support. Versioned reports and shared agent/rendered evidence follow, then
+reproducible commands, CI, and upstream adoption. The first assignment remains
+proposed; a readiness report and the earlier verification trial do not establish
+that the full development workflow has been demonstrated.
 
 ## Public content
 
