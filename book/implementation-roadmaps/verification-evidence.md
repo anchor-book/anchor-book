@@ -20,10 +20,11 @@ projects in milestone 5.
 ## Sequence and scope
 
 The [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book)
-uses the engine's existing model, test runner, and CLI to establish an early
-Symposium coding baseline. Milestones 4 and 1 supply that path. Milestone 2's
-native proof runner and engine CI are complete for their recorded scope and
-remain in place; Symposium's work uses tests and requires no Verus.
+starts with engine reporting, using the existing model, test runner, and CLI from
+milestones 4 and 1. Independent fixtures and this Book supply the first acceptance
+cases; new Symposium tests or coding trials are not prerequisites. Milestone 2's
+native proof runner and engine CI remain in place for their recorded scope;
+Symposium's work uses tests and requires no Verus.
 
 The next reporting increment is milestone 3's versioned representation of the
 current results, exercised locally through the real CLI and fixtures. That
@@ -32,11 +33,11 @@ completion claims for agents and rendering. Milestone 3's native CI retention
 remains required for its completion and for Symposium's CI adoption, but it does
 not prevent developing milestone 9's local report integration.
 
-Exercise each engine capability in this Book before Symposium relies on it,
-then repeat the development assignment with the improved feedback. The early
-baseline does not wait for the shared report; completion of Symposium's full
-agent-development workflow does. Findings guide bounded corrections to the
-engine rather than a new protocol for project test internals.
+Exercise each engine capability in this Book before Symposium relies on it.
+Symposium later compares its current-tools baseline with the shared-report
+workflow; those trials assess project adoption and return findings to the engine.
+Existing project results may inform development, but report implementation and
+acceptance do not depend on adding a project test or running a new coding trial.
 
 Milestone 8 implements assessment records where criteria require review. It is
 not a prerequisite for Symposium's current test-only assignments or for composing
@@ -241,15 +242,24 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 
 **Status:** Proposed
 
-**Dependencies:** Milestones 1 and 4 for the test-only path. The local versioned report can proceed after its schema and invocation are defined; native CI retention remains a separate completion criterion. Include milestone 2's available proof results without waiting for broader guards or consumer proof support. This Book exercises report retention before Symposium's CI adopts it.
+**Dependencies:** Milestones 1 and 4, complete, for the test-only path. Define the local report's schema and invocation before implementation, using independent engine fixtures and this Book. No new Symposium tests or coding trial are required. Native CI retention remains a separate completion criterion. Include milestone 2's available proof results without waiting for broader guards or consumer proof support. This Book exercises report retention before Symposium's CI adopts it.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md)
 
 **Identifier:** `verification-evidence-3`
 
+**Next engine increment:** Implement the local versioned report and its validation.
+This produces the retained-report criterion below and the interface milestone 9
+needs; it does not complete this milestone's separate CI criterion. Settle the
+artifact format, CLI option, and incomplete-run representation as part of the
+bounded design work before coding. Existing evidence states, claim checks, and
+the progress command's exit policy govern the new representation.
+
 **Tasks**
 
-- [ ] Define and implement a versioned representation of the existing typed report, exposed by the CLI for local development as well as CI. Preserve current inputs, selected scope, tools, states, source locations, claims, and limits; review retained fields against public-content guidance. Use the development baseline to assess whether agents can act on it.
+- [ ] Define the versioned representation and CLI invocation for existing verification results, including incomplete evaluation. Preserve current inputs, selected scope, tools, states, source locations, claims, and limits; review retained fields against public-content guidance and reconcile the report design before implementation.
+- [ ] Implement report writing, reading, and validation in the library and expose output through the actual CLI. A reader rejects malformed, unsupported, or mismatched reports; earlier success cannot stand in for a new run. Keep evaluation separate from serialization and preserve source files and existing exit behavior.
+- [ ] Exercise the local interface with independent fixtures and this Book. Cover passing results, unclaimed failures, unsatisfied completion claims, incomplete evaluation, excluded methods, and changed inputs; include dirty and non-Git workspaces. Verify that states agree with the existing report and private paths are omitted. These engine cases provide acceptance without new Symposium tests.
 - [ ] Run the whole-Book command in CI with supported tools and retain reports for passing, unsatisfied, and incomplete runs. Preserve the progress command's exit policy.
 - [ ] Exercise a test-only fixture with no Verus installation and only nextest configured. Start this Book's retained CI progress report with `--method test`, explicitly listing unchecked proof and review claims, while the separate Authority proof gate from milestone 2 remains required. A full-method report must preserve unsatisfied claims until their assessments and guards exist; a retained progress report never replaces the strict gate.
 - [ ] Include configured review results when milestone 8 is available. Keep excluded methods and their claims explicit in the artifact consumed by milestone 9; a successful scoped run never becomes a whole-Book verification badge.
@@ -260,9 +270,16 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 
 #### Retained report {#verification-evidence-3-retained-report}
 
-Independent fixtures and the actual CLI produce a versioned artifact that preserves the typed report's scope and states, input identities, source locations, claims, tools, and limits. Private paths and raw source/proof payloads are omitted. Invalid or stale artifacts never become evidence for another run. This local interface is usable by milestone 9 before CI retention is complete.
+Independent fixtures and the actual CLI produce and validate a versioned artifact
+that preserves scope and states, input identities, source locations, claims,
+tools, and limits. Passing, unclaimed failing, unsatisfied-claim, and incomplete
+runs retain their existing meaning and exit behavior. Dirty and non-Git inputs
+remain identifiable. Private paths and raw source/proof payloads are omitted.
+Malformed, unsupported, or stale artifacts never become current evidence. This
+Book exercises the local interface, which milestone 9 can use before CI retention
+or a new Symposium trial is complete.
 
-- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: retained CI presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: artifact scope and limits.
+- **Anchor coverage:** [A-verify-progress-report](../design/verification-evidence.md#A-verify-progress-report) · `progress-output`, `incomplete-runs` — Partial: versioned report presentation; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: artifact scope and limits.
 - **Evidence:** Pending.
 
 #### CI results {#verification-evidence-3-ci-results}
@@ -592,7 +609,7 @@ Pending.
 
 **Tasks**
 
-- [ ] Use the current-tools development baseline to settle the native build configuration, report handoff, artifact compatibility, input identities, and actionable diagnostics. Implement the test-only path first, using the existing runner outcomes rather than a new project test protocol. Reconcile design and fixtures; keep the engine usable with a broken Book.
+- [ ] Use independent engine fixtures and this Book to settle the native build configuration, report handoff, artifact compatibility, input identities, and actionable diagnostics. Existing Symposium findings can inform the work; a new project test or coding trial is not a prerequisite. Implement the test-only path using existing runner outcomes, reconcile design and fixtures, and keep the engine usable with a broken Book.
 - [ ] Compose structural findings, evidence states, and completion-claim results through shared library models. Expose stable record and criterion identities, source locations, scope, and limits through the CLI and versioned artifact so agents can act without HTML or handwritten result labels.
 - [ ] Connect native project verification to rendering without duplicate test execution or recursive builds. Validate inputs before and after evaluation and rendering, including dirty working trees and assessment changes; reject missing, invalid, unsupported, and mismatched handoffs.
 - [ ] Render the shared states beside criteria and link their evidence. Keep design acceptance, required methods, roadmap completion, and evaluated results distinct. Record-only rendering explicitly shows that verification was not evaluated.

@@ -219,11 +219,11 @@ The engine's existing proof CI stays in place; Symposium requires no proofs.
 
 | Order | Work and owning milestone | Observable outcome |
 | --- | --- | --- |
-| 1. Establish a development baseline | Start a bounded assignment under [Symposium Integration 7](symposium-integration.md#symposium-integration-7-current-tools) using the current contract, Markdown Book, `check`, project tests, and `verify --anchor`. | A coding agent changes tests or implementation for a stated criterion, corrects failures, and records evidence and remaining work. Missing engine support is identified from actual use. |
-| 2. Improve engine feedback from that use | [Verification Evidence 3](verification-evidence.md#verification-evidence-3-retained-report) first supplies a versioned report of the existing results; [milestone 9](verification-evidence.md#verification-evidence-9) supplies shared structural findings, criterion states, claims, and matching rendered evidence. Implement and exercise these capabilities in this Book before Symposium relies on them. | Agents can act on current results with stable identifiers and source locations; the rendered Book presents the same evidence. Changed inputs cannot masquerade as current results. |
-| 3. Define each next area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority as needed for the next assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
-| 4. Demonstrate the complete development workflow | Complete the three assignments in [Symposium Integration 7](symposium-integration.md#symposium-integration-7): missing tests, an implementation change, and a design change. Repeat the early assignment through the shared report when available. | The Book's definition guides implementation; code, tests, records, and progress agree after each change. The complete workflow has current agent and rendered evidence. |
-| 5. Make the workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup. [Verification Evidence 3](verification-evidence.md#verification-evidence-3-ci-results) and [Symposium Integration 5](symposium-integration.md#symposium-integration-5) retain reports and integrate ordinary commands and CI without redundant test execution. | A fresh checkout reproduces the development loop with a pinned engine and no undocumented setup. CI reports the same current results. |
+| 1. Save the engine's current verification results | Build the local report increment in [Verification Evidence 3](verification-evidence.md#verification-evidence-3-retained-report), using independent fixtures and this Book. Define the schema and CLI invocation, then implement report writing, reading, and validation. | Agents and tools can consume a versioned report of current results. Scope, states, claims, source locations, and input identities are preserved; invalid or stale reports cannot supply current evidence. |
+| 2. Share findings and evidence with agents and readers | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) composes structural findings, criterion states, and claims, then connects them to rendering. Exercise the complete workflow in this Book. | The CLI and rendered Book present the same current evidence, with locations an agent can use to correct the work. Rendering does not rerun tests. |
+| 3. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 3](verification-evidence.md#verification-evidence-3-ci-results) retains reports in CI and consumes current project-run results without duplicate tests. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
+| 4. Define each project area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority for the next project assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
+| 5. Demonstrate and adopt the development workflow in Symposium | [Symposium Integration 7](symposium-integration.md#symposium-integration-7) exercises missing tests, an implementation change, and a design change, comparing current tools with the shared-report workflow. [Milestone 5](symposium-integration.md#symposium-integration-5) applies the native commands and CI integration. | The Book guides implementation; code, tests, records, and progress agree after each change. Agents and readers receive current evidence from the same engine workflow. |
 | 6. Integrate the proven workflow upstream | [Symposium Integration 8](symposium-integration.md#symposium-integration-8) resolves maintainer review and design-document ownership and verifies the adopted contributor workflow. | Symposium uses the Book and engine for ordinary development upstream; a fork trial alone does not complete adoption. |
 
 These are iterative stages, not a requirement to finish each whole roadmap before
@@ -236,16 +236,18 @@ is not a prerequisite. Review-record support in
 when the assigned criteria depend on that method; unsupported methods and their
 claims remain explicit rather than being counted as satisfied.
 
-**Next proposed assignment:** cover
-`A-config-unreadable-run-continues#hooks-continue` in Symposium: a hook event with
-an unparseable configuration succeeds and produces the same output as with a
-missing configuration. Use isolated project fixtures, derive the assertion from
-the criterion, add its evidence link, run the project checks and scoped `verify`,
-and update the configuration roadmap's evidence and remaining gaps. The assignment
-uses the existing design as a scoped prototyping trial; it does not settle the
-unrelated relative-`SYMPOSIUM_HOME` question or complete all configuration work.
-Choosing the next implementation change requires its own stated intended behavior;
-this planning change assigns neither trial execution nor a new Symposium feature.
+**Next engine increment:** [Verification Evidence 3's local report](verification-evidence.md#verification-evidence-3-retained-report).
+Settle its schema and CLI invocation, expose the existing verification results,
+and demonstrate passing, unsatisfied, incomplete, and invalid or stale report cases
+through independent fixtures and the actual CLI. Preserve project test outcomes,
+current evidence states, and exit behavior. CI retention completes the wider
+milestone later; shared rendering belongs to milestone 9.
+
+Symposium's missing hook-continuation test remains a proposed project assignment
+in [milestone 7](symposium-integration.md#symposium-integration-7). Neither that
+test nor a new Symposium coding trial is a prerequisite for engine implementation.
+Existing trial findings can inform the work, and new findings return to the
+engine when the project exercises it.
 
 Later milestones remain Proposed until their scope and prerequisites are settled
 and work is assigned. Broader proof guards, consumer proofs, contract plugins,

@@ -24,17 +24,19 @@ upstream and final design-document ownership are its maintainers' decisions.
 
 ## Sequence and scope
 
-Follow the [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book).
-The existing Book, bootstrap, and assessed configuration loop from milestones 1,
-3, and 4 are enough to begin a bounded development assignment in milestone 7.
-Its first case uses the current `check`, project tests, and `verify --anchor`
-commands; it does not wait for all design areas, CI retention, or rendered evidence.
-The baseline records what the current tools actually enable and what is missing.
+Follow the [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book),
+which builds the next engine reporting increment with independent fixtures and
+the engine's Book. Symposium's coding trials are later project acceptance work.
+Its existing Book, bootstrap, and assessed configuration loop from milestones 1,
+3, and 4 can support a bounded assignment in milestone 7 when assigned. The
+current-tools baseline compares `check`, project tests, and `verify --anchor`
+with the shared-report workflow; it does not gate engine implementation.
 
 **Engine capabilities are exercised here first.** Implement each needed correction
 or new reporting capability in Anchor Book with independent fixtures and this
-Book's acceptance before relying on it in Symposium. The initial Symposium trial
-uses already-exercised tools. [Verification Evidence milestone 3](verification-evidence.md#verification-evidence-3)
+Book's acceptance before relying on it in Symposium. No new Symposium test or
+coding trial is required to build those engine capabilities.
+[Verification Evidence milestone 3](verification-evidence.md#verification-evidence-3)
 supplies the versioned report; [milestone 9](verification-evidence.md#verification-evidence-9)
 adds the shared agent/build/rendering workflow. Repeat the early assignment with
 that reporting and complete milestone 7's other cases before claiming the full
@@ -387,7 +389,7 @@ Pending.
 
 **Identifier:** `symposium-integration-7`
 
-**Dependencies:** Milestone 3's bootstrap, milestone 4's assessed configuration loop, and enough design from milestone 2 to define each assignment. These allow the current-tools baseline to begin on assignment. Full Book coverage, shared build reports, native CI integration, and unrelated proof work do not block that baseline. Completion of the full workflow additionally needs [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9), exercised in the engine's Book first. Review records are required only for assignments that depend on a declared review method.
+**Dependencies:** Milestone 3's bootstrap, milestone 4's assessed configuration loop, and enough design from milestone 2 to define each assignment. These allow the current-tools baseline to begin on assignment. Full Book coverage, shared build reports, native CI integration, and unrelated proof work do not block that baseline. This project trial does not block engine reporting work. Completion of the full workflow additionally needs [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9), exercised in the engine's Book first. Review records are required only for assignments that depend on a declared review method.
 
 **Design basis:** The [agent workflow](../design/system-overview.md#working-through-agents), the contract's build-and-verify guidance, [using verify](../design/verification-evidence.md#using-verify), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
 
