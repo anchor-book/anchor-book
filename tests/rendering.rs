@@ -161,6 +161,49 @@ fn anchor_headers_control_complete_collapsed_details() {
 }
 /// anchorbook: A-render-records-in-context#preservation-and-escaping
 #[test]
+fn record_disclosures_preserve_surrounding_details() {
+    use scraper::{Html, Selector};
+
+    // A permissive HTML parser repairs unmatched closing tags in standalone
+    // records. Inside authored details, an extra closing tag instead closes
+    // the reader's group and moves subsequent records and prose outside it.
+    let source = format!(
+        "<details id=\"authored-group\" open><summary>Related design</summary>\n\n{RECORDS}\n<p id=\"inside-after-records\">Still in the group.</p>\n</details>\n<p id=\"outside-group\">After the group.</p>\n"
+    );
+    let output = run(
+        &["md"],
+        &request(vec![chapter("a.md", "a.md", &source)]).to_string(),
+    );
+    assert!(output.status.success(), "{:?}", output.stderr);
+    let book: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let html = Html::parse_fragment(book["items"][0]["Chapter"]["content"].as_str().unwrap());
+    let select = |css| Selector::parse(css).unwrap();
+    let group = html.select(&select("#authored-group")).next().unwrap();
+    let records: Vec<_> = group
+        .select(&select("section.ab-record"))
+        .map(|record| record.attr("id").unwrap())
+        .collect();
+    assert_eq!(
+        records,
+        ["R-preserve-input", "D-pure-reader", "A-immutable-input"]
+    );
+    let after_records = html
+        .select(&select("#inside-after-records"))
+        .next()
+        .unwrap();
+    assert_eq!(
+        after_records.parent().map(|node| node.id()),
+        Some(group.id())
+    );
+    let after_group = html.select(&select("#outside-group")).next().unwrap();
+    assert_eq!(
+        after_group.parent().map(|node| node.id()),
+        group.parent().map(|node| node.id()),
+        "following prose remains outside the authored disclosure"
+    );
+}
+/// anchorbook: A-render-records-in-context#preservation-and-escaping
+#[test]
 fn escaped_fields_are_inert_and_empty_requirements_are_explicit() {
     let text = RECORDS
         .replace(

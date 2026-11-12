@@ -326,7 +326,13 @@ The existing anchor fragment and permalink still identify its visible heading wh
 The library and actual adapter supply the disclosure and its presentation without consumer theme files or source changes. Other record kinds retain their presentation, and supported-toolchain and Book checks pass.
 
 - **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `preservation-and-escaping` — Partial: anchor disclosure output and escaped heading
-- **Evidence:** The 13-test rendering suite passes, including source preservation, unrelated content, escaping, and the actual adapter boundary. Formatting and Clippy pass. All 166 independent tests, including the 13 rendering tests and doctests, pass on Rust 1.88.0 and stable, with eight optional acceptance tests ignored. Structural checking, the Book build, and all five current/rendered Book acceptance tests pass separately. The presentation remains embedded in the engine; no consumer theme files are required.
+- **Evidence:** The 14-test rendering suite passes, including source preservation, unrelated content, escaping, and the actual adapter boundary. Formatting and Clippy pass. All 167 independent tests, including the 14 rendering tests and doctests, pass on Rust 1.88.0 and stable, with eight optional acceptance tests ignored. Structural checking, the Book build, and all five current/rendered Book acceptance tests pass separately. The presentation remains embedded in the engine; no consumer theme files are required.
+
+### Mutation validation
+
+The [initial PR campaign](https://github.com/anchor-book/anchor-book/actions/runs/43157732566) at `7b721dff4a6a1c8920596b7c5975386df5cd70c9` tested four changed-line mutations: three caught, one missed, no timeouts or unviable changes. The survivor inverted the condition that closes an anchor's disclosure in `record`. Standalone HTML parsing repaired the malformed output, hiding the defect from the fixture assertions.
+
+`record_disclosures_preserve_surrounding_details` now places all three record kinds inside an authored disclosure and checks that the records and following inner prose remain inside it, while subsequent outer prose stays outside. An extra closing tag closes that authored group early. This exercises the observable containment guarantee without relying on a parser to report malformed HTML. No production behavior, assertions, or mutation exclusions were weakened. Revision-specific rerun results are tracked in [PR #39](https://github.com/anchor-book/anchor-book/pull/39).
 
 ### Completion record
 
