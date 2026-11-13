@@ -195,6 +195,36 @@ Start with synchronous Rust and explicit inputs. Avoid global configuration,
 changing the process working directory, and a speculative plugin framework.
 Internal data structures need not become public extension interfaces.
 
+## Book relationship index
+
+The [RFD relationship model](rfds.md#shared-relationship-model) composes existing
+record and roadmap inventories with a distinct RFD reader into a shared Book
+index. Its typed entities include RFDs, design sections, authorities, anchors and
+criteria, roadmaps, and milestones. RFD disposition is separate from record
+acceptance and milestone progress; authored references retain locations and
+backlinks are derived.
+
+RFD anchor changes carry typed add/revise/retire payloads. Proposed definitions
+are keyed by proposal and intended record identity, with explicit current or
+proposal-scoped references; they do not enter the current `RecordInventory`.
+Sharing anchor field types must not make a proposed replacement a duplicate
+current definition or a source of current authority or verification claims.
+
+The existing record inventory remains the authority-validation boundary. A
+proposal edge never becomes an `AuthorityReference`. Broader indexing neither
+weakens that validation nor extends its proof claim. Operations supply observed
+inputs; the index resolves them without filesystem or process access. CLI and
+renderer views use the same index. Add capability modules when implementing this
+work rather than empty modules or a separate persisted graph.
+
+[RFD format 1](rfd-format.md) fixes the source and configuration boundary. The
+reader parses the reserved TOML fences, retains locations through embedded record
+decoding, and supplies proposal-scoped candidates to the index. Ordinary record
+reading continues to exclude fenced content. Book-loading callers check enabled
+collection ownership and reject unscoped live definitions in it before exposing
+an inventory. Template commands return the packaged sources through a shared
+library function without loading the Book or writing files.
+
 ## Record API
 
 `read_records(&[Chapter<'_>]) -> Result<RecordInventory, RecordErrors>` is the

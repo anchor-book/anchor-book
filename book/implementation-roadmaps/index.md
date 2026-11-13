@@ -80,6 +80,11 @@ boundaries: several milestones may advance one anchor or vice versa. Put work
 outside a roadmap's goal in a separate roadmap. Ownership belongs to assignments;
 owner fields and issue links are optional.
 
+When an [RFD](../design/rfds.md) coordinates the change, link it to the affected
+work. Several roadmaps can implement one proposal; one milestone can serve several
+proposals. The roadmap owns task and evidence records, while the RFD preserves
+the coherent change and derives progress from these links.
+
 The Anchor Book preprocessor reads this format in the chapters of the
 `implementation-roadmaps` role: it validates milestone and criterion identifiers
 and anchor-coverage references and renders each criterion as a collapsible
@@ -219,7 +224,7 @@ The engine's existing proof CI stays in place; Symposium requires no proofs.
 
 | Order | Work and owning milestone | Observable outcome |
 | --- | --- | --- |
-| 1. Expose current verification results directly | [Verification Evidence 3](verification-evidence.md#verification-evidence-3-retained-report) supplies structured library/CLI output using independent fixtures and this Book. | Agents can read criterion context, current states, claims, and locations without report files or history. |
+| 1. Define and support coherent design changes | [Requests for Discussion](rfds.md) defines the optional proposal process; its proposed milestone 1 supplies configured structure, typed relationships, and templates. Milestone 2 adds adoption trials and shared views, with rendered evidence depending on Verification Evidence 9. | Agents can follow an agreed proposal into the live system definition, with affected anchors and work explicit. Parser and view implementation remain proposed. |
 | 2. Exercise the coding experience, then connect rendering | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) starts with an agent locating and correcting a failure from current feedback, then connects the shared results to rendering. | The agent uses the Book and evidence to correct work; the rendered Book presents the same current state without rerunning tests. |
 | 3. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 9](verification-evidence.md#verification-evidence-9) integrates current project-run results without duplicate tests. Retention is optional and needs an explicit purpose and expiration policy. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
 | 4. Define each project area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority for the next project assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
@@ -236,13 +241,14 @@ is not a prerequisite. Review-record support in
 when the assigned criteria depend on that method; unsupported methods and their
 claims remain explicit rather than being counted as satisfied.
 
-**Assigned engine increment:** [Verification Evidence 3's structured result](verification-evidence.md#verification-evidence-3-retained-report).
-Expose existing verification results directly through `verify --format json`,
-using independent fixtures and the actual CLI. Preserve project test outcomes,
-criterion states, claims, and exit behavior. Results need no stored history.
-The next focus is the coding experience: use the Book and current findings to
-locate, correct, and reassess work. Saved-input validation and shared rendering
-remain in milestone 9; durable retention is separate from this workflow.
+**Current engine assignment:** [RFD design and process](rfds.md).
+The design, source format, templates, and conditional contract guidance are
+prepared locally, defining the relationships connecting proposals to affected
+design and work before broad Symposium RFD adoption. Parser and view implementation are separate proposed
+milestones. [Verification Evidence 3's structured result](verification-evidence.md#verification-evidence-3-retained-report)
+is available through `verify --format json`; it preserves project outcomes and
+requires no report history. Coding feedback, saved-input validation, and shared
+rendering remain in milestone 9; RFD work makes the intended change explicit.
 
 Symposium's missing hook-continuation test remains a proposed project assignment
 in [milestone 7](symposium-integration.md#symposium-integration-7). Neither that
@@ -256,15 +262,32 @@ registry release, initialization, and materialization remain outside this
 first major milestone unless a concrete adoption finding requires them. The
 existing proof requirements and engine CI checks are preserved.
 
-- [Verification Evidence](verification-evidence.md): shared criterion evidence, early encapsulation of Verus and the engine's proof CI, review records, and current build results for agents and the rendered Book; broader proof guards and consumer-owned Verus follow.
-- [Symposium Integration](symposium-integration.md): trials of Book development and agent work lead to upstream adoption; engine gaps are corrected here first.
+## Roadmap directory
+
+The directory and sidebar put current engine work first, followed by reusable
+project setup and Symposium adoption. Established foundations follow in conceptual
+order. This is a navigation order; milestone dependencies and assignments define
+execution order, and the iterative sequence above does not require completing an
+entire roadmap before using its results.
+
+### Development and adoption
+
+- [Requests for Discussion](rfds.md): optional Book structure, coherent design proposals, shared relationships, conditional agent guidance, and derived implementation progress.
+- [Verification Evidence](verification-evidence.md): current results are available; shared build and rendered results remain in milestone 9. Review records, broader proof guards, and consumer-owned Verus have their own prerequisites.
 - [Project Integration](project-integration.md): this Book exercises shared groundwork, version alignment, and adoption guidance before Symposium relies on them.
+- [Symposium Integration](symposium-integration.md): trials of Book development and agent work lead to upstream adoption; engine gaps are corrected here first.
+
+### Established foundations
+
+These roadmaps record completed milestones and their evidence, including any
+recorded limits. Their position does not imply that they need reimplementation.
+
 - [Engine Bootstrap](bootstrap.md): reviewing and accepting the checker's governing records.
+- [Record Line Grammar](record-line-grammar.md): measuring the line grammar with agents, then making it the engine's and this Book's only record syntax.
 - [Record Rendering](record-rendering.md): readable, linked records in the rendered Book.
 - [Structural Checking](structural-checker.md): read-only checking that guides agents through format repairs.
-- [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
 - [Formal Verification](formal-verification.md): proving the engine's own authority validation, and making Verus an optional feature so no project needs it.
-- [Record Line Grammar](record-line-grammar.md): measuring the line grammar with agents, then making it the engine's and this Book's only record syntax.
+- [Mutation Testing](mutation-testing.md): mutation testing and its correction loop before merge.
 
 Drafting is preparation, not milestone completion. Ready work can be assigned;
 readiness alone starts no implementation. Engine automation is not needed to

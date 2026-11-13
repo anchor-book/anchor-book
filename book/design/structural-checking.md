@@ -102,6 +102,17 @@ this first scope.
 Document the parser's supported syntax and mdBook version. Unrecognized
 navigation cannot be interpreted as an empty, valid Book.
 
+## Optional RFD structure
+
+[RFD structure](rfds.md#optional-book-structure) extends the role checks only when
+the optional `book.sections.rfds` mapping enables it. Folder presence does not
+activate the capability. It checks explicit
+mapping, index placement, proposal-root inventory, supporting navigation, and
+ordinary path boundaries. Books without the section keep the initial rules.
+The RFD capability adds the [rfds/v1 scope](rfd-format.md#evaluation-boundary);
+a pass under the initial
+structural scope does not establish RFD conformance or proposal relationships.
+
 ## Navigation parser
 
 Use the standalone [`mdbook-summary` 0.5.4 parser](https://github.com/rust-lang/mdBook/blob/v0.5.4/crates/mdbook-summary/src/lib.rs)

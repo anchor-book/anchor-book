@@ -9,6 +9,11 @@ planned work or an explicit deferral with a reason. Check wording and presentati
 changes for impact without inventing implementation work. This obligation applies
 in every phase; iteration is part of each phase, not a separate phase.
 
+For a change coordinated by an RFD, reconcile its full set of affected
+relationships and linked work, including effects outside its main design topic.
+Follow [the RFD process](#use-rfds-when-enabled) when scope or
+agreement changes. Updating one destination does not reconcile the whole proposal.
+
 | Phase | Reconcile changed design and work |
 | --- | --- |
 | **Prototyping** | Evolve provisional milestones with the design and record uncertainty. Agreed scoped experiments need no whole-system review. Preserve completed experiments as evidence of what was tried, not proof of a revised goal. |

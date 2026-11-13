@@ -19,6 +19,11 @@ Make the next milestone assignable; leave unsettled later work explicitly
 proposed. Review changes with the engineer before treating them as agreed.
 Ownership belongs with the assignment; owner fields and issue tracking are optional.
 
+When work implements an RFD, link the proposal and the affected milestones.
+One proposal can coordinate several roadmaps, and a milestone can address more
+than one proposal. Keep tasks and completion evidence here; the RFD links to
+their current state and preserves the change's rationale and review context.
+
 Update Book progress, remaining work, and evidence alongside code and tests.
 Record evidence against the milestone's completion criteria, including tested
 revisions, checks or observations, results, supporting records, limitations, and

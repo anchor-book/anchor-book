@@ -17,6 +17,11 @@ Use these definitions and conventions while authoring this Book:
   and anchor fields.
 - [Authority Definitions](design/authority-definitions.md) defines requirements,
   decisions, and authority-reference rules.
+- [Requests for Discussion](design/rfds.md) defines optional proposal structure,
+  review disposition, and relationships across design and implementation work.
+- [RFD Source Format](design/rfd-format.md) specifies the proposed schema-2
+  extension, format-1 blocks, templates, and compatibility. These are design
+  targets; use the implementation state below to determine supported commands.
 - The [Glossary](glossary.md) lists the Book's terms. Use them in text and
   identifiers; propose a new term to the engineer before introducing it.
 - [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
@@ -52,6 +57,20 @@ uses the same Verus runner as a strict proof-target gate. Target success leaves
 criterion assessments and guards outstanding. This Book's tests are linked to its anchors' criteria
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
+
+The contract includes conditional RFD guidance. The optional RFD role, source
+format reader, broader Book relationship index, template commands, and RFD views are planned in the
+[RFD roadmap](implementation-roadmaps/rfds.md); the current engine does not check
+those relationships. This Book does not enable RFD support; the planned optional
+book.sections.rfds setting must be implemented before adding it to configuration.
+Its RFD design chapter defines the capability, not an active proposal collection.
+
+The RFD design specifies proposal-scoped definitions and the repository contains
+template sources under templates/rfds. Template commands and proposal validation
+are not implemented. For now, illustrative definitions belong in fenced Markdown
+examples and have no typed proposal validation. Do not place ordinary anchor
+blocks in an RFD and assume that marking them draft keeps them out of the current
+record inventory.
 
 The test runner trusts project test outcomes as described in
 [Trusting project test results](design/verification-evidence.md#trusting-project-test-results).
@@ -129,12 +148,15 @@ runner supplies no guard results until milestone 6 implements the actual checks.
 ## Development priority
 
 The [current sequence](implementation-roadmaps/index.md#first-major-milestone-symposium-adopts-anchor-book)
-centers on agents building Symposium from its Book's system definition. The next
-engine increment exposes current verification results directly, using independent
-fixtures and this Book for acceptance. The next focus is the coding experience:
-using the Book and current feedback to locate, correct, and reassess work. Shared
-rendering, reproducible commands, and CI follow; durable report retention is
-optional. New Symposium tests and coding trials belong
+centers on agents building Symposium from its Book's system definition. Direct
+structured verification results are available. The current assignment defines
+RFDs as optional Book structure, a conditional working process, and participants
+in the shared relationship model. The [RFD roadmap](implementation-roadmaps/rfds.md)
+separates this preparation from parser, checking, and view implementation.
+This supports the coding experience: understanding a proposed change, then using
+the Book and feedback to implement, correct, and reassess it. Shared rendering,
+reproducible commands, and CI remain work; durable retention is optional.
+New Symposium tests and coding trials belong
 to later project adoption and do not block this engine work. A readiness report
 and the earlier verification trial do not establish that the full development
 workflow has been demonstrated.

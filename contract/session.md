@@ -53,6 +53,11 @@ before changes. Resolve unmet prerequisites with the engineer, as
 For any other request, state its scope and constraints before making
 changes. Do not ask again for direction or agreement already given in the session.
 
+When configuration enables RFDs, apply [the RFD process](#use-rfds-when-enabled)
+and include the conditional RFD section in the readiness report. Read their
+index, roots, and supporting chapters as part of the Book; report any missing
+navigation or unavailable RFD checks as gaps.
+
 ### Readiness report template
 
 Use the following Markdown structure, replacing bracketed instructions with the
@@ -100,6 +105,14 @@ it rather than silently dropping later roadmaps or criteria.
 
 - Tasks: [summarize completed and remaining tasks separately]
 - To proceed: [unmet prerequisites or next step within an existing assignment]
+
+### RFDs
+
+[Include this section only when RFD support is enabled. Say when no proposals exist.]
+
+| RFD | Review disposition | Affected scope and linked work | Unresolved decisions and next step |
+| --- | --- | --- | --- |
+| [identity and title] | [recorded disposition; distinguish source acceptance during migration] | [affected design/records, proposed anchor changes, and milestone IDs; report implementation state separately] | [pending agreement, conflict, or action within an assignment] |
 
 ### Ready milestones
 

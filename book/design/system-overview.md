@@ -54,6 +54,7 @@ checking operates independently of the renderer and its output.
 | Concept | Responsibility |
 | --- | --- |
 | Design | The intended system as a whole, as well as it is currently understood |
+| Requests for Discussion | Optional coherent proposals for changes across the system, with review disposition and links to affected design and work |
 | Authority | Requirements and decisions that govern the system |
 | Anchors | Named properties grounded in at least one authority, with criteria for verification |
 | Implementation Roadmaps | AI-proposed work reviewed and agreed with people, including dependencies and completion evidence |
@@ -62,6 +63,11 @@ checking operates independently of the renderer and its output.
 A design change updates the goal; it does not establish that the change is
 implemented. A roadmap defines agreed implementation work; evidence establishes
 its completion.
+
+When the Book enables an RFD section, [Requests for Discussion](rfds.md) defines
+its expected structure and process. RFDs join the shared relationship model;
+their acceptance neither replaces governing authority nor establishes
+implementation. The contract includes conditional guidance for these Books.
 
 ### Working through agents
 

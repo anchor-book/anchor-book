@@ -112,7 +112,7 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 
 - [ ] **Design areas:** Adapt each design area in Symposium's contribution guide, such as sync, init, state, hooks, agents, subcommands, telemetry, and the report layer, prioritizing the next development assignment. Preserve intended behavior, identify unresolved choices, and put anchors at the top of each chapter. Do not redefine the goal merely to match current code.
 - [ ] **Tenets:** Carry Symposium's tenets into the design overview as prose. A tenet becomes a requirement's source or a decision's rationale where a record needs it; tenets are not records themselves.
-- [ ] **Authority:** Adapt accepted and completed RFDs into the requirements and decisions they establish, each naming its RFD; draft RFDs stay out until accepted.
+- [ ] **RFDs and authority:** After the [engine RFD workflow](rfds.md) is implemented and exercised in this Book, adopt Symposium's RFDs as coherent proposals with source identities, review context, supporting material, and links to all affected design and work. Derive requirements and decisions from agreed choices, each tracing its RFD; retain drafts as proposals without making them governing authority. Preserve source disposition separately from imported-record review and evidence.
 - [ ] **Methods:** Give each criterion its required methods, `test` or `review`; no criterion requires `proof`.
 - [ ] **Gaps:** Record record-format, authority, checking, or rendering gaps found at this size as in milestone 1.
 
@@ -128,6 +128,10 @@ Every design area in Symposium's contribution guide is either represented by a d
 #### Authority traced {#symposium-integration-2-authority-traced}
 
 Each anchor cites at least one requirement or decision that resolves, and each adapted requirement and decision names its source. Light review checks that the port preserves the existing design and flags uncertain interpretations; maintainers review the content at upstream integration. Tenets remain prose except where a particular record uses one as its source or rationale.
+
+RFDs retain their coherent change context and map to every affected capability,
+not one destination chapter. Draft proposals remain distinguishable from the
+agreed goal; linked milestones own implementation progress and evidence.
 
 - **Anchor coverage:** None — project content.
 - **Evidence:** Pending.
