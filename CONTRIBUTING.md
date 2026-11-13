@@ -188,6 +188,31 @@ the version the engine supports:
 cargo install cargo-nextest --version 0.9.151 --locked
 ```
 
+For structured feedback while coding, use the same command with a scoped anchor:
+
+```sh
+cargo run --quiet --locked --bin anchorbook -- verify --config anchorbook.toml --anchor A-verify-progress-report --method test --format json
+```
+
+This emits one `anchorbook.verify` result, schema version 1, on standard output.
+The library exposes the same projection as `adapters::verify::json_report` and
+`json_error`. It includes criterion statements, definition and evidence-link
+locations, current states, input identities, claims, counts, and limitations.
+`complete` means evaluation completed, not that criteria passed or the system is
+complete. JSON mode preserves the normal exit codes, including structured
+incomplete results with exit 2; invalid CLI arguments still print usage to stderr.
+Text is the default and can be selected with `--format text`.
+
+Neither output format saves the aggregate result or its history; runners retain
+their configured working output. Consume the result directly;
+redirect it only when the workflow needs a temporary handoff or selected evidence.
+The version names the format, not a history of results. The current command does
+not import reports or attach evidence to rendered pages. Those consumers must
+validate saved results against current inputs when implemented. CI retention
+requires an explicit purpose and expiration policy. Durable milestone evidence
+stays summarized in the Book; review authored content and diagnostics before
+publishing any selected full result.
+
 `--anchor <id>` and `--method test` narrow the run for the build loop. Without
 nextest, linked tests show as not evaluated; ordinary `cargo test` and CI do not
 need it. Configured Verus library targets run through the native proof runner;

@@ -64,7 +64,7 @@ flowchart LR
 ```
 
 ```sh
-anchorbook verify --config anchorbook.toml [--anchor ID]... [--method test|proof]...
+anchorbook verify --config anchorbook.toml [--anchor ID]... [--method test|proof|review]... [--format text|json]
                   [--skip-sensitivity] [--brief]
 ```
 
@@ -457,6 +457,41 @@ not change the exit status. Reports follow the
 [diagnostics conventions](check-diagnostics.md) for codes, locations,
 deterministic order, and output without color.
 
+### Structured output and retention
+
+`verify --format json` emits one `anchorbook.verify` result with
+`schema_version = 1` on standard output. Text remains the default. Both formats
+present the same current evaluation and retain exit 0 for progress, 1 for an
+unsatisfied completion claim, and 2 for incomplete evaluation. A valid JSON-mode
+invocation returns a structured incomplete result when evaluation cannot proceed;
+invalid CLI arguments print usage to standard error and run no checks.
+
+The result contains requested scope, input identities, chapters, anchors and
+criterion statements, per-method states and reasons, linked function identities
+and locations, findings, completion claims, summary counts, and evidence limits.
+Native proof-target results remain separate from criterion satisfaction. Locations
+name their base explicitly: `book` for authored records and `configuration` for
+code and structural findings. Unknown positions remain absent. The Book source
+path connects those bases when evaluation succeeds.
+
+The JSON projection belongs to the shared library adapter and performs no I/O.
+It creates no report file or history; a caller can consume standard output,
+pass the result directly, or redirect it to a temporary file. A schema version
+identifies the format, not a requirement to retain successive runs. Consumers
+must check that version and may not treat a saved result as current merely
+because it parses. The build handoff below validates applicability when it
+consumes evidence.
+
+Local development needs only current results. CI may retain temporary diagnostic
+artifacts under an explicit expiration policy. Durable completion evidence belongs
+in the roadmap: tested revisions, checks, outcomes, coverage, and limitations.
+Preserve a full report only when a concrete evidence need justifies it. Report
+history, automatic uploads, and durable storage are not prerequisites for the
+coding workflow. Raw process logs are not embedded. Diagnostic text is preserved, including any
+paths it names; review project-authored text and diagnostics before publishing
+selected results. Structured location fields use the declared relative base,
+with null paths when a location cannot be expressed under that base.
+
 ### Run identity
 
 Each result retains the information needed to assess its scope:
@@ -478,7 +513,7 @@ proof-note payloads.
 The Book build supplies agents with the current state of deterministic checks
 and anchor evidence, under
 [A-build-current-evidence](system-overview.md#A-build-current-evidence). The library,
-CLI, versioned machine-readable artifact, and rendered Book present the same
+CLI, versioned structured output, and rendered Book present the same
 evaluated model. Results retain stable identifiers, source locations, findings,
 per-method states, scope and limits, and checked or unchecked completion claims.
 The rendered Book shows this evidence beside criteria and keeps it separate from
@@ -557,7 +592,7 @@ above; an explicitly selected tool installation may be outside the project root.
    Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
    also claims every criterion in the Book, and whether a test with no link should
    fail when a project opts in, remain open.
-3. **Machine-readable output.** The versioned artifact schema for tools and agents.
+3. **Evidence handoff.** The transport and input-validation interface for consuming structured results in the Book build; output alone does not make saved results current.
 4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
    and Verus.
 5. **Sensitivity cost.** Each change verifies the complete target once, so large

@@ -1,5 +1,7 @@
-//! Plain-text presentation of a `verify` report, without process I/O.
+//! Text and structured presentation of a `verify` result, without process I/O.
+mod json;
 use crate::verification::{ClaimOutcome, Report, State};
+pub use json::{json_error, json_report};
 use std::fmt::Write;
 
 fn plural(count: usize, one: &str, many: &str) -> String {
