@@ -80,6 +80,14 @@ recorded requirement; its rationale must explain its independent basis. A
 decision can itself provide authority for an anchor. The syntax does not invent a
 requirement merely to fill a reference.
 
+## Relationship to RFDs
+
+[RFDs](rfds.md#shared-relationship-model) are change proposals in the broader Book
+index. Requirements and decisions can trace their provenance to an RFD, and an
+RFD can affect many authorities and anchors. Those edges do not make RFDs an
+allowed authority kind or confer acceptance on linked records. The authority
+validator continues to receive only its existing typed authority relationships.
+
 ## Validating authority relationships
 
 Collect records from the Book's chapter inventory into one typed index, then

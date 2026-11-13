@@ -19,8 +19,8 @@ covers and what it does not.
 | Chapter | Scope |
 | --- | --- |
 | This chapter | Methods, responsibilities, how tests and proofs correspond to criteria, the guards that check proofs, and assessment records |
-| [Proof Guards](proof-guards.md) | Timing table and sequence diagram for the checks around Verus |
 | [Running Verification](verification-evidence.md) | The `verify` operation: links from code to criteria, runners, evidence states, and reports |
+| [Proof Guards](proof-guards.md) | Timing table and sequence diagram for the checks around Verus |
 | [Shipping Verified Code](verified-code-packaging.md) | Publishing a crate containing verified code without imposing its verifier on dependents |
 
 ## Anchors

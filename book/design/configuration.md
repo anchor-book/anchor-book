@@ -52,6 +52,23 @@ chapter at the top level of `SUMMARY.md`. The display title can differ.
 Later schemas can add more detailed roles and policies; the initial mapping
 does not establish semantic validity of requirements, decisions, or anchors.
 
+## Optional RFD section
+
+The [RFD structural extension](rfds.md#optional-book-structure) in schema 2 adds optional
+`book.sections.rfds`, mapping a proposal index under the ordinary path rules.
+The three initial roles remain required. The optional mapping both enables RFD
+support and locates its index; no separate boolean or plugin package is needed.
+Omitting it leaves RFD support off, even if an `rfds/` folder exists. Explicitly
+mapped alternative locations support existing project layouts. Ordinary Book
+checks continue to apply when this optional capability is disabled.
+
+RFD roots and supporting chapters belong beneath that top-level index in
+`SUMMARY.md`. [RFD compatibility](rfd-format.md#configuration-and-compatibility)
+defines the upgrade: schema 1 remains supported without RFDs, schema 2 adds the
+optional mapping, and old engines reject schema 2. Unknown fields remain errors
+in versions that do not support them. Check every project entry point before
+adopting the new configuration; checking performs no migration.
+
 ## Project phase
 
 `[project].phase` selects the working expectations described in the

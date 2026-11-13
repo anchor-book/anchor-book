@@ -62,6 +62,12 @@ from the record inventory.
 > Statement: Implementation roadmaps must be readable by agents as compact source and by people as rendered pages, and their milestone and criterion identifiers and anchor-coverage references must be checked, so a roadmap cannot silently reuse an identifier or cite an anchor or criterion that does not exist.
 > Source: Roadmaps written as HTML tables spent about a fifth of the Book's source on presentation that agents read in every session, and nothing checked the anchor references they record.
 
+## Design change requirements
+
+> **`R-coherent-design-changes`** (draft): **Projects can discuss and track a design change across the Book**
+> Statement: A project must be able to enable RFD support explicitly in its Book configuration, obtaining a defined authoring, review, and design-adoption process, AI Working Contract guidance, and relationships from each proposal to all affected design, authority, anchors, criteria, and implementation work. Reviewers must be able to assess actual proposed anchor definitions and criteria before they are incorporated into the live system definition. The proposal must remain a coherent change record through review and implementation, with acceptance distinct from evidence and completion. Projects that do not enable RFDs must retain their existing workflow even when an RFD folder exists.
+> Source: The engineer's requirement to make Requests for Discussion an optional first-class part of Anchor Book for Rust systems, including Symposium's changes spanning multiple design areas.
+
 ## Verification requirements
 
 > **`R-criterion-evidence`** (draft): **See whether current evidence supports each criterion**

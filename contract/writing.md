@@ -55,11 +55,14 @@ through the schema's compatibility and migration policy; reconcile the schema,
 affected records, and validation expectations together. An unpublished draft may
 evolve under its documented policy. Accepting a record does not freeze its schema.
 
-Change the goal design directly through the project's review workflow, updating
-affected design, requirements, decisions, anchors, and roadmaps together. Keep
-unresolved alternatives in the experiment that resolves them or outside the Book;
-Git history keeps superseded designs. Agreeing on a design change and completing
-its implementation are separate steps.
+Change the goal design through the project's review workflow, updating affected
+design, requirements, decisions, anchors, and roadmaps together. When the Book
+enables RFDs, use [the RFD process](#use-rfds-when-enabled) to keep
+the change coherent across capabilities. Keep unresolved alternatives in its RFD
+or the experiment that resolves them, outside the goal design chapters. Without
+either, keep them outside the Book. Git history keeps superseded designs; an RFD
+retains the proposal and its review context. Agreeing on a design change and
+completing its implementation are separate steps.
 
 Design chapters define the goal system, not progress toward it. Keep out status,
 gaps, milestones, evidence, dates, and history; roadmaps record those.

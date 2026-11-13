@@ -228,6 +228,14 @@ progress), criteria, and evidence as open, collapsible sections. As with records
 the source is never rewritten, and an invalid roadmap fails preprocessing with
 located diagnostics.
 
+## RFD presentation
+
+When the Book enables RFDs, present the [proposal and its relationships](rfds.md#agent-and-rendered-views)
+as one navigable change: scope, disposition, affected entities, related proposals,
+and progress derived from linked work. Use the shared Book index; do not scrape
+RFD prose or treat it as authority. Authored review status and current verification
+results remain distinct. Rendering preserves sources and performs no verification.
+
 ## Acceptance and boundaries
 
 Use the current Book's complete record inventory as the main presentation case,

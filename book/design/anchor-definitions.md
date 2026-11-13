@@ -48,6 +48,16 @@ records:
 > - Criterion `file-preservation` [test]: Compare project file contents and directory entries before and after passing, failing, and incomplete checks; they remain unchanged.
 ```
 
+### Proposed definitions in RFDs
+
+[RFDs carry proposed anchor definitions](rfds.md#proposed-anchors) using these same
+field meanings within the [RFD change format](rfd-format.md#proposed-definitions).
+Its embedded definitions are read only by the proposal reader; ordinary code
+examples remain excluded. A proposed revision can name a
+current anchor ID without defining it again in the current inventory. The RFD
+reader validates that separate scope; ordinary record status `draft` is not a
+proposal namespace. Literal code examples remain examples, not typed proposals.
+
 ### Heading
 
 ``**`<id>`** (<status>): **<Title>**``
