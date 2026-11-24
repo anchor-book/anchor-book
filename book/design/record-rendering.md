@@ -14,7 +14,9 @@ literal code examples. Rendering does not establish implementation or verificati
 > Authority: `R-readable-records`; `D-shared-record-rendering`
 > - Criterion `record-presentation` [test]: Compare the authored inventory and fields with generated records; every definition appears once per chapter, all fields are accessible, and nested examples remain literal. Anchors begin collapsed, with title, identity, and status visible and a heading control for expansion.
 > - Criterion `browser-presentation` [test]: Browser assertions check heading-control expansion, keyboard focus and activation, visible title/identity/status, no clipping in light/dark and narrow layouts, and expanded fields in print output.
-> - Criterion `relationship-navigation` [test]: Exercise direct links and derived backlinks across nested chapters, localhost, a project site prefix, and the combined print view; fragments identify the intended record.
+> - Criterion `relationship-navigation` [test]: Through the actual adapter, exercise direct links and derived backlinks across nested chapter routes; fragments identify the intended record.
+> - Criterion `site-prefix-navigation` [test]: Serve an independently specified rendered fixture at localhost and under a project site prefix; follow direct record links and derived backlinks and assert each reaches the intended chapter and record.
+> - Criterion `print-navigation` [test]: In the combined print view, follow direct record links and derived backlinks and assert each fragment identifies the intended record within that view.
 > - Criterion `preservation-and-escaping` [test]: Compare source files before and after preprocessing and Book builds; they are unchanged. Fixtures containing HTML/script-like field text render it inertly, and unrelated prose and diagrams are preserved.
 > - Criterion `inline-text` [test]: Through the actual adapter, fixture fields with code spans, emphasis, strong emphasis, and relative and external links render formatted, with chapter links resolved; code-spanned identifiers of records in the inventory link to those records, and unknown ones stay code; other Markdown and raw HTML render as literal text.
 
@@ -61,6 +63,9 @@ flowchart TB
     renderer --> output["Transformed chapters returned to mdBook"]
     output --> site["mdBook HTML renderer and Book theme"]
     model -.-> future["Later engine operations reuse this model"]
+    class mdbook,model guide-context
+    class adapter,reader,validation,renderer,output,site guide-build
+    class future guide-design
 ```
 
 The single [Rust package](rust-engine.md#internal-boundaries) contains the library

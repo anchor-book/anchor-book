@@ -17,7 +17,9 @@ into outcomes an engineer can take on with their agents. Tasks describe the work
 completion criteria describe how to demonstrate that its outcome has been reached.
 A completion criterion is an observable condition shown by recorded evidence, not
 someone's approval or confirmation; a milestone is Complete when its evidence
-shows every criterion holds.
+shows every criterion holds. An implementation milestone without its governing
+design is not Ready; report the missing design as the next work. Research and
+design milestones instead name the question, scope, and assessment they will use.
 
 List milestones directly, without a separate overview table. Each records:
 
@@ -222,6 +224,9 @@ flowchart TD
     feedback --> correction["Agent corrects the work"]
     correction --> implementation
     feedback --> progress["Book: recorded progress and evidence"]
+    class goal guide-design
+    class assignment,implementation,correction guide-build
+    class feedback,progress guide-context
 ```
 
 The current footing is usable for a bounded development trial: contract delivery,
@@ -233,31 +238,31 @@ The engine's existing proof CI stays in place; Symposium requires no proofs.
 
 | Order | Work and owning milestone | Observable outcome |
 | --- | --- | --- |
-| 1. Define and support coherent design changes | [Requests for Discussion](rfds.md) defines the optional proposal process; its proposed milestone 1 supplies configured structure, typed relationships, and templates. Milestone 2 adds adoption trials and shared views, with rendered evidence depending on Verification Evidence 9. | Agents can follow an agreed proposal into the live system definition, with affected anchors and work explicit. Parser and view implementation remain proposed. |
-| 2. Exercise the coding experience, then connect rendering | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) starts with an agent locating and correcting a failure from current feedback, then connects the shared results to rendering. | The agent uses the Book and evidence to correct work; the rendered Book presents the same current state without rerunning tests. |
-| 3. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 9](verification-evidence.md#verification-evidence-9) integrates current project-run results without duplicate tests. Retention is optional and needs an explicit purpose and expiration policy. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
-| 4. Define each project area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority for the next project assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
-| 5. Demonstrate and adopt the development workflow in Symposium | [Symposium Integration 7](symposium-integration.md#symposium-integration-7) exercises missing tests, an implementation change, and a design change, comparing current tools with the shared-report workflow. [Milestone 5](symposium-integration.md#symposium-integration-5) applies the native commands and CI integration. | The Book guides implementation; code, tests, records, and progress agree after each change. Agents and readers receive current evidence from the same engine workflow. |
-| 6. Integrate the proven workflow upstream | [Symposium Integration 8](symposium-integration.md#symposium-integration-8) resolves maintainer review and design-document ownership and verifies the adopted contributor workflow. | Symposium uses the Book and engine for ordinary development upstream; a fork trial alone does not complete adoption. |
+| 1. Exercise the coding experience, then connect rendering | [Verification Evidence 9](verification-evidence.md#verification-evidence-9) starts with an agent locating and correcting a failure from current feedback, then connects the shared results to rendering. | The agent uses the Book and evidence to correct work; the rendered Book presents the same current state without rerunning tests. |
+| 2. Make the engine workflow reproducible | [Project Integration 4](project-integration.md#project-integration-4) supplies version alignment and contributor setup; [Verification Evidence 9](verification-evidence.md#verification-evidence-9) integrates current project-run results without duplicate tests. Retention is optional and needs an explicit purpose and expiration policy. | Ordinary commands and CI produce the same scoped report, and a fresh checkout reproduces the workflow with documented setup. |
+| 3. Define each project area before building it | [Symposium Integration 2](symposium-integration.md#symposium-integration-2) adapts design and authority for the next project assignment; [milestone 4](symposium-integration.md#symposium-integration-4) extends links to project-owned tests. Full design coverage remains its own completion requirement. | Each assigned change has a clear goal, governing records, criteria, and roadmap scope. Porting the entire Book is not a prerequisite for using the areas already defined. |
+| 4. Demonstrate and adopt the development workflow in Symposium | [Symposium Integration 7](symposium-integration.md#symposium-integration-7) exercises missing tests, an implementation change, and a design change, comparing current tools with the shared-report workflow. [Milestone 5](symposium-integration.md#symposium-integration-5) applies the native commands and CI integration. | The Book guides implementation; code, tests, records, and progress agree after each change. Agents and readers receive current evidence from the same engine workflow. |
+| 5. Integrate the proven workflow upstream | [Symposium Integration 8](symposium-integration.md#symposium-integration-8) resolves maintainer review and design-document ownership and verifies the adopted contributor workflow. | Symposium uses the Book and engine for ordinary development upstream; a fork trial alone does not complete adoption. |
 
 These are iterative stages, not a requirement to finish each whole roadmap before
 starting the next. Fix engine findings where they obstruct or misrepresent the
 workflow, exercise corrections in this Book, and repeat the affected Symposium
 case. Project test behavior stays the project's responsibility. The retired
 [execution-report proposal](verification-evidence.md#verification-evidence-10)
-is not a prerequisite. Review-record support in
-[milestone 8](verification-evidence.md#verification-evidence-8) is required only
-when the assigned criteria depend on that method; unsupported methods and their
-claims remain explicit rather than being counted as satisfied.
+is not a prerequisite. Review-method records are retired. Only executable tests
+and proofs can satisfy anchor criteria; unevaluated methods and missing coverage
+remain explicit. Human assessment of design and trial usefulness remains separate.
 
-**Current engine assignment:** [RFD design and process](rfds.md).
-The design, source format, templates, and conditional contract guidance are
-prepared locally, defining the relationships connecting proposals to affected
-design and work before broad Symposium RFD adoption. Parser and view implementation are separate proposed
+**Unselected proposal:** [RFD design and process](rfds.md) preparation merged in
+[PR #45](https://github.com/anchor-book/anchor-book/pull/45). The design, source
+format, templates, and conditional contract guidance define relationships between
+proposals, affected design, and work if the capability is selected. The
+[RFD-support decision](../open-questions.md#rfd-support) remains open; this
+proposal is not a prerequisite for the sequence above. Parser and view implementation remain proposed
 milestones. [Verification Evidence 3's structured result](verification-evidence.md#verification-evidence-3-retained-report)
 is available through `verify --format json`; it preserves project outcomes and
 requires no report history. Coding feedback, saved-input validation, and shared
-rendering remain in milestone 9; RFD work makes the intended change explicit.
+rendering remain in milestone 9 and do not require RFD support.
 
 Symposium's missing hook-continuation test remains a proposed project assignment
 in [milestone 7](symposium-integration.md#symposium-integration-7). Neither that
@@ -281,15 +286,21 @@ entire roadmap before using its results.
 
 ### Development and adoption
 
-- [Requests for Discussion](rfds.md): optional Book structure, coherent design proposals, shared relationships, conditional agent guidance, and derived implementation progress.
-- [Verification Evidence](verification-evidence.md): current results are available; shared build and rendered results remain in milestone 9. Review records, broader proof guards, and consumer-owned Verus have their own prerequisites.
+- [Verification Evidence](verification-evidence.md): current results are available; shared build and rendered results remain in milestone 9. Programmatic proof guards and consumer-owned Verus have their own prerequisites; review-method records are retired.
 - [Project Integration](project-integration.md): this Book exercises shared groundwork, version alignment, and adoption guidance before Symposium relies on them. [Milestone 6](project-integration.md#project-integration-6) supplies conversational user guidance and prompt examples.
 - [Symposium Integration](symposium-integration.md): trials of Book development and agent work lead to upstream adoption; engine gaps are corrected here first.
 
+### Unselected proposals
+
+- [Requests for Discussion](rfds.md): an unselected draft proposal for optional RFD support. The decision to proceed remains open; its milestones are outside the main development sequence.
+
 ### Established foundations
 
-These roadmaps record completed milestones and their evidence, including any
-recorded limits. Their position does not imply that they need reimplementation.
+These roadmaps record delivered foundations and their evidence. Structural
+Checking milestone 4 still lacks independent trial review and recorded agent
+versions; Formal Verification milestone 4 still lacks automated source-drift
+checks. Their position does not imply completion of those obligations or a need
+to reimplement the delivered foundations.
 
 - [Engine Bootstrap](bootstrap.md): reviewing and accepting the checker's governing records.
 - [Record Line Grammar](record-line-grammar.md): measuring the line grammar with agents, then making it the engine's and this Book's only record syntax.
@@ -315,14 +326,14 @@ clear design and outcome-based milestones before implementation.
 | Materialize managed content | [Operations](../design/system-overview.md#operations), [A-materialize-owned-content](../design/system-overview.md#A-materialize-owned-content) | Ownership boundaries, planned changes, conflict detection, repeatable reconciliation, and preservation of authored content. Settle ownership declarations and conflict/application policy, then implement the unlinked preservation criteria. Depends on configured structure and checking. |
 | Language-specific contract extensions | [Contract delivery](../design/system-overview.md#contract-delivery) | `anchorbook contract` delivers the engine-owned contract through [Project Integration milestone 1](project-integration.md#project-integration-1). Its Rust guidance is built in; extensions for other languages need their own design. |
 | Structured roadmaps | [Roadmap model](#defining-the-work) | Validation and rendering of the Markdown roadmap format are implemented in [Record Rendering milestone 4](record-rendering.md#record-rendering-4), which is Complete; references between roadmaps beyond fragments remain later work. |
-| Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
+| Remaining mdBook summary input | [Navigation parser](../design/structural-checking.md#navigation-parser) | Accept ordered lists, HTML or images in link labels, and content mdBook ignores, reporting links mdBook would drop as structural findings. The unlinked `mdbook-compatibility` criterion exposes this existing design gap. Deferred until a Book needs a construct; each is added with regression tests against mdBook's parser. |
 | Cross-Book authority | [Book concepts](../design/system-overview.md#what-a-book-describes) | Provider/consumer identity, revisions, distribution, change review, and conflict handling. Local authority validation does not require this. |
 | Automated phase and readiness checks | [Project phase](../design/configuration.md#project-phase) | Define what can establish design readiness or completion and how further iterations preserve a completed baseline. The first configuration reader only exposes the phase. |
 | Crate release | [Rust Engine](../design/rust-engine.md#rust-development-conventions), [Project Integration](../design/project-integration.md) | Registry naming, package contents including the contract, public API and schema compatibility, the declared engine, configuration, and record-syntax versions, and release verification. The package delivers what consuming Books need at run time, as it now does for the contract and the record and milestone presentation, and should leave out repository-only files such as workflows. Publishing is separate from local prototyping. |
 | Remaining project integration | [Project Integration](../design/project-integration.md) | [Project Integration milestone 4](project-integration.md#project-integration-4) now owns the library CLI entry point, exact engine-version declaration, and reproducible bootstrap and authoring references needed for Symposium. Broader adoption fixtures, other exact dependency pins, additional mdBook versions, and general release compatibility remain later work. sage-dev's integration is deferred while its role is unclear. Verus is optional through [Formal Verification milestone 4](formal-verification.md#formal-verification-4); consumer proof fixtures remain in [Verification Evidence milestone 5](verification-evidence.md#verification-evidence-5). Symposium can adopt a pinned Git revision before registry publication. |
 
-The prototype's mdBook-version, output-format, and plain-text-field limits remain
-documented constraints. Expanding them needs its own design and roadmap change;
+The supported mdBook versions, HTML output, and limited inline Markdown in record
+fields remain documented constraints. Expanding them needs its own design and roadmap change;
 they are not implicit tasks in the current rendering milestone.
 
 [Verification Evidence milestone 11](verification-evidence.md#verification-evidence-11)

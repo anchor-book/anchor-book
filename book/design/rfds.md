@@ -1,5 +1,9 @@
 # Requests for Discussion
 
+**Draft proposal.** Whether Anchor Book should provide this capability remains
+[an open decision](../open-questions.md#rfd-support). Keeping this design for
+consideration does not commit the project to implementing it.
+
 An RFD is a coherent proposal for a substantial design change. It carries the
 problem, motivation, proposed behavior, alternatives, unresolved questions, and
 relationships needed to discuss and implement that change across capabilities.

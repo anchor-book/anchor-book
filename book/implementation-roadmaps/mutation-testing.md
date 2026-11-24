@@ -25,9 +25,9 @@ Mutation outcomes assess tests, not design acceptance or anchor verification.
 
 **Identifier:** `mutation-testing-1`
 
-**Design basis:** Working-contract testing policy and Rust Engine testing guidance.
-
 **Dependencies:** The independent test suite from Record Rendering milestones 1 and 2.
+
+**Design basis:** Working-contract testing policy and Rust Engine testing guidance.
 
 **Tasks**
 
@@ -80,9 +80,9 @@ Complete locally on 2026-10-21. Scoped findings led to stronger tests and a pass
 
 **Identifier:** `mutation-testing-2`
 
-**Design basis:** Working-contract testing policy and Rust Engine testing guidance.
-
 **Dependencies:** Mutation Testing milestone 1; publication of the workflow and access to repository merge rules.
+
+**Design basis:** Working-contract testing policy and Rust Engine testing guidance.
 
 **Tasks**
 
@@ -132,7 +132,10 @@ None — test readiness and repository integration; no automatic claim of anchor
 
 **Equivalent mutations:** The three OR-to-XOR changes at `src/records/markdown.rs:24–26` produce the same option mask: the locked parser's four flags occupy distinct bits. Exact exclusions and their review conditions are recorded in `.cargo/mutants.toml`. Listing checks confirm exactly three exclusions and retain all flag-removal mutations. The previous unviable cases were reviewed: generated replacements call unavailable constructors or require missing trait implementations; they are not counted as detected faults.
 
-**Integration and limits:** The [PR #2 mutation run](https://github.com/anchor-book/anchor-book/actions/runs/39735753188) for head `687a4bf` passed with 228 attempted, 184 caught, 44 unviable, no survivors or timeouts, using cargo-mutants 27.1.0 and the reviewed exclusions. That work merged as `03fb981`. The tool does not discover bodies inside `verus!`; those functions have separate proof evidence. Merge protection and a remote failure/correction demonstration remain open. Passing local and GitHub authority proofs now satisfy the prerequisite for that follow-up; passing mutation runs alone do not demonstrate correction or enforcement. No ruleset rules applied to main when checked on 2026-10-24; merge enforcement has not been demonstrated.
+**Integration and limits:** The [PR #2 mutation run](https://github.com/anchor-book/anchor-book/actions/runs/39735753188) for head `687a4bf` passed with 228 attempted, 184 caught, 44 unviable, no survivors or timeouts, using cargo-mutants 27.1.0 and the reviewed exclusions. That work merged as `03fb981`. The tool does not discover bodies inside `verus!`; those functions have separate proof evidence. At that revision, merge protection and the remote failure/correction demonstration
+were still open, and no ruleset applied to main on 2026-10-24. The later failure,
+correction, and enforcement evidence below resolves those historical gaps; the
+earlier passing mutation run alone did not establish them.
 
 **Runtime and scope:** The full campaign grew to 667 mutations and took 35 minutes on two workers for [PR #27](https://github.com/anchor-book/anchor-book/actions/runs/42757352983) (536 caught, 131 unviable, none missed), near the 45-minute budget. PRs now mutate only their changed lines with `--in-diff`, and merges to `main` run the full campaign with four workers and a 60-minute budget; changes to mutation settings, manifests, or the toolchain still run the full campaign on the PR. Locally, PR #28's diff selects 18 mutations, tested in 16 seconds (8 caught, 10 unviable). A changed-line run cannot detect a test gap that a change exposes elsewhere; the full campaign on `main` finds it after merge. On GitHub, #28's changed-line [Mutation tests run](https://github.com/anchor-book/anchor-book/actions/runs/42766005463) took 3m36s. The first full campaign on `main`, [for `aa3120b`](https://github.com/anchor-book/anchor-book/actions/runs/42764948386), tested 667 mutations in 27 minutes on four workers: 536 caught, 131 unviable, none missed or timed out. The full campaign for PR #33, after `syn` was added, reached about 780 mutations and its job hit the 60-minute budget as it finished (632 caught, 149 unviable, none missed), so the check failed on time alone; campaigns now run as four shards with the required check passing only when every shard does. The sharded run's results are recorded with PR #33.
 

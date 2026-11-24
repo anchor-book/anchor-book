@@ -121,6 +121,9 @@ flowchart TB
     inspect --> evaluate["Evaluate rules on observed data"]
     evaluate --> report["Typed findings and evaluation scope"]
     report --> caller["Calling adapter formats or asserts results"]
+    class cli,tests,md guide-context
+    class api,records,render,load,inspect,evaluate,caller guide-build
+    class report guide-design
 ```
 
 ## Internal boundaries

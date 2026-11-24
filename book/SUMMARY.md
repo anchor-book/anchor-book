@@ -26,15 +26,19 @@
   - [Requirements](authority/requirements.md)
   - [Decisions](authority/decisions.md)
 - [Implementation Roadmaps](implementation-roadmaps/index.md)
-  - [Requests for Discussion](implementation-roadmaps/rfds.md)
   - [Verification Evidence](implementation-roadmaps/verification-evidence.md)
   - [Project Integration](implementation-roadmaps/project-integration.md)
   - [Symposium Integration](implementation-roadmaps/symposium-integration.md)
+  - [Requests for Discussion](implementation-roadmaps/rfds.md)
   - [Engine Bootstrap](implementation-roadmaps/bootstrap.md)
   - [Record Line Grammar](implementation-roadmaps/record-line-grammar.md)
   - [Record Rendering](implementation-roadmaps/record-rendering.md)
   - [Structural Checking](implementation-roadmaps/structural-checker.md)
   - [Formal Verification](implementation-roadmaps/formal-verification.md)
   - [Mutation Testing](implementation-roadmaps/mutation-testing.md)
+
+[Open Questions](open-questions.md)
+
+[Research](research.md)
 
 [Glossary](glossary.md)

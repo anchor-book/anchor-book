@@ -45,6 +45,9 @@ flowchart LR
     mdbook["mdBook"] --> adapter["Anchor Book preprocessor"]
     adapter --> engine
     adapter --> site["mdBook renderer"]
+    class callers,source,core,later,mdbook guide-context
+    class engine,adapter,site guide-build
+    class results,managed guide-design
 ```
 
 The boxes describe responsibilities, not separate services or Cargo packages.
@@ -217,6 +220,10 @@ flowchart TB
     report --> render["Validate report inputs and render with mdBook"]
     book --> render
     render --> pages["Published Book"]
+    class rust,book guide-context
+    class cargo,check,verify,render guide-build
+    class report,pages guide-design
+    class agent guide-context
 ```
 
 The diagram shows the CI order:

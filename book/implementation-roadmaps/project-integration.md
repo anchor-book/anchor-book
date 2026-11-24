@@ -58,11 +58,11 @@ contract guidance while preserving common retrieval for diagnosis.
 
 **Status:** Complete
 
+**Identifier:** `project-integration-1`
+
 **Dependencies:** The configuration loader, structural checker, and record renderer.
 
 **Design basis:** [mdBook configuration location](../design/configuration.md#relationship-to-mdbook), [contract delivery](../design/system-overview.md#contract-delivery), [running the engine](../design/project-integration.md#running-the-engine), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
-
-**Identifier:** `project-integration-1`
 
 **Tasks**
 
@@ -184,39 +184,66 @@ obligations without making an anchor per test or edge case.
   applies the rule to this Book; packaging and link tests cannot establish that
   fresh agents follow the procedure.
 
-**Self-application.** The 17 design chapters were assessed on the local
-`design-constraint-coverage` branch based on
-`b809f76f107e1ed0d7edc9e66f18f516fb94e34d`. Selection follows the
+**Self-application.** On 2026-11-24, the `book-self-reconciliation` branch based
+on `7966c9fddb3e9b9a710444c365cd698550de9b5f` assessed all 18 design chapters and
+the linked roadmap records. Selection follows the
 [importance threshold](../design/anchor-definitions.md#coverage-of-design-constraints):
-a property merits an anchor because of its consequence for correctness, not
-merely because it can be tested. Existing records and evidence retain their scope.
+correctness consequences justify anchors; testability alone does not. This is
+local Book reconciliation, not a fresh-agent conversation trial.
 
 | Assessed design | Key guarantee and coverage disposition |
 | --- | --- |
-| Design index and System Overview | The overview links owning definitions. Independent builds and current build evidence already have anchors. Preserving user-authored content during materialization needs [A-materialize-owned-content](../design/system-overview.md#A-materialize-owned-content) and its draft authority; violating this boundary could destroy the Book's intended design. |
+| Design index and System Overview | The overview links owning definitions. Independent builds and current build evidence already have anchors. Preserving user-authored content during materialization is owned by [A-materialize-owned-content](../design/system-overview.md#A-materialize-owned-content) and its draft authority; violating this boundary could destroy the Book's intended design. |
 | Anchor Definitions, Authority Definitions, and Rust Engine | Existing record grammar, valid-authority, and shared-result anchors cover identifiable definitions, justified properties, and consistent callers. No duplicate anchor for each record kind or API. |
 | Configuration, Structural Checking, and Checking Diagnostics | Existing selection, conformance, preservation, and truthful/actionable-result anchors own these boundaries. Routine diagnostic examples remain test cases under those properties. |
 | Verification, Running Verification, and Proof Guards | Existing criterion-state, linkage, execution, completion-claim, and proof-guard anchors own evidence validity. Proof Guards now links its owning anchors directly. Missing native guards remain explicit work; no new anchor is needed for that chapter. |
 | Shipping Verified Code | [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) makes source correspondence explicit: verifying a different executable body would invalidate the proof's application to shipped code. Prior consumer-build evidence does not establish this property. |
 | Project Integration and Record Rendering | Existing version, dependency, bootstrap, and rendering anchors own reproducibility and faithful presentation. Git-independent local setup remains a design/testing obligation within this milestone; it does not need a separate correctness anchor. |
-| Requests for Discussion, RFD Source Format, and RFD Worked Examples | Existing RFD anchors own proposal isolation, relationships, and distinct acceptance/implementation/evidence states. Format details and literal example records do not add live goal anchors. |
+| Requests for Discussion, RFD Source Format, and RFD Worked Examples | Draft RFD anchors describe the proposed isolation, relationships, and distinct acceptance/implementation/evidence states; the decision to implement the capability remains open. Format details and literal example records do not add live goal anchors. |
+| Using Anchor Book with an Agent | Existing contract-retrieval and phase-guidance criteria cover delivery. Conversational usefulness is assessed in milestone 6; neither prompts nor each workflow step needs an anchor. The optional walkthrough choice is recorded in Open questions. |
 
-The two new anchors expose five unlinked test criteria; no existing pass is reused
-for them. The [deferred materialization work](index.md#later-work-retained-from-the-design)
-still needs an ownership format and conflict/application policy. The
-[packaging follow-up](formal-verification.md#later-work) needs a programmatic
-source-comparison boundary. These choices need engineer judgment before their
-implementation; neither a new guarantee of atomic writes nor a proof of compiler
-correctness is implied. No current milestone is made Complete by this assessment.
+The [earlier assessment and validation](https://github.com/anchor-book/anchor-book/blob/7966c9fddb3e9b9a710444c365cd698550de9b5f/book/implementation-roadmaps/project-integration.md#project-integration-4-design-before-roadmaps)
+added two anchors with five unlinked criteria. This pass preserves those anchors
+and all other record identities, authority, and property statements. It adds no
+anchors. Three independent obligations now have their own unlinked criteria:
+`mdbook-compatibility`, `site-prefix-navigation`, and `print-navigation`. The
+existing adapter-navigation criterion retains the tested nested-route behavior;
+its site-prefix and print obligations moved into the two explicit criteria.
+The guarantee is unchanged. Supported grammar tests do not establish every
+mdBook-parseable input form.
 
-Validation on 2026-11-24: all six contract tests, structural checking, the mdBook
-build, and all five current/rendered-Book acceptance checks pass. The configured
-`verify --method test --format json` run with nextest 0.9.151 passes 123 linked
-tests: 48 criteria satisfied, 42 unlinked, and one proof criterion not evaluated
-(37 anchors: 14 satisfied, nine partial, 14 unlinked). The five new criteria are
-unlinked; existing records remain byte-identical. Proofs and fresh-agent trials
-were not run. These local checks establish format, preserved definitions, and
-reported evidence states, not completeness of the semantic assessment.
+[Research](../research.md) now owns source-format observations, packaging
+alternatives, and the Symposium no-agent experiment; roadmap results keep their
+revisions, limitations, and supporting references. [Open questions](../open-questions.md)
+owns unresolved guide, packaging, materialization, and integration choices.
+Milestones use the documented field order and current verification methods;
+completed delivery records identify merged PRs without relabeling old trials as
+fresh evidence. Core executable acceptance is independent of the unselected RFD
+proposal; its incorporation and agent-workflow checks retain their owners in the
+RFD roadmap. Diagram classes use the shared theme.
+
+Two existing completion claims were unsupported by their own evidence:
+[Formal Verification 4](formal-verification.md#formal-verification-4) requires
+automated source-drift rejection, and [Structural Checking 4](structural-checker.md#structural-checking-4)
+requires independent review and recorded agent versions. Both return to In
+progress with the missing work explicit; delivered implementation and original
+results remain valid within their recorded scope. Formal Verification 1 retains
+its completed target-proof experiment, with Partial coverage of today's
+`formal-authority` criterion until milestone 6 supplies native guards.
+
+**Validation:** The structural check, mdBook 0.5.4 build with mdbook-mermaid
+0.17.1, and all five current/rendered-Book acceptance checks pass; rendered
+acceptance covers 68 records and 2,966 local links. Browser inspection covers ten
+diagrams on seven pages in light, navy, narrow, and print layouts, with no script
+errors; wide screen diagrams remain horizontally scrollable and print diagrams
+fit the page width. Configured `verify --method test --format json` with nextest
+0.9.151 reports 48 satisfied criteria, 45 unlinked, and one proof criterion not
+evaluated across 37 anchors: 13 satisfied, ten partial, and 14 unlinked. There are
+no link findings or failed evaluated completion claims. Navigation conformance
+moves from satisfied to partial because its missing compatibility obligation is
+now explicit. Record identities, property statements, authority references, and
+milestone fragments are preserved. Proofs and fresh-agent trials were not run;
+these checks do not establish complete semantic coverage or conversational usefulness.
 
 ### Completion record
 
@@ -261,9 +288,10 @@ The delivered port section directs agents to recover missing engineer intent, re
 ### Completion record
 
 Complete locally on 2026-11-24 for phase parsing, configured contract delivery,
-working guidance, and the checks above. Changes are based on `64f0c3a`; integration
-into upstream and observation of the workflow in a real port remain outside this
-milestone's evidence.
+working guidance, and the checks above. Changes are based on `64f0c3a`; the implementation subsequently merged in
+[PR #50](https://github.com/anchor-book/anchor-book/pull/50) as
+`b809f76f107e1ed0d7edc9e66f18f516fb94e34d`. Observation of the workflow in a real
+port remains outside this milestone's evidence.
 
 ## Milestone 6. Engineers receive useful workflow guidance in conversation {#project-integration-6}
 
@@ -338,5 +366,8 @@ they do not prove that every agent will follow the guide.
 
 ### Completion record
 
-Guide design and contract delivery are prepared locally for review. Conversational
-trials remain outstanding; publication and downstream adoption are separate work.
+Guide design and contract delivery merged in
+[PR #52](https://github.com/anchor-book/anchor-book/pull/52) as
+`7966c9fddb3e9b9a710444c365cd698550de9b5f`. The checks above retain their original
+tested revision. Conversational trials remain outstanding; merge and downstream
+pinning do not establish conversational usefulness.

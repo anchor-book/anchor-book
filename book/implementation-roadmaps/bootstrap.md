@@ -22,11 +22,11 @@ The AI Working Contract (`anchorbook contract`) defines how agents work.
 
 **Status:** Complete
 
+**Identifier:** `engine-bootstrap-1`
+
 **Dependencies:** None. Acceptance is a design judgment; the built checker and its evidence inform the review but do not establish it.
 
 **Design basis:** [Structural Checking](../design/structural-checking.md), [Checking Diagnostics](../design/check-diagnostics.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md#A-check-shared-typed-results), [System Overview](../design/system-overview.md#A-check-independent-build), the [initial checker requirements](../authority/requirements.md#initial-checker-requirements), and [Decisions](../authority/decisions.md).
-
-**Identifier:** `engine-bootstrap-1`
 
 **Tasks**
 
@@ -59,7 +59,7 @@ The Book contains the checker design, six checker requirements, four governing d
 
 **Revision:** Branch `book-upkeep`, based on `cea6ba3`; review revisions in `3962e7f` and `33ae5fd`, acceptance in the following commit. Merged in PR #25 as `f78f047`.
 
-**Review revisions:** `ci-order` and `agent-repair` require `review`, since their evidence is recorded observation; `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `A-check-configuration-validity` also cites `R-truthful-results`; `D-separate-check-and-repair` is retitled; and `R-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
+**Historical review revisions:** At the accepted revision, `ci-order` and `agent-repair` used `review` for recorded observations. [Programmatic-only verification](verification-evidence.md#verification-evidence-11) supersedes those method selections; executable replacements remain in milestone 12. At that historical revision, `equivalent-callers` includes the `anchorbook md` preprocessor; required roles stay top-level chapters in every project; `A-check-configuration-validity` also cites `R-truthful-results`; `D-separate-check-and-repair` is retitled; and `R-repair-feedback` states its product source. Affected roadmaps were reconciled in the same changes. Six anchors were accepted without revision.
 
 **Checks:** The structural check, `mdbook build` with mdBook 0.5.4, current-Book acceptance, and rendered-Book acceptance passed after acceptance.
 
@@ -98,7 +98,7 @@ Their milestone identifiers are retired here and will not be reused:
 
 <a id="engine-bootstrap-5"></a>
 
-- `engine-bootstrap-5`: engine-generated contract delivery is planned in
+- `engine-bootstrap-5`: engine-generated contract delivery is implemented in
   [Project Integration milestone 1](project-integration.md#project-integration-1).
 
 Milestone 1's criteria `engine-bootstrap-1-traceable-design` and

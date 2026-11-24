@@ -71,6 +71,8 @@ flowchart LR
     crate --> verify["anchorbook verify"]
     code --> verify
     verify -->|"project's runners"| runners["nextest, Verus"]
+    class config,code,agents guide-context
+    class crate,tests,render,verify,runners guide-build
 ```
 
 | Integration point | What the project adds | Operation |
@@ -281,11 +283,5 @@ roadmaps name the projects they integrate.
 
 ## Open questions
 
-1. **Implementation associations.** Whether evidence links extend from tests and
-   proofs to implementation sites, with explicit not-yet-implemented and
-   not-applicable states.
-2. **Supported Verus versions.** How wide a report-version range the engine can
-   maintain, and how a project learns of the supported range.
-3. **Bootstrap ownership.** Whether initialization writes and checks the
-   `AGENTS.md` section as managed content, or the project maintains it from the
-   template.
+Unresolved choices for this capability are tracked with their owning work in
+[Open questions](../open-questions.md#project-adoption).

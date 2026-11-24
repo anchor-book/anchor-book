@@ -6,7 +6,7 @@ This roadmap builds the checker that [Engine Bootstrap](bootstrap.md) prepared
 the design for. It extends the crate from
 [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1).
 Milestones were assigned as scoped prototypes; review and acceptance of the
-checker's governing records continue in
+checker's governing records completed in
 [Engine Bootstrap milestone 1](bootstrap.md#engine-bootstrap-1). The checker runs
 independently of rendering and does not require generated Book output.
 
@@ -42,7 +42,8 @@ coverage, following the [roadmap convention](index.md#anchor-criteria-and-planne
 
 Record parsing and authority resolution belong to rendering, including the
 [authority-coverage follow-up](record-rendering.md#record-rendering-3-authority-coverage).
-They do not expand this layout/navigation check. Evidence aggregation is later work.
+They do not expand this layout/navigation check. The separate verification runner
+reports current criterion evidence; shared build integration remains later work.
 
 Milestone 1 prepares configuration; milestone 2 delivers a usable local checker
 whose findings explain format repairs and whose rerun confirms the corrected
@@ -53,8 +54,9 @@ required to complete this roadmap.
 
 Each milestone uses its linked criteria's declared verification methods. Navigation
 grammar behavior is tested against the documented supported syntax and version;
-it does not require a manual review of each Book. The agent-repair criterion
-retains review of the resulting edits and preserved obligations.
+it does not require a manual review of each Book. Milestone 4 retains human
+assessment of its trials. The anchor's agent-repair criterion requires an executable
+comparison harness, tracked in Verification Evidence milestone 12.
 
 ## Milestone 1. The engine selects the intended Book and validates its configuration {#structural-checking-1}
 
@@ -62,11 +64,11 @@ retains review of the resulting edits and preserved obligations.
 
 **Status:** Complete — merged with passing CI
 
+**Identifier:** `structural-checking-1`
+
 **Dependencies:** [Record Rendering — Milestone 1](record-rendering.md#record-rendering-1) and the assigned configuration prototype design. Remaining [Bootstrap](bootstrap.md) review and fresh-session exercises proceed separately for this explicitly assigned milestone.
 
 **Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md)
-
-**Identifier:** `structural-checking-1`
 
 **Tasks**
 
@@ -139,11 +141,11 @@ Complete and merged: configuration loading, validation, preservation, and phase 
 
 **Status:** Complete — merged with passing CI
 
+**Identifier:** `structural-checking-2`
+
 **Dependencies:** Structural Checking — Milestone 1.
 
 **Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md)
-
-**Identifier:** `structural-checking-2`
 
 **Tasks**
 
@@ -225,18 +227,17 @@ Complete on 2026-10-26. Merged in `3d197c0` with passing CI and a full mutation 
 
 ## Milestone 3. Continuous checks protect the current Book {#structural-checking-3}
 
-The shared rendering and publication gate also addresses Record Rendering
-milestone 3; its other criteria remain separate.
-
 **Outcome:** Changes to this repository receive independent engine validation and an acceptance check against its current Book before rendering.
 
 **Status:** Complete — merged with GitHub evidence
 
-**Dependencies:** Structural Checking — Milestone 2.
+**Identifier:** `structural-checking-3`
+
+**Dependencies:** Structural Checking — Milestone 2. The shared rendering and
+publication gate also addresses Record Rendering milestone 3; its other criteria
+remain separate.
 
 **Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md)
-
-**Identifier:** `structural-checking-3`
 
 **Tasks**
 
@@ -300,13 +301,13 @@ Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evid
 
 **Outcome:** An agent can use findings to make scoped structural repairs and reach a passing check while preserving unrelated content.
 
-**Status:** Complete — recorded agent runs and independent review
+**Status:** In progress
+
+**Identifier:** `structural-checking-4`
 
 **Dependencies:** Structural Checking — Milestone 2.
 
 **Design basis:** [Checker design](../design/structural-checking.md), [Configuration](../design/configuration.md), [Rust Engine](../design/rust-engine.md), and [Diagnostics](../design/check-diagnostics.md), and the contract's structural check guidance (`anchorbook contract`, “Check the Book's structure”)
-
-**Identifier:** `structural-checking-4`
 
 **Tasks**
 
@@ -315,6 +316,7 @@ Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evid
 - [x] Include missing chapters, misplaced required sections, and renderer-setting drift. Exercise invalid or unsupported input that must be resolved before evaluation. The agent must distinguish these results from a successful format check and preserve the intended configuration and required roles.
 - [x] Improve unclear diagnostics or workflow guidance and repeat affected cases.
 - [x] Record the initial defects, findings, edits, final result, and any human help.
+- [ ] Repeat the bounded trials with agent versions recorded and independent review of repairs and preservation.
 
 ### Completion criteria
 
@@ -323,7 +325,7 @@ Complete on 2026-11-07. Merged in `9ecd950` and `2aaf496`; local and GitHub evid
 Recorded agent runs repair seeded defects and reach a passing check. Independent review confirms intended repairs, unrelated content preservation, no weakened requirements, and any human assistance.
 
 - **Anchor coverage:** [A-check-actionable-diagnostics](../design/check-diagnostics.md#A-check-actionable-diagnostics) · `agent-repair` — Partial: observed repair trials; executable comparison harness pending.
-- **Evidence:** The recorded runs retain their original evidence. The executable acceptance checks now required by the criterion remain pending in [Verification Evidence milestone 12](verification-evidence.md#verification-evidence-12). Passed. Two fresh Codex sessions worked on throwaway branches of this Book, given only the repository bootstrap and an engineer request. Run 1 seeded a link typo, a required role turned into a targetless draft, and a navigation entry for a chapter that never existed. Run 2 seeded unsupported summary prose, renderer output drift, a required role nested under another, and a navigation entry for a chapter that never existed. Both runs repaired every defect whose intent was clear, leaving only the nonexistent chapter for the engineer; in run 2 the engineer removed that entry and the check passed. Independent review diffed each result against its baseline revision: run 1 matched exactly apart from the unresolved entry, and run 2 matched except for keeping the prose as an HTML comment. Neither run changed `anchorbook.toml` or engine code. Human assistance: in run 1 the agent reported the failures and stopped, repairing only after the engineer asked whether it had read the contract. That guidance gap was fixed before run 2, whose only input was the request to run the check.
+- **Evidence:** The recorded runs retain their original evidence. The executable anchor checks remain pending in [Verification Evidence milestone 12](verification-evidence.md#verification-evidence-12). Partial: separate review of these trials was not recorded. Two fresh Codex sessions worked on throwaway branches of this Book, given only the repository bootstrap and an engineer request. Run 1 seeded a link typo, a required role turned into a targetless draft, and a navigation entry for a chapter that never existed. Run 2 seeded unsupported summary prose, renderer output drift, a required role nested under another, and a navigation entry for a chapter that never existed. Both runs repaired every defect whose intent was clear, leaving only the nonexistent chapter for the engineer; in run 2 the engineer removed that entry and the check passed. Review in the same working session diffed each result against its baseline revision: run 1 matched exactly apart from the unresolved entry, and run 2 matched except for keeping the prose as an HTML comment. Neither run changed `anchorbook.toml` or engine code. Human assistance: in run 1 the agent reported the failures and stopped, repairing only after the engineer asked whether it had read the contract. That guidance gap was fixed before run 2, whose only input was the request to run the check.
 
 #### Separate edits {#structural-checking-4-separate-edits}
 
@@ -337,7 +339,7 @@ Each checker invocation remains read-only; agent edits are separately identifiab
 Cases outside the assignment or the agent’s ability produce an explicit explanation rather than a false completion claim; record versions and assistance.
 
 - **Anchor coverage:** [A-check-truthful-results](../design/check-diagnostics.md#A-check-truthful-results) · `report-scope` — Partial: reported scope and limits during the workflow
-- **Evidence:** Passed. In both runs the agent found that the entry's chapter had no file and no Git history, treated its intent as unclear, and neither invented the chapter nor removed the entry. It asked the engineer with concrete options and cited the contract, reporting the check as failed until the entry was resolved. Agent versions were not recorded; see the milestone evidence.
+- **Evidence:** Partial: the required agent versions were not recorded. In both runs the agent found that the entry's chapter had no file and no Git history, treated its intent as unclear, and neither invented the chapter nor removed the entry. It asked the engineer with concrete options and cited the contract, reporting the check as failed until the entry was resolved. Agent versions were not recorded; see the milestone evidence.
 
 ### Evidence {#structural-checking-4-evidence}
 
@@ -353,7 +355,12 @@ Cases outside the assignment or the agent’s ability produce an explicit explan
 
 ### Completion record
 
-Complete on 2026-11-08. Recorded agent runs and independent review cover every completion criterion within the limits above. With milestones 1–3 complete, this completes the Structural Checking roadmap.
+Reconciled to In progress on 2026-11-24. The original trials demonstrated scoped
+repairs and reported uncertain intent, but did not record agent versions or a
+separate review, both required by this milestone. Preserve their results at the
+original revisions. Repeat the bounded trials with recorded versions and
+independent assessment before completing this milestone; the executable anchor
+harness remains separate work in Verification Evidence milestone 12.
 
 ## Updating and completing the work
 

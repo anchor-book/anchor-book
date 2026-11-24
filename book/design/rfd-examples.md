@@ -1,5 +1,9 @@
 # RFD Worked Examples
 
+**Draft proposal.** Whether Anchor Book should provide this capability remains
+[an open decision](../open-questions.md#rfd-support). Keeping this design for
+consideration does not commit the project to implementing it.
+
 These examples illustrate [RFD format 1](rfd-format.md) in a fictional fixture
 Book. They are code examples, not proposals or live records in this Book.
 The repeated hexadecimal revisions identify hypothetical fixture snapshots;
