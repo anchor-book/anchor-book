@@ -34,14 +34,15 @@ situations other projects bring.
 > Property: Adding the crate as a dependency builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
 > Authority: `R-project-adoption`; `D-isolate-engine-verification`
 > - Criterion `independent-resolution` [test]: A fixture workspace that depends on the crate and on a different vstd version resolves and builds, and the crate's default dependency tree contains no vstd, Verus, or exact-version requirement on shared packages.
-> - Criterion `dependency-review` [review]: Review the published dependency set and features against this property for each release, recording any exact-version requirement with its reason.
+> - Criterion `dependency-review` [test]: Inspect packaged Cargo metadata and feature-resolution fixtures with an executable dependency audit: require optional verifier dependencies to be absent from ordinary builds and every exact-version requirement to match the declared compatibility policy and recorded reason. Reject an undeclared pin or default verifier dependency.
 > - Criterion `renderer-versions` [test]: The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions.
 
 > **`A-project-agent-bootstrap`** (draft): **A project's agents start from the contract and the project's Book**
-> Property: A project's agent bootstrap directs agents to read the working contract for the project's engine version, then the project's guidance and Book. The contract is retrieved from the engine and contains no project-specific content; project state, paths, commands, and policies stay in the project's Book.
+> Property: A project's agent bootstrap directs agents to read the working contract for the project's engine version, including guidance selected by its configured phase, then the project's guidance and Book. The contract is retrieved from the engine and contains no project-specific content; project state, paths, commands, and policies stay in the project's Book.
 > Authority: `R-project-adoption`
 > - Criterion `contract-retrieval` [test]: anchorbook contract prints the contract packaged with the running engine version, without reading project files, and the output is identical for different projects.
-> - Criterion `fresh-session` [test, review]: Fresh agent sessions in a fixture project with the documented bootstrap section retrieve the contract, read the project guidance and Book, and identify the phase and supported commands; record agent versions and any assistance.
+> - Criterion `phase-guidance` [test]: Through the library and actual CLI, configured Port returns the common contract plus port guidance exactly once; other phases return the common text. Different invocation directories select the same explicit configuration. Missing or malformed configuration and unsupported phases produce exit 2, diagnostics, and no partial contract; no project files change. Retrieval needs no valid Book, and Port preserves ordinary structural checks.
+> - Criterion `fresh-session` [test]: A fixture harness records a fresh agent session using the documented bootstrap, asserts retrieval of the checkout contract and access to project guidance and Book chapters, and compares the reported phase and supported commands with independently specified expectations. Record agent versions and assistance.
 
 > **`A-project-verus-evidence`** (draft): **A project's Verus proofs are evidence for its own criteria**
 > Property: For a project whose criteria require proof, verify runs the project's own Verus installation and verification toolchain over the project's code and reports a proof method satisfied only when every function linked to the criterion verified in a complete run under the configured no-trusted-assumption policy. The engine's own proofs never count as evidence for a project's criteria, and a Verus version whose report the engine does not support leaves the method inconclusive.
@@ -196,7 +197,8 @@ dependencies are constraints on that build:
 
 A project's `AGENTS.md` contains a short bootstrap section. It directs agents to:
 
-1. Run `anchorbook contract` and read the output in full before project work.
+1. Run `anchorbook contract --config PATH`, using the project's explicit
+   configuration path, and read the output in full before project work.
 2. Read the project's guidance chapter, which identifies its phase, commands,
    and authoring references.
 3. Read the Book's `SUMMARY.md` and every chapter it lists.
@@ -205,6 +207,16 @@ The contract comes from the engine version the project declares; no generated
 copy is checked in. Project-specific instructions belong in the guidance chapter,
 not in the contract or a modified copy of it. Other agent integrations, such as a
 skill that retrieves the contract, follow the same three steps.
+
+Configured retrieval selects the common contract and any additional phase section;
+Port adds guidance for reconstructing the source, asking the engineer for missing
+intent and constraints, defining the target, and carrying out the agreed port.
+If startup retrieved only the common contract, agents retrieve the configured
+form before phase-specific work. When configuration cannot load, the command
+without arguments remains available for diagnosis; correct the configuration and
+retry configured retrieval. Projects without configuration can still retrieve the
+common contract. Use an engine supporting Port and configured retrieval before
+changing bootstrap instructions to that form.
 
 After reading, agents use the contract's required readiness-report template to
 show the Book's state, every open milestone, its completion criteria and evidence
@@ -237,7 +249,8 @@ exclusions, as defined in [Anchor Definitions](anchor-definitions.md#required-sc
 remains the project's statement of what the proof must establish. The engine
 checks what it can observe from the run and its guards; whether the
 specification faithfully expresses the criterion stays a review obligation,
-recorded in a [assessment record](verification.md#assessment-records).
+examined through [specification review](verification.md#review-and-verification),
+separately from verification state.
 
 The engine's proofs of its own logic, such as its
 [authority proof](rust-engine.md#authority-proof), are evidence only for this

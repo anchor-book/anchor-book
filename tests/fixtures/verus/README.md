@@ -17,4 +17,4 @@ actual CLI, including independent malformed and partial variants. Its ignored
 native acceptance repeats the passing, failing, supporting-lemma, trust-policy,
 and correction cases through Cargo and the shared runner. See CONTRIBUTING for
 the pinned-tool invocation. Captured report success establishes a target result;
-it does not supply a criterion assessment or proof guards.
+it does not supply proof guards.

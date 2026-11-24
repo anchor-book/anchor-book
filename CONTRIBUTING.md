@@ -67,13 +67,16 @@ or located diagnostics. See [Rust Engine](book/design/rust-engine.md) for its
 boundaries. `cargo doc --no-deps` builds the public API documentation.
 
 The binary supports `anchorbook check --config PATH`, `anchorbook md`,
-`anchorbook md supports html`, `anchorbook contract`,
-`anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]...`,
+`anchorbook md supports html`, `anchorbook contract [--config PATH]`,
+`anchorbook verify --config PATH [--anchor ID]... [--method test|proof]...`,
 `anchorbook proof --config PATH [--anchor ID]...`,
 help, and version. The
 adapter targets **mdBook 0.5.4** and its HTML renderer. `anchorbook contract`
-prints the AI Working Contract, whose source is the section files in `contract/`;
-see `contract/README.md`. Materialization remains future work.
+prints the common AI Working Contract; `--config PATH` adds guidance for the
+configured phase, currently the Port section for `port`. Source files live in
+`contract/`; see `contract/README.md`. Invalid configuration fails without printing
+a partial contract; the command without arguments remains available for diagnosis.
+Materialization remains future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
 dependencies, after mdBook's include/link processing and before Mermaid. A first
@@ -172,6 +175,11 @@ local mutation campaigns or repeat a full campaign while remote validation is av
 
 ## Evidence for criteria
 
+Only `test` and `proof` are verification methods. Legacy `review` declarations
+fail validation: define executable expectations and leave their evidence
+outstanding until checks exist. Human or agent approval is not a test pass or a
+proof guard. Design and specification reviews remain part of development.
+
 ```sh
 cargo run --quiet --locked --bin anchorbook -- verify --config anchorbook.toml
 ```
@@ -216,7 +224,7 @@ publishing any selected full result.
 `--anchor <id>` and `--method test` narrow the run for the build loop. Without
 nextest, linked tests show as not evaluated; ordinary `cargo test` and CI do not
 need it. Configured Verus library targets run through the native proof runner;
-criterion assessments and guards remain outstanding after target success. Runner
+criterion guards remain outstanding after target success. Runner
 output, including each package's log, is under `target/anchorbook-verify/`.
 `tests/verification.rs` holds the fixture tests, which use a recording stand-in
 for `cargo`; `native_nextest_follows_a_change_through_the_build_loop` is ignored
@@ -321,7 +329,7 @@ assumptions, and selected proof results. Raw proof-note payloads are omitted;
 native diagnostic locations and local log paths are in the report. Raw logs are
 not uploaded. Cancelled or incomplete
 runs are not passing evidence. Review the anchor interpretation and unproved
-boundaries separately; a green job does not establish those review obligations.
+boundaries separately; a green job reports only its executable checks; review is outside verification state.
 
 The [Verification Evidence roadmap](book/implementation-roadmaps/verification-evidence.md#verification-evidence-2)
 records validation of the shared runner, the CI failure/correction demonstration,

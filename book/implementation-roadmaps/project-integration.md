@@ -49,6 +49,9 @@ to settle the minimum setup for reproducible native-command and CI integration.
 Registry publication is a separate outcome; a pinned Git dependency and installed
 engine can support the first adoption.
 
+[Milestone 5](#project-integration-5) adds the Port phase and configuration-selected
+contract guidance while preserving common retrieval for diagnosis.
+
 ## Milestone 1. This Book uses the integration groundwork {#project-integration-1}
 
 **Outcome:** This repository uses every mechanism a project will rely on: its configuration names its `book.toml`, its agents retrieve the contract with `anchorbook contract`, a pinned engine revision installed the documented way checks and renders this Book, and the declared mdBook versions are tested.
@@ -126,6 +129,7 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 - [ ] Exercise library, CLI, and preprocessor equivalence through independent consumer fixtures, including failing and incomplete Books and mismatched versions. Keep this repository's Book acceptance separate from its ordinary tests so a broken Book cannot prevent building its engine.
 - [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, supported tools, and normal commands. Decide how the engine distributes those references and exercise that delivery here before Symposium relies on it.
 - [ ] Exercise the contract's required readiness-report template in fresh Codex and Claude sessions. Check all sections, every open milestone and completion criterion, evidence limitations, and assignment prerequisites; record versions, assistance, omissions, and differences.
+- [ ] Trial the common design-before-roadmaps guidance in fresh Prototyping and Port sessions using disposable fixtures; assess design quality, ordering, missing-design readiness findings, and concise milestone updates.
 - [ ] Document a full pinned Git revision for dependency and installation before registry publication, with upgrade steps keeping configuration, locked dependency, and invoked binary aligned. Test the setup outside the development checkout without Verus.
 
 ### Completion criteria
@@ -152,6 +156,66 @@ results, and any assistance. General registry release remains separate.
 - **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: reproducible bootstrap and versioned references in a consumer fixture.
 - **Evidence:** Pending.
 
+#### Design before roadmaps {#project-integration-4-design-before-roadmaps}
+
+In disposable Prototyping and Port fixtures, fresh sessions establish a capability's
+coherent target design before proposing its implementation milestones. The design
+explains behavior, interfaces, interactions, constraints, and relevant failure
+cases; linked milestones follow from it. Scoped research or design milestones may
+establish missing knowledge with an agreed question, scope, and assessment.
+Readiness reporting identifies an implementation milestone's missing design basis
+even when its recorded status is Ready. Record inputs, engine and agent versions,
+observed ordering, content assessment, assistance, and limitations. Give the
+session a subsequent result or correction: it updates the existing milestone,
+keeps evidence and unresolved gaps retrievable, and avoids assignment narration,
+duplicated reports, and another milestone for the same outcome.
+
+- **Anchor coverage:** None: behavioral assessment of working guidance, beyond the engine's contract-delivery guarantees.
+- **Evidence:** Pending. Packaging and link tests cannot establish that agents follow the procedure.
+
 ### Completion record
 
 Pending.
+
+## Milestone 5. Porting projects receive the applicable working contract {#project-integration-5}
+
+**Outcome:** A project selects `port` and its agents retrieve the common contract plus port guidance from its configured engine. Source research becomes explicit target design before implementation planning.
+
+**Status:** Complete
+
+**Identifier:** `project-integration-5`
+
+**Dependencies:** Milestone 1's contract delivery and configuration loader; the reverse-engineering guidance in `64f0c3a`.
+
+**Design basis:** [Project phase](../design/configuration.md#project-phase), [contract delivery](../design/system-overview.md#contract-delivery), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
+
+**Tasks**
+
+- [x] Add `port` to configuration and define exploration, implementation, and transition expectations in the contract.
+- [x] Select additional port guidance through `contract --config PATH`, preserving common retrieval without project files.
+- [x] Cover engineer questions, source and target identification, compatibility, coherent target design, verification, provenance, and completion boundaries.
+- [x] Update this repository's startup and contributor guidance and document compatibility with earlier engines.
+- [x] Verify phase selection, failure behavior, supported toolchains, and Book structure and rendering independently of unrelated local work.
+
+### Completion criteria
+
+#### Configured contract {#project-integration-5-configured-contract}
+
+Port loads as an explicit phase and preserves the same structural checks as other phases. The actual CLI and library select the port section exactly once, preserve common retrieval and project files, and report configuration failures without partial output. Retrieval still works with missing Book sources when configuration otherwise loads.
+
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `phase-guidance`, `contract-retrieval` — Full; [A-check-configuration-validity](../design/configuration.md#A-check-configuration-validity) · `schema-rejection` — Partial: phase values and configuration errors.
+- **Evidence:** Passed locally on 2026-11-24 in an isolated checkout based on `64f0c3a` plus this change. `cargo test --offline --locked` passed 182 tests on stable 1.99.1 and Rust 1.88.0; eight tool-dependent acceptance tests were ignored by the ordinary suite. `cargo clippy --offline --all-targets --locked -- -D warnings` passed on both toolchains. The six contract tests exercise actual CLI selection across all four phases and two invocation directories, malformed and missing configuration, absent Book sources, unchanged files, common fallback, source packaging, and internal links. The explicit structural check, `mdbook build` with mdBook 0.5.4, and `cargo test --offline --locked --test current_book --test rendered_book -- --ignored` passed all five Book acceptance tests. CI and fresh-agent port trials have not run for this change.
+
+#### Port workflow {#project-integration-5-port-workflow}
+
+The delivered port section directs agents to recover missing engineer intent, reconstruct the source, incorporate agreed target design, and derive implementation work. It distinguishes experiments from implementation and phase transitions from milestone completion. Bootstrap retrieves configured guidance and documents the common fallback for diagnosis.
+
+- **Anchor coverage:** None: manual assessment of the reusable working guidance, beyond contract selection and delivery.
+- **Evidence:** Reviewed the delivered common and Port sections together. The Port section asks for missing intent and constraints while reusing prior answers, records source and target context, requires incorporation into owning design, preserves accepted-design requirements for implementation, and separates phase transitions from completion of individual milestones and source retirement. The repository bootstrap selects the configured contract and documents diagnosis through common retrieval. This assesses the written procedure; automated delivery tests cannot establish that agents consistently follow it in real ports.
+
+### Completion record
+
+Complete locally on 2026-11-24 for phase parsing, configured contract delivery,
+working guidance, and the checks above. Changes are based on `64f0c3a`; integration
+into upstream and observation of the workflow in a real port remain outside this
+milestone's evidence.

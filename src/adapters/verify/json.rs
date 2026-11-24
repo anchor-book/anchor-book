@@ -7,13 +7,13 @@ use std::path::Path;
 
 const LIMITS: &[&str] = &[
     "Satisfied means linked checks passed in this evaluation; it does not establish their sufficiency.",
-    "Proof-target success does not satisfy outstanding criterion assessments or guards.",
+    "Proof-target success does not satisfy outstanding criterion guards.",
     "This is a current-result snapshot, not a report importer or a durable evidence archive.",
 ];
 
 fn scope(scope: &Scope) -> Value {
     let methods: Vec<_> = if scope.methods.is_empty() {
-        vec!["test", "proof", "review"]
+        vec!["test", "proof"]
     } else {
         scope.methods.iter().map(|m| m.as_str()).collect()
     };

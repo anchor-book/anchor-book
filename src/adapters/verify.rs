@@ -51,7 +51,7 @@ pub fn format_report(report: &Report) -> String {
         format!("anchors {}", report.scope.anchors.join(", "))
     };
     let methods = if report.scope.methods.is_empty() {
-        "test, proof, review".to_owned()
+        "test, proof".to_owned()
     } else {
         report
             .scope

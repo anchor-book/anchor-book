@@ -71,11 +71,11 @@ from the record inventory.
 ## Verification requirements
 
 > **`R-criterion-evidence`** (draft): **See whether current evidence supports each criterion**
-> Statement: Engineers and agents must be able to see the project's progress toward its goal design: for every anchor criterion and each verification method it requires, whether current results support it, which tests or proofs they come from, and where evidence is missing or failed. Agents in the build loop must be able to get this for the anchors they are changing with one command. Missing or outdated evidence must never appear as support.
+> Statement: Engineers and agents must be able to see the project's progress toward its goal design: for every anchor criterion and each verification method it requires, whether current results support it, which tests or proofs they come from, and where evidence is missing or failed. Agents in the build loop must be able to get this for the anchors they are changing with one command. Missing or outdated evidence must never appear as support. An anchor is satisfied only when every criterion and each of its required methods have current passing evidence. Known uncovered obligations must be declared as criteria so they cannot disappear behind passing checks for other behavior.
 > Source: Anchors declare required verification methods, but completion and verification are otherwise recorded by hand in roadmaps, so nothing shows which anchor criteria are actually supported.
 
 > **`R-proofs-establish-criteria`** (draft): **A proof counts only when it establishes its criterion**
-> Statement: A proof must count as evidence for a criterion only when it establishes that criterion's stated claim over the production code the system executes, within the criterion's declared domain, boundary, assumptions, and exclusions. A successful verification whose specification is weaker than the claim, holds vacuously, rests on unrecorded assumptions, or differs from the specification that was reviewed must not appear as support for the criterion.
+> Statement: A proof must count as evidence for a criterion only when it establishes that criterion's stated claim over the production code the system executes, within the criterion's declared domain, boundary, assumptions, and exclusions. A successful verification whose specification is weaker than the claim, holds vacuously, rests on unrecorded assumptions, or describes different code or inputs from the current run must not appear as support for the criterion.
 > Source: Verus establishes that code meets its specification, not that the specification expresses the design. Agents that write both the code and its specification can obtain a passing proof that establishes less than the criterion requires.
 
 ## Project integration requirements
@@ -87,3 +87,7 @@ from the record inventory.
 > **`R-project-verification`** (draft): **Projects formally verify their own code against their Book**
 > Statement: A project must be able to formally verify its own production code with Verus against the proof criteria in its Book, and see which of those criteria its proofs establish, using its own Verus version and verification toolchain.
 > Source: The goal of integrating formal verification into the development of projects that use Anchor Book, not only of the engine itself.
+
+> **`R-programmatic-verification`** (accepted): **Anchor satisfaction requires programmatic evidence**
+> Statement: Only executable checks may establish anchor satisfaction. Human or agent review, approval, or recorded judgments must not satisfy a criterion or gate its verification state, including as a proof guard. Tests must assert behavior rather than merely relay a judgment. Missing executable checks remain verification gaps; design and change reviews remain separate activities.
+> Source: The engineer's requirement that anchors be verified only through programmatic means.

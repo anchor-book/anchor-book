@@ -79,8 +79,6 @@ pub enum VerificationMethod {
     Proof,
     /// Executed tests with assertions derived from the criterion.
     Test,
-    /// A recorded assessment against the criterion.
-    Review,
 }
 
 impl VerificationMethod {
@@ -89,7 +87,6 @@ impl VerificationMethod {
         match self {
             Self::Proof => "proof",
             Self::Test => "test",
-            Self::Review => "review",
         }
     }
 }

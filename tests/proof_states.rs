@@ -1,5 +1,5 @@
 //! Simulated post-verification results exercise the evidence model, not project
-//! proofs. Native guard execution and assessment ingestion remain separate work.
+//! proofs. Native guard execution remains separate work.
 use anchor_book::{
     VerificationMethod,
     adapters::verify::format_report,
@@ -46,7 +46,7 @@ fn book() -> fixture::Book {
                 format!(
                     "{}{}",
                     criterion("formal", "proof"),
-                    criterion("mixed", "test, proof, review")
+                    criterion("mixed", "test, proof")
                 )
             ),
             anchor("A-second", criterion("formal", "proof"))
@@ -77,7 +77,6 @@ fn example() { assert_eq!(value(), 1); }
 fn passing_guards() -> ProofGuards {
     ProofGuards {
         witnesses: GuardResult::Passed,
-        assessment: GuardResult::Passed,
         sensitivity: GuardResult::Passed,
     }
 }
@@ -129,6 +128,7 @@ fn claim(report: &Report, anchor: &str, criterion: &str) -> ClaimOutcome {
 
 /// anchorbook: A-verify-criterion-states#state-per-method
 /// anchorbook: A-verify-claims-evidenced#claim-failures
+/// anchorbook: A-verify-programmatic-only#programmatic-states
 #[test]
 fn each_proof_guard_controls_the_method_and_its_completion_claim() {
     use GuardResult::*;
@@ -136,19 +136,16 @@ fn each_proof_guard_controls_the_method_and_its_completion_claim() {
     let before = b.snapshot();
     let plan = plan(&b.config(), Scope::default()).unwrap();
     assert!(plan.findings.is_empty(), "{:?}", plan.findings);
-    // Expectations come from the proof-method state table, including missing
-    // and stale assessments and a sensitivity run explicitly skipped.
+    // Only current programmatic outcomes gate satisfaction; no review is required.
     let cases = [
         (
             Passed,
             Passed,
-            Passed,
             State::Satisfied,
-            "witnesses, specification assessment, and sensitivity passed",
+            "witnesses and sensitivity passed",
         ),
         (
             NoEvidence("unsatisfiable precondition has no witness".into()),
-            Passed,
             Passed,
             State::NoEvidence,
             "witnesses: unsatisfiable precondition",
@@ -156,40 +153,16 @@ fn each_proof_guard_controls_the_method_and_its_completion_claim() {
         (
             NoEvidence("value has no witness".into()),
             Passed,
-            Passed,
             State::NoEvidence,
             "witnesses: value has no witness",
         ),
         (
             Failed("witness at src/lib.rs:9 failed".into()),
             Passed,
-            Passed,
             State::Failed,
             "witnesses: witness at src/lib.rs:9 failed",
         ),
         (
-            Passed,
-            NoEvidence("missing record".into()),
-            Passed,
-            State::NoEvidence,
-            "specification assessment: missing record",
-        ),
-        (
-            Passed,
-            NoEvidence("stale fingerprint".into()),
-            Passed,
-            State::NoEvidence,
-            "specification assessment: stale fingerprint",
-        ),
-        (
-            Passed,
-            Failed("reviewer rejected the claim".into()),
-            Passed,
-            State::Failed,
-            "specification assessment: reviewer rejected the claim",
-        ),
-        (
-            Passed,
             Passed,
             Failed("unclassified survivor at src/lib.rs:5".into()),
             State::Failed,
@@ -197,26 +170,29 @@ fn each_proof_guard_controls_the_method_and_its_completion_claim() {
         ),
         (
             Passed,
-            Passed,
             Inconclusive("change at src/lib.rs:5 timed out".into()),
             State::Inconclusive,
             "sensitivity: change at src/lib.rs:5 timed out",
         ),
         (
             Passed,
+            NoEvidence("missing results".into()),
+            State::NoEvidence,
+            "sensitivity: missing results",
+        ),
+        (
             Passed,
             NotEvaluated("skipped by request".into()),
             State::NotEvaluated,
             "sensitivity: skipped by request",
         ),
     ];
-    for (witnesses, assessment, sensitivity, expected, reason) in cases {
+    for (witnesses, sensitivity, expected, reason) in cases {
         let mut run = run(&plan);
         run.guards.insert(
             ("A-first".into(), "formal".into()),
             ProofGuards {
                 witnesses,
-                assessment,
                 sensitivity,
             },
         );
@@ -292,17 +268,12 @@ fn guard_failures_outrank_gaps_and_all_reasons_survive() {
         ),
     ];
     for (a, c, expected) in pairs {
-        for [witnesses, assessment, sensitivity] in [
-            [a.clone(), c.clone(), Passed],
-            [c.clone(), Passed, a.clone()],
-            [Passed, a, c],
-        ] {
+        for [witnesses, sensitivity] in [[a.clone(), c.clone()], [c, a]] {
             let mut run = run(&plan);
             run.guards.insert(
                 ("A-first".into(), "formal".into()),
                 ProofGuards {
                     witnesses,
-                    assessment,
                     sensitivity,
                 },
             );
@@ -317,7 +288,6 @@ fn guard_failures_outrank_gaps_and_all_reasons_survive() {
         ("A-first".into(), "formal".into()),
         ProofGuards {
             witnesses: Failed("witness failed".into()),
-            assessment: NoEvidence("record stale".into()),
             sensitivity: Inconclusive("run timed out".into()),
         },
     );
@@ -326,7 +296,7 @@ fn guard_failures_outrank_gaps_and_all_reasons_survive() {
     assert_eq!(method.state, State::Failed);
     assert_eq!(
         method.reason,
-        "witnesses: witness failed; specification assessment: record stale; sensitivity: run timed out"
+        "witnesses: witness failed; sensitivity: run timed out"
     );
 }
 
@@ -457,7 +427,7 @@ fn guards_belong_to_one_criterion_and_cannot_supply_links_or_scope() {
 /// anchorbook: A-verify-criterion-states#state-per-method
 /// anchorbook: A-verify-claims-evidenced#unchecked-claims
 #[test]
-fn satisfied_proofs_do_not_satisfy_required_tests_or_reviews() {
+fn satisfied_proofs_do_not_satisfy_required_tests() {
     let b = book();
     let plan = plan(&b.config(), Scope::default()).unwrap();
     let mut run = run(&plan);
@@ -469,7 +439,7 @@ fn satisfied_proofs_do_not_satisfy_required_tests_or_reviews() {
         (
             Some(TestOutcome::Passed),
             State::Satisfied,
-            ClaimOutcome::Unchecked("review not evaluated".into()),
+            ClaimOutcome::Satisfied,
             0,
         ),
         (
@@ -501,14 +471,19 @@ fn satisfied_proofs_do_not_satisfy_required_tests_or_reviews() {
         };
         let report = evaluate(&plan, &results);
         let mixed = criterion(&report, "A-first", "mixed");
-        assert_eq!(mixed.state, State::Partial);
+        let expected = if expected_test == State::Satisfied {
+            State::Satisfied
+        } else {
+            State::Partial
+        };
+        assert_eq!(mixed.state, expected);
         assert_eq!(
             mixed.methods.iter().map(|m| m.state).collect::<Vec<_>>(),
-            [expected_test, State::Satisfied, State::NotEvaluated]
+            [expected_test, State::Satisfied]
         );
         assert_eq!(
             report.anchors().find(|a| a.id == "A-first").unwrap().state,
-            State::Partial
+            expected
         );
         assert_eq!(
             report.anchors().find(|a| a.id == "A-second").unwrap().state,
@@ -522,6 +497,7 @@ fn satisfied_proofs_do_not_satisfy_required_tests_or_reviews() {
 
 /// anchorbook: A-verify-criterion-states#state-per-method
 /// anchorbook: A-verify-claims-evidenced#claim-failures
+/// anchorbook: A-verify-programmatic-only#programmatic-states
 #[test]
 fn passing_tests_do_not_hide_failed_proof_guards() {
     let b = book();
@@ -550,7 +526,7 @@ fn passing_tests_do_not_hide_failed_proof_guards() {
     assert_eq!(mixed.state, State::Partial);
     assert_eq!(
         mixed.methods.iter().map(|m| m.state).collect::<Vec<_>>(),
-        [State::Satisfied, State::Failed, State::NotEvaluated]
+        [State::Satisfied, State::Failed]
     );
     assert_eq!(
         claim(&report, "A-first", "mixed"),

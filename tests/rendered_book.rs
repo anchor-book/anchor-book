@@ -170,7 +170,6 @@ fn check_record(record: &Record, element: ElementRef<'_>) {
                     .map(|method| match method {
                         VerificationMethod::Proof => "proof",
                         VerificationMethod::Test => "test",
-                        VerificationMethod::Review => "review",
                     })
                     .collect::<Vec<_>>()
                     .join(", ");

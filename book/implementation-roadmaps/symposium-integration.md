@@ -47,8 +47,7 @@ Milestone 2 adapts the next design area before an assignment changes it; milesto
 milestone 2's outcome, but it does not delay work within an already defined area.
 The project owns its tests and outcomes, including the no-agent behavior. The
 engine execution-report proposal is [retired](verification-evidence.md#verification-evidence-10).
-Review support in [milestone 8](verification-evidence.md#verification-evidence-8)
-is needed only when the assignment relies on a declared review method.
+Judgments do not supply verification evidence; criteria require executable checks.
 
 Milestone 5 and Project Integration milestone 4 make the tested workflow part of
 ordinary commands, pinned setup, and CI. Milestone 8 completes upstream adoption.
@@ -198,7 +197,7 @@ Complete on 2026-11-10, on fork branch `anchor-book`, pushed to the fork and not
 - [x] Run `verify` over Symposium's workspace, which has several member crates and excludes its evaluation fixtures. The current configuration links select tests in the root package only.
 - [x] Record the no-agent behavior and its owner. Symposium's tests report success when no agent is configured; `verify` reflects that current runner outcome. Symposium decides whether that test behavior and its evidence links meet its needs. No engine-specific execution signal is required.
 - [x] Symposium runs `cargo test`, and the runner uses nextest. Confirm nextest runs Symposium's tests with the same results on its supported platforms, or record the gap. Linux results agree; Windows and macOS remain unassessed, including the Windows-ignored auto-update link.
-- [ ] Review the assertions behind each link against the whole criterion. Record partial coverage without weakening the criterion, and use [criterion review records](verification-evidence.md#verification-evidence-8) where review is required. Passing linked tests alone never establish sufficiency.
+- [ ] Review the assertions behind each link against the whole criterion. Record partial coverage without weakening the criterion, and record missing executable assertions as verification work. Passing linked tests alone never establish sufficiency.
 - [ ] For every engine gap, record the expected behavior, reproducer, and affected design and milestone in this Book. Implement and exercise the correction here before Symposium relies on it, then repeat the original trial. Findings outside the current assignment receive bounded work with completion criteria.
 
 ### Completion criteria
@@ -393,7 +392,7 @@ Pending.
 
 **Identifier:** `symposium-integration-7`
 
-**Dependencies:** Milestone 3's bootstrap, milestone 4's assessed configuration loop, and enough design from milestone 2 to define each assignment. These allow the current-tools baseline to begin on assignment. Full Book coverage, shared build reports, native CI integration, and unrelated proof work do not block that baseline. This project trial does not block engine reporting work. Completion of the full workflow additionally needs [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9), exercised in the engine's Book first. Review records are required only for assignments that depend on a declared review method.
+**Dependencies:** Milestone 3's bootstrap, milestone 4's assessed configuration loop, and enough design from milestone 2 to define each assignment. These allow the current-tools baseline to begin on assignment. Full Book coverage, shared build reports, native CI integration, and unrelated proof work do not block that baseline. This project trial does not block engine reporting work. Completion of the full workflow additionally needs [Verification Evidence milestone 9](verification-evidence.md#verification-evidence-9), exercised in the engine's Book first. Every anchor criterion requires programmatic evidence; review remains separate from verification.
 
 **Design basis:** The [agent workflow](../design/system-overview.md#working-through-agents), the contract's build-and-verify guidance, [using verify](../design/verification-evidence.md#using-verify), and [agent bootstrap](../design/project-integration.md#agent-bootstrap).
 

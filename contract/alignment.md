@@ -16,6 +16,7 @@ agreement changes. Updating one destination does not reconcile the whole proposa
 
 | Phase | Reconcile changed design and work |
 | --- | --- |
+| **Port** | Reconcile source findings and compatibility choices with the target design before changing implementation work. Reassess evidence against target criteria and keep unresolved questions in scoped experiments. |
 | **Prototyping** | Evolve provisional milestones with the design and record uncertainty. Agreed scoped experiments need no whole-system review. Preserve completed experiments as evidence of what was tried, not proof of a revised goal. |
 | **Building** | Agree on revised governing design, scope, dependencies, and criteria before implementing affected work. Identify what needs repeating or reverifying; unaffected assigned work can continue. |
 | **Complete** | Preserve the completed baseline and plan another iteration for additional work. The engineer chooses its phase; earlier completion does not prove the new goal. |

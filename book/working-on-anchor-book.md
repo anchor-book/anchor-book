@@ -54,7 +54,7 @@ each anchor criterion's evidence state and checks the Book's claims of completio
 it runs linked tests with cargo-nextest and configured library proofs with Verus,
 which CONTRIBUTING describes installing. `anchorbook proof --config anchorbook.toml`
 uses the same Verus runner as a strict proof-target gate. Target success leaves
-criterion assessments and guards outstanding. This Book's tests are linked to its anchors' criteria
+criterion guards outstanding. This Book's tests are linked to its anchors' criteria
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
 
@@ -127,10 +127,10 @@ flowchart TD
 ```
 
 The gate passes only when current complete target evidence verifies every
-required function. The proof method still needs its assessment and further guards.
+required function. The proof method still needs its further programmatic guards.
 
 The [full workflow](design/proof-guards.md) additionally
-checks witnesses and current specification assessments and runs sensitivity
+checks witnesses and runs sensitivity
 changes through Verus. Those operations belong to
 [Verification Evidence milestone 6](implementation-roadmaps/verification-evidence.md#verification-evidence-6).
 They are not performed by the current runner. The existing native failure tests
@@ -139,7 +139,7 @@ automatic sensitivity guard for arbitrary project proofs.
 
 [Milestone 2](implementation-roadmaps/verification-evidence.md#verification-evidence-2-proof-states)
 includes independent fixtures that exercise proof-state handling using simulated
-guard outcomes, such as a missing assessment or a timed-out sensitivity run. The
+guard outcomes, such as a missing witness or a timed-out sensitivity run. The
 evidence model keeps these results per criterion and requires every obligation
 to pass before satisfying the proof method. They test Anchor Book's reporting
 logic; simulated outcomes supply no evidence for a project's proof. The native
@@ -175,7 +175,9 @@ publication permission outside the repository.
 The engine owns the contract, as the [contract delivery design](design/system-overview.md#contract-delivery)
 describes. Its source is the section files in `contract/` at the repository root,
 joined in the order listed in `src/contract.rs`; `anchorbook contract` prints the
-result, and `tests/contract.rs` checks that every section file is joined once.
+common text, and `--config PATH` adds the Port section when the configured phase
+is `port`. `tests/contract.rs` checks section packaging, selection, internal links,
+and retrieval with invalid configuration or an absent Book.
 Edit the contract there, keeping it to reusable guidance; project state and
 instructions belong in Book chapters such as this one. The contract is not a Book
 chapter, so the Book refers to its sections by name. In this repository, agents

@@ -422,7 +422,7 @@ fn capability_probe_and_arguments_have_defined_statuses() {
 fn renders_required_methods_per_criterion_without_claiming_results() {
     let text = RECORDS.replace(
         "> - Criterion `source-comparison` [test]: Compare input before and after validation.",
-        "> - Criterion `source-comparison` [review, proof, test]: Compare input before and after validation.\n>   - Domain: Every *input*.\n>   - Boundary: The reader.\n>   - Assumptions: None.\n>   - Exclusions: Review, covered by `second`.\n> - Criterion `second` [review]: Review the assumptions.",
+        "> - Criterion `source-comparison` [proof, test]: Compare input before and after validation.\n>   - Domain: Every *input*.\n>   - Boundary: The reader.\n>   - Assumptions: None.\n>   - Exclusions: Integration, covered by `second`.\n> - Criterion `second` [test]: Exercise the boundary.",
     );
     let output = run(
         &["md"],
@@ -432,8 +432,8 @@ fn renders_required_methods_per_criterion_without_claiming_results() {
     assert!(output.stderr.is_empty());
     let book: Value = serde_json::from_slice(&output.stdout).unwrap();
     let html = book["items"][0]["Chapter"]["content"].as_str().unwrap();
-    assert!(html.contains("<li><code class=\"ab-criterion-id\">source-comparison</code><div class=\"ab-text\">Compare input before and after validation.</div><dl class=\"ab-proof-scope\"><dt>Domain</dt><dd>Every <em>input</em>.</dd><dt>Boundary</dt><dd>The reader.</dd><dt>Assumptions</dt><dd>None.</dd><dt>Exclusions</dt><dd>Review, covered by <code>second</code>.</dd></dl><p>Required verification: review, proof, test</p></li>"), "{html}");
-    assert!(html.contains("<li><code class=\"ab-criterion-id\">second</code><div class=\"ab-text\">Review the assumptions.</div><p>Required verification: review</p></li>"));
+    assert!(html.contains("<li><code class=\"ab-criterion-id\">source-comparison</code><div class=\"ab-text\">Compare input before and after validation.</div><dl class=\"ab-proof-scope\"><dt>Domain</dt><dd>Every <em>input</em>.</dd><dt>Boundary</dt><dd>The reader.</dd><dt>Assumptions</dt><dd>None.</dd><dt>Exclusions</dt><dd>Integration, covered by <code>second</code>.</dd></dl><p>Required verification: proof, test</p></li>"), "{html}");
+    assert!(html.contains("<li><code class=\"ab-criterion-id\">second</code><div class=\"ab-text\">Exercise the boundary.</div><p>Required verification: test</p></li>"));
     assert!(!html.contains("Verified"));
     assert!(!html.contains("Passed"));
     assert!(html.contains(">Accepted<"));

@@ -20,7 +20,7 @@ observed problem, expected structure, location, and useful next action.
 > Authority: `R-repair-feedback`; `D-separate-check-and-repair`; `D-typed-check-results`
 > - Criterion `diagnostic-content` [test]: Assert the documented fields and location accuracy for missing chapters, misplaced roles, renderer drift, and invalid input; unavailable observations or source positions are not invented.
 > - Criterion `stable-presentation` [test]: Repeat checks with filesystem enumeration order varied and terminal styling disabled; diagnostic ordering and essential information remain consistent.
-> - Criterion `agent-repair` [review]: Record an agent repairing seeded Book defects using checker feedback and rechecking. Independent review confirms intended repairs, preserved unrelated content, and no weakened requirements; record any human assistance.
+> - Criterion `agent-repair` [test]: In a fixture with seeded Book defects and independently specified expected repairs, run an agent using checker feedback; programmatically compare the resulting records and file diff with the expected repair, assert unrelated content and requirements are unchanged, and recheck. Record agent versions and human assistance; unresolved choices must match the fixture's expected questions.
 
 ## Information returned
 

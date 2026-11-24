@@ -25,9 +25,9 @@ read the general execution workflow before the proof-specific details.
 | [RFD Worked Examples](rfd-examples.md) | A cross-capability proposal through acceptance and incorporation into the system definition |
 | [Structural Checking](structural-checking.md) | Layout and navigation checks, execution flow, findings, and acceptance cases |
 | [Checking Diagnostics](check-diagnostics.md) | Typed findings, result states, repair guidance, and CLI reports |
-| [Verification](verification.md) | Methods, responsibilities, proofs that match their criteria, proof guards, and assessment records |
+| [Verification](verification.md) | Methods, responsibilities, proofs that match their criteria, proof guards, and evidence limits |
 | [Running Verification](verification-evidence.md) | The verify operation: links from code to criteria, runners, guards, evidence states, and reports |
-| [Proof Guards](proof-guards.md) | When guards run, the original Verus result, and subsequent witness, assessment, and sensitivity checks |
+| [Proof Guards](proof-guards.md) | When guards run, the original Verus result, and subsequent witness and sensitivity checks |
 | [Shipping Verified Code](verified-code-packaging.md) | Publishing verified code without imposing its verifier on dependents |
 | [Record Rendering](record-rendering.md) | Readable records and relationship navigation through mdBook |
 | [Project Integration](project-integration.md) | How other Rust projects adopt the crate, run the engine, bootstrap agents, and verify their own code with Verus |

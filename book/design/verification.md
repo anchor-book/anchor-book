@@ -2,14 +2,13 @@
 
 
 
-Anchor criteria declare the methods that must establish them: tests, proofs, and
-reviews. Verification produces evidence that each declared method holds for the
+Anchor criteria declare the methods that must establish them: tests and proofs. Verification produces evidence that each declared method holds for the
 current code and design, and reports where it does not. Anchor Book provides this
 to Rust projects as one capability; the engine's own Book is its first user.
 
 Every method must establish exactly its criterion: tests whose assertions come
 from the criterion and exercise the code it concerns, proofs whose specification
-is the criterion, and reviews of what the criterion asks. The most important case
+expresses the criterion. The most important case
 is proofs: **proofs establish exactly the parts of the design marked as needing
 proof.** Verus checks that code meets its specification. It cannot check that the specification is the
 criterion. Anchor Book helps the project's agents make the specification express
@@ -18,7 +17,7 @@ covers and what it does not.
 
 | Chapter | Scope |
 | --- | --- |
-| This chapter | Methods, responsibilities, how tests and proofs correspond to criteria, the guards that check proofs, and assessment records |
+| This chapter | Methods, responsibilities, how tests and proofs correspond to criteria, the guards that check proofs, and their programmatic limits |
 | [Running Verification](verification-evidence.md) | The `verify` operation: links from code to criteria, runners, evidence states, and reports |
 | [Proof Guards](proof-guards.md) | Timing table and sequence diagram for the checks around Verus |
 | [Shipping Verified Code](verified-code-packaging.md) | Publishing a crate containing verified code without imposing its verifier on dependents |
@@ -31,10 +30,10 @@ and the runner's other states are anchored in
 [Project Integration](project-integration.md#A-project-verus-evidence).
 
 > **`A-verify-proof-sensitive`** (draft): **Proofs reject defects in the code they cover**
-> Property: For every proof criterion in scope, verify applies deliberate behavioral changes to the executable bodies of the criterion's linked functions, one at a time, and verifies the complete target for each. Every change that still verifies is reported at its source location. The proof method is satisfied only when every surviving change is detected by the linked tests of a criterion that its exclusions name, or is listed as equivalent in the current specification assessment. An unclassified survivor means the specification does not constrain that behavior, and the proof method fails.
+> Property: For every proof criterion in scope, verify applies deliberate behavioral changes to the executable bodies of the criterion's linked functions, one at a time, and verifies the complete target for each. Every change that still verifies is reported at its source location. The proof method is satisfied only when every surviving change is detected by the linked tests of a criterion that its exclusions name. An unclassified survivor means the specification does not constrain that behavior, and the proof method fails.
 > Authority: `R-proofs-establish-criteria`
 > - Criterion `surviving-changes` [test]: In a fixture whose specification omits one rule, the change that violates that rule verifies and is reported as an unclassified survivor, failing the proof method; once the specification states the rule, the same change fails verification and the method can be satisfied.
-> - Criterion `classified-survivors` [test]: A survivor is classified as excluded only when the linked tests of a criterion named in the exclusions fail against the same change, and as equivalent only when the current accepting specification assessment lists it; a stale assessment classifies nothing. Specifications and proofs are never changed.
+> - Criterion `classified-survivors` [test]: A survivor is classified as excluded only when the linked tests of a criterion named in the exclusions fail against the same change. A judgment of equivalence supplies no evidence; other survivors remain unresolved and fail the method. Specifications and proofs are never changed.
 > - Criterion `uninformative-changes` [test]: Changes that do not build are listed as unviable; changes rejected only by overflow, bounds, or termination obligations are reported with the failing obligation; a timed-out run makes the proof method inconclusive. None of these counts as a survivor or as detection by the claim.
 
 > **`A-verify-proof-nonvacuous`** (draft): **Proof contracts can be met by some real input**
@@ -42,11 +41,12 @@ and the runner's other states are anchored in
 > Authority: `R-proofs-establish-criteria`
 > - Criterion `witness-required` [test]: Fixtures with linked functions whose preconditions are unsatisfiable, satisfiable but unwitnessed, and witnessed by a verified witness function produce no-evidence, no-evidence, and satisfied proof methods; a witness that fails verification fails the method.
 
-> **`A-verify-proof-assessment-current`** (draft): **A changed specification needs a fresh assessment**
-> Property: A proof method is satisfied only when an accepting assessment record matches the criterion's current specification fingerprint: the criterion's statement and proof scope, the contracts of its linked functions, and every specification function and type those contracts reach. Changing any of them makes the assessment stale and leaves the method without evidence until it is assessed again; a rejecting assessment fails the method. Changing only executable or proof bodies, comments, or formatting leaves the assessment current, and reverification covers it.
-> Authority: `R-proofs-establish-criteria`; `D-assessment-records-as-files`
-> - Criterion `fingerprint-coverage` [test]: Changing a linked contract, a specification function it reaches transitively, a type it refers to, or the criterion's text changes the fingerprint and makes a matching assessment stale; changing only an executable or proof body, comments, or formatting does not.
-> - Criterion `assessment-states` [test]: Missing, stale, and rejecting specification assessments leave the proof method no-evidence, no-evidence, and failed; a current accepting record with passing verification and guards satisfies it. An assessment record never satisfies a method whose verification did not pass.
+> **`A-verify-programmatic-only`** (accepted): **Judgments cannot count as verification**
+> Property: Anchor criteria declare only test and proof methods. Verify derives satisfaction from current executable results and programmatic proof guards, never from a human or agent judgment. Unsupported review declarations fail validation; an approval record cannot replace missing, failing, or unevaluated checks.
+> Authority: `R-programmatic-verification`
+> - Criterion `methods` [test]: The record reader and actual verify command reject review-only and mixed test/review criteria with located diagnostics; the CLI rejects a review method selector. Test, proof, and both method orders remain valid.
+> - Criterion `programmatic-states` [test]: With current target and linked function results, passing witness and sensitivity results satisfy a proof without an assessment record. Missing, failing, or skipped guards retain their designed states; a passing test cannot hide a failed proof obligation.
+
 
 ## Methods
 
@@ -57,13 +57,13 @@ values and their syntax. Every listed method is required.
 | --- | --- | --- |
 | `test` | The stated cases behave as the criterion requires | Linked tests that ran and passed in the current run, with assertions derived from the criterion |
 | `proof` | The claim holds for every input in the stated domain, over the production code | Linked functions verified in a complete run, under the trust policy, with every [guard](#guards) satisfied |
-| `review` | A recorded judgment under the project's reviewer policy about what tests or proofs do not establish | A current accepting [assessment record](#assessment-records) for the criterion |
 
 Tests sample behavior; their assertions are visible, so a reader can judge what
 they cover. A proof covers every input, but its strength is in the specification,
 and nothing in a successful run shows how strong that is. The proof method
-therefore includes the guards and an assessment of the specification itself; the
-separate `review` method covers other judgments the criterion requires.
+therefore includes programmatic guards. Design and specification review examine
+whether the checks express the intended behavior, but do not enter verification
+states. A passing check does not prove that this translation is sufficient.
 
 ## Choosing methods
 
@@ -81,7 +81,7 @@ Choose methods during design review, for each criterion:
 
 Record the rationale with the criterion's design. Tests and proofs complement
 each other: a proof of an algorithm usually leaves its parsing, conversion, and
-callers to tests and review, named in its exclusions. Extending proof across
+callers to tests, named in its exclusions. Extending proof across
 every boundary is not an automatic obligation.
 
 ## Responsibilities
@@ -90,7 +90,7 @@ every boundary is not an automatic obligation.
 | --- | --- |
 | Project | Declare each criterion's claim and scope; write specifications, proofs, and tests beside the production code and link them; choose and install its Verus, `vstd`, verification toolchain, and verified targets; review specifications and record the reviews. |
 | Verus | Verify the selected code against its contracts under the recorded assumptions. |
-| Anchor Book | Define the criterion schema; resolve links; run the project's tests and Verus; interpret their reports; run the guards; compute fingerprints and read assessment records; report evidence states and their limits; give agents a brief of each criterion and the contract's proof workflow (`anchorbook contract`, “Develop a required proof”). |
+| Anchor Book | Define the criterion schema; resolve links; run the project's tests and Verus; interpret their reports; run the guards; validate current input identities; report evidence states and their limits; give agents a brief of each criterion and the contract's proof workflow (`anchorbook contract`, “Develop a required proof”). |
 | Reviewer | Assess whether the specification expresses the criterion, whether production callers meet its preconditions, whether the verified functions are the ones the system runs, and whether exclusions are covered. |
 
 Anchor Book needs no `vstd` and no verifier of its own for this: it runs the
@@ -104,8 +104,11 @@ while validating their identity and association with criteria. The guidance belo
 is for authoring and reviewing those tests; it is not an additional engine-run
 inspection or execution-attestation requirement.
 
-A test establishes its criterion only for the cases it exercises, so the cases
-and their assertions must come from the criterion:
+An anchor requires passing evidence for every criterion. Author
+[independently verifiable criteria](anchor-definitions.md#independently-verifiable-criteria)
+so a known missing compiler check, failure case, or environment cannot be hidden
+behind a passing runtime test. A test establishes only the cases it exercises;
+its assertions must come from the criterion:
 
 - **Assertions from the criterion.** Derive expected results from the criterion
   and its design, never from the implementation's current output. A test that
@@ -126,8 +129,9 @@ and their assertions must come from the criterion:
   [sensitivity](#guards) survivors in that behavior.
 
 A link claims that a test addresses its criterion; whether the tests are
-sufficient is visible in their assertions and, when the criterion requires it,
-judged by a review.
+sufficient is visible in their assertions and remains a design-review question,
+separate from verification state. Agent-driven tests require executable assertions
+over observed behavior; a judge's approval alone is not a test outcome.
 
 **Mutation testing** changes the code and checks that tests fail. It shows where
 tests do not constrain behavior, guides strengthening them, and is never evidence
@@ -171,24 +175,22 @@ algorithm is never reported as proof of its parsing, conversion, or callers.
 
 The engine's [authority proof](rust-engine.md#authority-proof) is a worked example:
 its claim is a biconditional over the complete candidate collection, and its
-exclusions name the `production-integration` criterion that tests and reviews
+exclusions name the `production-integration` criterion that tests
 parsing, conversion, and diagnostics.
 
 ## Guards
 
 A successful Verus run shows the code meets its contracts. A **guard** is a check
 `verify` runs on a proof beyond that result, for what it does not show: that the
-contracts say enough, can be met, are the ones assessed, and rest on no unrecorded
-assumption.
+contracts constrain the exercised changes, can be met, apply to current inputs,
+and rest on no unrecorded assumption.
 
 | Concern | Guard | Mechanism |
 | --- | --- | --- |
-| The specification expresses the claim | Specification assessment against the criterion's brief, recorded with its fingerprint | Assessment |
 | The specification constrains the code's behavior | [Sensitivity](#A-verify-proof-sensitive): deliberate changes to linked functions must fail verification | Mechanical |
 | Preconditions can be met | [Witnesses](#A-verify-proof-nonvacuous) for linked functions with preconditions | Mechanical |
-| The assessed specification is the current one | [Change detection](#A-verify-proof-assessment-current) by fingerprint | Mechanical |
+| Current code and specifications | Input identities checked before and after evaluation | Mechanical |
 | No project assumptions | Trust policy: assumptions and trusted bodies fail the method | Mechanical |
-| Production callers meet preconditions and run the verified functions | Specification assessment of the call path and exclusions | Assessment |
 
 **Sensitivity** is whether a proof detects defects in the code it covers; it is
 to proofs what mutation testing is to tests. A deliberate change to a linked
@@ -205,48 +207,35 @@ A proof is **vacuous** when it holds only because its preconditions can never be
 met: Verus proves any guarantee of a function nobody can call. A **witness** is a
 verified function that calls a linked function with an input it constructs,
 showing that its preconditions can be met; tests cannot show this, because preconditions are not checked when
-code runs. A **fingerprint** is a hash of what a specification assessment
-examined; when it changes, the assessment is stale.
+code runs. Input fingerprints bind evidence to the code, specifications, and
+criteria evaluated; changing those inputs requires fresh verification.
 [Running Verification](verification-evidence.md#proof-guards) defines how the
 guards run.
 
 ### When guards are checked
 
 [Proof Guards](proof-guards.md) gives the timing table and execution diagram,
-from the original Verus run through witness, assessment, and sensitivity checks.
+from the original Verus run through witness and sensitivity checks.
 
-## Assessment records
+## Review and verification
 
-Two kinds of recorded judgment use the same record. A **review** is the `review`
-method: a judgment a criterion requires because no test or proof can settle it. A
-**specification assessment** is part of the `proof` method: a judgment that a
-formal specification expresses its criterion, that production callers meet its
-preconditions, and that its exclusions are covered.
+Review examines whether the criterion, specification, production call path, and
+exclusions describe the intended system. It can uncover a missing check or require
+a design change. Such judgments belong in the project's ordinary review workflow;
+`verify` does not consume them, accept assessment files, or gate results on an
+approval. Nor may a sensitivity survivor be dismissed by a recorded judgment of
+equivalence. An unsupported survivor stays unresolved until executable evidence
+accounts for it under the sensitivity policy.
 
-An assessment record states that a reviewer examined a criterion's evidence against
-the criterion and reached a conclusion. It names:
-
-| Field | Content |
-| --- | --- |
-| Criterion | `<anchor-id>#<criterion-id>` |
-| Subject | `specification`, for a specification assessment, or `criterion`, for a review under the `review` method |
-| Examined | The specification fingerprint, or the sources examined with their content fingerprints |
-| Conclusion | `accepted` or `rejected`, with what was examined and any limits; a specification assessment also lists the sensitivity survivors it judged equivalent, with reasons |
-| Reviewer and revision | Who reviewed, as the project identifies reviewers, and the revision examined |
-
-Records are files in the project's configured assessment directory, under the
-[assessment-records decision](../authority/decisions.md#D-assessment-records-as-files).
-`verify` reads them; it never writes or edits them. A record whose fingerprints no
-longer match is stale and counts as no record. Who may assess or review is the project's
-policy; an agent can prepare a record for the reviewer, and the record states who
-reached the conclusion.
+Programmatic checks establish their stated scope. They cannot establish that a
+natural-language claim has been translated faithfully merely by running. Reports
+retain that limitation even when every required method passes.
 
 ## Evidence and reassessment
 
 Evidence holds for the inputs it was produced from. `verify` reports only the
 current run, and [run identity](verification-evidence.md#run-identity) records the
 inputs, tools, and scope. A change to code, specifications, conversion, or
-dependencies requires reverification; a change to a specification also requires
-a new assessment. Earlier success does not establish a new revision, and partial
+dependencies requires reverification and scrutiny of affected checks. Earlier success does not establish a new revision, and partial
 evidence does not satisfy a whole criterion. Results stay out of authored Book
 sources; required methods are obligations, never badges.

@@ -131,7 +131,7 @@ Every authored record appears once per chapter with expected fields and links; l
 
 Review light/dark themes, narrow layout, keyboard access, and printed details.
 
-- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: visual and accessibility review
+- **Anchor coverage:** [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `record-presentation` — Partial: historical visual and accessibility observations; executable browser checks remain in [Verification Evidence milestone 12](verification-evidence.md#verification-evidence-12)
 - **Evidence:** Passed: browser review of Light/Auto and Coal themes, a 390-pixel viewport with navigation collapsed, and keyboard Enter on the decision disclosure. No horizontal overflow was observed. Combined-print review showed all six decision details expanded. A disposable copy disabled only the automatic print-dialog call for inspection; the generated print content and local print helper were unchanged. Physical printer output was not tested.
 
 #### Relationship navigation {#record-rendering-2-relationship-navigation}

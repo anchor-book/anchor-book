@@ -13,7 +13,7 @@ mod fixture;
 const VERIFICATION: &str = "\n[verification]\nsources = [\"src\", \"tests\", \"other\"]\noutput = \"target/verify\"\nrunners = [\"nextest\"]\n";
 
 /// A line-grammar anchor citing `R-r`; methods are written as in the record, such
-/// as `test, review`, and a criterion requiring proof gets its four scope items.
+/// as `test`, and a criterion requiring proof gets its four scope items.
 fn anchor(id: &str, criteria: &[(&str, &str)]) -> String {
     let mut out = format!(
         "> **`{id}`** (draft): **Anchor {id}**\n> Property: A property.\n> Authority: `R-r`\n"
@@ -37,7 +37,7 @@ fn design() -> String {
         "# Fixture design\n\n{}{}{}",
         anchor(
             "A-tests",
-            &[("one", "test"), ("two", "test"), ("both", "test, review")]
+            &[("one", "test"), ("two", "test"), ("both", "test")]
         ),
         anchor(
             "A-proof",
@@ -352,10 +352,10 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
         state(&report, "A-tests", "two"),
         (NoEvidence, vec![NoEvidence])
     );
-    // Two required methods with one satisfied: the criterion is partial.
+    // A test-only criterion is satisfied when all its linked tests pass.
     assert_eq!(
         state(&report, "A-tests", "both"),
-        (Partial, vec![Satisfied, NotEvaluated])
+        (Satisfied, vec![Satisfied])
     );
     assert_eq!(
         state(&report, "A-unlinked", "none"),
@@ -424,7 +424,7 @@ fn every_method_state_comes_from_links_and_this_runs_results() {
         Inconclusive
     );
     assert_eq!(formal(&run(true, None, &[])), NoEvidence);
-    // Verified functions still lack the specification assessment the proof method needs.
+    // Verified functions still lack the proof guards the proof method needs.
     assert_eq!(
         formal(&run(true, Some(ProofOutcome::Verified), &[])),
         NoEvidence
@@ -473,9 +473,12 @@ fn a_scoped_run_reports_what_it_excludes_and_plans_only_its_scope() {
     assert!(plan.proof_targets.is_empty());
     let report = evaluate(&plan, &RunResults::not_run("none"));
     let (_, methods) = state(&report, "A-tests", "both");
-    assert_eq!(methods, [State::NotEvaluated, State::NotEvaluated]);
-    let reason = &report.anchors().next().unwrap().criteria[2].methods[1].reason;
-    assert!(reason.contains("outside the requested scope"), "{reason}");
+    assert_eq!(methods, [State::NotEvaluated]);
+    let excluded = &report.anchors().find(|a| a.id == "A-proof");
+    assert!(
+        excluded.is_none(),
+        "excluded anchors must not enter the scoped report"
+    );
 
     let whole_plan = whole(&book);
     assert_eq!(
@@ -559,10 +562,7 @@ fn complete_milestones_claim_their_full_coverage_and_fail_the_run_until_it_holds
     assert_eq!(failing.exit_code(), 1);
     let passing = evaluate(&plan, &results(TestOutcome::Passed));
     assert_eq!(outcome(&passing, "one"), ClaimOutcome::Satisfied);
-    // `both` also requires review, which is not read yet: unchecked, not satisfied.
-    assert!(
-        matches!(outcome(&passing, "both"), ClaimOutcome::Unchecked(r) if r.contains("review"))
-    );
+    assert_eq!(outcome(&passing, "both"), ClaimOutcome::Satisfied);
     assert_eq!(passing.exit_code(), 0);
 
     // An unlinked claimed criterion fails the run even when no runner ran.
@@ -630,12 +630,11 @@ fn the_cli_reports_progress_claims_and_incomplete_runs_and_changes_no_files() {
     assert!(stderr.is_empty());
     for expected in [
         "anchorbook verify: claims unsatisfied",
-        "scope: all anchors; methods test, proof, review",
+        "scope: all anchors; methods test, proof",
         "Fixture design (design.md)",
         "  A-tests (draft) — not-evaluated, 0 of 3 criteria satisfied",
         "    one [test]: not-evaluated — cargo-nextest is not installed; install it with `cargo install cargo-nextest --version 0.9.151 --locked`",
         "    none [test]: unlinked — no test link names the criterion",
-        "      review: not-evaluated — assessment records are not read yet",
         "  verify.link-misplaced: tests/it.rs:1:",
         "claims: 1 claim: 0 satisfied, 1 unsatisfied, 0 unchecked",
         "  unsatisfied: A-unlinked#none (unlinked), claimed by work-1-works at roadmap.md:",
@@ -1000,11 +999,7 @@ fn the_worst_linked_test_decides_and_reasons_name_the_function() {
         absent.reason
     );
     let done = proof(vec![(verified, ProofOutcome::Verified)]);
-    assert!(
-        done.reason.contains("specification assessment"),
-        "{}",
-        done.reason
-    );
+    assert!(done.reason.contains("proof guards"), "{}", done.reason);
 }
 
 /// anchorbook: A-verify-claims-evidenced#unchecked-claims
@@ -1045,34 +1040,34 @@ fn the_text_report_counts_states_and_claims() {
     let text = anchor_book::adapters::verify::format_report(&evaluate(&plan, &passing));
     assert!(text.starts_with("anchorbook verify: progress\n"), "{text}");
     assert!(
-        text.contains("claims: 2 claims: 1 satisfied, 0 unsatisfied, 1 unchecked"),
+        text.contains("claims: 2 claims: 2 satisfied, 0 unsatisfied, 0 unchecked"),
         "{text}"
     );
-    assert!(
-        text.contains("  unchecked: A-tests#both (review not evaluated)"),
-        "{text}"
-    );
+    assert!(!text.contains("  unchecked: A-tests#both"), "{text}");
     assert!(
         text.contains("summary: 3 anchors: 0 satisfied, 1 partial, 1 no-evidence, 1 unlinked\n"),
         "{text}"
     );
     assert!(
-        text.contains(
-            "6 criteria: 1 satisfied, 1 partial, 2 no-evidence, 1 unlinked, 1 not-evaluated\n"
-        ),
+        text.contains("6 criteria: 2 satisfied, 2 no-evidence, 1 unlinked, 1 not-evaluated\n"),
         "{text}"
     );
 }
 
+/// anchorbook: A-verify-programmatic-only#methods
 #[test]
 fn flags_are_parsed_strictly() {
     let book = book("");
-    let (code, stdout, _) = cli(&book, &["--method", "proof", "--method", "review"]);
+    let (code, stdout, _) = cli(&book, &["--method", "proof", "--method", "test"]);
     assert_eq!(code, Some(0));
     assert!(
-        stdout.contains("scope: all anchors; methods proof, review"),
+        stdout.contains("scope: all anchors; methods proof, test"),
         "{stdout}"
     );
+    let (code, stdout, stderr) = cli(&book, &["--method", "review"]);
+    assert_eq!(code, Some(2));
+    assert!(stdout.is_empty());
+    assert!(stderr.contains("test|proof"));
     let config = book.config();
     let (code, _, stderr) = cli(&book, &["--config", config.to_str().unwrap()]);
     assert_eq!(code, Some(2));
@@ -1504,7 +1499,7 @@ mod structured {
         assert_eq!(result["book_source"], "docs");
         assert_eq!(
             result["scope"],
-            json!({"anchors": [], "methods": ["test", "proof", "review"]})
+            json!({"anchors": [], "methods": ["test", "proof"]})
         );
         assert_eq!(result["summary"]["criteria"]["total"], 6);
         // The mixed test/proof criterion also lacks a proof link.
@@ -1566,7 +1561,7 @@ mod structured {
                 .contains("outside")
         );
         assert_eq!(
-            criterion(&scoped, "A-tests", "both")["methods"][1]["state"],
+            criterion(&scoped, "A-tests", "both")["methods"][0]["state"],
             "not-evaluated"
         );
         assert_eq!(
@@ -1635,13 +1630,13 @@ mod structured {
         assert_eq!(output["outcome"], "progress");
         assert_eq!(output["chapters"][0]["anchors"][0]["status"], "accepted");
         assert_eq!(criterion(&output, "A-tests", "one")["state"], "satisfied");
-        assert_eq!(criterion(&output, "A-tests", "both")["state"], "partial");
+        assert_eq!(criterion(&output, "A-tests", "both")["state"], "satisfied");
         assert_eq!(
             criterion(&output, "A-proof", "formal")["state"],
             "no-evidence"
         );
-        assert_eq!(output["summary"]["criteria"]["states"]["satisfied"], 2);
-        assert_eq!(output["summary"]["criteria"]["states"]["partial"], 2);
+        assert_eq!(output["summary"]["criteria"]["states"]["satisfied"], 3);
+        assert_eq!(output["summary"]["criteria"]["states"]["partial"], 1);
         let links = output["evidence_links"].as_array().unwrap();
         assert!(
             links
@@ -1864,5 +1859,133 @@ mod structured {
         assert_eq!(finding["message"], text);
         assert!(finding["location"]["path"].is_null());
         assert_eq!(finding["location"]["line"], 7);
+    }
+}
+
+/// anchorbook: A-verify-programmatic-only#methods
+#[test]
+fn review_criteria_are_invalid_even_with_an_accepting_record() {
+    for methods in ["review", "test, review", "review, proof"] {
+        let b = book("");
+        b.write(
+            "docs/design.md",
+            &anchor("A-judgment", &[("approved", methods)]),
+        );
+        b.write(
+            "verification/assessments/approved.json",
+            r#"{"criterion":"A-judgment#approved","conclusion":"accepted"}"#,
+        );
+        let before = b.snapshot();
+        let (code, stdout, stderr) = cli(&b, &[]);
+        assert_eq!(code, Some(2), "{stderr}");
+        assert!(
+            stdout.is_empty(),
+            "invalid records must not produce a progress report"
+        );
+        assert!(stderr.contains("design.md"), "{stderr}");
+        assert!(
+            stderr.contains("review is not verification evidence"),
+            "{stderr}"
+        );
+        assert_eq!(b.snapshot(), before);
+    }
+}
+
+/// anchorbook: A-verify-criterion-states#all-criteria
+#[test]
+fn every_declared_criterion_needs_current_passing_evidence_through_the_cli() {
+    let b = fixture::Book::new();
+    b.write("anchorbook.toml", &format!("{}\n[verification]\nsources = [\"src\"]\noutput = \"target/verify\"\nrunners = [\"nextest\"]\n", fixture::CONFIG));
+    b.write(
+        "Cargo.toml",
+        "[package]\nname = \"fixture\"\nversion = \"0.1.0\"\n",
+    );
+    b.write("docs/authority.md", AUTHORITY);
+    b.write(
+        "docs/design.md",
+        &anchor("A-borrowing", &[("runtime", "test"), ("compiler", "test")]),
+    );
+    b.write(
+        "docs/roadmap.md",
+        &format!(
+            "# Work\n\n{}",
+            milestone(
+                1,
+                "Complete",
+                "`A-borrowing` · `runtime`, `compiler` — Full"
+            )
+        ),
+    );
+    let runtime = "/// anchorbook: A-borrowing#runtime\n#[test]\nfn runtime_borrows() {}\n";
+    let compiler =
+        "/// anchorbook: A-borrowing#compiler\n#[test]\nfn compiler_rejects_overlap() {}\n";
+    b.write("src/lib.rs", runtime);
+    let assert_run =
+        |cases: &[(&str, &str, &str)], expected: &str, compiler_state: &str, code: i32| {
+            let runner = recording(&b, cases);
+            let (actual_code, stdout, stderr) = cli_with(&b, &["--format", "json"], &runner.env);
+            assert_eq!(actual_code, Some(code), "{stdout}{stderr}");
+            let result: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+            let anchor = &result["chapters"][0]["anchors"][0];
+            assert_eq!(anchor["state"], expected);
+            assert_eq!(anchor["criteria"][0]["state"], "satisfied");
+            assert_eq!(anchor["criteria"][1]["state"], compiler_state);
+            assert_eq!(anchor["criteria"].as_array().unwrap().len(), 2);
+            let (_, text, _) = cli_with(&b, &[], &runner.env);
+            assert!(
+                text.contains(&format!("A-borrowing (draft) — {expected}")),
+                "{text}"
+            );
+            assert!(
+                text.contains(&format!("compiler [test]: {compiler_state}")),
+                "{text}"
+            );
+        };
+    let runtime_pass = ("fixture", "runtime_borrows", "pass");
+    assert_run(&[runtime_pass], "partial", "unlinked", 1);
+    b.write("src/lib.rs", &format!("{runtime}{compiler}"));
+    assert_run(&[runtime_pass], "partial", "no-evidence", 1);
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "skip"),
+        ],
+        "partial",
+        "no-evidence",
+        1,
+    );
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "fail"),
+        ],
+        "partial",
+        "failed",
+        1,
+    );
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "pass"),
+        ],
+        "satisfied",
+        "satisfied",
+        0,
+    );
+    // Losing a link cannot reduce the authored obligation set.
+    b.write("src/lib.rs", runtime);
+    assert_run(&[runtime_pass], "partial", "unlinked", 1);
+    b.write("src/lib.rs", &format!("{runtime}{compiler}"));
+    for args in [
+        vec!["--format", "json"],
+        vec!["--format", "json", "--method", "proof"],
+    ] {
+        let (_, stdout, _) = cli(&b, &args);
+        let result: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+        assert_eq!(
+            result["chapters"][0]["anchors"][0]["state"],
+            "not-evaluated"
+        );
+        assert_eq!(result["summary"]["criteria"]["states"]["satisfied"], 0);
     }
 }

@@ -3,7 +3,34 @@
 Write anchor properties with clear behavior, conditions, and outcomes. Follow the
 project's schema to declare required verification methods for each criterion.
 Every listed method is an obligation; a selection is not evidence of completion.
+Anchor satisfaction requires programmatic evidence: executable tests or formal
+proofs. Human or agent review, approval, and recorded judgments do not satisfy a
+criterion or gate its verification state, including within proof guards. A test
+that merely reads an approval or asks an agent to judge success does not meet this
+rule. For behavior without an executable check, report the verification gap;
+keep subjective judgments in the design and change-review workflow. When
+migrating a review criterion, define its executable assertions and leave evidence
+outstanding until those checks run; never relabel review evidence as a test pass.
 Keep tool choices and execution steps in the verification design and roadmap.
+
+### Declare every verification obligation
+
+An anchor is satisfied only when every criterion is satisfied, and a criterion
+only when every required method has current passing evidence. Define criteria
+from the whole property before mapping tests. Separate obligations whose evidence
+can be missing independently, including compiler checks, failure paths, operating
+environments, and limits. Keep known missing or unsupported checks as explicit
+criteria; a roadmap caveat must not leave the anchor reporting satisfied.
+
+When linked checks cover only part of a criterion, preserve its full meaning by
+splitting out the remaining obligations and reconciling links and roadmap coverage.
+Retain existing identifiers for continuing scope and record where extracted scope
+moved. Link each check only to the obligation its assertions establish. Do not
+reuse a runtime pass for a compiler or platform obligation it does not exercise.
+A test can establish several criteria when its assertions cover each of them.
+Rerun verification after the split: the covered criteria may pass, but the anchor
+must remain partial or unsatisfied until every remaining criterion passes. Passing
+links alone cannot reveal an obligation omitted from the Book.
 
 An anchor requires formal verification if at least one of its criteria lists
 `"proof"`. Each such criterion requires proof of its stated scope. If all criteria
@@ -52,7 +79,8 @@ requiring proof:
 5. **Check that the proof can fail.** A deliberate behavioral defect in a linked
    function must fail verification. Investigate every change that still verifies:
    strengthen the specification, show that the covering criterion's tests detect
-   it, or explain why it is equivalent. Show that preconditions can be met.
+   it, or leave the survivor unresolved. An explanation of equivalence is not
+   passing evidence. Show that preconditions can be met.
 6. **Cover the exclusions.** Every excluded part of the anchor's property stays
    covered by the criterion its exclusions name, or is reported as a gap. Examine
    input conversion, callers, and failure propagation, and identify which
@@ -60,14 +88,14 @@ requiring proof:
    reported as proof of its parsing, conversion, or caller integration.
 7. **Account for the result.** Give the engineer a readable account of the formal
    claim, assumptions, coverage, survivors, and gaps in its translation from the
-   criterion, and prepare the specification assessment record for the reviewer. Do not
-   record acceptance of a specification you wrote unless project guidance permits it.
+   criterion. Review this correspondence through the project's normal change
+   workflow; that judgment is separate from programmatic verification.
 
 Do not weaken the anchor or assume its property to obtain a proof; changes to
 intended behavior require design reconciliation. Record results against code and
 design revisions, and reassess affected evidence when either changes; a changed
-specification also needs a new assessment. Partial evidence does not satisfy an
-entire criterion, and tests or review do not silently replace a required proof.
+specification also needs scrutiny of its correspondence to the claim. Partial
+evidence does not satisfy an entire criterion, and tests do not replace a required proof.
 Report proof results for the specific anchor and criterion, scope, and revision;
 a proof requirement or a successful partial proof does not verify the whole anchor.
 
