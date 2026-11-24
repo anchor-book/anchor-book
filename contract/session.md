@@ -134,6 +134,10 @@ recorded** for absent Book facts and explain access gaps; do not fill them by
 guessing. If there are no open milestones, say so under Open work and retain the
 Ready milestones section. Link to source chapters or records where practical.
 
+An implementation milestone needs governing design that meets the phase's
+acceptance requirements before it is ready to start; report missing design as
+the next work, following [design before roadmaps](#design-before-roadmaps).
+
 Report statuses and evidence as the Book records them. Task checkmarks, anchor
 references, passing linked tests, and a passing structural check do not establish
 milestone completion. Preserve distinctions between an evidence result and its

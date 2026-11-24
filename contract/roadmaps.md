@@ -1,3 +1,29 @@
+## Design before roadmaps
+
+Before proposing milestones to implement a capability, establish its coherent
+target design. Explain the intended behavior, interfaces, interactions,
+constraints, and relevant failure cases in the owning design chapters, with the
+governing requirements, decisions, anchors, and verification criteria. A design
+basis must explain the milestone's intended outcome; a heading, record inventory,
+source description, or list of tasks is insufficient.
+
+Research and design milestones may establish that basis. Give them an agreed
+question or outcome, scope, and assessment. Scoped experiments may use draft
+design under [the project's phase](#work-in-the-projects-phase). Incorporate
+findings and agreed choices into the owning design before proposing implementation
+milestones. Work capability by capability; the whole system's design need not be
+finished first.
+
+When RFDs are enabled, proposed work may reference the design in its RFD. Follow
+[the adoption procedure](#adopt-an-rfd-into-the-system-definition) to incorporate
+agreed definitions before that work is ready for implementation.
+
+Keep source inventories and exploratory notes in the research location named by
+project guidance. If none is defined, propose a suitable location and record it
+in that guidance; ask the engineer when the choice affects agreed structure or
+policy. Roadmaps summarize scoped findings and link evidence; research does not
+substitute for target design.
+
 ## Create and maintain implementation roadmaps
 
 Give each roadmap a simple name and an explicit goal. Divide the intended design

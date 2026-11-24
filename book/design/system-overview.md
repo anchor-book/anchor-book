@@ -76,6 +76,12 @@ together. Agents read the current Markdown sources and the engine's working
 contract, then implement assigned work and develop its tests, proofs, and review
 records. Reading the Book does not require a successful build or rendered HTML.
 
+The contract's “Design before roadmaps” section requires coherent capability design
+before implementation milestones. Research and design milestones may establish
+that basis; readiness depends on the governing design and the phase's acceptance
+requirements. Assessing this behavior in agent sessions is separate from checking
+Book structure or delivering the contract text.
+
 The build loop returns structured findings and current evidence to the agent,
 which uses them to correct the implementation or propose a design change with
 the engineer. Stable record and criterion identifiers connect findings to source

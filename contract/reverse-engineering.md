@@ -23,7 +23,8 @@ a bounded investigation need not recover the whole system.
    found in research or roadmaps. A reader must be able to understand the target
    without reconstructing it from source code or roadmap history.
 4. **Derive and reconcile the work.** Compare implementation and evidence with
-   that design to propose milestones. Follow [the project's phase](#work-in-the-projects-phase):
+   that design to propose milestones, following [design before roadmaps](#design-before-roadmaps).
+   Follow [the project's phase](#work-in-the-projects-phase):
    scoped experiments can resolve design questions. As findings settle choices,
    update the owning design and affected records and roadmaps together. Replace
    superseded descriptions in place and duplicated roadmap definitions with

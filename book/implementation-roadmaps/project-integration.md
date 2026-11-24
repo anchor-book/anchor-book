@@ -129,6 +129,7 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 - [ ] Exercise library, CLI, and preprocessor equivalence through independent consumer fixtures, including failing and incomplete Books and mismatched versions. Keep this repository's Book acceptance separate from its ordinary tests so a broken Book cannot prevent building its engine.
 - [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, supported tools, and normal commands. Decide how the engine distributes those references and exercise that delivery here before Symposium relies on it.
 - [ ] Exercise the contract's required readiness-report template in fresh Codex and Claude sessions. Check all sections, every open milestone and completion criterion, evidence limitations, and assignment prerequisites; record versions, assistance, omissions, and differences.
+- [ ] Trial the common design-before-roadmaps guidance in fresh Prototyping and Port sessions using disposable fixtures; assess design quality, ordering, and missing-design readiness findings.
 - [ ] Document a full pinned Git revision for dependency and installation before registry publication, with upgrade steps keeping configuration, locked dependency, and invoked binary aligned. Test the setup outside the development checkout without Verus.
 
 ### Completion criteria
@@ -154,6 +155,20 @@ results, and any assistance. General registry release remains separate.
 
 - **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: reproducible bootstrap and versioned references in a consumer fixture.
 - **Evidence:** Pending.
+
+#### Design before roadmaps {#project-integration-4-design-before-roadmaps}
+
+In disposable Prototyping and Port fixtures, fresh sessions establish a capability's
+coherent target design before proposing its implementation milestones. The design
+explains behavior, interfaces, interactions, constraints, and relevant failure
+cases; linked milestones follow from it. Scoped research or design milestones may
+establish missing knowledge with an agreed question, scope, and assessment.
+Readiness reporting identifies an implementation milestone's missing design basis
+even when its recorded status is Ready. Record inputs, engine and agent versions,
+observed ordering, content assessment, assistance, and limitations.
+
+- **Anchor coverage:** None: behavioral assessment of working guidance, beyond the engine's contract-delivery guarantees.
+- **Evidence:** Pending. Packaging and link tests cannot establish that agents follow the procedure.
 
 ### Completion record
 

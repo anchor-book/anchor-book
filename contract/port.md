@@ -15,8 +15,10 @@ Identify the source and target in project guidance and record inspected revision
 in research evidence. Define the selected compatibility scope explicitly. Choose
 interfaces, architecture, and dependencies suited to the target environment;
 source package boundaries and implementation mechanisms do not prescribe them.
-Incorporate agreed discoveries into the owning target design, requirements,
-decisions, anchors, and criteria before deriving implementation work.
+Follow [design before roadmaps](#design-before-roadmaps): write the target design
+for a capability from research and agreed choices before proposing its
+implementation milestones. Source behavior recorded only in a roadmap or
+migration inventory is not target design.
 
 Scoped experiments may use draft designs to resolve questions. Assigned
 implementation requires accepted governing design and authority, as in Building;
