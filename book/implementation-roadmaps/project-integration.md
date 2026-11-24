@@ -131,6 +131,7 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 - [ ] Exercise the contract's required readiness-report template in fresh Codex and Claude sessions. Check all sections, every open milestone and completion criterion, evidence limitations, and assignment prerequisites; record versions, assistance, omissions, and differences.
 - [ ] Trial the common design-before-roadmaps guidance in fresh Prototyping and Port sessions using disposable fixtures; assess design quality, ordering, missing-design readiness findings, and concise milestone updates.
 - [ ] Document a full pinned Git revision for dependency and installation before registry publication, with upgrade steps keeping configuration, locked dependency, and invoked binary aligned. Test the setup outside the development checkout without Verus.
+- [ ] Exercise local checking, rendering, and configured verification outside Git and with Git unavailable, preserving honest revision metadata and runner results.
 
 ### Completion criteria
 
@@ -168,10 +169,54 @@ even when its recorded status is Ready. Record inputs, engine and agent versions
 observed ordering, content assessment, assistance, and limitations. Give the
 session a subsequent result or correction: it updates the existing milestone,
 keeps evidence and unresolved gaps retrievable, and avoids assignment narration,
-duplicated reports, and another milestone for the same outcome.
+duplicated reports, and another milestone for the same outcome. Include an
+unanchored key correctness guarantee and one outside the scope of an existing anchor: the
+session surfaces their constraints, consequences, and missing coverage for engineer
+judgment, preserves existing approvals, and proposes executable criteria without
+inventing evidence or silently accepting a new constraint. An overview that only
+links owning definitions needs no duplicate anchor. Include routine testable
+behavior as a counterexample: the session leaves it in ordinary design and tests,
+explains the consequence that warrants each selected anchor, and groups related
+obligations without making an anchor per test or edge case.
 
 - **Anchor coverage:** None: behavioral assessment of working guidance, beyond the engine's contract-delivery guarantees.
-- **Evidence:** Pending. Packaging and link tests cannot establish that agents follow the procedure.
+- **Evidence:** Fresh-session trials remain pending. The local assessment below
+  applies the rule to this Book; packaging and link tests cannot establish that
+  fresh agents follow the procedure.
+
+**Self-application.** The 17 design chapters were assessed on the local
+`design-constraint-coverage` branch based on
+`b809f76f107e1ed0d7edc9e66f18f516fb94e34d`. Selection follows the
+[importance threshold](../design/anchor-definitions.md#coverage-of-design-constraints):
+a property merits an anchor because of its consequence for correctness, not
+merely because it can be tested. Existing records and evidence retain their scope.
+
+| Assessed design | Key guarantee and coverage disposition |
+| --- | --- |
+| Design index and System Overview | The overview links owning definitions. Independent builds and current build evidence already have anchors. Preserving user-authored content during materialization needs [A-materialize-owned-content](../design/system-overview.md#A-materialize-owned-content) and its draft authority; violating this boundary could destroy the Book's intended design. |
+| Anchor Definitions, Authority Definitions, and Rust Engine | Existing record grammar, valid-authority, and shared-result anchors cover identifiable definitions, justified properties, and consistent callers. No duplicate anchor for each record kind or API. |
+| Configuration, Structural Checking, and Checking Diagnostics | Existing selection, conformance, preservation, and truthful/actionable-result anchors own these boundaries. Routine diagnostic examples remain test cases under those properties. |
+| Verification, Running Verification, and Proof Guards | Existing criterion-state, linkage, execution, completion-claim, and proof-guard anchors own evidence validity. Proof Guards now links its owning anchors directly. Missing native guards remain explicit work; no new anchor is needed for that chapter. |
+| Shipping Verified Code | [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) makes source correspondence explicit: verifying a different executable body would invalidate the proof's application to shipped code. Prior consumer-build evidence does not establish this property. |
+| Project Integration and Record Rendering | Existing version, dependency, bootstrap, and rendering anchors own reproducibility and faithful presentation. Git-independent local setup remains a design/testing obligation within this milestone; it does not need a separate correctness anchor. |
+| Requests for Discussion, RFD Source Format, and RFD Worked Examples | Existing RFD anchors own proposal isolation, relationships, and distinct acceptance/implementation/evidence states. Format details and literal example records do not add live goal anchors. |
+
+The two new anchors expose five unlinked test criteria; no existing pass is reused
+for them. The [deferred materialization work](index.md#later-work-retained-from-the-design)
+still needs an ownership format and conflict/application policy. The
+[packaging follow-up](formal-verification.md#later-work) needs a programmatic
+source-comparison boundary. These choices need engineer judgment before their
+implementation; neither a new guarantee of atomic writes nor a proof of compiler
+correctness is implied. No current milestone is made Complete by this assessment.
+
+Validation on 2026-11-24: all six contract tests, structural checking, the mdBook
+build, and all five current/rendered-Book acceptance checks pass. The configured
+`verify --method test --format json` run with nextest 0.9.151 passes 123 linked
+tests: 48 criteria satisfied, 42 unlinked, and one proof criterion not evaluated
+(37 anchors: 14 satisfied, nine partial, 14 unlinked). The five new criteria are
+unlinked; existing records remain byte-identical. Proofs and fresh-agent trials
+were not run. These local checks establish format, preserved definitions, and
+reported evidence states, not completeness of the semantic assessment.
 
 ### Completion record
 

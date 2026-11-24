@@ -12,7 +12,9 @@ question or outcome, scope, and assessment. Scoped experiments may use draft
 design under [the project's phase](#work-in-the-projects-phase). Incorporate
 findings and agreed choices into the owning design before proposing implementation
 milestones. Work capability by capability; the whole system's design need not be
-finished first.
+finished first. Apply [constraint and anchor coverage](#surface-design-constraints-and-anchor-coverage)
+before treating the design basis as ready, including when existing design is
+reorganized without implementation changes.
 
 When RFDs are enabled, proposed work may reference the design in its RFD. Follow
 [the adoption procedure](#adopt-an-rfd-into-the-system-definition) to incorporate

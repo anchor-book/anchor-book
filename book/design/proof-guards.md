@@ -2,7 +2,10 @@
 
 A [proof guard](verification.md#guards) checks what a successful Verus result
 alone does not establish. This page shows when those checks happen and which
-steps call Verus.
+steps call Verus. The owning properties are
+[proof nonvacuity](verification.md#A-verify-proof-nonvacuous),
+[proof sensitivity](verification.md#A-verify-proof-sensitive), and
+[current scoped execution](verification-evidence.md#A-verify-runs-linked-checks).
 
 For the engine's implemented workflow, see
 [Proof verification today](../working-on-anchor-book.md#proof-verification-today).

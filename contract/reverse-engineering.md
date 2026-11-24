@@ -19,8 +19,9 @@ a bounded investigation need not recover the whole system.
 3. **Write the coherent design.** Put the target system's purpose, interfaces,
    responsibilities, interactions, and constraints in their owning design
    chapters. Record governing requirements and decisions, with anchors and
-   verification criteria for the resulting guarantees. Incorporate agreed design
-   found in research or roadmaps. A reader must be able to understand the target
+   verification criteria for key correctness guarantees, following
+   [constraint and anchor coverage](#surface-design-constraints-and-anchor-coverage).
+   Incorporate agreed design found in research or roadmaps. A reader must be able to understand the target
    without reconstructing it from source code or roadmap history.
 4. **Derive and reconcile the work.** Compare implementation and evidence with
    that design to propose milestones, following [design before roadmaps](#design-before-roadmaps).

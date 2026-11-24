@@ -196,6 +196,29 @@ does not make an anchor accepted or verified. Methods declare obligations; parsi
 and rendering them do not run tools or establish evidence. Concrete tool choices
 and commands belong in the verification design and roadmap, not in this field.
 
+### Coverage of design constraints
+
+The AI Working Contract's “Surface design constraints and anchor coverage” rule
+connects design judgment to these records. Select anchors for key correctness
+guarantees: a violation would materially break intended behavior, invalidate
+results, corrupt or lose user work, or cross an important trust or ownership
+boundary. Explain that consequence and resolve uncertain scope with the engineer.
+Being testable does not make a statement anchor-worthy. Routine behavior,
+implementation details, and quality checks can stay in design and tests without
+anchors; subjective goals remain design judgments.
+
+Group related obligations into a coherent property and express its independently
+necessary parts as criteria. Do not create an anchor per test, edge case, or
+chapter. An existing anchor must cover the key guarantee's actual scope; its
+presence somewhere in a chapter is insufficient. Overview prose can link to
+anchors defined elsewhere.
+
+Preserving record identities during consolidation does not freeze the inventory.
+Missing authority or unresolved choices require design work; missing executable
+checks require verification work. Neither justifies omitting a key guarantee.
+The parser validates authored records and references, not whether the important
+correctness guarantees have been represented.
+
 ### Independently verifiable criteria
 
 Declare the obligations of the whole property before choosing existing tests.
