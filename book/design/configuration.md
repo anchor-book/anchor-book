@@ -80,6 +80,7 @@ The field is required and accepts exactly one of these strings:
 
 | Value | Meaning |
 | --- | --- |
+| `"port"` | Reconstruct an existing system and implement an agreed target. Scoped experiments may use draft design; implementation requires accepted governing design and authority. The configured contract adds port guidance. |
 | `"prototyping"` | Explore design and implementation through assigned experiments; draft governing records are allowed. |
 | `"building"` | Implement assigned roadmap work against accepted governing design and authority. |
 | `"complete"` | Declare the defined goal system complete for a recorded scope and revision, supported by completion and verification evidence. |
@@ -91,7 +92,7 @@ to that field. The contract defines phase behavior without declaring a project's
 current value.
 
 The configuration reader validates and exposes the phase as data. All
-three phases use the same initial structural rules: prototyping does not disable
+four phases use the same initial structural rules: porting and prototyping do not disable
 layout checks, and a structural pass in Complete does not establish implementation
 or verification.  The phase value expresses the chosen workflow; it is not evidence.
 
@@ -100,6 +101,14 @@ AI Working Contract (`anchorbook contract`, “Work in the project's phase”); 
 scope and basis are recorded in the roadmap. Later development can begin a new iteration while preserving the prior
 completed baseline. A scoped experiment alongside accepted work is described in
 its roadmap and assignment; no per-capability override syntax is introduced here.
+
+Port adds a value to the unpublished schema 1. Existing phase values retain their
+meaning; earlier engines reject `port` and do not support configured contract
+retrieval. Upgrade the project's engine and bootstrap command together before
+selecting it. The engineer chooses when porting ends and the next phase; completing
+a milestone does not imply that the selected port or source retirement is complete.
+Source and target references, compatibility choices, and transition criteria
+belong in the Book rather than additional configuration fields.
 
 ## Paths
 

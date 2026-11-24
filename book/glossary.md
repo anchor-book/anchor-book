@@ -22,7 +22,7 @@ and add it here when agreed. Prefer plain words to abbreviations and tool jargon
 | Decision | A choice that governs the system, with its rationale and alternatives; see [decision fields](design/authority-definitions.md#decision-fields). |
 | Identifier | A record's stable name: a kind code and a name stating its meaning, never a number; see [Identifiers](design/anchor-definitions.md#identifiers). |
 | Status | A record's design acceptance, `draft` or `accepted`; it does not mean implemented or verified. See [Heading](design/anchor-definitions.md#heading). |
-| Phase | The project's working expectations: prototyping, building, or complete; see [Project phase](design/configuration.md#project-phase). |
+| Phase | The project's working expectations: port, prototyping, building, or complete; see [Project phase](design/configuration.md#project-phase). |
 | Implementation roadmap | Agreed work toward the goal system, divided into milestones; see [Defining the work](implementation-roadmaps/index.md#defining-the-work). |
 | Milestone | A coherent outcome within a roadmap, with tasks and completion criteria; see [Defining the work](implementation-roadmaps/index.md#defining-the-work). |
 | Completion criterion | An observable condition showing a milestone's outcome is reached, distinct from an anchor criterion; see [planned coverage](implementation-roadmaps/index.md#anchor-criteria-and-planned-coverage). |

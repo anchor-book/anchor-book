@@ -1,7 +1,8 @@
 ## Test before opening a pull request
 
-Apply these requirements to implementation pull requests in Building. During
-Prototyping, test assigned experiments and record results and gaps while refining
+Apply these requirements to implementation pull requests in Building and Port.
+For scoped experiments in Prototyping or Port, test the assigned scope and record
+results and gaps while refining
 the testing workflow. A written policy does not establish that the project's
 tooling or CI implements it; project guidance records that readiness.
 

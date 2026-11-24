@@ -30,19 +30,3 @@ a bounded investigation need not recover the whole system.
    links. Roadmaps retain tasks, remaining gaps, and completion evidence; research
    retains source observations and comparisons.
 
-### Porting to a different implementation
-
-Define the selected compatibility scope and source baseline explicitly. Choose
-interfaces, architecture, and dependencies suited to the target environment;
-source package boundaries and implementation mechanisms do not prescribe them.
-Verify selected behavior and deliberate differences with representative scenarios,
-including failures, against the target criteria. Source tests inform these checks
-without defining the target's requirements.
-
-Keep migration inventories and comparisons separate from durable target design.
-Ongoing parity, source tracking, and dependencies on the original system require
-explicit project scope. Define port completion and any cutover or retirement
-separately. Before copying or adapting material, establish applicable permissions
-and preserve required notices and provenance, even if migration notes are later
-removed.
-

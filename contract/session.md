@@ -29,6 +29,14 @@ phase, authoring references, and development commands. Read the Book's `SUMMARY.
 and every chapter it lists in full, using current Markdown sources so unpublished
 changes are included; no Book build is needed.
 
+For a configured project, retrieve the contract with `anchorbook contract --config
+PATH`, using the configuration path from project guidance. It includes additional
+guidance for the selected phase. If startup retrieved only the common contract,
+retrieve the configured contract before phase-specific work. A failed retrieval
+supplies no phase guidance; correct its reported
+configuration problem and retry. The common contract remains available without
+arguments for diagnosis.
+
 Read the content, not just headings or filenames, and continue beyond truncated
 tool output. Report missing or unreadable guidance and the resulting context gap;
 do not guess project paths or claim to have read unavailable content.

@@ -143,11 +143,23 @@ project context.
 The contract includes Rust guidance. Extensions for other languages are outside
 this design.
 
-`anchorbook contract` prints the contract packaged with the running engine. It
-reads no project files, so its output is the same for every project using that
-engine version. The engine keeps one contract source, maintained as section files
-joined at compile time, without project-specific content or checked-in generated
-copies; the Book refers to its sections by name. An agent integration must
+`anchorbook contract` prints the common contract packaged with the running engine.
+Without arguments it reads no project files, so its output is the same for every
+project using that engine version and remains available for diagnosis.
+`anchorbook contract --config PATH` uses the configuration loader to select the
+phase, then returns the common contract plus the Port section when the phase is
+`port`. Other phases return the common text. The configuration path follows the
+ordinary explicit-path rules; no project is discovered implicitly. Invalid or
+unreadable configuration produces an error on stderr, exit 2, and no contract
+on stdout. Retrieval neither checks Book structure nor reads chapter contents,
+executes project tools, or writes files. Missing Book sources do not prevent
+retrieval when configuration otherwise loads.
+
+The engine keeps one contract source, maintained as section files joined at
+compile time and selected by phase, without project-specific content or checked-in
+generated copies. The library exposes the common text and a phase-selected form;
+selection itself performs no I/O. The Book refers to contract sections by name.
+An agent integration must
 retrieve and read the contract; packaging it alone does not place it in the
 agent's working context. This repository's own startup and source location are in
 [Working on Anchor Book](../working-on-anchor-book.md#contract-source).

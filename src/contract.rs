@@ -5,7 +5,7 @@
 //! version was built with. It contains no project-specific content; projects keep
 //! their state, paths, commands, and policies in their own Book.
 
-/// The complete contract text, identical for every project.
+/// The common contract text, identical for every project.
 pub const TEXT: &str = concat!(
     include_str!("../contract/session.md"),
     include_str!("../contract/collaboration.md"),
@@ -31,6 +31,9 @@ pub const SECTIONS: [&str; 9] = [
     "project.md",
 ];
 
+/// Additional guidance selected by the port phase, following the common contract.
+pub const PORT: &str = include_str!("../contract/port.md");
+
 /// The contract for this engine version. It reads no files.
 ///
 /// ```
@@ -38,4 +41,14 @@ pub const SECTIONS: [&str; 9] = [
 /// ```
 pub fn text() -> &'static str {
     TEXT
+}
+
+/// The common contract plus guidance for the selected phase. It reads no files.
+pub fn for_phase(phase: crate::configuration::Phase) -> String {
+    let mut text = TEXT.to_owned();
+    if phase == crate::configuration::Phase::Port {
+        text.push('\n');
+        text.push_str(PORT);
+    }
+    text
 }

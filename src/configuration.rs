@@ -17,6 +17,8 @@ use std::{
 /// The engineer-selected working phase, not evidence of readiness or completion.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Phase {
+    /// Reconstruct an existing system and implement the agreed target design.
+    Port,
     /// Explore and refine the system through scoped experiments.
     Prototyping,
     /// Implement the agreed goal design.

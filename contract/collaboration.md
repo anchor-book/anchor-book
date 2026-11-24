@@ -115,6 +115,7 @@ evidence describe different things; one does not automatically establish another
 
 | Phase | Working expectations |
 | --- | --- |
+| **Port** | Reconstruct an existing system and build an agreed target. Use the additional port guidance from the configured contract. Scoped experiments may use draft designs; implementation requires accepted governing design and authority. Record compatibility choices and incorporate discoveries into the target design. |
 | **Prototyping** | Draft designs can guide assigned experiments. Evolve design, schemas, roadmaps, and implementation together. Even a provisional roadmap states the experiment's scope, intended learning or outcome, and assessment. Record results, changes, and unresolved questions. |
 | **Building** | Before assigned implementation starts, its governing design, requirements, decisions, and anchors must be accepted. Later design changes may remain drafts. Agree on changes to governing design before implementing them. |
 | **Complete** | The defined goal is implemented for a recorded scope and revision, with evidence satisfying its verification criteria. Preserve that baseline; further development starts another Prototyping or Building iteration. |

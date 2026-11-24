@@ -38,9 +38,10 @@ situations other projects bring.
 > - Criterion `renderer-versions` [test]: The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions.
 
 > **`A-project-agent-bootstrap`** (draft): **A project's agents start from the contract and the project's Book**
-> Property: A project's agent bootstrap directs agents to read the working contract for the project's engine version, then the project's guidance and Book. The contract is retrieved from the engine and contains no project-specific content; project state, paths, commands, and policies stay in the project's Book.
+> Property: A project's agent bootstrap directs agents to read the working contract for the project's engine version, including guidance selected by its configured phase, then the project's guidance and Book. The contract is retrieved from the engine and contains no project-specific content; project state, paths, commands, and policies stay in the project's Book.
 > Authority: `R-project-adoption`
 > - Criterion `contract-retrieval` [test]: anchorbook contract prints the contract packaged with the running engine version, without reading project files, and the output is identical for different projects.
+> - Criterion `phase-guidance` [test]: Through the library and actual CLI, configured Port returns the common contract plus port guidance exactly once; other phases return the common text. Different invocation directories select the same explicit configuration. Missing or malformed configuration and unsupported phases produce exit 2, diagnostics, and no partial contract; no project files change. Retrieval needs no valid Book, and Port preserves ordinary structural checks.
 > - Criterion `fresh-session` [test, review]: Fresh agent sessions in a fixture project with the documented bootstrap section retrieve the contract, read the project guidance and Book, and identify the phase and supported commands; record agent versions and any assistance.
 
 > **`A-project-verus-evidence`** (draft): **A project's Verus proofs are evidence for its own criteria**
@@ -196,7 +197,8 @@ dependencies are constraints on that build:
 
 A project's `AGENTS.md` contains a short bootstrap section. It directs agents to:
 
-1. Run `anchorbook contract` and read the output in full before project work.
+1. Run `anchorbook contract --config PATH`, using the project's explicit
+   configuration path, and read the output in full before project work.
 2. Read the project's guidance chapter, which identifies its phase, commands,
    and authoring references.
 3. Read the Book's `SUMMARY.md` and every chapter it lists.
@@ -205,6 +207,16 @@ The contract comes from the engine version the project declares; no generated
 copy is checked in. Project-specific instructions belong in the guidance chapter,
 not in the contract or a modified copy of it. Other agent integrations, such as a
 skill that retrieves the contract, follow the same three steps.
+
+Configured retrieval selects the common contract and any additional phase section;
+Port adds guidance for reconstructing the source, asking the engineer for missing
+intent and constraints, defining the target, and carrying out the agreed port.
+If startup retrieved only the common contract, agents retrieve the configured
+form before phase-specific work. When configuration cannot load, the command
+without arguments remains available for diagnosis; correct the configuration and
+retry configured retrieval. Projects without configuration can still retrieve the
+common contract. Use an engine supporting Port and configured retrieval before
+changing bootstrap instructions to that form.
 
 After reading, agents use the contract's required readiness-report template to
 show the Book's state, every open milestone, its completion criteria and evidence

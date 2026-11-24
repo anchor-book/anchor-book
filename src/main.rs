@@ -19,19 +19,7 @@ fn main() -> ExitCode {
         return md(&args[1..]);
     }
     if args.first().is_some_and(|a| a == "contract") {
-        if args.len() != 1 {
-            let _ = writeln!(io::stderr().lock(), "Usage: anchorbook contract");
-            return ExitCode::from(2);
-        }
-        return if io::stdout()
-            .lock()
-            .write_all(anchor_book::contract::text().as_bytes())
-            .is_ok()
-        {
-            ExitCode::SUCCESS
-        } else {
-            ExitCode::FAILURE
-        };
+        return contract(&args[1..]);
     }
     if args.len() == 1 && (args[0] == "--version" || args[0] == "-V") {
         return if writeln!(
@@ -50,7 +38,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | verify --config PATH | proof --config PATH | md [supports html] | contract | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the AI Working Contract packaged with this engine version.\nMaterialization is not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | verify --config PATH | proof --config PATH | md [supports html] | contract [--config PATH] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the common AI Working Contract; --config appends guidance for the configured phase.\nMaterialization is not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS
@@ -60,6 +48,31 @@ fn main() -> ExitCode {
     }
     let _ = writeln!(io::stderr().lock(), "Unknown or missing operation.\n{help}");
     ExitCode::from(2)
+}
+
+fn contract(args: &[std::ffi::OsString]) -> ExitCode {
+    let text = if args.is_empty() {
+        anchor_book::contract::text().to_owned()
+    } else if args.len() == 2 && args[0] == "--config" && !args[1].is_empty() {
+        match anchor_book::configuration::load(std::path::Path::new(&args[1])) {
+            Ok(configuration) => anchor_book::contract::for_phase(configuration.phase()),
+            Err(error) => {
+                let _ = writeln!(io::stderr().lock(), "{error}");
+                return ExitCode::from(2);
+            }
+        }
+    } else {
+        let _ = writeln!(
+            io::stderr().lock(),
+            "Usage: anchorbook contract [--config PATH]"
+        );
+        return ExitCode::from(2);
+    };
+    if io::stdout().lock().write_all(text.as_bytes()).is_ok() {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    }
 }
 
 fn md(args: &[std::ffi::OsString]) -> ExitCode {

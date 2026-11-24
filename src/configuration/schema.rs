@@ -114,6 +114,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
         ));
     }
     let phase = match raw.project.phase.as_str() {
+        "port" => Phase::Port,
         "prototyping" => Phase::Prototyping,
         "building" => Phase::Building,
         "complete" => Phase::Complete,
@@ -122,7 +123,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
                 path,
                 Some("project.phase"),
                 field_span("project.phase"),
-                "phase must be prototyping, building, or complete",
+                "phase must be port, prototyping, building, or complete",
             ));
         }
     };
@@ -186,6 +187,7 @@ mod tests {
     #[test]
     fn phases_are_explicit_and_preserve_declared_paths() {
         for (name, phase) in [
+            ("port", Phase::Port),
             ("prototyping", Phase::Prototyping),
             ("building", Phase::Building),
             ("complete", Phase::Complete),
