@@ -42,7 +42,7 @@ Write milestones in plain Markdown, without HTML, so agents read only content:
 
 **Identifier:** `roadmap-id-1`
 
-**Dependencies:** Prerequisites and required milestones.
+**Dependencies:** Prerequisites and required milestones, or None.
 
 **Design basis:** [Linked design](../design/chapter.md#section) and authority.
 
@@ -61,18 +61,21 @@ The observable condition that shows the outcome is reached.
 
 ### Evidence {#roadmap-id-1-evidence}
 
-Milestone-level results, if any.
+Shared tested revision and execution context, if needed by several criteria.
+Link supporting reports or reproducible checks; criterion entries own results.
 
 ### Completion record
 
-Pending, or the completion statement.
+Pending, or disposition, integration state, and remaining blockers.
 ```
 
 Fields are separate paragraphs, in this order, with outcome and status first.
 The milestone heading and each criterion heading carry their stable fragment as a
-heading attribute; these fragments are the link targets. Completed preparation may
-be recorded separately, but neither preparation nor task checkmarks establish
-acceptance evidence.
+heading attribute; these fragments are the link targets. Keep prerequisites in
+Dependencies and governing links in Design basis; assignment history belongs in
+the project's contribution workflow. Completed preparation may be recorded
+separately, but neither preparation nor task checkmarks establish acceptance
+evidence. Add milestones for distinct outcomes; update existing work in place.
 
 Milestones may be split into smaller outcomes. Keep detailed tasks and evidence
 in one place and link from the parent. Anchors provide traceability, not work
@@ -150,7 +153,9 @@ Do not weaken scope or criteria to match completed work.
 
 Until results exist, record **Pending**, meaning no acceptance evidence has been
 recorded for that criterion. When a check or review has run, record what it
-established and its limits under the relevant criterion using these fields:
+established and its limits under the relevant criterion. The following information
+must be recoverable; shared context can be stated once and referenced, without
+repeating a full table for each criterion:
 
 | Field | Meaning |
 | --- | --- |
@@ -162,11 +167,15 @@ established and its limits under the relevant criterion using these fields:
 | Limitations | Missing cases, partial coverage, assistance, or other limits; state none when appropriate |
 | Integration context | Branch work or integrated into main |
 
-Record the latest applicable result for each criterion. Leave superseded
-revisions and the chronology of changes to Git history, unless the criterion
-concerns the correction itself, such as a mutation survivor and its fix. Status
-belongs in each milestone's Status and Completion record; design pages and other
-roadmaps link to it rather than restating it.
+Record the latest applicable result for each criterion. Link test associations,
+reports, and project commands; retain assertion detail when it explains coverage.
+Keep superseded results only when they explain a current limitation or the
+correction itself, such as a mutation survivor and its fix; otherwise reference
+retained history. Preserve unique evidence and unresolved failures when condensing.
+Omit session narration and resolved tool retries that no longer affect reproduction.
+Status belongs in Status and Completion record; the latter summarizes disposition,
+integration, and blockers without repeating the evidence. Other chapters link to
+these records rather than restating them.
 
 Keep failed and inconclusive results visible. Complete requires evidence for the
 outcome and every completion criterion; task checkmarks, anchor references, and

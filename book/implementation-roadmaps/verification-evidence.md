@@ -721,17 +721,14 @@ replace the earlier human assessment of an agent trial.
 
 ## Milestone 13. Known obligations remain visible until satisfied {#verification-evidence-13}
 
-**Outcome:** Criteria represent independently verifiable obligations, including
-known missing or unsupported checks. The existing aggregation requires every
-criterion to pass before an anchor is satisfied. Thinkwell demonstrates that
-passing runtime tests cannot hide the rest of a broad criterion.
+**Outcome:** Explicit criteria expose known verification gaps, and a CLI regression
+protects all-criteria aggregation. Thinkwell supplies the consumer acceptance case.
 
 **Status:** Complete
 
 **Identifier:** `verification-evidence-13`
 
-**Dependencies:** Milestone 11 and the existing test runner. The engineer assigned
-the correction and selected the Thinkwell port as the consumer acceptance case.
+**Dependencies:** Milestone 11, the test runner, and Thinkwell's existing test links.
 
 **Design basis:** [Independent criteria](../design/anchor-definitions.md#independently-verifiable-criteria),
 [all-criteria aggregation](../design/verification-evidence.md#A-verify-criterion-states),
@@ -739,10 +736,10 @@ and the contract's declaration of every verification obligation.
 
 **Tasks**
 
-- [x] Make independent obligation authoring explicit in the shared contract and owning schema/design chapters. Known gaps must be criteria, not only roadmap prose.
-- [x] Exercise actual CLI text/JSON output with a passing runtime criterion and missing compiler evidence; require all current evidence before satisfaction and preserve obligations after link removal.
-- [x] Use Thinkwell's unchanged tests as acceptance: split uncovered compiler, failure-path, cleanup, schema, and progress scope into required criteria without changing product guarantees.
-- [x] Validate contract packaging, supported Rust toolchains, Book checks, and current evidence; record the exact tested scope.
+- [x] Clarify independent obligation authoring in the contract and design.
+- [x] Add the CLI regression for required criteria and missing evidence.
+- [x] Extract Thinkwell's uncovered obligations without changing product guarantees.
+- [x] Run supported-toolchain, contract, Book, and consumer checks.
 
 ### Completion criteria
 
@@ -754,7 +751,14 @@ the anchor. Unavailable or excluded methods never satisfy it, and losing a link
 cannot shrink the required criterion set.
 
 - **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `all-criteria` — Full
-- **Evidence:** On the local `complete-criteria` tree based on `fb7badc8f3bb763f9ba89d6c15c8701faefe1e46`, `cargo test --locked` passes 184 tests with eight opt-in checks ignored. The verification and contract suites also pass on Rust 1.88.0; formatting and all-target Clippy with warnings denied pass on stable and 1.88.0. The Book builds, all four current-Book acceptance checks and rendered-record/link acceptance pass. Current `verify --method test --format json` reports this criterion satisfied, with no findings. The runner fixture supplies controlled outcomes to test aggregation; it is not evidence for a consumer compiler check. No runtime implementation changed, so no mutation campaign was added.
+- **Evidence:** `cargo test --locked` passes 184 tests; eight opt-in checks are
+  ignored. Verification and contract suites also pass on Rust 1.88.0. Formatting
+  and all-target Clippy with warnings denied pass on stable and 1.88.0. The Book
+  builds; four current-Book checks and rendered-record/link acceptance pass.
+  `verify --method test --format json` reports this criterion and its Full claim
+  satisfied, with no findings. The CLI fixture uses controlled runner outcomes;
+  it supplies no consumer compiler evidence. Runtime implementation is unchanged,
+  so no mutation campaign was added.
 
 #### Consumer acceptance {#verification-evidence-13-consumer}
 
@@ -762,19 +766,29 @@ Thinkwell's original passing tests retain their results, while every known gap
 has a criterion and prevents its anchor from becoming satisfied. No product code,
 test assertion, or anchor property changes to obtain the result.
 
-- **Anchor coverage:** None — independent consumer acceptance; Thinkwell's product criteria retain their own evidence.
-- **Evidence:** On the local `port-phase-adoption` tree based on `4f13784f3b07cfee26f745901cafe1b0ca3b2cf6`, the same 38 linked tests pass before and after refinement. Code identity remains `c5aec1dd9dd03591` and configuration identity `a9835f786b88232f`; criteria change from `430a13eaa269155e` to `3173bc7858e8742e`. All seven continuing runtime criteria pass; 15 additional required criteria are unlinked. Routing and cancellation anchors are satisfied; five anchors with missing evidence are partial. JSON and JUnit assertions check these counts and identities. The existing pinned engine already enforces this aggregation, so the trial requires no runtime algorithm change. Current input identity and the consumer roadmap qualify the tested uncommitted state; no CI or merge result is claimed.
+- **Anchor coverage:** None — consumer acceptance; product criteria retain their own evidence.
+- **Evidence:** The same 38 linked tests pass before and after refinement. Seven
+  runtime criteria pass; 15 new criteria are unlinked. Routing and cancellation
+  anchors are satisfied; five anchors are partial. JSON and JUnit assertions
+  confirm these results. Code identity remains `c5aec1dd9dd03591` and configuration
+  identity `a9835f786b88232f`; criteria change from `430a13eaa269155e` to
+  `3173bc7858e8742e`. Bootstrap and structural checks pass, as does rendered
+  acceptance of 37 records and 1,262 local links. The existing pinned engine
+  already enforces aggregation; the correction declares the missing obligations.
+  Missing product checks remain work in Thinkwell's executable-verification roadmap.
+
+### Evidence {#verification-evidence-13-evidence}
+
+Local uncommitted trees: engine branch `complete-criteria` based on
+`fb7badc8f3bb763f9ba89d6c15c8701faefe1e46`; Thinkwell branch `port-phase-adoption`
+based on `4f13784f3b07cfee26f745901cafe1b0ca3b2cf6`. Consumer execution is on Linux.
+Commands and runner setup follow each project's contributor guidance.
 
 ### Completion record
 
-Complete for the assigned local implementation and consumer acceptance. Changes
-remain on local branches; CI, publication, and integration are not claimed.
-Thinkwell bootstrap, structural checks, and rendered acceptance also pass (37
-records and 1,262 local links). This increment requires complete obligation
-declarations and protects aggregation with an end-to-end regression. It does not claim to infer
-unstated requirements from arbitrary test assertions. Implementing consumer gap
-checks, importing compiler evidence, and changing CI exit policy remain separate
-work.
+Complete for local implementation and consumer acceptance. Branch work awaits
+CI and integration. Compiler-evidence import and CI exit-policy changes remain
+separate work.
 
 ## Retired work
 
