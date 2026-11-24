@@ -197,14 +197,15 @@ fn parses_all_supported_line_endings_and_a_record_at_eof() {
     }
 }
 
+/// anchorbook: A-verify-programmatic-only#methods
 #[test]
 fn verification_methods_are_explicit_typed_obligations_in_authored_order() {
-    use VerificationMethod::{Proof, Review, Test};
+    use VerificationMethod::{Proof, Test};
     for (authored, expected) in [
         ("proof", vec![Proof]),
         ("test", vec![Test]),
-        ("review", vec![Review]),
-        ("review, proof, test", vec![Review, Proof, Test]),
+        ("proof, test", vec![Proof, Test]),
+        ("test, proof", vec![Test, Proof]),
     ] {
         let mut criterion = CRITERION.replace("[test]", &format!("[{authored}]"));
         if authored.contains("proof") {
@@ -224,18 +225,21 @@ fn verification_methods_are_explicit_typed_obligations_in_authored_order() {
     }
 }
 
+/// anchorbook: A-verify-programmatic-only#methods
 #[test]
 fn rejects_invalid_verification_on_each_criterion_with_located_diagnostics() {
     for replacement in [
         "[]",
         "[proof, proof]",
         "[test, test]",
-        "[review, proof, review]",
+        "[review]",
+        "[test, review]",
+        "[review, proof]",
         "[verus]",
         "[Proof]",
         "[ test]",
-        "[test,review]",
-        "[test , review]",
+        "[test,proof]",
+        "[test , proof]",
         "[test, ]",
         "test",
         "[test] ",

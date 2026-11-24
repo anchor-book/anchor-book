@@ -12,15 +12,14 @@ For the engine's implemented workflow, see
 Guards are evaluated when an agent or CI asks `verify` to evaluate a proof
 criterion. They are development and CI checks, not checks performed each time the
 application calls a verified function. The checks use Verus results, additional
-Verus runs, and recorded judgments at different points:
+Verus runs, and executable checks at different points:
 
 | When | Check | Work performed |
 | --- | --- | --- |
 | During the original Verus run | Trust policy | `--no-cheating` rejects project assumptions and trusted bodies. |
 | After the original target verifies completely | Witness coverage | Check that each linked function with preconditions has a witness verified in that same run. The witness's proof was checked by Verus; Anchor Book checks its association and result. |
-| After the original target verifies completely | Current specification assessment | Compute the current fingerprint and read the reviewer's record. Check its subject, fingerprint, conclusion, and scope. This reads a judgment already recorded; it does not summon a reviewer. |
-| After the original target verifies completely | Sensitivity | Make deliberate changes to executable code in fresh copies and run Verus again for each change. Classify survivors using the covering tests and current assessment. |
-| When all required results are available | Proof-method state | Combine the target result, witness coverage, sensitivity, and assessment. Only complete passing evidence satisfies the proof method. |
+| After the original target verifies completely | Sensitivity | Make deliberate changes to executable code in fresh copies and run Verus again for each change. Classify survivors using the covering tests. |
+| When all required results are available | Proof-method state | Combine the target result, witness coverage, and sensitivity. Only complete passing evidence satisfies the proof method. |
 
 The original code's verification must succeed before the post-verification
 stage starts. The [execution diagram](#execution-sequence)
@@ -34,12 +33,9 @@ proof detects this defect; a surviving change needs the
 [survivor classification](verification-evidence.md#proof-guards). The first
 passing run alone supplies no sensitivity result.
 
-A reviewer creates or updates the specification assessment during development,
-using the criterion, contracts, call paths, and observed results. Each `verify`
-run checks whether that record is still applicable. An unchanged specification
-fingerprint can retain its assessment; code changes still require fresh
-verification and sensitivity checks. A changed fingerprint requires a new
-assessment before the method can be satisfied.
+Specification review belongs to development. It does not supply a guard result;
+current complete executable evidence is the basis for satisfaction. Code or
+specification changes require fresh verification and sensitivity checks.
 
 `anchorbook proof` is the [target gate](verification-evidence.md#ci-proof-gate):
 it stops at the original target's result and does not establish these additional
@@ -52,8 +48,8 @@ for the implemented portion of this workflow.
 The post-verification [guard stage](#when-guards-are-checked)
 starts after a complete successful target result. The trust policy is already
 enforced during that original Verus invocation, and witness functions in the
-target are verified in that run. Anchor Book then checks witness coverage,
-assessment currency, and sensitivity for the proof criteria in scope.
+target are verified in that run. Anchor Book then checks witness coverage
+and sensitivity for the proof criteria in scope.
 `anchorbook proof` stops at the target gate; this diagram shows the complete
 `verify` workflow.
 
@@ -63,30 +59,25 @@ sequenceDiagram
     actor Caller as Agent or CI
     participant Book as Anchor Book
     participant Verus
-    participant Records as Assessment files
     Caller->>Book: verify selected<br/>proof criteria
     Book->>Verus: Original whole target<br/>with --no-cheating
     Note over Book,Verus: Witness functions are verified<br/>in this same run
     Verus-->>Book: Target and function results
     alt Complete successful target result
         Book->>Book: Check witness coverage
-        Book->>Records: Read assessment<br/>and compare fingerprint
-        Records-->>Book: Judgment and equivalent<br/>survivor listings
         loop Each deliberate change to executable code
             Book->>Verus: Verify changed target<br/>in a fresh copy
             Verus-->>Book: Result and failing obligations
             Book->>Book: Classify result and run<br/>covering tests for survivors
         end
-        Book->>Book: Combine target, guards,<br/>and assessment
+        Book->>Book: Combine target and guards
     else Failed or incomplete target
         Book->>Book: Keep failure or<br/>incomplete evidence<br/>without post-run guards
     end
     Book-->>Caller: Proof-method state,<br/>evidence, and gaps
 ```
 
-The record-reading step consumes a reviewer's existing assessment; review is a
-separate activity. Missing or stale records do not become accepting judgments.
-The sequence details one proof method; the criterion's required test and review
-methods keep their own results. The surrounding [Book build](verification-evidence.md#book-build-evidence)
+The sequence details one proof method; required tests retain their own results.
+The surrounding [Book build](verification-evidence.md#book-build-evidence)
 consumes the evaluated report before rendering, without starting verification
 again inside the renderer.

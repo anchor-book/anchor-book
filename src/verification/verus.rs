@@ -84,7 +84,7 @@ impl ProofReport {
 }
 
 /// Run only required proof targets, returning the same native evidence used by
-/// [`super::verify`]. Criterion assessments and guards are not implied.
+/// [`super::verify`]. Criterion guards are not implied.
 ///
 /// # Errors
 /// Invalid configuration, Book, records, or requested anchors, as [`super::plan`].
@@ -438,7 +438,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
 }
 
 pub(super) fn run(plan: &Plan) -> (ProofResult, ProofReport) {
-    let mut report = ProofReport { schema_version: 1, complete: false, inputs: plan.inputs.clone(), tools: Vec::new(), targets: Vec::new(), reasons: Vec::new(), limits: "Target contracts only. Criterion specification assessments, sensitivity and witness guards remain outstanding. Verifier, solver, compiler, standard-library and dependency contracts are trusted; excluded integration boundaries retain their test and review obligations.".into() };
+    let mut report = ProofReport { schema_version: 1, complete: false, inputs: plan.inputs.clone(), tools: Vec::new(), targets: Vec::new(), reasons: Vec::new(), limits: "Target contracts only. Criterion sensitivity and witness guards remain outstanding. Verifier, solver, compiler, standard-library and dependency contracts are trusted; excluded integration boundaries retain their test obligations.".into() };
     let result = execute(plan, &mut report);
     match &result {
         ProofResult::NotRun(reason) | ProofResult::Unusable(reason) => {

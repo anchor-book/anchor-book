@@ -26,7 +26,8 @@ proofs supply evidence for this Book; they never establish a consumer's criteria
 The [proof-requirement convention](../design/anchor-definitions.md#does-an-anchor-require-formal-verification)
 determines which criteria require proof. This roadmap's `formal-authority` criterion
 now states its claim, domain, boundary, assumptions, and exclusions explicitly;
-`production-integration` retains tests and review for those excluded boundaries.
+`production-integration` requires executable tests for those excluded boundaries;
+review remains a development activity.
 The declaration is not evidence that either criterion is complete.
 
 This roadmap owns the anchor's `formal-authority` and `production-integration`
@@ -318,7 +319,7 @@ Complete on 2026-11-10. Ordinary builds of the engine and of dependents need no 
 
 Reusable proof execution and normalized results belong to
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
-proof guards and the assessment record for `formal-authority` to
+programmatic proof guards for `formal-authority` to
 [milestone 6](verification-evidence.md#verification-evidence-6),
 independent consumers to [milestone 5](verification-evidence.md#verification-evidence-5),
 and retained CI reports to [milestone 3](verification-evidence.md#verification-evidence-3).

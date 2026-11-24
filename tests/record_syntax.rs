@@ -50,7 +50,7 @@ Prose before the records names `R-inputs-unchanged` in passing.
 > **`A-reads-are-linear`** (accepted): **Reading is linear**
 > Property: Reading time grows linearly with the text.
 > Authority: `R-inputs-unchanged`
-> - Criterion `timing` [test, review]: Time reads of growing Books.
+> - Criterion `timing` [test]: Time reads of growing Books.
 ";
 
 fn read(text: &str) -> Result<RecordInventory, RecordErrors> {
@@ -252,8 +252,8 @@ fn proof_criteria_carry_their_scope_and_exclusions_name_real_criteria() {
         ),
         (
             BOOK.replace(
-                "> - Criterion `timing` [test, review]: Time reads of growing Books.",
-                "> - Criterion `timing` [test, review]: Time reads of growing Books.\n>   - Domain: Not a proof criterion.",
+                "> - Criterion `timing` [test]: Time reads of growing Books.",
+                "> - Criterion `timing` [test]: Time reads of growing Books.\n>   - Domain: Not a proof criterion.",
             ),
             ">   - Domain: Not a proof criterion.",
         ),

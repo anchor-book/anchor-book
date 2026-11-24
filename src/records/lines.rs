@@ -741,11 +741,16 @@ impl<'a> RecordReader<'a, '_> {
             let method = match method {
                 "proof" => VerificationMethod::Proof,
                 "test" => VerificationMethod::Test,
-                "review" => VerificationMethod::Review,
+                "review" => {
+                    return Err(self.invalid(
+                        line,
+                        "review is not verification evidence: define executable test or proof checks and leave missing evidence outstanding",
+                    ));
+                }
                 _ => {
                     return Err(self.invalid(
                         line,
-                        "criterion methods are distinct values from `proof`, `test`, and `review`, separated by `, `",
+                        "criterion methods are distinct values from `proof` and `test`, separated by `, `",
                     ));
                 }
             };

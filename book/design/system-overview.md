@@ -15,13 +15,13 @@ work. mdBook presents the same Book and results for people to inspect.
 > Property: Engineers and agents can still build and use the checker to diagnose a broken Book while developing Anchor Book with that Book. Engine compilation and independent fixture tests do not require a valid or rendered repository Book. Checking the current Book is a separate acceptance step before rendering, so format defects can be reported without first repairing the Book to build its checker.
 > Authority: `R-independent-engine`
 > - Criterion `broken-book` [test]: In a disposable checkout with deliberately invalid Book navigation and no rendered output, compile the engine and run independent fixture tests successfully; the separate Book check reports the known failure.
-> - Criterion `ci-order` [review]: Record actual CI results showing engine checks, current-Book acceptance, and then rendering for a valid revision; a broken Book fails acceptance without making engine compilation dependent on it.
+> - Criterion `ci-order` [test]: An executable audit of CI results checks engine checks, current-Book acceptance, and rendering in dependency order for the same valid revision. For seeded broken Books, assert independent engine tests pass, Book acceptance fails with the expected diagnosis, and rendering and publication do not run.
 
 > **`A-build-current-evidence`** (draft): **Agents and the rendered Book see the same current evidence**
 > Property: A Book build with evidence configured exposes one shared result through the library, agent-facing report, and rendered Book. It identifies the evaluated inputs and scope, structural findings, criterion evidence, and checked or unchecked completion claims. Evidence from different or changed inputs cannot appear as current support. Authored design, acceptance status, and roadmap status remain distinct from these derived results, and sources remain unchanged.
 > Authority: `R-criterion-evidence`; `R-truthful-results`; `D-typed-check-results`
 > - Criterion `consistent-views` [test]: Independently specified fixtures containing satisfied, failed, partial, unlinked, and unevaluated criteria and checked and unchecked completion claims produce equivalent identities, states, scope, and limits in the library, versioned artifact, CLI, and rendered Book; acceptance and roadmap labels do not become evidence states.
-> - Criterion `current-inputs` [test]: Through the actual build integration, current matching evidence is accepted; missing, malformed, unsupported, or mismatched reports and input changes during evaluation or rendering prevent a successful current-evidence build. Cases include edits to criteria, evidence links, code, configuration, lockfiles, and assessment records without a Git revision change.
+> - Criterion `current-inputs` [test]: Through the actual build integration, current matching evidence is accepted; missing, malformed, unsupported, or mismatched reports and input changes during evaluation or rendering prevent a successful current-evidence build. Cases include edits to criteria, evidence links, code, configuration, and lockfiles without a Git revision change.
 > - Criterion `independent-pipeline` [test]: A fixture pipeline runs verification before rendering, without recursive tests or Book builds, preserves source files, and leaves engine compilation and independent tests usable with invalid Book input. A record-only build without evidence configuration explicitly indicates that verification was not evaluated.
 
 ## Components
@@ -73,8 +73,8 @@ implementation. The contract includes conditional guidance for these Books.
 
 The engineer and agents refine design, anchors, and the implementation roadmap
 together. Agents read the current Markdown sources and the engine's working
-contract, then implement assigned work and develop its tests, proofs, and review
-records. Reading the Book does not require a successful build or rendered HTML.
+contract, then implement assigned work and develop its tests and proofs.
+Design and code reviews remain part of the project's change workflow. Reading the Book does not require a successful build or rendered HTML.
 
 The contract's “Design before roadmaps” section requires coherent capability design
 before implementation milestones. Research and design milestones may establish
@@ -104,7 +104,7 @@ test ran or that its assertions are sufficient. Evidence must preserve execution
 scope, relevant inputs, and outcomes. The model must also accommodate formal
 verification, including statements, assumptions, bounds, and inconclusive results.
 
-[Verification](verification.md) defines how tests, proofs, and reviews
+[Verification](verification.md) defines how tests and proofs
 establish criteria, including the guards that check a proof establishes its
 criterion. The engine's own [authority proof](rust-engine.md#authority-proof) is
 an example.
@@ -120,7 +120,7 @@ inventory from mdBook and does not require project configuration.
 | Adopt | Map an existing project into Book roles, expose gaps, and apply reviewed changes through materialization | Agreed configuration and managed structure |
 | Materialize | Reconcile required structure, core content, and selected integration settings | Declared managed content |
 | Check | Evaluate the current Book against an explicit rule scope | None |
-| Verify | Evaluate linked tests, proofs, and recorded reviews; report progress by chapter, anchor, and criterion | Derived evidence reports only |
+| Verify | Evaluate linked tests and proofs; report progress by chapter, anchor, and criterion | Derived evidence reports only |
 | Contract | Return the effective AI Working Contract through a command into agent context | None |
 | Build | Assemble anchor, verification, and roadmap progress and render it using mdBook | Derived reports and rendered output |
 
@@ -198,7 +198,7 @@ flowchart TB
     rust["Engine Rust sources"] --> cargo["Cargo build and engine tests"]
     cargo --> check["Check this repository's Book"]
     book["Authored Book and configuration"] --> check
-    check --> verify["Evaluate tests, proofs, and recorded reviews"]
+    check --> verify["Evaluate tests and proofs"]
     cargo --> verify
     verify --> report["Current shared evidence report"]
     report --> agent["Agent reads results and corrects work"]

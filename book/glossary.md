@@ -15,7 +15,7 @@ and add it here when agreed. Prefer plain words to abbreviations and tool jargon
 | Anchor | A named property that must hold in the built system, grounded in authority and with verification criteria; see [Anchor Definitions](design/anchor-definitions.md). |
 | Property | The statement of what an anchor guarantees, with its scope and limits; see [anchor fields](design/anchor-definitions.md#anchor-fields). |
 | Criterion | A statement of what verification must establish for an anchor, with its required methods; see [anchor fields](design/anchor-definitions.md#anchor-fields). |
-| Verification method | `test`, `proof`, or `review`; every method a criterion lists is required. See [verification methods](design/anchor-definitions.md#verification-methods) and [Methods](design/verification.md#methods). |
+| Verification method | `test` or `proof`; every method a criterion lists is required. See [verification methods](design/anchor-definitions.md#verification-methods) and [Methods](design/verification.md#methods). |
 | Proof scope | A proof criterion's claim, domain, boundary, assumptions, and exclusions; see [required scope](design/anchor-definitions.md#required-scope-of-a-proof-criterion). |
 | Authority | The requirements and decisions that explain why a property must hold; see [Authority](authority/index.md). |
 | Requirement | A required outcome or constraint, with its source; see [requirement fields](design/authority-definitions.md#requirement-fields). |
@@ -40,14 +40,12 @@ and add it here when agreed. Prefer plain words to abbreviations and tool jargon
 | Precondition | A condition in `requires` that callers must establish; Verus checks it only at verified call sites. |
 | Production code | The functions the system actually executes, as opposed to a model or proof-only copy; see [Prove the code that runs](design/verification.md#proofs-that-match-the-design). |
 | Trust policy | The verifier settings that reject project assumptions and trusted function bodies; see [Verus runner](design/verification-evidence.md#verus-runner). |
-| Review | The `review` method: a recorded judgment a criterion requires because no test or proof can settle it; see [Assessment records](design/verification.md#assessment-records). Not to be confused with design or pull-request review. |
-| Specification assessment | Part of the `proof` method: a recorded judgment that a formal specification expresses its criterion, that production callers meet its preconditions, and that its exclusions are covered; see [Assessment records](design/verification.md#assessment-records). |
-| Assessment record | A file recording a review or specification assessment, what was examined, and the conclusion; see [Assessment records](design/verification.md#assessment-records). |
+| Review | A judgment about design, code, or evidence in the project's change workflow. It does not satisfy an anchor or gate verification; see [Review and verification](design/verification.md#review-and-verification). |
 | Mutation testing | Changing code to check that tests detect the change; it assesses tests and is never evidence. See [Tests that match the design](design/verification.md#tests-that-match-the-design). |
 | Guard | A check `verify` runs on a proof beyond the verifier's own result: that the specification constrains the code, its preconditions can be met, it is the one assessed, and no assumptions were added; see [Guards](design/verification.md#guards). |
 | Sensitivity | Whether a proof detects defects in the code it covers, measured by deliberate changes to linked functions that must fail verification; the proof counterpart of mutation testing. See [Guards](design/verification.md#guards). |
 | Survivor | A deliberate change to a linked function that still verifies. It is behavior the criterion leaves to tests, which must catch it; an assessed equivalent change; or a gap in the specification. See [Guards](design/verification.md#guards). |
 | Vacuous | Holding only because its preconditions can never be met; Verus proves any guarantee of a function nobody can call. See [Guards](design/verification.md#guards). |
 | Witness | A verified function that calls a linked function with an input it constructs, showing that its preconditions can be met, so its proof is not vacuous; see [Guards](design/verification.md#guards). |
-| Fingerprint | A hash of what a specification assessment or review examined; it ignores comments and formatting, and a change makes the record stale. See [Guards](design/verification.md#guards). |
-| Brief | The output of `verify --brief`: a criterion's scope, linked functions, assessment status, and exclusions with their covering criteria, produced without running tools; see [Using verify](design/verification-evidence.md#using-verify). |
+| Fingerprint | A hash identifying inputs to verification, used to detect changes that invalidate current evidence; see [run identity](design/verification-evidence.md#run-identity). |
+| Brief | The output of `verify --brief`: a criterion's scope, linked functions, and exclusions with their covering criteria, produced without running tools; see [Using verify](design/verification-evidence.md#using-verify). |

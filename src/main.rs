@@ -150,7 +150,7 @@ fn check(args: &[std::ffi::OsString]) -> ExitCode {
 
 fn verify(args: &[std::ffi::OsString]) -> ExitCode {
     use anchor_book::{VerificationMethod, verification};
-    let usage = "Usage: anchorbook verify --config PATH [--anchor ID]... [--method test|proof|review]... [--format text|json]";
+    let usage = "Usage: anchorbook verify --config PATH [--anchor ID]... [--method test|proof]... [--format text|json]";
     let mut config = None;
     let mut format = None;
     let mut scope = verification::Scope::default();
@@ -169,7 +169,6 @@ fn verify(args: &[std::ffi::OsString]) -> ExitCode {
             (Some("--method"), Some(method)) => match method {
                 "test" => scope.methods.push(VerificationMethod::Test),
                 "proof" => scope.methods.push(VerificationMethod::Proof),
-                "review" => scope.methods.push(VerificationMethod::Review),
                 _ => {
                     let _ = writeln!(io::stderr().lock(), "{usage}");
                     return ExitCode::from(2);

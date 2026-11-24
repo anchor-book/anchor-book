@@ -139,7 +139,7 @@ pub struct ProofRun {
     pub failures_elsewhere: Vec<String>,
     /// Post-verification results by (anchor ID, criterion ID), for this run only.
     /// An absent entry leaves the proof method without evidence. The native
-    /// runner supplies no entries until it implements assessments and guards;
+    /// runner supplies no entries until it implements guards;
     /// independent fixtures can supply outcomes to exercise aggregation.
     pub guards: BTreeMap<(String, String), ProofGuards>,
 }
@@ -344,7 +344,7 @@ pub struct Report {
     pub links: Vec<Link>,
     /// Versions of the runners that ran.
     pub tools: Vec<String>,
-    /// Native proof-target evidence, separate from criterion assessments and guards.
+    /// Native proof-target evidence, separate from criterion guards.
     pub proofs: Option<ProofReport>,
 }
 impl Report {
@@ -679,12 +679,6 @@ fn method_state(
             "method outside the requested scope".into(),
         );
     }
-    if method == VerificationMethod::Review {
-        return report(
-            State::NotEvaluated,
-            "assessment records are not read yet".into(),
-        );
-    }
     if links.is_empty() {
         return report(
             State::Unlinked,
@@ -759,19 +753,21 @@ fn method_state(
                 if !missing.is_empty() {
                     return report(State::NoEvidence, missing.join("; "));
                 }
-                match run.guards.get(&(criterion.anchor.clone(), criterion.criterion.clone())) {
+                match run
+                    .guards
+                    .get(&(criterion.anchor.clone(), criterion.criterion.clone()))
+                {
                     Some(guards) => {
                         let (state, reason) = guards.state();
                         report(state, reason)
                     }
                     None => report(
                         State::NoEvidence,
-                        "linked functions verified; specification assessment and proof guards have no results".into(),
+                        "linked functions verified; proof guards have no results".into(),
                     ),
                 }
             }
         },
-        VerificationMethod::Review => unreachable!("handled above"),
     }
 }
 
@@ -877,7 +873,7 @@ fn claim_outcome(report: Option<&CriterionReport>, scope: &Scope) -> ClaimOutcom
 }
 
 /// Plan `scope`, run configured linked tests and proofs, and evaluate. Runner
-/// output is written only under `[verification] output`. Proof assessments and
+/// output is written only under `[verification] output`. Programmatic proof
 /// guards remain explicit outstanding obligations even after target success.
 ///
 /// # Errors

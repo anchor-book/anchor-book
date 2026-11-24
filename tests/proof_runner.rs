@@ -194,7 +194,6 @@ fn gate_uses_current_targets_links_modes_and_native_arguments() {
     let progress = command(&b, "verify").output().unwrap();
     let text = String::from_utf8(progress.stdout).unwrap();
     assert!(text.contains("formal [proof]: no-evidence"), "{text}");
-    assert!(text.contains("specification assessment"), "{text}");
     assert!(text.contains("proof guards have no results"), "{text}");
     assert!(
         text.contains("proof targets: verified against contracts"),

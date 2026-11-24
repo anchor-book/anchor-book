@@ -175,7 +175,7 @@ Literal examples in code blocks also match text searches; they are not records.
 ### Verification methods
 
 Every criterion names a nonempty, comma-separated list of distinct methods in
-brackets. The only values are `proof`, `test`, and `review`, with exactly that
+brackets. The only values are `proof` and `test`, with exactly that
 spelling. Every listed method is required; the list is not a choice between
 alternatives. Order has no semantic significance and is preserved for
 presentation. Missing, empty, repeated, or unknown methods are invalid definitions.
@@ -184,7 +184,12 @@ presentation. Missing, empty, repeated, or unknown methods are invalid definitio
 | --- | --- |
 | `proof` | Formal verification of the relevant production code against an explicit specification expressing the criterion, with assumptions and coverage stated. |
 | `test` | Executed tests whose assertions derive from the criterion, with inputs, results, and coverage recorded. |
-| `review` | A recorded assessment against the criterion, identifying what was examined, the conclusion, and limits. |
+
+Review is not a verification method. Legacy `review` declarations are invalid;
+replace them with executable criteria and retain missing evidence as a gap.
+Do not carry a review result forward as a test pass. Subjective design judgments
+belong in the review workflow, as [Verification](verification.md#review-and-verification)
+explains.
 
 Different criteria within an anchor may require different methods. Listing proof
 does not make an anchor accepted or verified. Methods declare obligations; parsing
@@ -192,7 +197,7 @@ and rendering them do not run tools or establish evidence. Concrete tool choices
 and commands belong in the verification design and roadmap, not in this field.
 
 For example, one criterion can require a proof of the validation algorithm while
-another requires tests and review of its integration. If a method covers only a
+another requires tests of its integration. If a method covers only a
 portion, identify that portion and the remaining obligations explicitly; partial
 evidence does not satisfy the whole criterion.
 
@@ -203,7 +208,7 @@ Determine this from the criterion declarations, for the current anchor revision:
 | Declaration | Meaning |
 | --- | --- |
 | At least one criterion lists `proof` | Formal verification is required for every criterion that lists it, within that criterion's stated scope. |
-| Every criterion has a valid method list and none lists `proof` | Formal verification is not required; the listed tests and reviews remain required. |
+| Every criterion has a valid method list and none lists `proof` | Formal verification is not required; the listed tests remain required. |
 | A method list is missing or invalid | The definition is invalid. Do not interpret missing information as “proof not required.” |
 
 Do not add a separate anchor-level proof flag or infer proof requirements from
@@ -234,7 +239,7 @@ four nested items, in order:
 | `Domain:` | The inputs, states, conditions, and bounds covered. Include relevant invalid cases; do not assume the property being proved. |
 | `Boundary:` | The production behavior covered, such as the validation algorithm or the path from typed input to the public API result. |
 | `Assumptions:` | Caller obligations and trusted components or contracts. Preconditions must not assume the claim itself. |
-| `Exclusions:` | Behavior outside the proof, with the criteria that cover it through tests, review, or another proof. An uncovered obligation remains an explicit gap. |
+| `Exclusions:` | Behavior outside the proof, with the criteria that cover it through tests or another proof. An uncovered obligation remains an explicit gap. |
 
 Exclusions name each covering criterion by its code-spanned identifier: the
 criterion identifier alone for one of the same anchor, or
@@ -247,7 +252,7 @@ tool versions, commands, and function/file associations in the implementing
 codebase and verification design. Exclusions must not silently remove part of the
 anchor's property. The [authority anchor](rust-engine.md#A-records-valid-authority)
 demonstrates this: `formal-authority` requires a proof of the authority algorithm,
-while `production-integration` requires tests and review of the surrounding boundaries.
+while `production-integration` requires tests of the surrounding boundaries.
 
 ### Displaying verification requirements
 

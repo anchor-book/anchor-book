@@ -80,7 +80,7 @@ Each decision states its own status. These choices govern the system being built
 > Reconsider when: A supported language or tool cannot carry comments next to its tests or proofs; define its link form without moving links into the Book.
 
 > **`D-project-test-results-trusted`** (draft): **Projects own test behavior and the meaning of test outcomes**
-> Choice: Anchor Book trusts the current outcomes reported by the project's supported test runner for its linked tests. The project owns test setup, assertions, internal execution, and pass, fail, or skip semantics. The engine validates result identity, freshness, scope, and association with criteria; it does not require an additional execution attestation or inspect agent activity to accept a passing test. Proof verification retains its separate contracts, guards, and assessment requirements.
+> Choice: Anchor Book trusts the current outcomes reported by the project's supported test runner for its linked tests. The project owns test setup, assertions, internal execution, and pass, fail, or skip semantics. The engine validates result identity, freshness, scope, and association with criteria; it does not require an additional execution attestation or inspect agent activity to accept a passing test. Proof verification retains its separate contracts and programmatic guards.
 > Requirements: `R-criterion-evidence`
 > Rationale: The project is responsible for the tests it trusts. A second execution-report protocol would duplicate that responsibility without independently establishing correctness. A satisfied test method means its linked tests reported passing, with the documented scope and limits; test quality and sufficiency remain project responsibilities.
 > Alternatives:
@@ -116,13 +116,3 @@ Each decision states its own status. These choices govern the system being built
 > - Projects use the engine's pinned Verus and vstd, which avoids version handling in the engine but forces every project onto the engine's release cadence.
 > - The engine bundles a Verus installation, which simplifies setup but still dictates the version and adds a large download to every installation.
 > Reconsider when: Verus and vstd provide compatible version ranges across releases, so a shared requirement no longer forces a single version.
-
-> **`D-assessment-records-as-files`** (draft): **Assessment records are files beside the code, outside the Book**
-> Choice: A specification assessment or a review is recorded as a file in an assessment directory configured in anchorbook.toml, naming the criterion, the subject, the fingerprints of what was examined, the conclusion, the reviewer, and the revision. verify reads these records and treats one whose fingerprints no longer match as stale; it never writes them.
-> Requirements: `R-criterion-evidence`; `R-proofs-establish-criteria`
-> Rationale: Assessments and reviews are evidence, so they stay out of authored Book sources, which hold the goal rather than results. Files go through the project's ordinary review workflow and history, can record a judgment that spans several source files, and fingerprints make a record of changed sources visibly stale instead of silently carried forward.
-> Alternatives:
-> - Records in Book chapters, which keeps the records visible to readers but mixes results into the goal design and churns the Book on every specification change.
-> - Comments beside the reviewed code, which move with that code but cannot hold a judgment spanning several files and clutter the code with conclusions.
-> - An external tracker, which keeps the repository small but separates the evidence from the revision it describes.
-> Reconsider when: Assessments or reviews need signatures or approval workflows that files in the repository cannot represent; keep fingerprinted staleness whatever the store.

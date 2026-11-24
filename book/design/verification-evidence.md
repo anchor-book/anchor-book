@@ -46,7 +46,7 @@ working on after each change, and CI, reporting the whole Book. It complements
 > Property: When a roadmap milestone has status Complete, each anchor criterion that one of its completion criteria covers in full is claimed. Verify fails the run when a claimed criterion in its scope is not satisfied, naming the claiming milestone and the criterion's state, so work cannot be recorded as done while its evidence is missing, stale, or failing. Partial or no coverage claims nothing. A claimed method the run does not evaluate is reported as unchecked, never as satisfied.
 > Authority: `R-criterion-evidence`; `D-completion-claims-checked`
 > - Criterion `claim-failures` [test]: In a fixture Book, a Complete milestone covering a criterion in full fails the run when that criterion is unlinked, failing, or no-evidence, naming the milestone and state, and passes once linked tests pass; the same coverage in an In progress milestone, or Partial coverage in a Complete one, does not fail the run.
-> - Criterion `unchecked-claims` [test]: A run scoped to fewer anchors or methods, or a claimed review method before assessment records are evaluated, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim.
+> - Criterion `unchecked-claims` [test]: A run scoped to fewer anchors or methods, or a method whose runner is unavailable, lists the claims it did not check and never reports them as satisfied; a full-scope run checks every claim.
 
 ## Using verify
 
@@ -64,7 +64,7 @@ flowchart LR
 ```
 
 ```sh
-anchorbook verify --config anchorbook.toml [--anchor ID]... [--method test|proof|review]... [--format text|json]
+anchorbook verify --config anchorbook.toml [--anchor ID]... [--method test|proof]... [--format text|json]
                   [--skip-sensitivity] [--brief]
 ```
 
@@ -76,7 +76,7 @@ guard, leaving it `not-evaluated`. CI runs it for the whole Book with every guar
 **Brief.** `--brief` runs no tools. For each criterion in scope it prints what an
 agent needs before writing or changing its tests or proof: the statement and proof
 scope, the required methods, the linked functions with their identities and modes,
-the current specification fingerprint and assessment record status, and each exclusion
+current input identities, and each exclusion
 with the criterion covering it and that criterion's linked tests. Exclusions that
 name no covering criterion are listed as gaps. States that need a run are shown as
 `not-evaluated`.
@@ -99,9 +99,10 @@ typed data; the CLI handles invocation and presentation.
 [Verification](verification.md#responsibilities) divides the work between the
 project, Verus, Anchor Book, and review. Successful function verification does
 not establish that its contract expresses the criterion or covers the system's
-runtime path; the [guards](verification.md#guards) and the specification assessment
-address that. A criterion requiring tests or review remains unsatisfied until
-those methods also have evidence.
+runtime path. Programmatic [guards](verification.md#guards) check specific limits;
+[review](verification.md#review-and-verification) examines the design correspondence
+outside verification state. A criterion also requiring tests remains unsatisfied
+until those tests have current evidence.
 
 ## Evidence links
 
@@ -175,14 +176,14 @@ describe the current run only: reports from earlier runs are never inputs, and
 inputs that change during the run make affected evidence inconclusive whatever
 the runner reported.
 
-| State | Test method | Proof method | Review method |
-| --- | --- | --- | --- |
-| `satisfied` | Every linked test passed once | Every required target has a [complete result](#verus-runner), each linked function verified once in its expected mode, and every [guard](#proof-guards) holds | A current accepting assessment record |
-| `failed` | A linked test failed | A linked function or its witness failed verification, the target violated the trust policy, a sensitivity survivor is unclassified, or the specification assessment rejects it | The current assessment record rejects the criterion |
-| `inconclusive` | The runner could not build or run, or its results are malformed | Without a failure above: a required target has no complete result, it has verification failures outside the criterion's links (listed in the report), or a sensitivity run timed out | Never |
-| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in a complete result; a precondition has no witness; or the specification assessment is missing or stale | The assessment record is missing or stale |
-| `unlinked` | No test link names the criterion | No proof link names the criterion | Never |
-| `not-evaluated` | Outside the requested scope, or the runner is unavailable or unsupported | Outside the requested scope, the runner is unavailable or unsupported, or sensitivity was skipped | Outside the requested scope |
+| State | Test method | Proof method |
+| --- | --- | --- |
+| `satisfied` | Every linked test passed once | Every required target has a [complete result](#verus-runner), each linked function verified once in its expected mode, and every [guard](#proof-guards) holds |
+| `failed` | A linked test failed | A linked function or witness failed verification, the target violated the trust policy, or a sensitivity survivor is unclassified |
+| `inconclusive` | The runner could not build or run, or its results are malformed | Without a failure above: a required target has no complete result, verification failed outside the criterion's links, or a sensitivity run timed out |
+| `no-evidence` | A linked test was absent, ambiguous, or skipped in usable results | A linked function was absent, ambiguous, in the wrong mode, or skipped in a complete result; a precondition has no witness; or a required guard has no result |
+| `unlinked` | No test link names the criterion | No proof link names the criterion |
+| `not-evaluated` | Outside the requested scope, or the runner is unavailable or unsupported | Outside the requested scope, the runner is unavailable or unsupported, or sensitivity was skipped |
 
 Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
@@ -190,9 +191,9 @@ first applicable state in the order `failed`, `inconclusive`, `no-evidence`,
 `unlinked`, `not-evaluated`. An anchor is satisfied when all its criteria are,
 partial when some are, and otherwise takes the same order.
 
-The `review` method runs nothing: `verify` reads the criterion's
-[assessment records](verification.md#assessment-records) and compares their fingerprints
-with the current sources.
+Reviews and approval records never contribute a method or guard result. A legacy
+`review` declaration makes the Book invalid, with a diagnostic directing migration
+to executable checks. An unavailable check stays outstanding.
 
 ## Running linked checks
 
@@ -253,10 +254,12 @@ reinterpret a passing result from project logs or knowledge of its internals.
 
 The project's choice to trust a test and link it to a criterion is distinct from
 the engine's result handling. Known coverage limitations can be recorded and
-reviewed by the project; an explicitly required review remains a separate method.
+reviewed by the project outside verification. Project tests must make executable
+assertions about behavior; relaying a human or agent approval does not satisfy the
+authoring contract. The runner does not inspect test internals to enforce this.
 A satisfied test method reports passing linked tests, not independent proof of
 their quality or sufficiency. Proof verification continues to require its own
-contracts, guards, and assessments.
+contracts and programmatic guards.
 
 ### Verus runner
 
@@ -318,7 +321,7 @@ project bodies is demonstrated before the policy is claimed. Reports record the
 trusted compiler, verifier, solver, standard-library, and dependency contracts;
 zero errors alone cannot establish the absence or adequacy of assumptions.
 Unproved conversions, callers, diagnostics, and other excluded behavior keep
-their test or review obligations.
+their test obligations.
 
 **Fresh runs.** Proof runs use fresh target and report directories under the
 configured output, with locked dependencies. Cache reuse is introduced only after
@@ -355,7 +358,7 @@ also rejects an empty required scope. Invalid inputs and unavailable tools canno
 silently remove an obligation.
 
 This gate establishes target verification against its contracts. It reports
-criterion assessments and guards separately: a complete target does not satisfy
+criterion guards separately: a complete target does not satisfy
 a proof criterion with outstanding obligations. The progress command retains its
 [exit policy](#using-verify), including explicitly unchecked claims; exit 0 from
 that command alone does not establish that the strict proof gate passed. Test-only
@@ -381,10 +384,9 @@ reported with the obligation that failed; one rejected only by overflow, bounds,
 or termination obligations is reported as such, since the claim did not detect
 it. A change that verifies is a survivor. The runner then runs the linked tests
 of the criteria named in the exclusions against each survivor; a survivor they
-detect is classified as excluded, and one listed as equivalent in the current
-specification assessment is classified as equivalent. Changes are identified by
-function, location, and original and replacement text, so a listing that no
-longer matches classifies nothing. Changes that do not build are unviable;
+detect is classified as excluded. Other survivors remain unresolved and fail the
+method; a reviewer's equivalence judgment cannot clear them. Changes are identified
+by function, location, and original and replacement text. Changes that do not build are unviable;
 timeouts are inconclusive. The number of changes and the time budget are reported.
 Ordinary mutation tools find no mutations inside `verus!` bodies and judge changes
 only by tests, so the runner generates these changes with the same parser that
@@ -394,17 +396,10 @@ reads links and modes.
 that verified in the same complete result. The report lists functions without
 one.
 
-**Fingerprints.** The specification fingerprint covers the criterion's statement
-and proof scope, the signatures and contracts of its linked functions, and the
-definitions of every specification function and type those contracts reach,
-followed transitively. It is computed from tokens, so comments and formatting do
-not change it; executable and proof bodies are excluded. The brief and report
-show the fingerprint so a reviewer can record it.
-
-**Assessment records.** The runner reads the records for the criteria in scope from
-the configured assessment directory, rejects malformed or duplicate records as
-located findings, and treats a record whose fingerprints differ from the current
-ones as stale.
+**Current inputs.** The runner binds results to the evaluated criteria, source,
+configuration, and tool identities, checking input snapshots before and after
+execution. Changed inputs invalidate the affected evidence; no assessment file
+can make a result current or supply a guard result.
 
 ## Claims of completion
 
@@ -421,7 +416,7 @@ established, so `verify` checks it, under the
 - Partial and None coverage, and milestones in any other status, claim nothing;
   their criteria remain progress.
 - A claim outside the run's scope, or on a method the run cannot evaluate yet,
-  such as `review` before assessment records, is listed as unchecked. It never
+  such as proof with an unavailable verifier, is listed as unchecked. It never
   counts as satisfied, and only a full-scope run with every method evaluated
   checks every claim.
 
@@ -437,7 +432,7 @@ criteria:
 
 ```text
 anchorbook verify: progress
-scope: all anchors; methods test, proof; review not evaluated
+scope: all anchors; methods test, proof
 
 Structural Checking (design/structural-checking.md)
   A-check-observation-only (draft) — partial, 1 of 2 criteria
@@ -448,7 +443,7 @@ Structural Checking (design/structural-checking.md)
 summary: 18 anchors: 1 satisfied, 2 partial, 0 failing, 15 unlinked
          41 criteria: 5 satisfied, 1 failed, 35 unlinked
 satisfied means linked tests and proofs passed in this run; it does not show
-they are sufficient, and review is not evaluated
+they are sufficient
 files changed: none (runner output under target/anchorbook-verify)
 ```
 
@@ -501,7 +496,7 @@ Each result retains the information needed to assess its scope:
 | Inputs | Content identities for the evaluated criteria, configuration, code, and lockfile; revision and dirty state when Git is available. |
 | Selection | Requested anchors and methods, actual packages/targets/features, and resolved function identities and modes. |
 | Execution | Run identity, executed argument vector, exit status, and actual verifier, solver, and Rust toolchain versions. |
-| Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations; specification fingerprints and the assessment records read; sensitivity changes, their outcomes, and their classifications. |
+| Evidence | Target completeness, per-function results, assumptions, exclusions, and source locations; sensitivity changes, their outcomes, and their classifications. |
 
 A Git revision alone does not identify uncommitted inputs, so relevant inputs are
 snapshotted before and after execution. Local execution remains usable without
@@ -527,7 +522,7 @@ never starts tests, proofs, or another Book build. Tests that require rendered
 output run afterward and cannot supply evidence to the build they depend on.
 
 The handoff binds results to the current Book inventory, configuration, code,
-evidence links, lockfiles, assessments, and actual tool and selection identities.
+evidence links, lockfiles, and actual tool and selection identities.
 Input snapshots cover uncommitted changes and are compared before and after
 evaluation and rendering. A configured report that is absent, malformed, from an
 unsupported schema, or mismatched makes the current-evidence build incomplete
@@ -547,15 +542,14 @@ output; neither evaluation nor rendering writes them into authored Book sources.
 [verification]
 sources = ["src", "tests"]
 output = "target/anchorbook-verify"
-assessments = "verification/assessments"
 runners = ["nextest", "verus"]
 ```
 
 `sources` are the directories scanned for links; `output` is where runner reports
-are written; `assessments` holds the project's [assessment records](verification.md#assessment-records);
+are written;
 `runners` lists the supported runners the project uses. Paths follow the existing
 [path rules](configuration.md#paths). `output` must be separate from the Book, the
-configured source directories, and `assessments`; `assessments` must be outside the Book. The section is required for
+configured source directories. The section is required for
 `verify` and ignored by `check`; its absence makes `verify` incomplete. `verify`
 validates the section itself, so an invalid one never affects `check` or
 record-only rendering. A build configured to consume evidence additionally
@@ -577,7 +571,8 @@ above; an explicitly selected tool installation may be outside the project root.
 - `verify` adds selection by criterion to the project's existing tools; it does
   not replace `cargo test`, the project's CI test jobs, or their commands.
 - Its states describe linked results, not the property. Passing tests may still
-  miss part of a criterion; sufficiency stays a `review` obligation.
+  miss part of a criterion; reviewing sufficiency remains a design activity outside
+  verification state.
 - [Mutation testing](verification.md#tests-that-match-the-design) assesses test
   sensitivity and is not evidence for any method.
 - Results are not written into Book sources. Agent reports and rendered evidence

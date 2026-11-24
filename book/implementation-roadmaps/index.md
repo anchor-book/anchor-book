@@ -219,7 +219,7 @@ The current footing is usable for a bounded development trial: contract delivery
 Book checking and rendering, and the linked-test `verify --anchor` loop are
 implemented. The configuration-loading trial exercised passing, failing, and
 restored results; fresh sessions can read the Book. Unified build reports,
-rendered evidence, review records, and native CI integration remain open work.
+rendered evidence, migrated executable acceptance checks, and native CI integration remain open work.
 The engine's existing proof CI stays in place; Symposium requires no proofs.
 
 | Order | Work and owning milestone | Observable outcome |
@@ -315,3 +315,8 @@ clear design and outcome-based milestones before implementation.
 The prototype's mdBook-version, output-format, and plain-text-field limits remain
 documented constraints. Expanding them needs its own design and roadmap change;
 they are not implicit tasks in the current rendering milestone.
+
+[Verification Evidence milestone 11](verification-evidence.md#verification-evidence-11)
+owns programmatic-only verification. Its [migration follow-up](verification-evidence.md#verification-evidence-12)
+tracks executable checks replacing historical review-based acceptance; native proof
+guards remain in milestone 6.
