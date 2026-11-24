@@ -317,6 +317,13 @@ Complete on 2026-11-10. Ordinary builds of the engine and of dependents need no 
 
 ## Later work
 
+[Executable-source correspondence](../design/verified-code-packaging.md#A-package-verified-bodies)
+requires `feature-boundary` and `packaged-source` checks. Milestone 4's consumer
+builds and production-boundary review retain their tested scope; review cannot
+satisfy these newly explicit criteria. Select the comparison boundary for permitted
+ghost erasure and package contents, implement seeded mismatch rejection, then link
+and execute the checks. This verification work remains proposed.
+
 Reusable proof execution and normalized results belong to
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
 programmatic proof guards for `formal-authority` to

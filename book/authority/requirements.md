@@ -38,6 +38,12 @@ from the record inventory.
 > Source: The goal of developing Anchor Book using its own Book without a circular dependency that prevents diagnosing or repairing that Book.
 
 
+## Managed content requirement
+
+> **`R-managed-content-boundary`** (draft): **Automation preserves project-authored design and authority**
+> Statement: Operations that create or reconcile Book content must distinguish managed content from project-authored design and authority, preserve the latter, expose conflicts, and leave already-conforming managed content unchanged.
+> Source: The materialization design promises bounded ownership, conflict detection, preservation, and idempotence. Unlike read-only checking, content management intentionally writes files and needs its own reviewable constraint.
+
 ## Authority traceability requirement
 
 > **`R-traceable-properties`** (draft): **Every binding system property has a traceable justification**

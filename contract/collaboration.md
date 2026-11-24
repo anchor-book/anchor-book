@@ -11,6 +11,40 @@ and verify that scope. A roadmap's existence does not authorize starting or
 expanding it. Explain unresolved prerequisites and resolve the affected scope
 with the engineer.
 
+### Surface design constraints and anchor coverage
+
+When creating, changing, or reconstructing design, make consequential constraints
+visible for the engineer's judgment: behavior, interfaces, resource ownership,
+failure handling, security boundaries, supported environments, and meaningful
+exclusions. Explain their purpose and consequences, distinguishing accepted
+requirements and choices from assumptions or proposals. Raise new or disputed
+constraints and tradeoffs before treating them as agreed; retain existing
+agreements without asking for the same approval again.
+
+Select anchors for key correctness guarantees: properties whose violation would
+materially break the system's intended behavior, invalidate its results, corrupt
+or lose user work, or cross an important trust or ownership boundary. Explain why
+each matters and surface uncertain importance or scope for engineer judgment.
+Testability alone is not a reason to create an anchor. Routine behavior,
+implementation details, and quality checks can remain in design and tests without
+anchors; subjective goals remain design judgments. Group related obligations
+under a coherent property, with criteria covering its independently necessary
+parts, rather than creating an anchor for every test, edge case, or chapter.
+
+For each key guarantee, identify its owning anchor or propose missing coverage
+with authority and executable criteria. Examine chapters that already have
+anchors too; an overview can link to properties owned elsewhere. Preserve record
+identities and obligations, not a fixed anchor count. Missing tests or runner
+support leave verification work outstanding; they do not justify omitting a key
+guarantee or narrowing it to what currently passes.
+
+Record agreed constraints in their owning design and authority, unresolved choices
+in the project's proposal or question location, and missing coverage in the work
+that will resolve it. Report the assessed scope and remaining gaps; do not present
+record preservation or structural validity as complete design coverage. Keep this
+account concise and reuse existing records. Human judgment establishes the intended
+design; only programmatic evidence satisfies anchor verification.
+
 ## Use RFDs when enabled
 
 An RFD (Request for Discussion) is a coherent proposal for a substantial design

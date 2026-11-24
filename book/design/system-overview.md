@@ -24,6 +24,13 @@ work. mdBook presents the same Book and results for people to inspect.
 > - Criterion `current-inputs` [test]: Through the actual build integration, current matching evidence is accepted; missing, malformed, unsupported, or mismatched reports and input changes during evaluation or rendering prevent a successful current-evidence build. Cases include edits to criteria, evidence links, code, configuration, and lockfiles without a Git revision change.
 > - Criterion `independent-pipeline` [test]: A fixture pipeline runs verification before rendering, without recursive tests or Book builds, preserves source files, and leaves engine compilation and independent tests usable with invalid Book input. A record-only build without evidence configuration explicitly indicates that verification was not evaluated.
 
+> **`A-materialize-owned-content`** (draft): **Materialization respects explicit content ownership**
+> Property: Materialization plans changes within explicit managed-content boundaries, preserves project-authored design and authority, and reports conflicting content. Running it against already-conforming managed content produces no changes. These constraints do not select an ownership declaration format or an atomic-application policy.
+> Authority: `R-managed-content-boundary`
+> - Criterion `ownership-preservation` [test]: Independent mixed-ownership fixtures show that plans and applied changes affect only declared managed content and preserve authored design, authority, and unrelated directory entries.
+> - Criterion `conflict-reporting` [test]: Divergent managed/authored content is identified as a located conflict; inspection and conflict handling preserve project-authored content.
+> - Criterion `conforming-noop` [test]: Already-conforming fixtures and a second application of a successful plan leave file contents and directory entries unchanged.
+
 ## Components
 
 ```mermaid

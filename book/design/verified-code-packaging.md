@@ -9,6 +9,12 @@ crate without imposing its verifier on dependents. The engine is one such crate:
 its [authority validator](rust-engine.md#authority-proof) is verified, and projects
 that verify their own code must be able to depend on the engine.
 
+> **`A-package-verified-bodies`** (draft): **Verification and consumer builds use the same executable source**
+> Property: The optional verification feature gates specifications, proof blocks, and Verus imports, not executable code. Consumers compile the executable source whose contracts were verified. A package used as verification evidence contains that same executable source; a source change requires fresh correspondence and verification evidence. This correspondence does not remove trust in the compiler, verifier, or dependency contracts.
+> Authority: `R-proofs-establish-criteria`; `D-isolate-engine-verification`
+> - Criterion `feature-boundary` [test]: An executable correspondence check compares the verification and ordinary-build configurations after erasing permitted ghost material and rejects seeded feature-dependent executable code changes.
+> - Criterion `packaged-source` [test]: Verification and runtime acceptance use the packaged implementation; an independent source-identity check rejects an altered executable file in the package rather than carrying forward the earlier proof result.
+
 ## Proof packaging for consumers
 
 **The problem.** Verus releases about weekly, and each release requires its
@@ -48,8 +54,10 @@ dependencies controlled by feature flags.
 **The rule that keeps the proof about the running code.** The feature may gate only
 specifications, proof blocks, and Verus imports, never executable code. Code that
 differed under the feature would verify one body and run another; the Verus guide
-warns that gating code this way is unsound. Review checks the rule whenever the
-verified source changes.
+warns that gating code this way is unsound. The
+[executable correspondence criteria](#A-package-verified-bodies) make this boundary
+an explicit verification obligation. Design review assesses the intended boundary;
+it cannot supply a passing correspondence result.
 
 **Limits.** The Verus guide lists the attribute syntax among contributed extensions
 that are not complete, and it changes between weekly releases. Its open problems
@@ -60,7 +68,8 @@ guidance on publishing verified crates, so this design owns that boundary.
 **Acceptance.** The arrangement is accepted only when ordinary dependent builds
 work without Verus, the baseline consumer resolves and builds with its own `vstd`,
 and the proof and integration tests pass for the same packaged implementation.
-The production-boundary review is repeated after any source or packaging change.
+The executable correspondence check and production-boundary review are repeated
+after any source or packaging change.
 This covers the verification-dependency boundary only; other exact dependencies,
 public API compatibility, and publication keep their own release obligations.
 
@@ -69,5 +78,6 @@ public API compatibility, and publication keep their own release obligations.
 A project that publishes verified code meets the same problem for its own
 dependents, and the same arrangement, rule, and acceptance apply. Its proof
 evidence is evaluated against the source it verifies, so the correspondence to the
-published source is part of the boundary its review covers: verify the packaged
-source, or show that it is identical to the verified source.
+published source is part of its verification boundary: verify the packaged
+source, or establish executable-source identity programmatically. Review judges
+whether the selected boundary expresses the intended guarantee.
