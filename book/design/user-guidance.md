@@ -174,10 +174,10 @@ anchor satisfaction, and publishing remain distinct facts.
 ## Anchor walkthroughs
 
 You can ask the agent to walk through the design's anchors before implementation,
-explaining each guarantee, its authority, and the planned verification. Whether
-the agent should proactively offer this optional walkthrough when proposing
-implementation work remains an open interaction choice for the guide. It is
-separate from required design acceptance and from programmatic verification.
+explaining each guarantee, its authority, and the planned verification. The walkthrough is
+optional and separate from required design acceptance and programmatic
+verification. The [proactive-offer question](../open-questions.md#anchor-walkthroughs)
+belongs to the guide's conversation trials.
 
 ## Delivery through the engine
 

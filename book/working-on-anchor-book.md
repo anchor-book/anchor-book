@@ -35,6 +35,35 @@ Follow their documented evolution policy and update the syntax, affected records
 and validation expectations together. Per-capability phase configuration is not
 currently defined.
 
+## Research, questions, and design ownership
+
+[Research](research.md) holds source observations and exploratory comparisons.
+[Open questions](open-questions.md) collects unresolved choices for the linked
+design work and experiments. Neither supplies governing target behavior. Keep
+agreed behavior, interfaces, responsibilities, and failure cases in owning design
+chapters, with requirements and decisions supporting key correctness anchors.
+An overview may link those definitions; routine testable details need no anchor.
+
+Roadmaps retain work, dependencies, scoped findings, evidence, and remaining gaps.
+Keep evidence tied to its tested revision when moving definitions or condensing
+history. Reuse existing milestones for the same outcome. When an independent
+verification obligation is missing, expose it as an unlinked criterion instead
+of leaving it only in a roadmap caveat beside a satisfied criterion.
+
+For process help, use [the conversational guide](design/user-guidance.md). The
+agent should relate its recommendation to the current Book and the engineer's
+stated goal; a guidance question does not cancel an existing assignment.
+
+## Diagrams
+
+Use Mermaid for small flow and ownership diagrams. The shared theme supplies
+light/dark colors, typography, and print styling; use the existing `guide-context`,
+`guide-choice`, `guide-design`, and `guide-build` classes where those meanings fit.
+Keep labels readable, express relationships in text as well as color, and inspect
+changed diagrams in light, dark, narrow, and print layouts. Contributor setup
+pins the Mermaid preprocessor and regenerates its assets; do not paste rendered
+SVG or a separate theme into each chapter.
+
 ## Current phase
 
 Read `[project].phase` in the repository-root `anchorbook.toml` for the current
@@ -124,6 +153,10 @@ flowchart TD
     complete -->|No| gap["Report failed, missing,<br/>or incomplete evidence"]
     complete -->|Yes| gate["proof:<br/>target gate passes"]
     complete -->|Yes| progress["verify:<br/>target contracts passed<br/>Proof: no-evidence<br/>Further checks pending"]
+    class request guide-context
+    class run guide-build
+    class complete,gap,progress guide-choice
+    class gate guide-design
 ```
 
 The gate passes only when current complete target evidence verifies every
@@ -149,11 +182,11 @@ runner supplies no guard results until milestone 6 implements the actual checks.
 
 The [current sequence](implementation-roadmaps/index.md#first-major-milestone-symposium-adopts-anchor-book)
 centers on agents building Symposium from its Book's system definition. Direct
-structured verification results are available. The current assignment defines
-RFDs as optional Book structure, a conditional working process, and participants
-in the shared relationship model. The [RFD roadmap](implementation-roadmaps/rfds.md)
-separates this preparation from parser, checking, and view implementation.
-This supports the coding experience: understanding a proposed change, then using
+structured verification results and conversational contract guidance are available.
+The [RFD design](design/rfds.md) remains an unselected draft; its preparation
+has merged, but the [decision to implement it](open-questions.md#rfd-support) is
+open. It is not a prerequisite for the current development sequence.
+The coding experience remains the priority: understanding a proposed change, then using
 the Book and feedback to implement, correct, and reassess it. Shared rendering,
 reproducible commands, and CI remain work; durable retention is optional.
 New Symposium tests and coding trials belong

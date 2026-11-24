@@ -11,6 +11,12 @@ capabilities and implementation work through a shared typed relationship model.
 
 ## Current scope
 
+**Decision open:** The engineer is reconsidering whether to proceed with this
+capability. Retain the draft design and proposed milestones for assessment;
+neither their preparation nor merge authorizes implementation. The
+[RFD-support question](../open-questions.md#rfd-support) records that decision.
+This proposal is outside the main development sequence until selected.
+
 The engineer assigned the RFD design, conditional contract guidance, source
 format, templates, and relationship-model plan. These are prepared here. The current schema and readers
 still recognize only the three required roles and existing authority records;
@@ -25,7 +31,10 @@ revision `76f415e4934734f29776dda15df8e5d060c8fbe7`: the structural check
 (`structural/v1`), Book build, four packaged-contract tests, and six source/rendered
 Book acceptance tests passed. These check the authored design and delivered
 guidance; they establish neither RFD-specific engine behavior nor fresh-agent
-compliance. The changes are not yet integrated into main.
+compliance. The preparation merged in
+[PR #45](https://github.com/anchor-book/anchor-book/pull/45) as
+`9689b00416fd577bfb68a02f1fa310f6088404cf`; the results retain their tested revision.
+That merge did not accept the draft requirement or anchors.
 
 Source-format authoring validation used a temporary local program with the
 checkout's locked dependencies: all nine TOML example/template blocks parsed,
@@ -50,8 +59,10 @@ and anchors remain draft; milestone status remains Proposed pending agreement or
 an explicit implementation prototype assignment. No parser design decision is
 left as an implicit prerequisite for milestone 1.
 
-This engine work precedes Symposium's broad RFD import. It uses independent
-fixtures and this Book first; Symposium's tests and migration do not block it.
+If selected, this engine work precedes importing Symposium's RFDs into the
+proposed engine role. It would use independent fixtures and this Book first.
+Symposium's ordinary design migration can continue using its existing source
+RFDs and does not require this optional capability.
 The coding experience remains the goal: proposals make the intended change and
 affected scope clear before agents implement and verify it.
 
@@ -147,9 +158,9 @@ or relationship checks.
 
 - [ ] Present proposal scope, actual proposed anchor definitions and changes, review disposition, relationships, and progress derived from linked milestones through shared agent and rendered views. Distinguish proposed and current definitions.
 - [ ] Exercise accepted proposals with incomplete work, draft prototypes with evidence, rejected/withdrawn/superseded proposals, and missing or stale evaluation. Do not introduce a second authored completion checklist.
-- [ ] Run fresh agent sessions with RFD support enabled and disabled, including an RFD folder with support disabled and an enabled alternative location. Demonstrate a design change spanning chapters, its roadmap assignment, and reconciliation after implementation findings; record assistance and scope.
+- [ ] Run fresh agent sessions with RFD support enabled and disabled, including an RFD folder with support disabled and an enabled alternative location. Demonstrate a design change spanning chapters, its roadmap assignment, and reconciliation after implementation findings; record assistance and scope. Use an executable harness with independently specified expected choices, reported questions, and preserved records to establish the anchor criteria; the session assessment alone cannot satisfy them.
 - [x] Define the contract's adoption procedure for reconciling an agreed RFD with the live system definition, affected authority, anchors, criteria, work, and evidence.
-- [ ] Assess adoption in a fresh agent assignment with a cross-capability proposal and a seeded conflict outside its declared impact list. Review the resulting definition and implementation gaps, then repeat against the incorporated revision to assess preservation of identities and evidence.
+- [ ] Assess adoption in a fresh agent assignment with a cross-capability proposal and a seeded conflict outside its declared impact list. Review the resulting definition and implementation gaps, then repeat against the incorporated revision to assess preservation of identities and evidence. Assert the seeded conflict, expected edits, preservation, and unchanged-repeat behavior programmatically.
 - [ ] Use the full workflow in this Book before importing Symposium's RFDs. Carry source identity and review history forward, retaining draft proposals without making them governing authority.
 
 ### Completion criteria

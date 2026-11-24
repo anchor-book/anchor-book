@@ -585,16 +585,5 @@ above; an explicitly selected tool installation may be outside the project root.
 
 ## Open questions
 
-1. **Build configuration.** The native configuration and report-handoff interface
-   for [Book build evidence](#book-build-evidence), settled with the artifact schema
-   before implementation.
-2. **Further claims.** [Claims of completion](#claims-of-completion) come from
-   Complete milestones. Whether the `complete` [project phase](configuration.md#project-phase)
-   also claims every criterion in the Book, and whether a test with no link should
-   fail when a project opts in, remain open.
-3. **Evidence handoff.** The transport and input-validation interface for consuming structured results in the Book build; output alone does not make saved results current.
-4. **Other languages and runners.** Link forms and runners beyond Rust, nextest,
-   and Verus.
-5. **Sensitivity cost.** Each change verifies the complete target once, so large
-   targets may need a sampling or
-   per-function selection policy that reports which changes were not tried.
+Unresolved choices for this capability are tracked with their owning work in
+[Open questions](../open-questions.md#evidence-integration).

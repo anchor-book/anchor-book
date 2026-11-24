@@ -11,29 +11,16 @@ or revised on evidence before the migration.
 
 ## Gap
 
-Before [milestone 2](#record-line-grammar-2), the engine and this Book's records
-used an earlier TOML form: each record a fenced block labeled `anchorbook-anchor`,
-`anchorbook-requirement`, or `anchorbook-decision`, with lowercase identifiers
-that carried no kind code and proof scope written as unchecked paragraphs inside
-the statement. Searches against this Book's sources showed what that form cost
-agents:
-
-| Question | Result with TOML records |
-| --- | --- |
-| What cites `R-observation-only`? | 6 lines in three shapes: the definition, an anchor citation, a decision citation, and three lines from literal schema examples that look the same without reading the surrounding block |
-| Which records are drafts? | 29 lines of `status = "draft"`, none stating the record's kind or identity |
-| Which criteria require proof? | `verification = ["proof"]`, without its criterion or anchor identifier |
-
-The renderer needed no change beyond rendering
-[inline text](../design/record-rendering.md#reader-presentation): it replaces each
-record's source range with HTML from the typed inventory.
+The earlier TOML syntax hid record identity and relationships from one-line
+searches. [Source observations](../research.md#record-syntax-observations) retain
+the original search measurements; milestone 1 owns the comparison and trials.
 
 ## Timing
 
-Tabled on 2026-11-10: decide before
+The experiment was proposed on 2026-11-10 to decide before
 [Symposium Integration milestone 2](symposium-integration.md#symposium-integration-2),
-which writes most of Symposium's records, so they are written once in the chosen
-syntax. A mechanical conversion of this Book's 54 records then measured the line
+which writes most of Symposium's records, so those records would be written once in the chosen
+syntax. The decision and engine migration are complete below. A mechanical conversion of this Book's 54 records then measured the line
 grammar at 13% fewer bytes than TOML (about 2% of the Book); its larger benefit is
 one-line identity and one spelling for every reference, which milestone 1 measures.
 
@@ -43,11 +30,11 @@ one-line identity and one spelling for every reference, which milestone 1 measur
 
 **Status:** Complete
 
+**Identifier:** `record-line-grammar-1`
+
 **Dependencies:** None.
 
 **Design basis:** [Record syntax](../design/anchor-definitions.md#record-syntax), [Authority Definitions](../design/authority-definitions.md), and the [gap](#gap)
-
-**Identifier:** `record-line-grammar-1`
 
 **Tasks**
 
@@ -124,7 +111,7 @@ A written assessment compares the variants on searches, reads, wrong matches, an
 
 ### Completion record
 
-Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The variants, measurements, agent trials, and assessment are recorded, and the engineer confirmed the line grammar as the goal syntax; no syntax revision was needed.
+Complete on 2026-11-11 on branch `record-line-grammar`; integrated in [PR #37](https://github.com/anchor-book/anchor-book/pull/37) as `1b8274ec2460b63419e9b310606ef67de04efbbe`. The evidence retains its tested branch revision. The variants, measurements, agent trials, and assessment are recorded, and the engineer confirmed the line grammar as the goal syntax; no syntax revision was needed.
 
 ## Milestone 2. The engine and this Book use the line grammar {#record-line-grammar-2}
 
@@ -200,4 +187,4 @@ This Book and the fixtures contain only line-grammar records and kind-coded iden
 
 ### Completion record
 
-Complete on 2026-11-11 on branch `record-line-grammar`, not yet integrated. The engine reads the line grammar as its only record format, this Book and its fixtures use it with kind-coded identifiers, and records render with formatted inline text and linked identifiers. The conversion review is the implementing agent's.
+Complete on 2026-11-11 on branch `record-line-grammar`; integrated in [PR #37](https://github.com/anchor-book/anchor-book/pull/37) as `1b8274ec2460b63419e9b310606ef67de04efbbe`. The evidence retains its tested branch revision. The engine reads the line grammar as its only record format, this Book and its fixtures use it with kind-coded identifiers, and records render with formatted inline text and linked identifiers. The conversion review is the implementing agent's.

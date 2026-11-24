@@ -1,5 +1,9 @@
 # RFD Source Format
 
+**Draft proposal.** Whether Anchor Book should provide this capability remains
+[an open decision](../open-questions.md#rfd-support). Keeping this design for
+consideration does not commit the project to implementing it.
+
 This chapter defines RFD format 1, its engine-owned templates, and its version
 boundary. [Requests for Discussion](rfds.md) defines the process and guarantees.
 Projects supply their proposals and review policy; the engine owns this syntax.

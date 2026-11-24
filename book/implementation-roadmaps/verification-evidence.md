@@ -61,11 +61,11 @@ General command/version alignment and contributor setup remain in
 
 **Status:** Complete
 
+**Identifier:** `verification-evidence-1`
+
 **Dependencies:** [Milestone 4](#verification-evidence-4), complete; cargo-nextest, agreed.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md), [Configuration](../design/configuration.md), [Diagnostics](../design/check-diagnostics.md), and [Rust Engine](../design/rust-engine.md)
-
-**Identifier:** `verification-evidence-1`
 
 **Tasks**
 
@@ -128,11 +128,11 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 **Status:** Complete
 
+**Identifier:** `verification-evidence-2`
+
 **Dependencies:** [Milestone 4](#verification-evidence-4) and the existing engine proof, both complete. The native compatibility experiment settled the supported configuration and CI interface in the design. This milestone precedes the next Symposium development trial.
 
 **Design basis:** [Verus runner](../design/verification-evidence.md#verus-runner), [authority proof](../design/rust-engine.md#authority-proof), and [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence).
-
-**Identifier:** `verification-evidence-2`
 
 **Tasks**
 
@@ -154,7 +154,7 @@ Complete on 2026-11-10; merged in PR #35 as `c07dbc5`. `verify` runs linked test
 
 #### Proof states {#verification-evidence-2-proof-states}
 
-Fixtures cover every proof-method state, supplying guard results only in independent fixtures that exercise aggregation. Native runs demonstrate a linked failure as failed, a passing linked caller with a failing unlinked lemma as inconclusive, and correction as a complete target result. Build failures and unavailable tools retain their designed states. The engine's proof criterion remains unsatisfied while required assessments or guards are missing or not evaluated; milestone 6 establishes the complete proof method. Test and review obligations retain their own states.
+Fixtures cover every proof-method state, supplying guard results only in independent fixtures that exercise aggregation. Native runs demonstrate a linked failure as failed, a passing linked caller with a failing unlinked lemma as inconclusive, and correction as a complete target result. Build failures and unavailable tools retain their designed states. The engine's proof criterion remains unsatisfied while required programmatic guards are missing or not evaluated; milestone 6 establishes the complete proof method. Test obligations retain their own states; the review method is retired.
 
 - **Anchor coverage:** [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `state-per-method` — Partial: proof method; [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: proof runner; [A-verify-links-resolve](../design/verification-evidence.md#A-verify-links-resolve) · `link-findings` — Partial: proof links
 - **Evidence:** Runner states passed locally and in native CI. The recording-runner fixtures and `native_proof_failure_support_failure_trust_and_correction` exercise the actual CLI: linked failure is failed, a passing caller with a failing supporting lemma is inconclusive, and restored target verification passes. The native test also rejects assumptions and trusted bodies. Successful target results remain no-evidence at the criterion level because programmatic guards are outstanding. The guard-dependent fixtures in `tests/proof_states.rs` now establish all six proof-method states, precedence among guard failures and gaps, per-criterion isolation, test/proof aggregation, and completion-claim outcomes. They supply simulated outcomes to the evidence model; actual guard execution remains in milestone 6. The completion evidence below records the local results.
@@ -190,7 +190,7 @@ output, malformed or unsupported reports, missing or wrong-mode functions, and
 partial or zero-coverage results. Actual GitHub runs demonstrate deliberate
 proof failure and correction for recorded revisions, with the required check
 still enforced. Passing the target gate never labels outstanding criterion guards
-or assessments satisfied.
+satisfied.
 
 - **Anchor coverage:** [A-verify-runs-linked-checks](../design/verification-evidence.md#A-verify-runs-linked-checks) · `selected-run` — Partial: shared native proof execution in CI; [A-verify-criterion-states](../design/verification-evidence.md#A-verify-criterion-states) · `scope-and-limits` — Partial: target-gate success distinguished from criterion satisfaction.
 - **Evidence:** Passed locally and on GitHub. `.github/workflows/proof.yml` calls `anchorbook proof` and native fixture acceptance; expected functions come from source links. The deliberate-defect run rejects `has_required_authority`, and the restored revision passes with all seven linked functions. The job name, pinned installation, ordinary engine tests, retained public artifact, and required-check rule remain. Revision-specific runs are recorded below; all required checks pass on the tested implementation revision.
@@ -203,9 +203,9 @@ or assessments satisfied.
 
 **Checks:** The independent suite passes on Rust 1.88.0 and stable (165 tests including doctests after the additional review assertions, with eight optional acceptance tests ignored); Clippy and formatting pass. The native failure/correction acceptance passes in about 327 seconds for ten fresh target runs. The strict Authority gate reports a complete target with all seven linked functions. Structural checking, five current/rendered Book acceptance tests, and the absent/invalid/incomplete Book independence experiments pass. Existing proof-loop mutation exclusions were relocated for the added doc comments and checked against the mutation list; no local mutation campaign was run.
 
-**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, proof guards, and assessment records retain their planned scope. Target success does not satisfy the complete proof criterion. The revision-specific GitHub proof failure/correction demonstration and corrected mutation validation are complete. All required checks pass on the tested runner implementation revision; the runner and CI are integrated into main through PR #38. The later guard-state aggregation change has separate local evidence below.
+**Limits and remaining work:** The local verifier is built from source; CI uses the pinned release archive. Whole-library targets and ordinary Rust attribute links are supported; macro-body links, additional target forms, and programmatic proof guards retain their planned scope. Assessment records are retired. Target success does not satisfy the complete proof criterion. The revision-specific GitHub proof failure/correction demonstration and corrected mutation validation are complete. All required checks pass on the tested runner implementation revision; the runner and CI are integrated into main through PR #38. The later guard-state aggregation change has separate local evidence below.
 
-**Whole-Book progress:** The final aggregation-checkout run evaluates 70 criteria
+**Historical whole-Book progress:** Before review-method retirement, the final aggregation-checkout run evaluated 70 criteria
 across 30 anchors with no link findings: 41 satisfied, three partial, one
 no-evidence, 22 unlinked, and three not evaluated. Of 39 completion claims, 34 are
 satisfied, the Authority proof criterion is no-evidence pending its assessment
@@ -243,11 +243,11 @@ Complete locally on 2026-11-12. Native execution and the strict gate are integra
 
 **Status:** Complete
 
+**Identifier:** `verification-evidence-3`
+
 **Dependencies:** Milestones 1 and 4, complete. Use independent engine fixtures and this Book. New Symposium tests, project coding trials, proof guards, and report retention do not block the work.
 
 **Design basis:** [Structured output and retention](../design/verification-evidence.md#structured-output-and-retention), [evidence states](../design/verification-evidence.md#evidence-states), and [claims of completion](../design/verification-evidence.md#claims-of-completion).
-
-**Identifier:** `verification-evidence-3`
 
 **Tasks**
 
@@ -278,8 +278,9 @@ the outcome requires no artifact retention or report importer.
 
 Complete locally on branch `codex/shared-verification-results` for the structured
 current-result interface. The code revision and acceptance above establish that
-scope; GitHub checks and integration are reported on the PR and are not implied
-by local completion. Renderer consumption and saved-input validation remain in
+scope. The implementation merged in [PR #44](https://github.com/anchor-book/anchor-book/pull/44)
+as `76f415e4934734f29776dda15df8e5d060c8fbe7`; the local results keep their tested
+revision, and GitHub checks are recorded on that PR. Renderer consumption and saved-input validation remain in
 milestone 9. Retention is optional and needs a concrete purpose and expiration policy.
 
 ## Milestone 4. Both runners share criterion evidence and report behavior {#verification-evidence-4}
@@ -288,11 +289,11 @@ milestone 9. Retention is optional and needs a concrete purpose and expiration p
 
 **Status:** Complete
 
+**Identifier:** `verification-evidence-4`
+
 **Dependencies:** The record library, configuration loader, and navigation reader. Existing record identifiers remain usable.
 
 **Design basis:** [Running Verification](../design/verification-evidence.md), including [links](../design/verification-evidence.md#evidence-links), [run identity](../design/verification-evidence.md#run-identity), states, and command behavior.
-
-**Identifier:** `verification-evidence-4`
 
 **Tasks**
 
@@ -350,11 +351,11 @@ Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correctio
 
 **Status:** Proposed — deferred until this Book's runners and guards are complete
 
+**Identifier:** `verification-evidence-5`
+
 **Dependencies:** Deferred until milestones 2, 3, and 6 are complete on this Book, and [Formal Verification milestone 4](formal-verification.md#formal-verification-4). Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.
 
 **Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence), and [verification responsibilities](../design/verification.md#responsibilities).
-
-**Identifier:** `verification-evidence-5`
 
 **Tasks**
 
@@ -406,14 +407,14 @@ Agents receive a criterion brief before developing a proof.
 
 **Status:** Proposed
 
+**Identifier:** `verification-evidence-6`
+
 **Dependencies:** Milestones 1 and 2 and the scoped findings of [milestone 7](#verification-evidence-7).
 Settle supported change operators, witness forms, and runtime budgets before native
 implementation. Exclusion coverage uses the existing parsed proof-scope items.
 
 **Design basis:** [Guards](../design/verification.md#guards), the
 [workflow](../design/proof-guards.md), and the [brief](../design/verification-evidence.md#using-verify).
-
-**Identifier:** `verification-evidence-6`
 
 **Tasks**
 
@@ -447,7 +448,7 @@ preconditions produce the designed proof states.
 Fixtures assert scope, links, current identities, exclusions, and uncovered gaps
 for criteria with and without proof requirements. The brief runs no tools.
 
-- **Anchor coverage:** None — agent guidance output; an owning anchor remains an open design question.
+- **Anchor coverage:** None — criterion guidance is assessed against the specified output; it adds no separate key correctness guarantee requiring another anchor.
 - **Evidence:** Pending.
 
 #### Pilot {#verification-evidence-6-pilot}
@@ -456,7 +457,7 @@ The engine's `formal-authority` method is satisfied with current programmatic
 guards. A deliberate defect fails and correction passes; changed inputs require
 fresh evidence. Record survivors, classifications, and the tested revision.
 
-- **Anchor coverage:** None — current-Book acceptance; proof evidence remains in the Formal Verification roadmap.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Full
 - **Evidence:** Pending.
 
 ### Completion record
@@ -470,11 +471,11 @@ sensitivity execution remain unimplemented.
 
 **Status:** Complete
 
+**Identifier:** `verification-evidence-7`
+
 **Dependencies:** The existing authority proof and the pinned Verus release documented in CONTRIBUTING. No engine tooling is required. This is a prototyping experiment: it changes no engine code or Book records, and its results do not verify any anchor.
 
 **Design basis:** [Guards](../design/verification.md#guards), [proof guards](../design/verification-evidence.md#proof-guards), and the [authority proof](../design/rust-engine.md#authority-proof).
-
-**Identifier:** `verification-evidence-7`
 
 **Tasks**
 
@@ -664,11 +665,13 @@ and Clippy pass, as do formatting, Book checks, and engine-independence experime
 The test-scoped evidence run has no findings and passes all evaluated completion
 claims; proof remains outside that run. Native proof guard execution and migrated
 acceptance checks remain in milestones 6 and 12. No new mutation campaign or
-GitHub CI result is claimed for this branch.
+GitHub CI result is claimed by that local record. The implementation subsequently
+merged in [PR #50](https://github.com/anchor-book/anchor-book/pull/50) as
+`b809f76f107e1ed0d7edc9e66f18f516fb94e34d`.
 
 ## Milestone 12. Automate the migrated acceptance criteria {#verification-evidence-12}
 
-**Outcome:** Criteria formerly relying on review gain executable checks for the
+**Outcome:** Core criteria formerly relying on review gain executable checks for the
 behavior their design now specifies. Historical trials remain evidence of their
 original scope until these checks run.
 
@@ -677,13 +680,13 @@ original scope until these checks run.
 **Identifier:** `verification-evidence-12`
 
 **Dependencies:** Milestone 11; agree independent expected results for each fixture
-and scoped runtime budgets before agent or browser trials. RFD cases also depend
-on implementing the RFD capability. Dependency audits depend on the declared
-packaging and compatibility policy.
+and scoped runtime budgets before agent or browser trials. Dependency audits
+depend on the declared packaging and compatibility policy. Optional RFD support
+is not a prerequisite.
 
 **Design basis:** [Diagnostics](../design/check-diagnostics.md),
 [Project Integration](../design/project-integration.md),
-[Record Rendering](../design/record-rendering.md), [RFDs](../design/rfds.md), and
+[Record Rendering](../design/record-rendering.md), and
 [CI independence](../design/system-overview.md#A-check-independent-build).
 
 **Tasks**
@@ -691,14 +694,14 @@ packaging and compatibility policy.
 - [ ] Implement an executable audit of same-revision CI outcomes and dependency order for valid and seeded broken Books.
 - [ ] Add agent trial harnesses with independently specified repairs, expected workflow choices and reported questions, preserved-record assertions, and repeat-adoption checks.
 - [ ] Add the packaged dependency and feature audit, including a seeded undeclared pin and default verifier dependency.
-- [ ] Add browser assertions for keyboard operation, collapsed/expanded state, light/dark/narrow presentation, and print visibility.
+- [ ] Add browser assertions for keyboard operation, collapsed/expanded state, light/dark/narrow presentation, print visibility, and record navigation under a project site prefix and in the combined print view.
 - [ ] Link only checks covering these assertions, run them, and restore Full milestone coverage only for established scope.
 
 ### Completion criteria
 
 #### Executable acceptance {#verification-evidence-12-acceptance}
 
-Each migrated criterion has linked checks derived from its specified expectations,
+Each core criterion covered below has linked checks derived from its specified expectations,
 including negative cases. Checks assert observed behavior and never use a human or
 agent judgment as the pass condition.
 
@@ -707,17 +710,20 @@ agent judgment as the pass condition.
 
 #### Adoption and presentation {#verification-evidence-12-adoption}
 
-The dependency audit, bootstrap and RFD harnesses, and browser assertions exercise
+The dependency audit, bootstrap harness, and browser assertions exercise
 their design criteria with independently specified results and seeded failures.
 
-- **Anchor coverage:** [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `dependency-review` — Full; [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Full; [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `browser-presentation` — Full; [A-rfd-proposed-anchors](../design/rfds.md#A-rfd-proposed-anchors) · `explicit-incorporation` — Full; [A-rfd-agent-workflow](../design/rfds.md#A-rfd-agent-workflow) · `conditional-guidance`, `design-adoption` — Full
+- **Anchor coverage:** [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `dependency-review` — Full; [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Full; [A-render-records-in-context](../design/record-rendering.md#A-render-records-in-context) · `browser-presentation`, `site-prefix-navigation`, `print-navigation` — Full
 - **Evidence:** Pending.
 
 ### Completion record
 
 Pending. Existing passing parser, adapter, integration, and rendering fixtures
 retain their original scope. They do not establish the new browser assertions or
-replace the earlier human assessment of an agent trial.
+replace the earlier human assessment of an agent trial. RFD incorporation and
+agent-workflow checks remain in [RFD milestones 1 and 2](rfds.md); their draft
+obligations are preserved without making that optional capability a completion
+requirement here.
 
 ## Milestone 13. Known obligations remain visible until satisfied {#verification-evidence-13}
 
@@ -786,8 +792,10 @@ Commands and runner setup follow each project's contributor guidance.
 
 ### Completion record
 
-Complete for local implementation and consumer acceptance. Branch work awaits
-CI and integration. Compiler-evidence import and CI exit-policy changes remain
+Complete for local implementation and consumer acceptance; integrated in
+[PR #50](https://github.com/anchor-book/anchor-book/pull/50) as
+`b809f76f107e1ed0d7edc9e66f18f516fb94e34d`. The recorded Thinkwell trial retains
+its original criterion set and tested revisions. Compiler-evidence import and CI exit-policy changes remain
 separate work.
 
 ## Retired work

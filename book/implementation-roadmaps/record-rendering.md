@@ -39,11 +39,11 @@ Rendering evidence recorded here does not establish those criteria.
 
 **Status:** Complete — local implementation and verification
 
+**Identifier:** `record-rendering-1`
+
 **Dependencies:** current schemas and agreement on prototype scope.
 
 **Design basis:** [Rendering design and governing records](#design-basis)
-
-**Identifier:** `record-rendering-1`
 
 **Tasks**
 
@@ -104,11 +104,11 @@ Complete locally on 2026-10-20. The library reads this Book and independent fixt
 
 **Status:** Complete — local implementation and verification
 
+**Identifier:** `record-rendering-2`
+
 **Dependencies:** Record Rendering — Milestone 1.
 
 **Design basis:** [Rendering design and governing records](#design-basis)
-
-**Identifier:** `record-rendering-2`
 
 **Tasks**
 
@@ -177,11 +177,11 @@ Complete locally on 2026-10-20: records render with preserved identities, fields
 
 **Status:** Complete
 
+**Identifier:** `record-rendering-3`
+
 **Dependencies:** Record Rendering — Milestone 2.
 
 **Design basis:** [Rendering design and governing records](#design-basis)
-
-**Identifier:** `record-rendering-3`
 
 **Tasks**
 
@@ -336,7 +336,7 @@ The [initial PR campaign](https://github.com/anchor-book/anchor-book/actions/run
 
 ### Completion record
 
-Complete locally on 2026-11-12 in the working tree based on `15177478934198254815784fb077e169c3ad5508`. The shared renderer supplies the disclosure; independent adapter tests, supported-toolchain checks, Book acceptance, and the browser checks above pass. Commands: `cargo fmt --all -- --check`, `cargo clippy --all-targets --locked -- -D warnings`, `cargo test --locked` (Clippy and tests also with `+1.88.0`), `cargo run --quiet --locked --bin anchorbook -- check --config anchorbook.toml`, `mdbook build`, and `cargo test --locked --test current_book --test rendered_book -- --ignored`. Rendered acceptance used a separate build destination to avoid the live preview rebuilding its output during the check. The work is on `codex/book-guards-and-collapsible-anchors`, based on that revision, and is not integrated into main. No local mutation campaign was run; required GitHub checks, including mutation testing, must pass before merge readiness is established.
+Complete locally on 2026-11-12 in the working tree based on `15177478934198254815784fb077e169c3ad5508`. The shared renderer supplies the disclosure; independent adapter tests, supported-toolchain checks, Book acceptance, and the browser checks above pass. Commands: `cargo fmt --all -- --check`, `cargo clippy --all-targets --locked -- -D warnings`, `cargo test --locked` (Clippy and tests also with `+1.88.0`), `cargo run --quiet --locked --bin anchorbook -- check --config anchorbook.toml`, `mdbook build`, and `cargo test --locked --test current_book --test rendered_book -- --ignored`. Rendered acceptance used a separate build destination to avoid the live preview rebuilding its output during the check. The work subsequently merged in [PR #39](https://github.com/anchor-book/anchor-book/pull/39) as `e5edca6383c2f4a4c1996e10a1206f1300e34900`. The local results retain their tested revision; merge does not constitute a rerun. No local mutation campaign was run; GitHub checks are recorded on the PR.
 
 ## Handoff and later work
 

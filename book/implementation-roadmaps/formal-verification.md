@@ -30,8 +30,10 @@ now states its claim, domain, boundary, assumptions, and exclusions explicitly;
 review remains a development activity.
 The declaration is not evidence that either criterion is complete.
 
-This roadmap owns the anchor's `formal-authority` and `production-integration`
-criteria; [Record Rendering milestone 3](record-rendering.md#record-rendering-3-authority-coverage)
+This roadmap owns the target proof and production-integration evidence;
+[Verification Evidence milestone 6](verification-evidence.md#verification-evidence-6)
+owns the native guards needed to satisfy `formal-authority`.
+[Record Rendering milestone 3](record-rendering.md#record-rendering-3-authority-coverage)
 owns its three behavioral test criteria.
 
 The sequence is **local production-code proof, GitHub proof execution, then merge
@@ -53,9 +55,9 @@ changes require new proof and integration evidence.
 
 **Identifier:** `formal-verification-1`
 
-**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
-
 **Dependencies:** The implemented record reader and renderer, existing independent tests, and reviewed mutation findings. Merge protection is deferred. Review the specification against the anchor before proving the extracted implementation.
+
+**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Scope:** One local proof of the authority validator used by `read_records`, covering every anchor authority and decision requirement. Parser correctness, diagnostic presentation proofs, GitHub proof jobs, merge protection, and generalized evidence tooling are outside this task.
 
@@ -75,7 +77,7 @@ changes require new proof and integration evidence.
 
 The production validator verifies acceptance if and only if the defined authority rules hold over the complete typed input. Preconditions do not assume valid authority relationships. The run identifies the verified functions; a deliberate rule violation fails a proof obligation, and the restored code passes.
 
-- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Full.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority` — Partial: the target proof and original defect experiment; current witness and sensitivity guards remain in Verification Evidence milestone 6.
 - **Evidence:** The claim is limited to the specified authority logic and recorded assumptions. Passed: local proof, the deliberate-defect failure, the current main proof run, and the specification assessment; see milestone evidence.
 
 #### Production path {#formal-verification-1-production-path}
@@ -104,7 +106,9 @@ Pinned tools reproduce verification without rendering the Book. Ordinary builds,
 
 **Mutation assessment:** cargo-mutants 27.1.0 discovers no mutations inside `verus!`, so automatic mutation coverage of the validator is unavailable. The focused inventory integration run initially found four diagnostic assertion gaps; after strengthening message and related-location assertions, all 24 selected mutations were attempted: 22 caught, two unviable, no survivors or timeouts. Command: `target/mutation-tools/bin/cargo-mutants mutants --jobs 2 --build-timeout 120 --file src/records/inventory.rs --output target/verus-mutations-fixed`. This is scoped evidence, not a new whole-engine campaign. Raw reports remain ignored under target. Milestone 2 records subsequent remote proof results.
 
-**Specification assessment:** Accepted. A first assessment of `src/records/authority.rs` at `cea6ba3`, verified on main by the [Formal Verification](https://github.com/anchor-book/anchor-book/actions/runs/42741006859) workflow, accepted its claim and found that `inventory.rs` relied on violation properties the contract did not state. The contract now states them in `violation_is_located`, an added `ensures` on `validate_authorities`, and `validate_reference`'s guarantee that it never reports missing authority. Because that changed the specification, a fresh agent that wrote none of it assessed the revised specification on 2026-11-10 from the code, the criterion, and the design, against `formal-authority`'s claim, domain, boundary, assumptions, and exclusions, and accepted it. There is no assessment-record file yet, because [assessment records](verification-evidence.md#verification-evidence-6) are not implemented.
+**Specification assessment:** Accepted. A first assessment of `src/records/authority.rs` at `cea6ba3`, verified on main by the [Formal Verification](https://github.com/anchor-book/anchor-book/actions/runs/42741006859) workflow, accepted its claim and found that `inventory.rs` relied on violation properties the contract did not state. The contract now states them in `violation_is_located`, an added `ensures` on `validate_authorities`, and `validate_reference`'s guarantee that it never reports missing authority. Because that changed the specification, a fresh agent that wrote none of it assessed the revised specification on 2026-11-10 from the code, the criterion, and the design, against `formal-authority`'s claim, domain, boundary, assumptions, and exclusions, and accepted it. This remains a recorded specification assessment at the tested revision. The
+assessment-record proposal is retired; current proof satisfaction instead requires
+the [programmatic guards](verification-evidence.md#verification-evidence-6).
 
 - **Claim.** `validate_authorities` ensures `violations.len() == 0` exactly when `records_satisfy_authority_rules` holds over the whole collection, so acceptance and rejection are both proved. The rules state each part of the claim: anchors need a reference; references within a record are distinct by identity, which also rejects one identity cited as two kinds; a reference resolves to exactly one candidate, counting undecodable candidates with a recovered identity; the target is decoded, of the declared kind, and accepted when the source is accepted. Every decoded record is checked, including decisions no anchor cites.
 - **Domain.** `validate_authorities`, `has_required_authority`, `lookup`, `has_unknown_identity`, `matches_identity`, and `matches_target_kind` have no preconditions. `validate_reference` requires only valid record and reference indices, which its verified caller establishes; none assumes a valid relationship. Undecodable source records carry no reference obligations, matching the claim's "successfully decoded record"; their parse errors are kept by `read_records`.
@@ -140,9 +144,9 @@ Complete on 2026-11-10. The production validator's proof establishes the `formal
 
 **Identifier:** `formal-verification-2`
 
-**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
-
 **Dependencies:** Formal Verification milestone 1 and the existing PR workflows. Establish passing and failing proof runs first, then complete merge protection together with Mutation Testing milestone 2. Remote execution follows an authorized push.
+
+**Design basis:** [Authority proof](../design/rust-engine.md#authority-proof), [authority rules](../design/authority-definitions.md#validating-authority-relationships), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Tasks**
 
@@ -191,15 +195,15 @@ Complete on 2026-11-10. Remote proof and integration pass for recorded revisions
 
 ## Milestone 3. Criteria declare their required verification methods {#formal-verification-3}
 
-**Outcome:** Engineers and agents can read explicit proof, test, and review obligations on each criterion; the engine validates and renders those selections without claiming results.
+**Outcome:** Engineers and agents can read explicit verification obligations on each criterion; the engine validates and renders those selections without claiming results. The original migration included review; [milestone 11](verification-evidence.md#verification-evidence-11) subsequently restricted current methods to test and proof.
 
 **Status:** Complete — local schema implementation and verification
 
 **Identifier:** `formal-verification-3`
 
-**Design basis:** [Criterion methods](../design/anchor-definitions.md#verification-methods), [record presentation](../design/record-rendering.md#reader-presentation), and agent verification guidance (`anchorbook contract`, “Develop verification with the code”).
-
 **Dependencies:** The existing record parser and renderer. This scoped schema change is assigned before the proof milestones; it does not assign the Verus refactor or settle its prerequisites.
+
+**Design basis:** [Criterion methods](../design/anchor-definitions.md#verification-methods), [record presentation](../design/record-rendering.md#reader-presentation), and agent verification guidance (`anchorbook contract`, “Develop verification with the code”).
 
 **Tasks**
 
@@ -254,21 +258,22 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 **Outcome:** Ordinary builds of the engine, and of every project that depends on it, need no Verus toolchain or `vstd`; the engine's proof builds only with an optional Cargo feature, over the same maintained source that ordinary builds execute.
 
-**Status:** Complete
+**Status:** In progress
 
 **Identifier:** `formal-verification-4`
 
-**Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
-
 **Dependencies:** The existing production authority proof. Begin with a small source-arrangement experiment and review its feasibility before assigning the full packaging change. Registry publication, contract delivery, and the consumer runner are not prerequisites.
+
+**Design basis:** [Proof packaging for consumers](../design/verified-code-packaging.md#proof-packaging-for-consumers), [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies), and [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority).
 
 **Tasks**
 
-- [x] Test one maintained source arrangement on a representative validator slice. A feature alone does not compile: code inside `verus!` needs Verus's macro crates even with the feature off. Candidates are (a) an optional `verus` Cargo feature with the validator written as ordinary Rust, its contracts attached through Verus's attribute syntax (`#[verus_verify]`, `#[verus_spec]`, present in the pinned release) under `cfg_attr`, and specification functions and proofs compiled only with the feature; and (b) a development proof workspace with reproducible erasure. For the chosen one, establish supported forms, tool availability, drift detection, and runtime correspondence.
+- [x] Compare packaging candidates in a feasibility slice and select the [production-source arrangement](../design/verified-code-packaging.md#proof-packaging-for-consumers); retain the [source research](../research.md#optional-verus-packaging), runtime correspondence, and supported-tool boundaries.
 - [x] Remove engine verification libraries from the default dependency graph; with the feature off, `cargo tree` shows no `vstd` or other Verus crate. Keep the authority implementation on the production path; relocating a still-required proof crate or maintaining a second validator does not establish isolation.
 - [x] Preserve `fixtures/consumers/verus-resolution` as the consumer-resolution regression fixture: its exact `vstd` pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.
 - [x] Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.
 - [x] Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.
+- [ ] Settle the programmatic source-comparison boundary, then add independent feature-boundary and packaged-source checks with seeded divergence; link and run both criteria.
 
 ### Completion criteria
 
@@ -276,8 +281,8 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 
 Review identifies one maintained authority implementation and a reproducible relationship between verified and packaged functions. Independent tests and drift checks reject divergence; any erasure or conversion assumptions are explicit. A separately maintained proof-only validator cannot complete this criterion.
 
-- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1.
-- **Evidence:** Passed. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. Drift is prevented by construction and by the rule in [Shipping Verified Code](../design/verified-code-packaging.md#proof-packaging-for-consumers), which review enforces; no automated check for gated executable code exists yet.
+- **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1. [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) · `feature-boundary`, `packaged-source` — Full.
+- **Evidence:** Partial. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. The source comparison and review support this tested candidate. They do not establish automated drift rejection: no check for gated executable code exists yet. [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) exposes the missing checks.
 
 #### Consumer resolution {#formal-verification-4-consumer-resolution}
 
@@ -303,7 +308,11 @@ A recorded review of the candidate's package contents, dependency set, and featu
 
 ### Evidence {#formal-verification-4-evidence}
 
-**Arrangement chosen:** candidate (a), Verus's attribute syntax under an optional `verus` feature. A feasibility slice (two helpers, `lookup` with its loop invariant, and the specification functions they use) verified with the feature and built without it, and a deliberate defect failed; the full validator then followed. Research into the Verus guide for the pinned release supports the choice: the guide recommends `#[verus_spec]` for executable functions and `verus!` for specification functions when production code must build without Verus, with dependencies controlled by feature flags. The gate is the Cargo feature rather than Verus's internal `verus_keep_ghost` cfg. Candidate (b), generated runtime source, was not needed.
+**Arrangement chosen:** The accepted [packaging design](../design/verified-code-packaging.md#proof-packaging-for-consumers)
+uses ordinary Rust executable bodies with optional Verus attributes. The
+[feasibility research](../research.md#optional-verus-packaging) records the source
+guidance, tested slice, and rejected generated-source alternative. Proof, consumer,
+and mutation results stay here with their original scope.
 
 **Mutation coverage:** the validator's bodies are now ordinary Rust, so cargo-mutants 27.1.0 reaches them: 50 mutations, against none inside `verus!`. Five loop-counter mutations (`+= 1` to `*= 1`) hang the loops; each fails verification with "decreases not satisfied", so they are excluded in `.cargo/mutants.toml` with that reason. Of the remaining 45, tests catch 42 and 3 are unviable; none survive or time out.
 
@@ -313,7 +322,12 @@ A recorded review of the candidate's package contents, dependency set, and featu
 
 ### Completion record
 
-Complete on 2026-11-10. Ordinary builds of the engine and of dependents need no Verus crate, the regression consumer resolves and builds with its own `vstd`, and the proof and tests pass for the same packaged implementation. GitHub results for the change are recorded with its pull request.
+Reconciled to In progress on 2026-11-24: the runtime-correspondence completion
+criterion already required automated divergence checks, but its evidence records
+only source comparison and review. The optional feature, consumer isolation,
+packaged proof, and tests delivered on 2026-11-10 retain their recorded evidence.
+The two source-correspondence criteria remain unlinked; milestone completion
+requires those checks. This correction does not reopen delivered implementation.
 
 ## Later work
 
@@ -322,7 +336,8 @@ requires `feature-boundary` and `packaged-source` checks. Milestone 4's consumer
 builds and production-boundary review retain their tested scope; review cannot
 satisfy these newly explicit criteria. Select the comparison boundary for permitted
 ghost erasure and package contents, implement seeded mismatch rejection, then link
-and execute the checks. This verification work remains proposed.
+and execute the checks. Milestone 4 owns this outstanding verification work; the comparison policy is
+tracked in [Open questions](../open-questions.md#packaged-source-comparison).
 
 Reusable proof execution and normalized results belong to
 [Verification Evidence milestone 2](verification-evidence.md#verification-evidence-2),
@@ -330,7 +345,8 @@ programmatic proof guards for `formal-authority` to
 [milestone 6](verification-evidence.md#verification-evidence-6),
 independent consumers to [milestone 5](verification-evidence.md#verification-evidence-5),
 and retained CI reports to [milestone 3](verification-evidence.md#verification-evidence-3).
-The engine's proof evidence remains manually recorded until that runner exists.
+The runner is implemented; current target results alone do not satisfy
+`formal-authority` while its programmatic guards remain missing.
 Anchor progress views and support for other verifiers retain their later scope.
 Verification runs remain separate from structural checking and mdBook
 preprocessing; they neither prove the whole engine nor change an anchor's

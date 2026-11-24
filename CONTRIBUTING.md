@@ -131,9 +131,11 @@ record and renderer fixtures remain necessary because this acceptance test share
 the production record parser.
 
 The generated record HTML is self-contained. The local theme supplies appearance
-and a small print helper that opens decision details for printing; it does not
-parse records. Schema examples stay literal. Field strings are escaped plain
-text with paragraph breaks; inline Markdown is not interpreted.
+and a small print helper that opens record details for printing; it does not
+parse records. Schema examples stay literal. Fields support code spans, emphasis,
+strong emphasis, and links; known code-spanned record identifiers become links.
+Unsupported Markdown and raw HTML remain literal, as the Record Rendering design
+specifies.
 The package is not publishable yet; release readiness is a separate milestone.
 
 ## Configuration loading
