@@ -104,8 +104,11 @@ while validating their identity and association with criteria. The guidance belo
 is for authoring and reviewing those tests; it is not an additional engine-run
 inspection or execution-attestation requirement.
 
-A test establishes its criterion only for the cases it exercises, so the cases
-and their assertions must come from the criterion:
+An anchor requires passing evidence for every criterion. Author
+[independently verifiable criteria](anchor-definitions.md#independently-verifiable-criteria)
+so a known missing compiler check, failure case, or environment cannot be hidden
+behind a passing runtime test. A test establishes only the cases it exercises;
+its assertions must come from the criterion:
 
 - **Assertions from the criterion.** Derive expected results from the criterion
   and its design, never from the implementation's current output. A test that

@@ -196,6 +196,26 @@ does not make an anchor accepted or verified. Methods declare obligations; parsi
 and rendering them do not run tools or establish evidence. Concrete tool choices
 and commands belong in the verification design and roadmap, not in this field.
 
+### Independently verifiable criteria
+
+Declare the obligations of the whole property before choosing existing tests.
+Use separate criteria when evidence can be missing independently. For example,
+`runtime-borrows` and `borrow-rejection` distinguish execution with borrowed values
+from compiler rejection of overlapping access. Missing compiler-runner support
+leaves the latter without current evidence and prevents anchor satisfaction.
+
+Known uncovered cases belong in criteria, even if their tests are not written or
+the engine cannot consume their results. Roadmaps own the work to supply evidence,
+not a hidden qualification of a satisfied criterion. If part of a broad criterion
+already has evidence, extract its remaining obligations without weakening the
+property, preserve continuing identifiers, and reconcile code links and roadmap
+coverage. A criterion can combine cases checked together; it must not combine a
+passing subset with independently missing obligations.
+
+All criteria remain required regardless of which tests exist or which methods a
+run selects. A link's presence is never evidence for another criterion, and the
+engine cannot infer undeclared requirements from prose or arbitrary assertions.
+
 For example, one criterion can require a proof of the validation algorithm while
 another requires tests of its integration. If a method covers only a
 portion, identify that portion and the remaining obligations explicitly; partial

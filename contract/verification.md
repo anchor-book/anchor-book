@@ -13,6 +13,25 @@ migrating a review criterion, define its executable assertions and leave evidenc
 outstanding until those checks run; never relabel review evidence as a test pass.
 Keep tool choices and execution steps in the verification design and roadmap.
 
+### Declare every verification obligation
+
+An anchor is satisfied only when every criterion is satisfied, and a criterion
+only when every required method has current passing evidence. Define criteria
+from the whole property before mapping tests. Separate obligations whose evidence
+can be missing independently, including compiler checks, failure paths, operating
+environments, and limits. Keep known missing or unsupported checks as explicit
+criteria; a roadmap caveat must not leave the anchor reporting satisfied.
+
+When linked checks cover only part of a criterion, preserve its full meaning by
+splitting out the remaining obligations and reconciling links and roadmap coverage.
+Retain existing identifiers for continuing scope and record where extracted scope
+moved. Link each check only to the obligation its assertions establish. Do not
+reuse a runtime pass for a compiler or platform obligation it does not exercise.
+A test can establish several criteria when its assertions cover each of them.
+Rerun verification after the split: the covered criteria may pass, but the anchor
+must remain partial or unsatisfied until every remaining criterion passes. Passing
+links alone cannot reveal an obligation omitted from the Book.
+
 An anchor requires formal verification if at least one of its criteria lists
 `"proof"`. Each such criterion requires proof of its stated scope. If all criteria
 have valid method lists and none lists proof, formal verification is not required

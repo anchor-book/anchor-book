@@ -71,7 +71,7 @@ from the record inventory.
 ## Verification requirements
 
 > **`R-criterion-evidence`** (draft): **See whether current evidence supports each criterion**
-> Statement: Engineers and agents must be able to see the project's progress toward its goal design: for every anchor criterion and each verification method it requires, whether current results support it, which tests or proofs they come from, and where evidence is missing or failed. Agents in the build loop must be able to get this for the anchors they are changing with one command. Missing or outdated evidence must never appear as support.
+> Statement: Engineers and agents must be able to see the project's progress toward its goal design: for every anchor criterion and each verification method it requires, whether current results support it, which tests or proofs they come from, and where evidence is missing or failed. Agents in the build loop must be able to get this for the anchors they are changing with one command. Missing or outdated evidence must never appear as support. An anchor is satisfied only when every criterion and each of its required methods have current passing evidence. Known uncovered obligations must be declared as criteria so they cannot disappear behind passing checks for other behavior.
 > Source: Anchors declare required verification methods, but completion and verification are otherwise recorded by hand in roadmaps, so nothing shows which anchor criteria are actually supported.
 
 > **`R-proofs-establish-criteria`** (draft): **A proof counts only when it establishes its criterion**

@@ -320,3 +320,7 @@ they are not implicit tasks in the current rendering milestone.
 owns programmatic-only verification. Its [migration follow-up](verification-evidence.md#verification-evidence-12)
 tracks executable checks replacing historical review-based acceptance; native proof
 guards remain in milestone 6.
+
+[Verification Evidence milestone 13](verification-evidence.md#verification-evidence-13)
+uses Thinkwell to validate independent criteria: passing runtime checks preserve
+their evidence, while missing obligations keep their anchors partial.

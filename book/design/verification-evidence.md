@@ -24,6 +24,7 @@ working on after each change, and CI, reporting the whole Book. It complements
 > Authority: `R-criterion-evidence`; `D-project-test-results-trusted`
 > - Criterion `state-per-method` [test]: Independent fixtures produce each state for test and proof methods, including criteria requiring several methods with only some satisfied; assert the per-method and per-criterion states and that only fully satisfied criteria are satisfied.
 > - Criterion `scope-and-limits` [test]: A run scoped to fewer methods or anchors reports the excluded parts as not evaluated, never as satisfied, and every report states what a satisfied criterion does not establish.
+> - Criterion `all-criteria` [test]: Through the actual CLI and text/JSON reports, a fixture anchor with passing runtime checks and an unlinked compiler criterion is partial. Adding the missing link without a passing result still prevents satisfaction; missing, skipped, failed, unavailable, and excluded required results never satisfy the anchor. Only current passing results for every criterion satisfy it, and removing a required link makes it partial again.
 
 > **`A-verify-progress-report`** (draft): **Verify reports progress, not failure, for a Book in progress**
 > Property: A completed verify run reports every anchor in scope, grouped by design chapter, with each criterion's state and its linked tests or proofs, and summary counts of satisfied, partial, failing, and unlinked anchors and criteria. Unsatisfied and unlinked criteria are reported as progress and do not make the run fail, unless the Book [claims](#A-verify-claims-evidenced) them; the run is incomplete only when it cannot evaluate the scope, such as invalid configuration, an invalid Book, or invalid records.
@@ -189,7 +190,11 @@ Only `satisfied` counts as evidence. A criterion is `satisfied` when every
 required method is satisfied, `partial` when some are, and otherwise takes the
 first applicable state in the order `failed`, `inconclusive`, `no-evidence`,
 `unlinked`, `not-evaluated`. An anchor is satisfied when all its criteria are,
-partial when some are, and otherwise takes the same order.
+partial when some are, and otherwise takes the same order. Aggregation includes
+all authored criteria, including criteria with no links and methods excluded from
+the requested run. Evidence for one criterion cannot satisfy another. Follow
+[independent criteria](anchor-definitions.md#independently-verifiable-criteria)
+to make all known obligations visible to this computation.
 
 Reviews and approval records never contribute a method or guard result. A legacy
 `review` declaration makes the Book invalid, with a diagnostic directing migration

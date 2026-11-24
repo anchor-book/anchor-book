@@ -1890,3 +1890,102 @@ fn review_criteria_are_invalid_even_with_an_accepting_record() {
         assert_eq!(b.snapshot(), before);
     }
 }
+
+/// anchorbook: A-verify-criterion-states#all-criteria
+#[test]
+fn every_declared_criterion_needs_current_passing_evidence_through_the_cli() {
+    let b = fixture::Book::new();
+    b.write("anchorbook.toml", &format!("{}\n[verification]\nsources = [\"src\"]\noutput = \"target/verify\"\nrunners = [\"nextest\"]\n", fixture::CONFIG));
+    b.write(
+        "Cargo.toml",
+        "[package]\nname = \"fixture\"\nversion = \"0.1.0\"\n",
+    );
+    b.write("docs/authority.md", AUTHORITY);
+    b.write(
+        "docs/design.md",
+        &anchor("A-borrowing", &[("runtime", "test"), ("compiler", "test")]),
+    );
+    b.write(
+        "docs/roadmap.md",
+        &format!(
+            "# Work\n\n{}",
+            milestone(
+                1,
+                "Complete",
+                "`A-borrowing` · `runtime`, `compiler` — Full"
+            )
+        ),
+    );
+    let runtime = "/// anchorbook: A-borrowing#runtime\n#[test]\nfn runtime_borrows() {}\n";
+    let compiler =
+        "/// anchorbook: A-borrowing#compiler\n#[test]\nfn compiler_rejects_overlap() {}\n";
+    b.write("src/lib.rs", runtime);
+    let assert_run =
+        |cases: &[(&str, &str, &str)], expected: &str, compiler_state: &str, code: i32| {
+            let runner = recording(&b, cases);
+            let (actual_code, stdout, stderr) = cli_with(&b, &["--format", "json"], &runner.env);
+            assert_eq!(actual_code, Some(code), "{stdout}{stderr}");
+            let result: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+            let anchor = &result["chapters"][0]["anchors"][0];
+            assert_eq!(anchor["state"], expected);
+            assert_eq!(anchor["criteria"][0]["state"], "satisfied");
+            assert_eq!(anchor["criteria"][1]["state"], compiler_state);
+            assert_eq!(anchor["criteria"].as_array().unwrap().len(), 2);
+            let (_, text, _) = cli_with(&b, &[], &runner.env);
+            assert!(
+                text.contains(&format!("A-borrowing (draft) — {expected}")),
+                "{text}"
+            );
+            assert!(
+                text.contains(&format!("compiler [test]: {compiler_state}")),
+                "{text}"
+            );
+        };
+    let runtime_pass = ("fixture", "runtime_borrows", "pass");
+    assert_run(&[runtime_pass], "partial", "unlinked", 1);
+    b.write("src/lib.rs", &format!("{runtime}{compiler}"));
+    assert_run(&[runtime_pass], "partial", "no-evidence", 1);
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "skip"),
+        ],
+        "partial",
+        "no-evidence",
+        1,
+    );
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "fail"),
+        ],
+        "partial",
+        "failed",
+        1,
+    );
+    assert_run(
+        &[
+            runtime_pass,
+            ("fixture", "compiler_rejects_overlap", "pass"),
+        ],
+        "satisfied",
+        "satisfied",
+        0,
+    );
+    // Losing a link cannot reduce the authored obligation set.
+    b.write("src/lib.rs", runtime);
+    assert_run(&[runtime_pass], "partial", "unlinked", 1);
+    b.write("src/lib.rs", &format!("{runtime}{compiler}"));
+    for args in [
+        vec!["--format", "json"],
+        vec!["--format", "json", "--method", "proof"],
+    ] {
+        let (_, stdout, _) = cli(&b, &args);
+        let result: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+        assert_eq!(
+            result["chapters"][0]["anchors"][0]["state"],
+            "not-evaluated"
+        );
+        assert_eq!(result["summary"]["criteria"]["states"]["satisfied"], 0);
+    }
+}
