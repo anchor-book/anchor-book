@@ -84,6 +84,12 @@ from the record inventory.
 > Statement: A proof must count as evidence for a criterion only when it establishes that criterion's stated claim over the production code the system executes, within the criterion's declared domain, boundary, assumptions, and exclusions. A successful verification whose specification is weaker than the claim, holds vacuously, rests on unrecorded assumptions, or describes different code or inputs from the current run must not appear as support for the criterion.
 > Source: Verus establishes that code meets its specification, not that the specification expresses the design. Agents that write both the code and its specification can obtain a passing proof that establishes less than the criterion requires.
 
+## Conversational guidance requirement
+
+> **`R-guided-workflow`** (draft): **Engineers can learn and navigate the workflow through their agent**
+> Statement: The engine must deliver reusable guidance that lets an agent explain how to use Anchor Book, help the engineer express an intent in ordinary language, and recommend a concrete next step grounded in the project's current design, agreements, work, and evidence. Guidance must distinguish explanation and proposal from assigned work, preserve existing agreements, and identify consequential choices for human judgment.
+> Source: Engineers need help understanding the Anchor Book process and what to ask their agent next; a system definition and a list of roadmaps do not supply that user flow on their own.
+
 ## Project integration requirements
 
 > **`R-project-adoption`** (draft): **Rust projects adopt Anchor Book through the crate**

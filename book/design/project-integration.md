@@ -223,6 +223,12 @@ show the Book's state, every open milestone, its completion criteria and evidenc
 gaps, and what can be assigned. The contract owns the report's format and detail;
 projects do not maintain a separate template in their bootstrap instructions.
 
+The common contract also delivers [conversational user guidance](user-guidance.md).
+An agent uses it to explain the workflow and recommend a next step from the
+project's current Book. An explicit request for guidance or next-step advice gets
+a concise answer; a request to read the Book or report readiness retains the full
+template. Projects do not copy the user guide or maintain their own prompt catalog.
+
 The engine documents the section as a template that the project adds by hand;
 whether initialization writes it is [open question 3](#open-questions).
 

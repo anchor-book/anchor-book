@@ -1,5 +1,151 @@
-/* Preserve readable diagram labels in narrow book views. */
+/* Book diagrams use a quiet surface and readable, theme-aware contrast. */
+:root {
+    --diagram-surface: #f7f9fc;
+    --diagram-border: #dce3ed;
+    --diagram-ink: #26354a;
+    --diagram-line: #8291a6;
+    --diagram-node: #edf1f7;
+    --diagram-node-border: #8191a8;
+    --diagram-context: #eaf0ff;
+    --diagram-context-border: #7187c6;
+    --diagram-design: #e5f4ee;
+    --diagram-design-border: #5a9d87;
+    --diagram-build: #efecfc;
+    --diagram-build-border: #9280c2;
+    --diagram-choice: #fff2dc;
+    --diagram-choice-border: #c99e53;
+}
+
+.navy, .coal, .ayu {
+    --diagram-surface: #1b2433;
+    --diagram-border: #38465b;
+    --diagram-ink: #e7edf7;
+    --diagram-line: #97a7bf;
+    --diagram-node: #2a3548;
+    --diagram-node-border: #8293ae;
+    --diagram-context: #253653;
+    --diagram-context-border: #819de0;
+    --diagram-design: #203f39;
+    --diagram-design-border: #68baa2;
+    --diagram-build: #38304f;
+    --diagram-build-border: #b3a0e5;
+    --diagram-choice: #473b25;
+    --diagram-choice-border: #d1ae6b;
+}
+
 .mermaid {
     overflow-x: auto;
-    margin-block: 1.5em;
+    margin-block: 1.75em;
+    padding: 1.5rem;
+    border: 1px solid var(--diagram-border);
+    border-radius: 16px;
+    background: var(--diagram-surface);
+}
+
+.mermaid svg {
+    display: block;
+    margin-inline: auto;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+/* Override Mermaid's generated theme without modifying its installed assets. */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon,
+.mermaid .node path {
+    fill: var(--node-surface, var(--diagram-node)) !important;
+    stroke: var(--node-outline, var(--diagram-node-border)) !important;
+    stroke-width: 1.4px !important;
+}
+
+.mermaid .node rect {
+    rx: 10px;
+    ry: 10px;
+}
+
+.mermaid .node {
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 5%));
+}
+
+.mermaid .nodeLabel,
+.mermaid .label text,
+.mermaid .edgeLabel {
+    color: var(--diagram-ink) !important;
+    fill: var(--diagram-ink) !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.mermaid .nodeLabel {
+    font-weight: 550;
+    line-height: 1.5;
+}
+
+.mermaid .flowchart-link {
+    stroke: var(--diagram-line) !important;
+    stroke-width: 1.5px !important;
+}
+
+.mermaid marker path {
+    fill: var(--diagram-line) !important;
+    stroke: var(--diagram-line) !important;
+}
+
+.mermaid .edgeLabel,
+.mermaid .edgeLabel p {
+    background-color: var(--diagram-surface) !important;
+}
+
+.mermaid .edgeLabel rect {
+    fill: var(--diagram-surface) !important;
+    opacity: 1 !important;
+}
+
+.mermaid .guide-context {
+    --node-surface: var(--diagram-context);
+    --node-outline: var(--diagram-context-border);
+}
+
+.mermaid .guide-design {
+    --node-surface: var(--diagram-design);
+    --node-outline: var(--diagram-design-border);
+}
+
+.mermaid .guide-build {
+    --node-surface: var(--diagram-build);
+    --node-outline: var(--diagram-build-border);
+}
+
+.mermaid .guide-choice {
+    --node-surface: var(--diagram-choice);
+    --node-outline: var(--diagram-choice-border);
+}
+
+@media print {
+    .mermaid {
+        --diagram-surface: #fff;
+        --diagram-ink: #26354a;
+        --diagram-line: #8291a6;
+        --diagram-node: #edf1f7;
+        --diagram-node-border: #8191a8;
+        --diagram-context: #eaf0ff;
+        --diagram-context-border: #7187c6;
+        --diagram-design: #e5f4ee;
+        --diagram-design-border: #5a9d87;
+        --diagram-build: #efecfc;
+        --diagram-build-border: #9280c2;
+        --diagram-choice: #fff2dc;
+        --diagram-choice-border: #c99e53;
+        border: 0;
+        padding: 0;
+        overflow: visible;
+    }
+
+    .mermaid svg {
+        max-width: 100% !important;
+    }
+
+    .mermaid .node {
+        filter: none;
+    }
 }

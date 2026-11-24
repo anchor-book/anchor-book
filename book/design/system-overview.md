@@ -78,6 +78,11 @@ implementation. The contract includes conditional guidance for these Books.
 
 ### Working through agents
 
+[Using Anchor Book with an Agent](user-guidance.md) defines the conversational
+user flow: express an outcome, understand the current state, resolve design
+choices, agree on work, build and verify, and reconcile the Book. Agents offer
+contextual next steps and example prompts through guidance in the common contract.
+
 The engineer and agents refine design, anchors, and the implementation roadmap
 together. Agents read the current Markdown sources and the engine's working
 contract, then implement assigned work and develop its tests and proofs.

@@ -6,6 +6,7 @@
 
 - [Design](design/index.md)
   - [System Overview](design/system-overview.md)
+  - [Using Anchor Book with an Agent](design/user-guidance.md)
   - [Anchor Definitions](design/anchor-definitions.md)
   - [Authority Definitions](design/authority-definitions.md)
   - [Configuration](design/configuration.md)

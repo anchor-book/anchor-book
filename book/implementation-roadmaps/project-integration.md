@@ -264,3 +264,79 @@ Complete locally on 2026-11-24 for phase parsing, configured contract delivery,
 working guidance, and the checks above. Changes are based on `64f0c3a`; integration
 into upstream and observation of the workflow in a real port remain outside this
 milestone's evidence.
+
+## Milestone 6. Engineers receive useful workflow guidance in conversation {#project-integration-6}
+
+**Outcome:** An engineer can ask how to use Anchor Book or what to do next and
+receive an understandable explanation, a grounded recommendation, and a usable
+prompt through the project's agent.
+
+**Status:** In progress
+
+**Identifier:** `project-integration-6`
+
+**Dependencies:** Existing contract delivery and configured phase selection.
+Conversation trials need agents with access to the selected engine and fixture
+Books; they do not require a new command or completion of milestone 4's broader
+integration work.
+
+**Design basis:** [User flow and guide](../design/user-guidance.md),
+[R-guided-workflow](../authority/requirements.md#R-guided-workflow), and
+[agent bootstrap](../design/project-integration.md#A-project-agent-bootstrap).
+
+**Tasks**
+
+- [x] Define orientation from current state, intent clarification, recommended paths, and iteration between design and building with an explicit design prerequisite.
+- [x] Deliver concise guidance through the common contract in every phase, with project-specific recommendations grounded in the current Book.
+- [x] Distinguish a conversational guidance request from an explicit request for the full readiness report.
+- [x] Check compiled delivery, navigation, and rendering; record their scope separately from conversational usefulness.
+- [ ] Trial orientation and next-step requests in this Book and independent fresh sessions; record misleading advice, missing choices, unnecessary approvals, and revisions to the guidance.
+
+### Completion criteria
+
+#### Guide delivery {#project-integration-6-delivery}
+
+The common and configured contracts deliver the conversational guidance and
+prompt examples exactly once, with valid internal links and unchanged retrieval
+semantics. The Book's introduction and design navigation lead to the fuller guide.
+
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `contract-retrieval`, `phase-guidance` — Partial: inclusion of the user guidance in the existing common and phase-selected contract delivery.
+- **Evidence:** Passed locally on 2026-11-24 on `conversational-user-guide`, based
+  on `4a24dca491b731e69a779fd69328068ef9ff6a21` plus this change. All six contract
+  tests pass, covering source packaging, actual CLI retrieval, every configured
+  phase, invalid configuration, preservation, and internal links. Formatting,
+  structural checking, mdBook build, and all five current/rendered-Book checks
+  pass; rendered acceptance covers 68 records and 2,842 local links, using a build directory separate from the live
+  preview. Browser
+  inspection confirms both guide diagrams render without script errors and use
+  the intended colors in light and navy themes. The diagrams retain their flow
+  and labels. These checks do not establish conversational usefulness.
+
+#### Contextual guidance {#project-integration-6-conversation}
+
+In observed sessions, an engineer can understand the relevant next step, why it
+fits, and what decision is needed without knowing the Book's syntax. Recommendations
+cite the current project context, preserve existing assignments and approvals,
+and do not present missing evidence or planned tools as available capability.
+
+- **Anchor coverage:** None — conversational usefulness and design judgment are assessed separately from executable contract-delivery guarantees.
+- **Evidence:** Pending. The following cases define the trial scope; packaging and structural tests alone cannot establish this criterion.
+
+| Situation | Expected conversation |
+| --- | --- |
+| General “How does this work?” with no Book | Explain the loop and offer supported setup help without inventing project state or requiring a readiness inventory. |
+| New or existing project asking for a first step | Summarize current state, ask the intended outcome if unknown, and offer relevant paths with a recommendation. Reuse an already stated goal. Distinguish establishing intended design from observing implementation. |
+| Port with unresolved compatibility choices | Reuse known source/target facts, surface consequential choices, and recommend target design before implementation milestones. |
+| Implementation roadmap lacking design or key anchors and authority | Identify the missing basis and a concrete design prompt before implementation planning; preserve existing work and evidence. |
+| Accepted design and an assigned milestone in progress | Give brief guidance and continue the assignment when requested; allow design iteration when needed without restarting the workflow or requesting the same approval. |
+| Passing tests with unlinked criteria | Explain what passed and what remains uncovered, with a useful verification next step. |
+| Explicit request to read the Book or give readiness | Return the full readiness template, preserving all milestone and criterion details. |
+
+Record the engine revision, agent/version, fixture state, prompt and observable
+response, any assistance, and remaining limitations. Trials assess bounded behavior;
+they do not prove that every agent will follow the guide.
+
+### Completion record
+
+Guide design and contract delivery are prepared locally for review. Conversational
+trials remain outstanding; publication and downstream adoption are separate work.

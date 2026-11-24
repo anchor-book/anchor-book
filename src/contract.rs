@@ -8,6 +8,7 @@
 /// The common contract text, identical for every project.
 pub const TEXT: &str = concat!(
     include_str!("../contract/session.md"),
+    include_str!("../contract/guidance.md"),
     include_str!("../contract/collaboration.md"),
     include_str!("../contract/reverse-engineering.md"),
     include_str!("../contract/roadmaps.md"),
@@ -19,8 +20,9 @@ pub const TEXT: &str = concat!(
 );
 
 /// Section files joined into [`TEXT`], in order, relative to `contract/`.
-pub const SECTIONS: [&str; 9] = [
+pub const SECTIONS: [&str; 10] = [
     "session.md",
+    "guidance.md",
     "collaboration.md",
     "reverse-engineering.md",
     "roadmaps.md",

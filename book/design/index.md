@@ -7,7 +7,8 @@ It defines the goal, not progress toward it.
 Chapters remain **drafts for review**. The
 [roadmaps](../implementation-roadmaps/index.md) record progress and evidence.
 
-Read from the system overview through the core records and configuration, then
+Read the system overview and conversational user guide before the core records
+and configuration, then
 RFDs as the optional process for evolving that definition. The operations follow:
 check its structure, produce verification evidence, and present the resulting
 Book. Project integration applies those capabilities in another repository;
@@ -17,6 +18,7 @@ read the general execution workflow before the proof-specific details.
 | Chapter | Scope |
 | --- | --- |
 | [System Overview](system-overview.md) | Components, Book concepts, operations, and how the engine will develop using its own Book |
+| [Using Anchor Book with an Agent](user-guidance.md) | User flow, example prompts, contextual next steps, and guidance delivered through the contract |
 | [Anchor Definitions](anchor-definitions.md) | One structured authoring format, authority references, and verification criteria |
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
 | [Configuration](configuration.md) | Mapping a project's layout into Book roles |
