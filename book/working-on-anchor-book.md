@@ -174,7 +174,10 @@ publication permission outside the repository.
 
 The engine owns the contract, as the [contract delivery design](design/system-overview.md#contract-delivery)
 describes. Its source is the section files in `contract/` at the repository root,
-joined in the order listed in `src/contract.rs`; `anchorbook contract` prints the
+joined in the order listed in `src/contract.rs`; `contract/guidance.md` supplies
+conversational guidance and prompt examples, designed in
+[Using Anchor Book with an Agent](design/user-guidance.md). The command
+`anchorbook contract` prints the
 common text, and `--config PATH` adds the Port section when the configured phase
 is `port`. `tests/contract.rs` checks section packaging, selection, internal links,
 and retrieval with invalid configuration or an absent Book.

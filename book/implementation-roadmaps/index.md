@@ -283,7 +283,7 @@ entire roadmap before using its results.
 
 - [Requests for Discussion](rfds.md): optional Book structure, coherent design proposals, shared relationships, conditional agent guidance, and derived implementation progress.
 - [Verification Evidence](verification-evidence.md): current results are available; shared build and rendered results remain in milestone 9. Review records, broader proof guards, and consumer-owned Verus have their own prerequisites.
-- [Project Integration](project-integration.md): this Book exercises shared groundwork, version alignment, and adoption guidance before Symposium relies on them.
+- [Project Integration](project-integration.md): this Book exercises shared groundwork, version alignment, and adoption guidance before Symposium relies on them. [Milestone 6](project-integration.md#project-integration-6) supplies conversational user guidance and prompt examples.
 - [Symposium Integration](symposium-integration.md): trials of Book development and agent work lead to upstream adoption; engine gaps are corrected here first.
 
 ### Established foundations

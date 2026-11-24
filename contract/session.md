@@ -49,7 +49,11 @@ but its findings qualify what you report about it.
 After reading, give the engineer a readiness report using the
 [required template](#readiness-report-template), so they can see the project's
 state and choose what to work on. Keep its headings, tables, and level of detail;
-a brief summary does not replace the report.
+a brief summary does not replace the report. For an explicit workflow-guidance or
+next-step question, use [conversational guidance](#guide-the-user-through-the-workflow)
+instead of the full report. Project-specific recommendations still require the
+reading and checking above; general process explanations need no readiness report.
+An explicit request to read the Book or report readiness uses the full template.
 
 When the request is only to read the Book, the readiness report is the whole
 response: report check findings and the repairs you would make rather than
