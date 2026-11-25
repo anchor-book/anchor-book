@@ -2,6 +2,3 @@
 .DS_Store
 /mermaid.min.js
 /mermaid-init.js
-
-# Local Python release-check caches.
-__pycache__/

@@ -43,8 +43,8 @@ recorded on 2026-11-10 with Verus 0.2026.10.18.7d82994. Its
 [original evidence context](https://github.com/anchor-book/anchor-book/blob/7966c9fddb3e9b9a710444c365cd698550de9b5f/book/implementation-roadmaps/formal-verification.md#formal-verification-4-evidence)
 remains available. The chosen target arrangement now lives in
 [Shipping Verified Code](design/verified-code-packaging.md#proof-packaging-for-consumers).
-Automated drift rejection is still missing; the feasibility result does not
-satisfy the packaged-source or feature-boundary criteria.
+That feasibility result did not establish automated drift rejection. The owning
+roadmap records the later private-workspace and source-audit work.
 
 ## Symposium test outcomes
 
@@ -120,9 +120,9 @@ with work and acceptance in [Project Integration milestone 7](implementation-roa
 
 Two release-tool details affect the preparation. Release-plz's
 [commit selection](https://github.com/release-plz/release-plz/blob/c9e4ab586016cb5fa0ba9760387f3dcde26c543b/website/docs/usage/release.md#what-commit-is-released)
-can publish the release PR's head instead of its merge commit. Squash merging
-keeps the selected publication at the main commit; the proposed gate validates
-that relationship. Cargo-semver-checks 0.51.0's default feature heuristic selects
+can publish the release PR's head instead of its merge commit. The release workflow therefore selects the same candidate before passing it
+to its validation jobs. Cargo-semver-checks 0.51.0's default feature heuristic selects
 `verus`. An Anchor Book all-features build on ordinary stable Rust failed at its
-Verus-only unstable attributes. An explicit `--default-features` API comparison
-avoids that verifier-only build; it is separate from release-plz's automatic scan.
+Verus-only unstable attributes. An explicit `--default-features` scan avoided that build in the initial
+preparation. Isolating the verifier in an unpublished workspace removes the
+public feature entirely, allowing the standard release-plz scan again.

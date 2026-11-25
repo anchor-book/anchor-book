@@ -84,15 +84,16 @@ job and its report check, and the mutation exclusions. The
 [Formal Verification roadmap](../implementation-roadmaps/formal-verification.md)
 records results and remaining review. The engine follows
 [Shipping Verified Code](verified-code-packaging.md): its validator uses Verus's
-attribute syntax, so only the `verus` feature brings in `vstd`. Reading, checking,
+attribute syntax through a repository-only proof manifest; the distributed crate
+has no Verus dependency or public verification feature. Reading, checking,
 and rendering a Book never run the verifier.
 
 ## Package and adapters
 
-The repository has one Cargo package containing a library and a CLI: package
+The distributed Cargo package contains a library and a CLI: package
 `anchor-book`, library `anchor_book`, and executable `anchorbook`.
-Confirm registry availability before release. Multiple crates are justified only
-when actual dependency or release requirements call for them.
+An unpublished, isolated workspace under `verification/` verifies that same library
+source with its own dependencies and lockfile. Confirm registry availability before release.
 
 The library owns configuration resolution, the Book model, rules, findings, and
 operations. The binary handles arguments, presentation, streams, and exit status.
@@ -279,9 +280,10 @@ The pinned Verus toolchain remains independent.
 | `mdbook-core` =0.5.4 | Read file-based renderer settings and defaults without running tools |
 | `syn` 2.0, with `full` and `parsing` only | Parse Rust sources to attach evidence-link doc comments to their functions; no proc-macro, printing, or Verus dependency |
 | `proc-macro2` 1.0, with `span-locations` only | Source line numbers for links and findings |
-| `vstd` =0.0.0-2026-10-18-0147, optional | Verus specifications for production authority validation, enabled only by the `verus` feature that `cargo verus verify` uses; ordinary builds and consuming projects do not build it, as the [isolation decision](../authority/decisions.md#D-isolate-engine-verification) requires |
 
-`Cargo.lock` records the exact tested dependency versions. The adapter targets
+`Cargo.lock` records the exact tested consumer dependencies. The private
+`verification/Cargo.toml` owns `vstd =0.0.0-2026-10-18-0147` and the proof
+configuration; it and its lockfile are excluded from publication. The adapter targets
 only the repository's pinned **mdBook 0.5.4** preprocessor protocol and rejects
 other versions explicitly. The checker uses the standalone summary/core crates,
 without the mdBook driver, renderer, or server. Rendered Book output remains

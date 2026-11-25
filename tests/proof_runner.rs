@@ -855,3 +855,139 @@ fn native_proof_failure_support_failure_trust_and_correction() {
     b.write("src/lib.rs", LIB);
     assert!(native("proof").status.success());
 }
+
+fn private_manifest(b: &fixture::Book) {
+    b.write("verification/Cargo.toml", "[package]\nname = \"modes\"\nversion = \"0.1.0\"\npublish = false\n[lib]\npath = \"../src/lib.rs\"\n");
+    b.write("verification/Cargo.lock", "# private lock\n");
+    b.write("verification/build.rs", "fn main() {}\n");
+    let configuration = fs::read_to_string(b.config()).unwrap().replace(
+        "manifest = \"Cargo.toml\"",
+        "manifest = \"verification/Cargo.toml\"",
+    );
+    b.write("anchorbook.toml", &configuration);
+}
+
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+#[test]
+fn private_proof_manifest_must_compile_the_identical_library_file() {
+    let b = book();
+    recording(&b);
+    private_manifest(&b);
+    let output = run(&b);
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    assert!(
+        fs::read_to_string(b.path("tools/calls"))
+            .unwrap()
+            .contains("--manifest-path\nverification/Cargo.toml\n")
+    );
+    // A symlink in another directory could select different relative modules.
+    std::os::unix::fs::symlink(b.path("src/lib.rs"), b.path("verification/alias.rs")).unwrap();
+    let manifest = fs::read_to_string(b.path("verification/Cargo.toml")).unwrap();
+    b.write(
+        "verification/Cargo.toml",
+        &manifest.replace("../src/lib.rs", "alias.rs"),
+    );
+    assert_eq!(run(&b).status.code(), Some(1));
+    b.write("verification/Cargo.toml", &manifest);
+    // Equal text in a separately maintained file is not the production source.
+    b.write("verification/copy.rs", LIB);
+    let manifest = fs::read_to_string(b.path("verification/Cargo.toml")).unwrap();
+    for altered in [
+        manifest.replace("../src/lib.rs", "copy.rs"),
+        manifest.replace("../src/lib.rs", "missing.rs"),
+        manifest.replace("publish = false", "publish = true"),
+    ] {
+        b.write("verification/Cargo.toml", &altered);
+        let output = run(&b);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(
+            report(&output)["reasons"]
+                .to_string()
+                .contains("no matching configured library target")
+        );
+    }
+}
+
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+#[test]
+fn private_manifest_lock_and_build_script_are_proof_inputs() {
+    let b = book();
+    recording(&b);
+    private_manifest(&b);
+    for path in [
+        "verification/Cargo.toml",
+        "verification/Cargo.lock",
+        "verification/build.rs",
+    ] {
+        let original = fs::read_to_string(b.path(path)).unwrap();
+        let output = command(&b, "proof")
+            .env("CHANGE", b.path(path))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(1));
+        assert!(report(&output)["reasons"].to_string().contains("changed"));
+        b.write(path, &original);
+    }
+    assert_eq!(run(&b).status.code(), Some(0));
+}
+
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+#[test]
+fn private_manifest_directory_roots_are_not_library_sources() {
+    let b = book();
+    recording(&b);
+    private_manifest(&b);
+    let private = fs::read_to_string(b.path("verification/Cargo.toml"))
+        .unwrap()
+        .replace("../src/lib.rs", "../src");
+    b.write("verification/Cargo.toml", &private);
+    let production =
+        fs::read_to_string(b.path("Cargo.toml")).unwrap() + "\n[lib]\npath = \"src\"\n";
+    b.write("Cargo.toml", &production);
+    let output = run(&b);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        report(&output)["reasons"]
+            .to_string()
+            .contains("no matching configured library target")
+    );
+}
+
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+#[test]
+fn proof_identity_follows_enabled_custom_build_scripts() {
+    let b = book();
+    recording(&b);
+    private_manifest(&b);
+    let manifest = fs::read_to_string(b.path("verification/Cargo.toml")).unwrap();
+    b.write(
+        "verification/Cargo.toml",
+        &manifest.replace("publish = false", "publish = false\nbuild = \"setup.rs\""),
+    );
+    b.write("verification/setup.rs", "fn main() {}\n");
+    let output = command(&b, "proof")
+        .env("CHANGE", b.path("verification/setup.rs"))
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    assert!(report(&output)["reasons"].to_string().contains("changed"));
+    b.write(
+        "verification/Cargo.toml",
+        &manifest.replace("publish = false", "publish = false\nbuild = false"),
+    );
+    let output = command(&b, "proof")
+        .env("CHANGE", b.path("verification/build.rs"))
+        .output()
+        .unwrap();
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}

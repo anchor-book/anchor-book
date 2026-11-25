@@ -41,8 +41,8 @@ protection**. Merge protection is shared with
 [Mutation Testing milestone 2](mutation-testing.md#mutation-testing-2): the
 **Protect main** ruleset requires the authority proof alongside the other checks.
 
-Milestone 4 makes Verus optional and starts with a bounded feasibility
-experiment. It does not depend on the consumer runner. Any project that adds the
+Milestone 4 isolates the verifier from the distributed crate; its initial
+optional-feature feasibility experiment supplies earlier evidence. It does not depend on the consumer runner. Any project that adds the
 engine as a Cargo dependency depends on it, whether or not that project uses
 Verus, and so does [consumer acceptance](verification-evidence.md#verification-evidence-5). Existing proof evidence remains tied to its recorded revision; packaging
 changes require new proof and integration evidence.
@@ -254,9 +254,9 @@ All Book definitions, literal examples, and fixtures use the same required field
 
 Complete locally on 2026-10-21. Required-method declarations are parsed, rendered, and exercised with independent and current-Book inputs. The schema change is committed as `7ab9616`; proof implementation and subsequent remote evidence are tracked in milestones 1 and 2.
 
-## Milestone 4. Verus is an optional engine feature {#formal-verification-4}
+## Milestone 4. Engine verification stays inside the repository {#formal-verification-4}
 
-**Outcome:** Ordinary builds of the engine, and of every project that depends on it, need no Verus toolchain or `vstd`; the engine's proof builds only with an optional Cargo feature, over the same maintained source that ordinary builds execute.
+**Outcome:** Ordinary builds of the engine, and of every project that depends on it, need no Verus toolchain or `vstd`; the engine's proof builds through a private manifest over the same maintained source that ordinary builds execute. The distributed manifest and every public feature selection remain free of engine Verus dependencies.
 
 **Status:** In progress
 
@@ -273,7 +273,9 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 - [x] Preserve `fixtures/consumers/verus-resolution` as the consumer-resolution regression fixture: its exact `vstd` pin fails against the current engine and must resolve and build after isolation. Repeat with the packaged candidate and an ordinary consumer without Verus installed.
 - [x] Verify the source corresponding to that package, run ordinary tests on the minimum and stable toolchains, and reject a deliberate authority defect before restoring a passing proof. Reassess conversion, callers, diagnostics, and any new generation boundary.
 - [x] Record package contents and dependency review, source correspondence, tools, commands, tested revisions, proof and integration results, and remaining limits. Reconcile contributor commands and the proof workflow with the chosen arrangement.
-- [ ] Settle the programmatic source-comparison boundary, then add independent feature-boundary and packaged-source checks with seeded divergence; link and run both criteria.
+- [x] Move Verus into an excluded, unpublished workspace that targets the identical production library; preserve source and configuration identity in the native runner and reject redirected proof sources.
+- [x] Enforce package exclusion, ordinary dependency parity, all-feature consumer isolation, and native proof preservation for this arrangement.
+- [x] Add source-boundary and packaged-source identity checks with seeded divergence, linking the continuing criterion identities. The audit permits the named ghost configuration only on supported Verus annotations, ghost functions, proof blocks, and imports; compiler and verifier behavior remain trusted.
 
 ### Completion criteria
 
@@ -282,7 +284,7 @@ Complete locally on 2026-10-21. Required-method declarations are parsed, rendere
 Review identifies one maintained authority implementation and a reproducible relationship between verified and packaged functions. Independent tests and drift checks reject divergence; any erasure or conversion assumptions are explicit. A separately maintained proof-only validator cannot complete this criterion.
 
 - **Anchor coverage:** [A-records-valid-authority](../design/rust-engine.md#A-records-valid-authority) · `formal-authority`, `production-integration` — Partial: correspondence across the packaging boundary; specification acceptance remains in milestone 1. [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) · `feature-boundary`, `packaged-source` — Full.
-- **Evidence:** Partial. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. The source comparison and review support this tested candidate. They do not establish automated drift rejection: no check for gated executable code exists yet. [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) exposes the missing checks.
+- **Earlier evidence (2026-11-10):** Partial. There is one implementation: the seven functions in `src/records/authority.rs` are ordinary Rust, and the `verus` feature adds only their `verus_spec` attributes, the specification-function block, one `proof!` block, and the `vstd` import. No executable statement is gated, so verified and compiled bodies are the same source with no generation or erasure step. The packaged `.crate`'s `authority.rs` is byte-identical to the branch's. The source comparison and review support this tested candidate. That trial did not establish automated drift rejection. [A-package-verified-bodies](../design/verified-code-packaging.md#A-package-verified-bodies) exposes the missing checks.
 
 #### Consumer resolution {#formal-verification-4-consumer-resolution}
 
@@ -308,7 +310,7 @@ A recorded review of the candidate's package contents, dependency set, and featu
 
 ### Evidence {#formal-verification-4-evidence}
 
-**Arrangement chosen:** The accepted [packaging design](../design/verified-code-packaging.md#proof-packaging-for-consumers)
+**Earlier arrangement (2026-11-10):** The [packaging design](../design/verified-code-packaging.md#proof-packaging-for-consumers)
 uses ordinary Rust executable bodies with optional Verus attributes. The
 [feasibility research](../research.md#optional-verus-packaging) records the source
 guidance, tested slice, and rejected generated-source alternative. Proof, consumer,
@@ -318,22 +320,48 @@ and mutation results stay here with their original scope.
 
 **Changes:** `src/records/authority.rs`, `src/lib.rs` (enables `proc_macro_hygiene` only with the feature, for loop attributes), `Cargo.toml`, `.cargo/mutants.toml`, the proof workflow's `--features verus`, CONTRIBUTING, and the Rust Engine, Running Verification, and Shipping Verified Code chapters.
 
-**Limits:** The attribute syntax is a contributed Verus extension that changes between releases; reverify on every upgrade. `cargo build --features verus` with an ordinary toolchain fails, because the loop attributes need the feature only Verus's compiler allows; the feature is for verification only. No automated check yet enforces that the feature gates no executable code.
+**Earlier limits:** The public verification feature still required the verifier's compiler, and that trial had no automated executable-source guard. The private-workspace revision below replaces that boundary. The Verus attribute extension still requires revalidation on upgrades.
+
+### Private-workspace validation
+
+The release-preparation revision following `0ba3407` moves verifier dependencies
+and their lockfile to excluded `verification/`, whose library target is the actual
+production `src/lib.rs`. The public manifest and lockfile contain no verifier
+package or feature. This supersedes the optional public feature while retaining
+the single maintained executable implementation.
+
+- **Runtime correspondence:** Rust tests audit the ghost-only configuration and
+  compare packaged production files byte for byte. Seeded conditional runtime
+  code, a redirected proof library, and altered/missing packaged files are rejected.
+  The runner also rejects changes to private manifests, lockfiles, and enabled
+  build scripts during verification. Both source-correspondence criteria are linked.
+- **Consumer isolation:** Explicit Rust package acceptance passes: stable and Rust
+  1.88 builds, archive installation, CLI/contract/template checks, Book rendering,
+  manifest/lockfile/resolution audit, and default/all-feature consumer use. The
+  private workspace is absent from the archive. Consumers select their own vstd;
+  the original conflicting pin is retained as a regression case.
+- **Preserved proof:** A disposable copy passes the native configured target gate
+  with the pinned verifier. Replacing the accepted-status condition with `false`
+  fails verification, and restoring it passes. All seven linked functions are
+  checked through the private manifest over the production library.
+- **Scope:** These checks establish source/dependency isolation and native target
+  preservation. They do not supply the separate proof-criterion guards or general
+  dependency-policy coverage. Ordinary tests and Clippy pass on stable and Rust
+  1.88; the full independent-build experiment passes. PR CI and integration remain
+  pending for this revision.
 
 ### Completion record
 
-Reconciled to In progress on 2026-11-24: the runtime-correspondence completion
-criterion already required automated divergence checks, but its evidence records
-only source comparison and review. The optional feature, consumer isolation,
-packaged proof, and tests delivered on 2026-11-10 retain their recorded evidence.
-The two source-correspondence criteria remain unlinked; milestone completion
-requires those checks. This correction does not reopen delivered implementation.
+In progress: the private-workspace implementation and local validation are ready
+for PR review; required CI and integration remain outstanding. Earlier proof,
+consumer and mutation evidence retains its recorded scope. Registry publication
+is owned by Project Integration milestone 7 and is not proof-isolation evidence.
 
 ## Later work
 
 [Executable-source correspondence](../design/verified-code-packaging.md#A-package-verified-bodies)
-requires `feature-boundary` and `packaged-source` checks. Milestone 4's consumer
-builds and production-boundary review retain their tested scope; review cannot
+has executable `feature-boundary` and `packaged-source` checks in milestone 4.
+Its earlier consumer builds and production-boundary review retain their tested scope; review cannot
 satisfy these newly explicit criteria. Select the comparison boundary for permitted
 ghost erasure and package contents, implement seeded mismatch rejection, then link
 and execute the checks. Milestone 4 owns this outstanding verification work; the comparison policy is

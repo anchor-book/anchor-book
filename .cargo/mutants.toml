@@ -15,10 +15,10 @@ exclude_re = [
     # Loop counters in the verified authority functions: `+= 1` to `*= 1` leaves the
     # index at 0, so the loop never ends and tests can only time out. Termination is
     # proved instead: each loop's `decreases` clause rejects these changes under
-    # `cargo verus verify --features verus`. Re-review when these loops change.
-    '^src/records/authority\.rs:283:25: replace \+= with \*= in lookup$',
-    '^src/records/authority\.rs:310:25: replace \+= with \*= in has_unknown_identity$',
-    '^src/records/authority\.rs:350:33: replace \+= with \*= in validate_reference$',
-    '^src/records/authority\.rs:443:33: replace \+= with \*= in validate_authorities$',
-    '^src/records/authority\.rs:446:22: replace \+= with \*= in validate_authorities$',
+    # `cargo verus verify --manifest-path verification/Cargo.toml`. Re-review when these loops change.
+    '^src/records/authority\.rs:282:25: replace \+= with \*= in lookup$',
+    '^src/records/authority\.rs:309:25: replace \+= with \*= in has_unknown_identity$',
+    '^src/records/authority\.rs:349:33: replace \+= with \*= in validate_reference$',
+    '^src/records/authority\.rs:442:33: replace \+= with \*= in validate_authorities$',
+    '^src/records/authority\.rs:445:22: replace \+= with \*= in validate_authorities$',
 ]

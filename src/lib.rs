@@ -18,7 +18,7 @@
 //! # Ok::<(), anchor_book::RecordErrors>(())
 //! ```
 // Verus's attributes on loops need this; only verification enables the feature.
-#![cfg_attr(feature = "verus", feature(proc_macro_hygiene))]
+#![cfg_attr(anchorbook_verification, feature(proc_macro_hygiene))]
 
 pub mod adapters;
 pub mod checking;

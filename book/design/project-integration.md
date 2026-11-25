@@ -31,8 +31,9 @@ situations other projects bring.
 > - Criterion `unsupported-versions` [test]: Configurations and Books declaring unsupported schema or record-syntax versions produce incomplete results identifying the declared and supported versions.
 
 > **`A-project-no-imposed-dependencies`** (draft): **Depending on the engine does not constrain the project's own tools**
-> Property: Adding the crate as a dependency builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
+> Property: Adding the crate as a dependency, with any published feature selection, builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
 > Authority: `R-project-adoption`; `D-isolate-engine-verification`
+> - Criterion `verifier-isolation` [test]: The published manifest, feature set, lockfile, and resolved dependency graph contain no engine Verus dependencies. Default and all-feature consumers build on the minimum and stable Rust toolchains; a consumer can independently select a different vstd version. The private verification workspace is excluded from the package.
 > - Criterion `independent-resolution` [test]: A fixture workspace that depends on the crate and on a different vstd version resolves and builds, and the crate's default dependency tree contains no vstd, Verus, or exact-version requirement on shared packages.
 > - Criterion `dependency-review` [test]: Inspect packaged Cargo metadata and feature-resolution fixtures with an executable dependency audit: require optional verifier dependencies to be absent from ordinary builds and every exact-version requirement to match the declared compatibility policy and recorded reason. Reject an undeclared pin or default verifier dependency.
 > - Criterion `renderer-versions` [test]: The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions.
@@ -197,10 +198,12 @@ establishes crate ownership through the registry's supported bootstrap procedure
 subsequent releases use OIDC. Merging a release PR is the recurring release
 control; setup does not add another routine approval ceremony.
 
-Release PRs use squash merges so the publication revision remains the checked
-main commit. A gate rejects merge strategies that let release-plz select a different
-commit. Package validation and library compatibility checks exercise ordinary consumer
-features without implicitly enabling the engine's Verus verification feature.
+The release workflow selects the source revision release-plz will publish and
+passes it to reusable validation jobs. Publication depends on their successful
+completion through GitHub Actions job dependencies. This supports release-plz's
+merge and squash behavior without a separate service that interprets CI history.
+Package validation and library compatibility checks exercise the published feature
+set; the engine's Verus dependencies exist only in its private proof workspace.
 The [dependency](#what-the-crate-must-not-impose) and
 [packaged-source](verified-code-packaging.md#A-package-verified-bodies) guarantees
 still apply. Release notes report unresolved scope honestly rather than treating

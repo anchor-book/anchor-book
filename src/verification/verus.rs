@@ -208,6 +208,37 @@ fn fresh_directory(output: &Path) -> std::io::Result<PathBuf> {
     Ok(dir)
 }
 
+// An unpublished alternate manifest may add proof dependencies, but it must
+// compile the production library root directly, never a proof-only copy.
+fn same_library_source(production: &Path, verification: &Path) -> bool {
+    fn library(manifest: &Path, private: bool) -> Option<(PathBuf, PathBuf)> {
+        let text = fs::read_to_string(manifest).ok()?;
+        let document = toml_edit::Document::parse(text.as_str()).ok()?;
+        if private
+            && document
+                .get("package")?
+                .get("publish")
+                .and_then(|p| p.as_bool())
+                != Some(false)
+        {
+            return None;
+        }
+        let path = document
+            .get("lib")
+            .and_then(|l| l.get("path"))
+            .and_then(|p| p.as_str())
+            .unwrap_or("src/lib.rs");
+        let declared = manifest.parent()?.join(path);
+        let source = fs::canonicalize(&declared).ok()?;
+        // Relative modules resolve beside the declared root. A symlink to the
+        // same file in a different directory can select different module files.
+        let directory = fs::canonicalize(declared.parent()?).ok()?;
+        source.is_file().then_some((source, directory))
+    }
+    matches!((library(production, false), library(verification, true)),
+        (Some(production), Some(verification)) if production == verification)
+}
+
 fn display(path: &Path, base: &Path) -> String {
     path.strip_prefix(base)
         .unwrap_or(Path::new("[external]"))
@@ -255,7 +286,9 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
         let Some(configured) = settings.targets.iter().find(|t| {
             &t.package == package
                 && *target == Target::Lib
-                && plan.manifests.get(package) == Some(&t.manifest)
+                && plan.manifests.get(package).is_some_and(|production| {
+                    production == &t.manifest || same_library_source(production, &t.manifest)
+                })
         }) else {
             return ProofResult::Unusable(format!(
                 "no matching configured library target for `{package}` ({target})"

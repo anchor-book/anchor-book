@@ -9,7 +9,8 @@ Read the [Anchor Book](https://anchor-book.github.io/anchor-book/) and
 
 The `anchor-book` package contains the `anchor_book` Rust library and the
 `anchorbook` command. It requires Rust 1.88 or newer. Ordinary installation and
-use do not require Verus. Rendering uses mdBook 0.5.4; verification needs the
+use, including all published features, do not depend on Verus or `vstd`.
+The engine's own verifier is confined to an unpublished workspace in this repository. Rendering uses mdBook 0.5.4; verification needs the
 project's configured test or proof tools.
 
 The first crates.io release is being prepared. Until it is published, install
@@ -22,6 +23,6 @@ anchorbook contract
 ```
 
 Once a release is published, install its exact version with
-`cargo install anchor-book --version =VERSION --locked`. A library consumer uses
+`cargo install anchor-book --version "=VERSION" --locked`. A library consumer uses
 `anchor-book = "=VERSION"` in Cargo.toml. Upgrade both entry points together;
 automatic version alignment and project creation are not implemented.

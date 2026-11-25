@@ -34,7 +34,7 @@ is deferred while its role is unclear; see
 retired.
 
 Verus is optional for every project. A project that adds the engine as a Cargo
-dependency needs [Verus as an optional engine feature](formal-verification.md#formal-verification-4)
+dependency needs [repository-only engine verification](formal-verification.md#formal-verification-4)
 first, whether or not it verifies its own code; proofs in other projects are
 [deferred](verification-evidence.md#verification-evidence-5).
 
@@ -456,7 +456,7 @@ The [Sparkle assessment](../research.md#registry-release-automation) supplies so
 
 - [ ] Prepare the initial `anchor-book` version (proposed: 0.1.0). Review public APIs, CLI/configuration/record compatibility, licenses, README install examples, documentation metadata, package contents, and changelog. Keep automatic publishing disabled until the release is prepared and authorized.
 - [ ] Exercise a fresh consumer and an installation from the packaged crate without Git or Verus. Check default dependency resolution, including a consumer selecting a different vstd version, runtime source identity, contract and template retrieval, structural checks, and rendering. Record unresolved package guarantees instead of inferring them from a successful build.
-- [ ] Add `release-plz.toml` and `.github/workflows/release-plz.yml`, with `release_always = false`, ordinary-feature publication, explicit GitHub job permissions, and a GitHub app token or appropriately scoped `RELEASE_PLZ_TOKEN`. Confirm library semver checking works without enabling `verus`. Generated release PRs must trigger the existing protected checks.
+- [ ] Add `release-plz.toml` and `.github/workflows/release-plz.yml`, with `release_always = false`, ordinary-feature publication, explicit GitHub job permissions, and a GitHub app token or appropriately scoped `RELEASE_PLZ_TOKEN`. Use standard library semver checking after isolating the verifier from every public feature. Generated release PRs must trigger the existing protected checks.
 - [ ] Add a package/install acceptance gate and require successful checks for the exact release revision before publication. Wire the existing separate workflows into a gate or reuse their validation; do not publish concurrently with unchecked main-branch runs.
 - [ ] With explicit publication authorization, perform the initial publish, establish the intended crate owners, configure trusted publishing for this repository and workflow, and enable recurring release publication. Coordinate the initial version's crate, tag, changelog, and GitHub release.
 - [ ] Exercise the next release PR, publication, and a retry; document recovery from a partially completed registry/tag/GitHub-release sequence. Update consumer instructions to exact registry versions and run a real Symposium adoption trial after the release.
@@ -472,7 +472,7 @@ complete, verifier tools are unnecessary for ordinary use, and any intentionally
 unsupported scope is explicit in release notes.
 
 - **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `contract-retrieval` — Partial: registry-installed CLI; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution`, `dependency-review` — Partial: release package and consumer fixtures.
-- **Evidence:** Initial packaging at `70355d4` passed `cargo package --locked`. The clean preparation commit `aaabda4` passes `python3 scripts/check-package.py`: archive installation outside the checkout, revision identity, contract and template comparison, fixture Book checking/rendering, and a library consumer both without vstd and with its own different version. The extracted package builds on stable and Rust 1.88.0. A default-feature cargo-semver-checks 0.51.0 comparison against merged main `3699fe5` passes 202 checks, with 58 skipped; it is not a published-version comparison. Registry installation and the broader packaged-proof source-correspondence guarantees remain outstanding.
+- **Evidence:** Initial packaging at `70355d4` and archive acceptance at `aaabda4` established the distribution path. The revision following `0ba3407` replaces that prototype script with `cargo test --test package -- --ignored`: archive installation, source identity, contract/template comparison, fixture Book checking/rendering, stable and Rust 1.88 builds, all-feature dependency isolation, and independent consumers. [Formal Verification 4](formal-verification.md#formal-verification-4) owns the private proof workspace and correspondence checks. Registry installation remains outstanding; package tests do not imply that every engine anchor is satisfied.
 
 #### Controlled releases {#project-integration-7-release-flow}
 
@@ -484,7 +484,7 @@ same version and commit. A repeated run preserves that identity. Failed checks
 and a non-release main-branch change do not publish a new version.
 
 - **Anchor coverage:** None: project release-workflow acceptance; publishing is not evidence that all engine anchors are satisfied.
-- **Evidence:** The branch prepares `release-plz.toml`, disabled release automation, and Package CI. Seven local publication-gate tests pass, covering missing, failed, pending, stale, wrong-revision and foreign-repository evidence, non-release changes, retry eligibility, API failure, and rejected merge strategies. Workflow lint passes. These tests establish gate decisions, not live GitHub triggering, registry ownership, OIDC publication, or interrupted-release recovery; those trials remain outstanding.
+- **Evidence:** The initial gate prototype at `aaabda4` passed seven local tests. The current revision replaces it with reusable validation jobs and GitHub Actions `needs` dependencies. It selects the source release-plz will publish before validation and supports merge and squash releases. The private verifier workspace allows standard release-plz API scanning again. Workflow lint passes; live GitHub triggering, registry ownership, OIDC publication, and interrupted-release recovery remain outstanding. Automation stays disabled during bootstrap.
 
 #### Consumer adoption {#project-integration-7-adoption}
 

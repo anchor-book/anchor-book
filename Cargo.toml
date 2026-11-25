@@ -12,6 +12,7 @@ homepage = "https://anchor-book.github.io/anchor-book/"
 keywords = ["documentation", "design", "verification", "mdbook"]
 categories = ["development-tools", "command-line-utilities"]
 publish = ["crates-io"]
+exclude = ["/verification/"]
 
 [lib]
 name = "anchor_book"
@@ -30,18 +31,10 @@ toml_edit = { version = "0.25.6", default-features = false, features = ["parse",
 # Rust source parsing for evidence links: items, attributes, and line positions only.
 syn = { version = "2.0.119", default-features = false, features = ["full", "parsing"] }
 proc-macro2 = { version = "1.0.107", default-features = false, features = ["span-locations"] }
-vstd = { version = "=0.0.0-2026-10-18-0147", optional = true }
-
-[features]
-# Verification only: `cargo verus verify --features verus` supplies vstd and attaches
-# the authority proof's specifications. Ordinary builds and dependents need no Verus
-# crate. The feature must never change executable code.
-verus = ["dep:vstd"]
-
 [lints.rust]
 unsafe_code = "forbid"
 missing_docs = "warn"
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(verus_only)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(verus_only)', 'cfg(anchorbook_verification)'] }
 
 [lints.clippy]
 all = "warn"
@@ -50,6 +43,3 @@ all = "warn"
 percent-encoding = "2.3"
 scraper = { version = "0.24", default-features = false }
 url = "2.5"
-
-[package.metadata.verus]
-verify = true

@@ -277,10 +277,13 @@ cargo run --quiet --locked --bin anchorbook -- proof --config anchorbook.toml --
 ```
 
 The production functions are ordinary Rust carrying Verus attributes such as
-`#[cfg_attr(feature = "verus", verus_spec(...))]`; specification functions sit in a
-`#[cfg(feature = "verus")] verus! { ... }` block. The feature may gate only
-specifications and proofs, never executable code: code that differs under the
-feature would make the proof describe something other than what runs.
+`#[cfg_attr(anchorbook_verification, verus_spec(...))]`; specification functions
+sit in a guarded `verus!` block. Only the unpublished `verification/` workspace
+sets that configuration and depends on vstd. Its manifest points directly to
+`../src/lib.rs`; ordinary dependencies must match the public manifest, while the
+private lockfile stays separate. The published crate has no Verus feature or
+dependency. The configuration may gate only specifications and proofs, never
+executable code. Rust package tests reject source divergence and dependency leaks.
 
 Verification uses Rust 1.99.1; ordinary engine builds require Rust 1.88 or later.
 No Book build or wrapper script is required. `--no-cheating` rejects project
@@ -457,24 +460,22 @@ GitHub token alone cannot publish. `release-plz.toml` and
 For a local package trial, with mdBook and Rust 1.88.0 installed:
 
 ```sh
-python3 -m unittest discover -s scripts -p 'test_*.py'
-python3 scripts/check-package.py
+cargo test --locked --test package
+cargo test --locked --test package -- --ignored --nocapture
 ```
 
-The package check installs the extracted archive outside the checkout, compares
-its source revision, contract and template, checks and renders a fixture Book,
-and runs a library consumer with ordinary dependencies and with its own different
-vstd version. Use `--allow-dirty` only for a local preparation trial; release CI
-requires a clean source revision. Cargo also compiles the extracted package with stable and Rust 1.88.0.
+The ordinary tests reject verifier declarations and configuration-dependent
+executable source. The explicit acceptance test packages with all public features,
+checks source identity and dependency isolation, builds with stable and Rust 1.88,
+installs the CLI, checks and renders a fixture Book, and runs separate library
+consumers, including one choosing its own vstd. It also checks private/public
+ordinary dependency declarations. For a local uncommitted trial only, set
+`ANCHORBOOK_PACKAGE_ALLOW_DIRTY=1`; release CI requires a clean checkout.
 
-Package CI installs cargo-semver-checks 0.51.0 and runs
-`python3 scripts/check-release-api.py`. It compares default features with the
-latest stable crates.io version; before the first publication it explicitly
-reports the absent baseline. Release-plz's implicit API scan is disabled because
-its feature heuristic enables `verus`, which requires the separate verifier
-toolchain. A detected API break requires an appropriate version bump in the PR;
-do not disable the check to get a release through. The check cannot assess CLI,
-configuration, record-format, or contract migrations.
+Release-plz uses cargo-semver-checks 0.51.0 with its normal feature selection.
+The public crate's features cannot enable the private verifier. API comparison
+begins after the first registry publication supplies a baseline. Review CLI,
+configuration, record-format, and contract migrations separately.
 
 ### One-time bootstrap
 
@@ -496,32 +497,30 @@ configuration, record-format, or contract migrations.
    This workflow has no GitHub environment. Subsequent publications request the
    registry credential through OIDC; no persistent Cargo token belongs in Actions.
 5. Enable `RELEASE_AUTOMATION_ENABLED=true` in repository Actions variables. Run
-   **Release** manually on `main` to create the first automated release PR.
+   **Main and release** manually on `main` to create the first automated release PR.
    This dispatch prepares a PR; publication waits for a release-PR merge and CI.
 
 ### Recurring releases and recovery
 
 Release-plz proposes version and changelog updates after changes reach `main`.
-Review scope, compatibility, migrations, and the required checks, then use
-**Squash and merge for release PRs**. Other PRs retain their usual merge options.
-The publication gate rejects merge commits and ancestor PR heads because
-release-plz can otherwise switch away from the checked revision.
+Review scope, compatibility, migrations, and required checks before merging.
+Both merge commits and squash merges are supported.
 
-After a release PR merges, completion of the Book, Formal verification, Mutation
-testing, and Package workflows reevaluates publication. All four latest **main
-push runs for that exact SHA** must succeed. The Book run includes both Rust
-versions and installed-engine acceptance. Missing, running, skipped, cancelled,
-or failed checks cannot publish. The publishing job checks out that SHA and
-`release_always=false` restricts it to a release PR. CI on a fork or PR revision
-cannot supply the release evidence.
+`Main and release` selects the revision release-plz will publish: a merged release
+PR's head when it is an ancestor, otherwise the main commit produced by squash or
+rebase. It passes that immutable revision to the reusable Book, proof, mutation,
+and Package workflows. Those same workflows run directly on PRs. Publication uses
+GitHub Actions `needs` dependencies and starts only if every validation job succeeds;
+there is no service that queries CI history to decide readiness. The Book workflow
+includes both Rust versions and installed-engine acceptance. Automatic publication
+is disabled during bootstrap, while main validation continues to run.
 
-If validation fails, fix it through a PR and rerun the affected checks. If a
-release PR was merged using the wrong method, prepare a new `release-plz-...` PR
-from main with the corrected release contents and squash it; do not rewrite main.
-For an interrupted publication, inspect crates.io, the tag, and the GitHub release
-before retrying. Rerun a validation workflow's original main-push run to trigger
-the gate for the same SHA. Do not change the version, republish different bytes,
-move an existing tag, or delete a published crate to recover. If a retry leaves a tag or GitHub release missing, complete those only after
-confirming the already published crate's version and source SHA. A conflict
-requires inspection before any manual repair. The first live release and interrupted-publication trial remain
-milestone evidence to collect, not behavior established by local gate tests.
+If validation fails, fix it through a PR and rerun the affected checks. For an
+interrupted publication, inspect crates.io, the tag, and the GitHub release before
+retrying the original `Main and release` run for the same revision. Do not change
+the version, republish different bytes, move an existing tag, or delete a published
+crate to recover. If a retry leaves a tag or GitHub release missing, complete those
+only after confirming the published crate's version and source SHA. A conflict
+requires inspection before manual repair. GitHub/OIDC publication and interruption
+recovery still need live trials after bootstrap; local package tests do not establish
+them.
