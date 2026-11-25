@@ -98,38 +98,13 @@ project's installation and reads its report.
 
 ## Shared verification adapters
 
-Anchor Book supplies the connection between anchor criteria and the project's
-verification tools. An adapter translates a verification plan into tool
-invocations and normalizes the results; the engine owns criterion matching,
-current-input checks, required guards, and satisfaction across every required
-method. The standard Verus adapter invokes the project's installed tools, so
-using this capability adds no engine-owned `vstd` dependency to the project.
+Anchor Book supplies the connection between anchor criteria and the project's verification tools. An adapter translates a verification plan into tool invocations and normalizes the results; the engine owns criterion matching, current-input checks, required guards, and satisfaction across every required method. The standard Verus adapter invokes the project's installed tools, so using this capability adds no engine-owned `vstd` dependency to the project.
 
-Anchor Book uses that same project-facing adapter interface to verify its own
-code. Its private `verification/` workspace is a consumer of the interface: it
-owns the engine's proof dependencies, lockfile, and build configuration, while
-the adapter runs the verifier and returns evidence. The workspace's library
-points to the maintained production source, under the
-[source-correspondence rules](verified-code-packaging.md#proof-packaging-for-consumers).
-It is excluded from the published crate; the capability to verify a user's own
-criteria remains part of Anchor Book. Engine proofs establish only this Book's
-criteria, never those of a consuming project.
+Anchor Book uses that same project-facing adapter interface to verify its own code. Its private `verification/` workspace is a consumer of the interface: it owns the engine's proof dependencies, lockfile, and build configuration, while the adapter runs the verifier and returns evidence. The workspace's library points to the maintained production source, under the [source-correspondence rules](verified-code-packaging.md#proof-packaging-for-consumers). It is excluded from the published crate; the capability to verify a user's own criteria remains part of Anchor Book. Engine proofs establish only this Book's criteria, never those of a consuming project.
 
-A project-specific verification command connects through an adapter with defined
-result semantics. Results must identify the checks and inputs evaluated, actual
-tools, completeness, and outcomes; a successful process exit alone cannot satisfy
-a criterion. Adapter results retain the same evidence and proof-scope rules as
-standard runners. A separate model's success does not establish a claim about
-production code without the required correspondence.
+A project-specific verification command connects through an adapter with defined result semantics. Results must identify the checks and inputs evaluated, actual tools, completeness, and outcomes; a successful process exit alone cannot satisfy a criterion. Adapter results retain the same evidence and proof-scope rules as standard runners. A separate model's success does not establish a claim about production code without the required correspondence.
 
-The adapter boundary does not require another crate. Separate optional adapter
-packages are useful when dependencies or verifier compatibility need independent
-releases; their packaging preserves the same dependency isolation and evidence
-rules. Anchor Book's own proof workspace and independent consumer fixtures
-exercise the shared interface, with no engine-only invocation or result parser.
-[Running Verification](verification-evidence.md#running-linked-checks) owns runner
-behavior; [adapter extension choices](../open-questions.md#verification-adapter-extensions)
-identify the interface details to settle before adding custom commands.
+The adapter boundary does not require another crate. Separate optional adapter packages are useful when dependencies or verifier compatibility need independent releases; their packaging preserves the same dependency isolation and evidence rules. Anchor Book's own proof workspace and independent consumer fixtures exercise the shared interface, with no engine-only invocation or result parser. [Running Verification](verification-evidence.md#running-linked-checks) owns runner behavior; [adapter extension choices](../open-questions.md#verification-adapter-extensions) identify the interface details to settle before adding custom commands.
 
 ## Tests that match the design
 

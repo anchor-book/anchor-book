@@ -41,12 +41,7 @@ Exercise each engine capability in this Book before Symposium relies on it.
 Symposium trials later assess adoption and return findings to the engine; new
 project tests and coding trials do not gate this reporting increment.
 
-[Milestone 11](#verification-evidence-11) removes judgments from verification;
-[milestone 12](#verification-evidence-12) owns executable checks for migrated
-review criteria. The proposed assessment reader in milestone 8 is retired.
-Broader programmatic proof guards and the brief remain in milestone 6; consumer
-proofs in milestone 5 also need [private Verus packaging](formal-verification.md#formal-verification-4).
-They are separate from Symposium's test workflow.
+[Milestone 11](#verification-evidence-11) removes judgments from verification; [milestone 12](#verification-evidence-12) owns executable checks for migrated review criteria. The proposed assessment reader in milestone 8 is retired. Broader programmatic proof guards and the brief remain in milestone 6; consumer proofs in milestone 5 also need [private Verus packaging](formal-verification.md#formal-verification-4). They are separate from Symposium's test workflow.
 
 Milestone 4 records criteria/configuration identities and Git context; milestones
 1 and 2 add code/lockfile identities and current-run checks. Milestones 3 and 9

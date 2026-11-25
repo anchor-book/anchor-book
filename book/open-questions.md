@@ -78,15 +78,7 @@ choice, not two independent implementations.
 
 ## Verification adapter extensions
 
-The [shared adapter boundary](design/verification.md#shared-verification-adapters)
-is selected; the concrete configuration and versioned result interface for a
-project-provided verification command still need design. How are supported
-methods, check identities, current inputs, complete results, and proof guards
-represented and validated? Whether an adapter is distributed separately depends
-on its dependencies and compatibility cadence, rather than requiring a second
-crate for every consumer. Custom commands and separate adapter packages remain
-follow-up work; [consumer verification](implementation-roadmaps/verification-evidence.md#verification-evidence-5)
-first exercises the standard adapter with the engine and independent projects.
+The [shared adapter boundary](design/verification.md#shared-verification-adapters) is selected; the concrete configuration and versioned result interface for a project-provided verification command still need design. How are supported methods, check identities, current inputs, complete results, and proof guards represented and validated? Whether an adapter is distributed separately depends on its dependencies and compatibility cadence, rather than requiring a second crate for every consumer. Custom commands and separate adapter packages remain follow-up work; [consumer verification](implementation-roadmaps/verification-evidence.md#verification-evidence-5) first exercises the standard adapter with the engine and independent projects.
 
 ## Project adoption
 
