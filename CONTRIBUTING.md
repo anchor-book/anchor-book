@@ -521,7 +521,7 @@ from main with the corrected release contents and squash it; do not rewrite main
 For an interrupted publication, inspect crates.io, the tag, and the GitHub release
 before retrying. Rerun a validation workflow's original main-push run to trigger
 the gate for the same SHA. Do not change the version, republish different bytes,
-move an existing tag, or delete a published crate to recover. Release-plz normally
-reconciles existing release state; a conflict requires inspection before any
-manual repair. The first live release and interrupted-publication trial remain
+move an existing tag, or delete a published crate to recover. If a retry leaves a tag or GitHub release missing, complete those only after
+confirming the already published crate's version and source SHA. A conflict
+requires inspection before any manual repair. The first live release and interrupted-publication trial remain
 milestone evidence to collect, not behavior established by local gate tests.
