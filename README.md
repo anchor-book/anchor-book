@@ -2,7 +2,7 @@
 
 Anchor Engineering is a method for building software with AI agents, guided by human judgment. An Anchor Book is its central artifact: a living system definition kept alongside the code, where engineers and agents share the design, the reasoning behind it, and the plan for building it. Anchors state the properties that must hold in the resulting software, and verification criteria define how to check them.
 
-The `anchor-book` engine checks Book structure, renders design records, and reports verification evidence for anchor criteria. Read the [engine’s own Book](https://anchor-book.github.io/anchor-book/) and [contributor setup](CONTRIBUTING.md).
+The `anchor-book` engine supports AI-assisted Rust development by checking Book structure, rendering design records, and reporting verification evidence for anchor criteria. Read the [engine’s own Book](https://anchor-book.github.io/anchor-book/) and [contributor setup](CONTRIBUTING.md).
 
 For the approach behind the artifact, see [Principles of Anchor Engineering](https://nappingtoheavymetal.com/post/2026-09-15-principles-of-anchor-engineering/) and [Anchoring Our Mental Model](https://nappingtoheavymetal.com/post/2026-10-10-anchoring-our-mental-model/).
 
