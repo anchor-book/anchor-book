@@ -144,7 +144,8 @@ parse records. Schema examples stay literal. Fields support code spans, emphasis
 strong emphasis, and links; known code-spanned record identifiers become links.
 Unsupported Markdown and raw HTML remain literal, as the Record Rendering design
 specifies.
-The package is not publishable yet; release readiness is a separate milestone.
+
+Crate publication follows the [release procedure](#preparing-and-publishing-a-crate-release), including checks for the exact release revision and the initial registry bootstrap.
 
 ## Configuration loading
 

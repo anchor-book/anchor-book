@@ -499,10 +499,6 @@ working installation command for the prior release.
 
 ### Completion record
 
-In progress on the preparation branch. Package metadata permits crates.io, while
-`RELEASE_AUTOMATION_ENABLED` keeps automation off until bootstrap. The initial
-version and compatibility review, account setup, authorized first publication,
-live automation and recovery trials, and consumer adoption remain outstanding.
-Prebuilt macOS/Linux/Windows downloads are a separate follow-up after the crate
-path works; only validated targets should be offered. Automatic Book creation,
-terminology distribution, and the draft RFD capability are not release prerequisites.
+In progress. Release preparation is merged in [PR #55](https://github.com/anchor-book/anchor-book/pull/55), and the shared adapter design and paragraph-per-line contract guidance are merged in [PR #56](https://github.com/anchor-book/anchor-book/pull/56). The initial release is `0.1.0`; its changelog and README define the prototype scope, limits, and exact CLI/library installation versions. Package metadata permits crates.io, while `RELEASE_AUTOMATION_ENABLED` keeps automation off until bootstrap. Authorized first publication, registry installation, owner and trusted-publisher setup, live automation and recovery trials, and consumer adoption remain outstanding.
+
+Prebuilt macOS/Linux/Windows downloads are a separate follow-up after the crate path works; only validated targets should be offered. Automatic Book creation, terminology distribution, and the draft RFD capability are not release prerequisites.
