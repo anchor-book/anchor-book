@@ -36,6 +36,9 @@ verification feature. Default and all-feature consumer builds use ordinary Rust
 and never select the engine's verifier libraries. An unpublished package in an
 isolated workspace under `verification/` owns `vstd`, its lockfile, and its build
 configuration. It is excluded from the distributed crate.
+The workspace uses the same [verification adapter](verification.md#shared-verification-adapters)
+as consuming projects. Keeping this proof build private does not remove the
+published engine's support for verifying a user's own anchor criteria.
 
 The private package has a distinct name, `anchor-book-verification`, so standard
 Cargo tooling can distinguish it from the public package. Its library target points directly

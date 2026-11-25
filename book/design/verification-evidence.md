@@ -202,6 +202,10 @@ to executable checks. An unavailable check stays outstanding.
 
 ## Running linked checks
 
+Runners implement the [shared adapter boundary](verification.md#shared-verification-adapters).
+The engine and consuming projects use the same invocation and result interpretation
+for a supported verifier; project configuration selects its tools and targets.
+
 `verify` runs only the configured runners, invoked the way the engine documents,
 and reads only that run's output, written under the configured output directory.
 A runner that is not installed leaves its method `not-evaluated`, with the reason.
@@ -294,8 +298,10 @@ and Z3 identities are checked and retained. An explicit installation must contai
 installation on PATH. The first adapter supports Verus
 0.2026.10.18.7d82994, Rust 1.99.1, and Z3 4.16.0. Library names come from the Cargo
 manifest, including an explicit `[lib].name`. An alternate, unpublished proof
-manifest is supported when its package name matches the linked production package
-and its library root resolves to the identical production file and module directory. A separate copy or
+manifest is supported when its library root resolves to the identical production
+file and module directory and it is the unique matching configured target. Its
+package name may differ; reports identify both the linked production package and
+the package selected for verification. A separate copy or
 redirected library is rejected. Both manifests, their lockfiles, and enabled build
 scripts contribute to input identity; changing them during verification makes its
 result incomplete. The [packaging design](verified-code-packaging.md) owns the
