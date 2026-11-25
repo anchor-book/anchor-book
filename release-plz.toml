@@ -1,0 +1,6 @@
+[workspace]
+# A merged release PR is the publication decision. All public features are
+# ordinary Rust; the isolated private proof workspace is not a release member.
+release_always = false
+publish_all_features = true
+semver_check = true

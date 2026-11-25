@@ -39,15 +39,14 @@
 //! The code favors an inspectable proof over speed: string identities, borrowed
 //! slices, linear lookup, and a scan of earlier references for duplicates. It is
 //! not optimized or benchmarked for large inventories.
-#[cfg(feature = "verus")]
+#[cfg(anchorbook_verification)]
 use vstd::prelude::*;
 
-// Specifications attach only with the `verus` feature, which `cargo verus verify`
-// enables and which supplies `vstd`; ordinary builds compile the same executable
-// bodies without any Verus crate. The feature may gate only specifications and
-// proofs, never executable code, so the verified bodies are the ones that run.
+// The private verification manifest enables attributes, specifications and proofs.
+// The published crate has no verification feature or Verus dependency. Both
+// configurations compile these same executable bodies.
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
     Anchor,
@@ -55,20 +54,20 @@ pub(super) enum Kind {
     Decision,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum TargetKind {
     Requirement,
     Decision,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 pub(super) struct Reference {
     pub id: String,
     pub kind: TargetKind,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 pub(super) struct Candidate {
     // Keep any recovered identity even when the rest of the definition is invalid.
     pub id: Option<String>,
@@ -80,7 +79,7 @@ pub(super) struct Candidate {
     pub references: Vec<Reference>,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Failure {
     MissingAuthority,
@@ -92,7 +91,7 @@ pub(super) enum Failure {
     IncompatibleStatus,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 pub(super) struct Violation {
     // Position in the complete candidate collection.
     pub record_index: usize,
@@ -101,14 +100,14 @@ pub(super) struct Violation {
     pub failure: Failure,
 }
 
-#[cfg_attr(feature = "verus", verus_verify)]
+#[cfg_attr(anchorbook_verification, verus_verify)]
 enum Lookup {
     Missing,
     Unique(usize), // The matching candidate's index.
     Ambiguous,
 }
 
-#[cfg(feature = "verus")]
+#[cfg(anchorbook_verification)]
 verus! {
 
 // Authority rules: these mathematical definitions do not execute at runtime.
@@ -213,7 +212,7 @@ pub(super) open spec fn violation_is_located(candidates: Seq<Candidate>, violati
 // Used by schema decoding as well as the complete validator: emptiness is not
 // assumed away at the boundary of the proof.
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(allowed =>
+#[cfg_attr(anchorbook_verification, verus_spec(allowed =>
     ensures allowed == (!is_anchor || reference_count > 0),
 ))]
 pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) -> bool {
@@ -221,7 +220,7 @@ pub(super) fn has_required_authority(is_anchor: bool, reference_count: usize) ->
 }
 
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(yes =>
+#[cfg_attr(anchorbook_verification, verus_spec(yes =>
     ensures yes == identified_by(*candidate, id@),
 ))]
 fn matches_identity(candidate: &Candidate, id: &str) -> bool {
@@ -232,7 +231,7 @@ fn matches_identity(candidate: &Candidate, id: &str) -> bool {
 }
 
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(yes =>
+#[cfg_attr(anchorbook_verification, verus_spec(yes =>
     ensures yes == kind_matches(kind, target),
 ))]
 fn matches_target_kind(kind: Kind, target: TargetKind) -> bool {
@@ -245,7 +244,7 @@ fn matches_target_kind(kind: Kind, target: TargetKind) -> bool {
 // Count identity matches even in undecodable candidates: otherwise an invalid
 // definition could disappear and make an ambiguous authority look unique.
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(result =>
+#[cfg_attr(anchorbook_verification, verus_spec(result =>
     ensures match result {
         Lookup::Missing => forall|candidate_index: int| #![auto] 0 <= candidate_index < candidates.len() ==>
             !identified_by(candidates[candidate_index], id@),
@@ -263,7 +262,7 @@ fn lookup(candidates: &[Candidate], id: &str) -> Lookup {
     let mut matched_index: Option<usize> = None;
     // Among candidates already visited, every match is the recorded matched_index.
     // A second match exits as Ambiguous. The unvisited count decreases each time.
-    #[cfg_attr(feature = "verus", verus_spec(
+    #[cfg_attr(anchorbook_verification, verus_spec(
         invariant
             candidate_index <= candidates.len(),
             matched_index.is_some() ==> matched_index.unwrap() < candidate_index
@@ -290,14 +289,14 @@ fn lookup(candidates: &[Candidate], id: &str) -> Lookup {
 
 // An unrecoverable ID means we cannot describe an unresolved target as simply missing.
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(found =>
+#[cfg_attr(anchorbook_verification, verus_spec(found =>
     ensures found == (exists|candidate_index: int| #![auto]
         0 <= candidate_index < candidates.len() && candidates[candidate_index].id.is_none()),
 ))]
 fn has_unknown_identity(candidates: &[Candidate]) -> bool {
     let mut candidate_index: usize = 0;
     // Everything visited so far has a known ID; finding None is a witness for exists.
-    #[cfg_attr(feature = "verus", verus_spec(
+    #[cfg_attr(anchorbook_verification, verus_spec(
         invariant candidate_index <= candidates.len(),
             forall|earlier_index: int| #![auto] 0 <= earlier_index < candidate_index ==>
                 candidates[earlier_index].id.is_some(),
@@ -315,7 +314,7 @@ fn has_unknown_identity(candidates: &[Candidate]) -> bool {
 // requires supplies only safe indices, not an assumption that the reference is valid.
 // ensures proves both directions: valid references succeed and invalid ones fail.
 /// anchorbook: A-records-valid-authority#formal-authority
-#[cfg_attr(feature = "verus", verus_spec(failure =>
+#[cfg_attr(anchorbook_verification, verus_spec(failure =>
     requires
         record_index < candidates.len(),
         reference_index < candidates[record_index as int].references.len(),
@@ -333,7 +332,7 @@ fn validate_reference(
     let reference = &record.references[reference_index];
     let mut earlier_reference_index: usize = 0;
     // None of the earlier references examined so far uses this reference's ID.
-    #[cfg_attr(feature = "verus", verus_spec(
+    #[cfg_attr(anchorbook_verification, verus_spec(
         invariant
             record_index < candidates.len(), reference_index < record.references.len(),
             earlier_reference_index <= reference_index,
@@ -376,7 +375,7 @@ fn validate_reference(
 // Main guarantee: no violations if and only if every decoded record's authority
 // relationships satisfy the rules. Parser errors still prevent overall Book success.
 // The contract does not prove the exact classification or location of each violation.
-#[cfg_attr(feature = "verus", verus_spec(violations =>
+#[cfg_attr(anchorbook_verification, verus_spec(violations =>
     ensures
         (violations.len() == 0) == records_satisfy_authority_rules(
             candidates@, candidates.len() as int),
@@ -389,7 +388,7 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
     let mut record_index: usize = 0;
     // At each loop head, the collected violations describe whether all earlier
     // records satisfy the rules. Reaching the full length gives the final guarantee.
-    #[cfg_attr(feature = "verus", verus_spec(
+    #[cfg_attr(anchorbook_verification, verus_spec(
         invariant record_index <= candidates.len(),
             (violations.len() == 0) == records_satisfy_authority_rules(candidates@, record_index as int),
             forall|violation_index: int| #![auto] 0 <= violation_index < violations.len() ==>
@@ -400,7 +399,7 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
         // Extending the processed portion by one record means the old portion
         // AND the current record satisfy the rules. Verus proves this assertion;
         // it is not an assumption, and it is not compiled into ordinary builds.
-        #[cfg(feature = "verus")]
+        #[cfg(anchorbook_verification)]
         proof! {
             assert(records_satisfy_authority_rules(candidates@, record_index as int + 1) ==
                 (records_satisfy_authority_rules(candidates@, record_index as int)
@@ -419,7 +418,7 @@ pub(super) fn validate_authorities(candidates: &[Candidate]) -> Vec<Violation> {
             let mut reference_index: usize = 0;
             // No violations yet exactly when earlier records passed, authority
             // presence is satisfied, and every reference visited in this record passed.
-            #[cfg_attr(feature = "verus", verus_spec(
+            #[cfg_attr(anchorbook_verification, verus_spec(
                 invariant
                     record_index < candidates.len(), record == candidates[record_index as int], record.decoded,
                     reference_index <= record.references.len(),

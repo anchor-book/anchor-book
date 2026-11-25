@@ -94,8 +94,27 @@ pub(super) fn parse_junit(xml: &str) -> BTreeMap<(String, String), TestOutcome> 
 /// manifests and lockfiles of the packages with linked tests.
 pub(super) fn input_paths(plan: &Plan) -> Vec<PathBuf> {
     let mut paths = plan.settings.sources.clone();
-    for manifest in plan.manifests.values() {
+    let verification_manifests = plan
+        .settings
+        .verus
+        .iter()
+        .flat_map(|settings| &settings.targets)
+        .map(|target| &target.manifest);
+    for manifest in plan.manifests.values().chain(verification_manifests) {
         paths.push(manifest.clone());
+        // Build scripts select proof configuration and are evidence inputs too.
+        if let Some(parent) = manifest.parent() {
+            let text = fs::read_to_string(manifest).unwrap_or_default();
+            if let Ok(document) = toml_edit::Document::parse(text.as_str()) {
+                let build = document.get("package").and_then(|p| p.get("build"));
+                if build.and_then(|b| b.as_bool()) != Some(false) {
+                    let script = parent.join(build.and_then(|b| b.as_str()).unwrap_or("build.rs"));
+                    if script.is_file() {
+                        paths.push(script);
+                    }
+                }
+            }
+        }
         let mut directory = manifest.parent();
         while let Some(dir) = directory {
             let lock = dir.join("Cargo.lock");

@@ -1,0 +1,148 @@
+name: Main and release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    name: Select validation revision
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      revision: ${{ steps.source.outputs.revision }}
+      release: ${{ steps.source.outputs.release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Identify a merged release PR
+        id: pr
+        if: >-
+          github.repository == 'anchor-book/anchor-book' &&
+          vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
+          github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              ...context.repo, commit_sha: context.sha, per_page: 100
+            });
+            const releases = prs.filter(pr => pr.merged_at && pr.merge_commit_sha === context.sha &&
+              pr.base.ref === 'main' && pr.base.repo.full_name === process.env.GITHUB_REPOSITORY &&
+              pr.head.repo?.full_name === process.env.GITHUB_REPOSITORY &&
+              pr.head.ref.startsWith('release-plz-'));
+            if (releases.length > 1) throw new Error('Ambiguous release PR');
+            return releases[0]?.head.sha || '';
+      - name: Select the source release-plz publishes
+        id: source
+        env:
+          RELEASE_HEAD: ${{ steps.pr.outputs.result }}
+        run: |
+          revision="$GITHUB_SHA"
+          release=false
+          if [ -n "$RELEASE_HEAD" ]; then
+            release=true
+            # release-plz uses the PR head when it is an ancestor (merge),
+            # otherwise the checked-out main commit (squash/rebase).
+            git fetch --no-tags origin "$RELEASE_HEAD"
+            status=0
+            git merge-base --is-ancestor "$RELEASE_HEAD" "$GITHUB_SHA" || status=$?
+            case "$status" in
+              0) revision="$RELEASE_HEAD" ;;
+              1) ;; # A squash/rebase commit replaces the PR head.
+              *) exit "$status" ;;
+            esac
+          fi
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+
+  book:
+    name: Book
+    needs: source
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/book.yml
+    with:
+      revision: ${{ needs.source.outputs.revision }}
+
+  proof:
+    name: Formal verification
+    needs: source
+    uses: ./.github/workflows/proof.yml
+    with:
+      revision: ${{ needs.source.outputs.revision }}
+
+  mutation:
+    name: Mutation testing
+    needs: source
+    uses: ./.github/workflows/mutation.yml
+    with:
+      revision: ${{ needs.source.outputs.revision }}
+
+  package:
+    name: Package
+    needs: source
+    uses: ./.github/workflows/package.yml
+    with:
+      revision: ${{ needs.source.outputs.revision }}
+
+  release-pr:
+    if: >-
+      github.repository == 'anchor-book/anchor-book' &&
+      vars.RELEASE_AUTOMATION_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: release-pr
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-semver-checks@0.51.0
+      - uses: release-plz/action@v0.5
+        with:
+          command: release-pr
+          version: '0.4.3'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}
+
+  release:
+    needs: [source, book, proof, mutation, package]
+    if: >-
+      github.repository == 'anchor-book/anchor-book' &&
+      vars.RELEASE_AUTOMATION_ENABLED == 'true' && needs.source.outputs.release == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: release-publication-${{ needs.source.outputs.revision }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.revision }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: release-plz/action@v0.5
+        with:
+          command: release
+          version: '0.4.3'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}

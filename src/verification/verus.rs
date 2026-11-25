@@ -36,6 +36,8 @@ pub struct FunctionEvidence {
 pub struct TargetEvidence {
     /// Package selected from the Book's proof links.
     pub package: String,
+    /// Actual Cargo package used for verification, which may be private.
+    pub verification_package: String,
     /// Cargo target kind.
     pub target: String,
     /// Cargo features used for this invocation.
@@ -208,6 +210,37 @@ fn fresh_directory(output: &Path) -> std::io::Result<PathBuf> {
     Ok(dir)
 }
 
+// An unpublished alternate manifest may add proof dependencies, but it must
+// compile the production library root directly, never a proof-only copy.
+fn same_library_source(production: &Path, verification: &Path) -> bool {
+    fn library(manifest: &Path, private: bool) -> Option<(PathBuf, PathBuf)> {
+        let text = fs::read_to_string(manifest).ok()?;
+        let document = toml_edit::Document::parse(text.as_str()).ok()?;
+        if private
+            && document
+                .get("package")?
+                .get("publish")
+                .and_then(|p| p.as_bool())
+                != Some(false)
+        {
+            return None;
+        }
+        let path = document
+            .get("lib")
+            .and_then(|l| l.get("path"))
+            .and_then(|p| p.as_str())
+            .unwrap_or("src/lib.rs");
+        let declared = manifest.parent()?.join(path);
+        let source = fs::canonicalize(&declared).ok()?;
+        // Relative modules resolve beside the declared root. A symlink to the
+        // same file in a different directory can select different module files.
+        let directory = fs::canonicalize(declared.parent()?).ok()?;
+        source.is_file().then_some((source, directory))
+    }
+    matches!((library(production, false), library(verification, true)),
+        (Some(production), Some(verification)) if production == verification)
+}
+
 fn display(path: &Path, base: &Path) -> String {
     path.strip_prefix(base)
         .unwrap_or(Path::new("[external]"))
@@ -252,15 +285,23 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
         .as_ref()
         .expect("tools require settings");
     for (index, (package, target)) in plan.proof_targets.iter().enumerate() {
-        let Some(configured) = settings.targets.iter().find(|t| {
-            &t.package == package
-                && *target == Target::Lib
-                && plan.manifests.get(package) == Some(&t.manifest)
-        }) else {
+        let mut candidates = settings.targets.iter().filter(|t| {
+            *target == Target::Lib
+                && plan.manifests.get(package).is_some_and(|production| {
+                    (production == &t.manifest && &t.package == package)
+                        || same_library_source(production, &t.manifest)
+                })
+        });
+        let Some(configured) = candidates.next() else {
             return ProofResult::Unusable(format!(
                 "no matching configured library target for `{package}` ({target})"
             ));
         };
+        if candidates.next().is_some() {
+            return ProofResult::Unusable(format!(
+                "ambiguous configured library targets for `{package}` ({target})"
+            ));
+        }
         let manifest_text = match fs::read_to_string(&configured.manifest) {
             Ok(s) => s,
             Err(_) => return ProofResult::Unusable("cannot read target manifest".into()),
@@ -274,7 +315,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             .and_then(|l| l.get("name"))
             .and_then(|n| n.as_str())
             .map(str::to_owned)
-            .unwrap_or_else(|| package.replace('-', "_"));
+            .unwrap_or_else(|| configured.package.replace('-', "_"));
         let links: Vec<_> = plan
             .links
             .iter()
@@ -303,7 +344,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             "--manifest-path".into(),
             display(&configured.manifest, &plan.base),
             "--package".into(),
-            package.clone(),
+            configured.package.clone(),
             "--target-dir".into(),
             display(&target_dir, &plan.base),
         ];
@@ -325,6 +366,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             .output();
         let mut target_report = TargetEvidence {
             package: package.clone(),
+            verification_package: configured.package.clone(),
             target: target.to_string(),
             features: configured.features.clone(),
             command: std::iter::once("cargo".into()).chain(args).collect(),

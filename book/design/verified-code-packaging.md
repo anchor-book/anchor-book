@@ -10,10 +10,10 @@ its [authority validator](rust-engine.md#authority-proof) is verified, and proje
 that verify their own code must be able to depend on the engine.
 
 > **`A-package-verified-bodies`** (draft): **Verification and consumer builds use the same executable source**
-> Property: The optional verification feature gates specifications, proof blocks, and Verus imports, not executable code. Consumers compile the executable source whose contracts were verified. A package used as verification evidence contains that same executable source; a source change requires fresh correspondence and verification evidence. This correspondence does not remove trust in the compiler, verifier, or dependency contracts.
+> Property: The repository-only verification configuration gates specifications, proof blocks, and Verus imports, not executable code. Consumers compile the executable source whose contracts were verified. A package used as verification evidence contains that same executable source; a source change requires fresh correspondence and verification evidence. This correspondence does not remove trust in the compiler, verifier, or dependency contracts.
 > Authority: `R-proofs-establish-criteria`; `D-isolate-engine-verification`
-> - Criterion `feature-boundary` [test]: An executable correspondence check compares the verification and ordinary-build configurations after erasing permitted ghost material and rejects seeded feature-dependent executable code changes.
-> - Criterion `packaged-source` [test]: Verification and runtime acceptance use the packaged implementation; an independent source-identity check rejects an altered executable file in the package rather than carrying forward the earlier proof result.
+> - Criterion `feature-boundary` [test]: An executable source audit establishes that private verification configuration gates only permitted ghost material, leaving the same executable declarations and bodies for consumers. It rejects seeded conditional executable changes, including uses of implicit Verus configuration flags.
+> - Criterion `packaged-source` [test]: The packaged executable source is byte-identical to the production source selected by the private proof manifest, and runtime acceptance uses the extracted crate. An independent source-identity check rejects altered or missing executable files; source identity alone does not establish a passing proof.
 
 ## Proof packaging for consumers
 
@@ -31,33 +31,39 @@ build when the maintained code sits inside `verus!`, because the code needs that
 macro to compile. A separately maintained proof-only copy cannot establish that the
 verified code is the code that runs.
 
-**The arrangement.** The verified production functions are ordinary Rust whose
-contracts and loop invariants are Verus attributes, applied only with an optional
-`verus` Cargo feature:
+**The arrangement.** The published manifest declares no Verus dependency or
+verification feature. Default and all-feature consumer builds use ordinary Rust
+and never select the engine's verifier libraries. An unpublished package in an
+isolated workspace under `verification/` owns `vstd`, its lockfile, and its build
+configuration. It is excluded from the distributed crate.
 
-```rust
-#[cfg_attr(feature = "verus", verus_spec(yes =>
-    ensures yes == kind_matches(kind, target),
-))]
-fn matches_target_kind(kind: Kind, target: TargetKind) -> bool { /* body */ }
-```
+The private package has a distinct name, `anchor-book-verification`, so standard
+Cargo tooling can distinguish it from the public package. Its library target points directly
+to the production `src/lib.rs`; Rust resolves the production modules and embedded
+assets from those same files. It maintains no second implementation. Its ordinary
+dependency declarations match the public manifest, with that correspondence checked
+by tests. Only the private build script sets `anchorbook_verification`, enabling
+Verus attributes, ghost functions, proof blocks, and imports in the shared source.
+The public package has no switch that enables this configuration.
 
-Specification functions, which never run, sit in a
-`#[cfg(feature = "verus")] verus! { ... }` block, and proof blocks are
-`#[cfg(feature = "verus")] proof! { ... }`. The feature enables `vstd`;
-`cargo verus verify --features verus` verifies, and every other build, including
-every dependent's, compiles the same bodies with no Verus crate. This is the use
-the Verus guide gives for its attribute syntax: executable functions with
-`#[verus_spec]`, specification and proof functions in `verus!`, and Verus
-dependencies controlled by feature flags.
+A configured proof target can use an unpublished private manifest only when its
+library root resolves to the identical production file and module directory.
+The selection must be unique; multiple matching targets are rejected. The proof
+report names both the linked production package and the verification package.
+An alternate source file, even an initially identical copy,
+is rejected. The private manifest, lockfile, and build script participate in input
+identity, so changing them invalidates an in-flight proof result. A manifest
+redirect does not make a proof-only implementation evidence for production.
 
-**The rule that keeps the proof about the running code.** The feature may gate only
-specifications, proof blocks, and Verus imports, never executable code. Code that
-differed under the feature would verify one body and run another; the Verus guide
-warns that gating code this way is unsound. The
-[executable correspondence criteria](#A-package-verified-bodies) make this boundary
-an explicit verification obligation. Design review assesses the intended boundary;
-it cannot supply a passing correspondence result.
+**The correspondence boundary.** Verification configuration may gate only ghost
+material, never executable code or module selection. A conservative token audit rejects configuration-dependent executable declarations,
+statements, and expressions, including implicit Verus flags. It accepts only the
+explicitly supported ghost syntax; it is not a general Rust macro expander.
+Package acceptance compares shipped production source with the source the private
+manifest verifies and rejects altered source. The compiler, verifier, procedural
+macros, and dependency contracts remain trusted; source identity is not a proof of
+compiler correctness. A native proof and defect/correction trial accompany changes
+to this boundary.
 
 **Limits.** The Verus guide lists the attribute syntax among contributed extensions
 that are not complete, and it changes between weekly releases. Its open problems
@@ -76,7 +82,8 @@ public API compatibility, and publication keep their own release obligations.
 ## Projects shipping verified code
 
 A project that publishes verified code meets the same problem for its own
-dependents, and the same arrangement, rule, and acceptance apply. Its proof
+dependents, and the same isolation and correspondence rules apply; a private proof manifest can
+keep their own verification dependencies out of their public package. Its proof
 evidence is evaluated against the source it verifies, so the correspondence to the
 published source is part of its verification boundary: verify the packaged
 source, or establish executable-source identity programmatically. Review judges

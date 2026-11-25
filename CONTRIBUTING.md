@@ -277,10 +277,13 @@ cargo run --quiet --locked --bin anchorbook -- proof --config anchorbook.toml --
 ```
 
 The production functions are ordinary Rust carrying Verus attributes such as
-`#[cfg_attr(feature = "verus", verus_spec(...))]`; specification functions sit in a
-`#[cfg(feature = "verus")] verus! { ... }` block. The feature may gate only
-specifications and proofs, never executable code: code that differs under the
-feature would make the proof describe something other than what runs.
+`#[cfg_attr(anchorbook_verification, verus_spec(...))]`; specification functions
+sit in a guarded `verus!` block. Only the unpublished `verification/` workspace
+sets that configuration and depends on vstd. Its manifest points directly to
+`../src/lib.rs`; ordinary dependencies must match the public manifest, while the
+private lockfile stays separate. The published crate has no Verus feature or
+dependency. The configuration may gate only specifications and proofs, never
+executable code. Rust package tests reject source divergence and dependency leaks.
 
 Verification uses Rust 1.99.1; ordinary engine builds require Rust 1.88 or later.
 No Book build or wrapper script is required. `--no-cheating` rejects project
@@ -445,3 +448,79 @@ PR's GitHub results and repeat the loop for remote failures. New commits invalid
 prior CI success; required checks must pass for the revision being merged.
 The [Mutation Testing roadmap](book/implementation-roadmaps/mutation-testing.md)
 tracks setup, findings, and validation of that loop and merge enforcement.
+
+
+## Preparing and publishing a crate release
+
+The package is publishable to crates.io, but automation remains off until the
+repository Actions variable `RELEASE_AUTOMATION_ENABLED` is `true`. Adding the
+GitHub token alone cannot publish. `release-plz.toml` and
+`.github/workflows/release-plz.yml` own recurring release configuration.
+
+For a local package trial, with mdBook and Rust 1.88.0 installed:
+
+```sh
+cargo test --locked --test package
+cargo test --locked --test package -- --ignored --nocapture
+```
+
+The ordinary tests reject verifier declarations and configuration-dependent
+executable source. The explicit acceptance test packages with all public features,
+checks source identity and dependency isolation, builds with stable and Rust 1.88,
+installs the CLI, checks and renders a fixture Book, and runs separate library
+consumers, including one choosing its own vstd. It also checks private/public
+ordinary dependency declarations. For a local uncommitted trial only, set
+`ANCHORBOOK_PACKAGE_ALLOW_DIRTY=1`; release CI requires a clean checkout.
+
+Release-plz uses cargo-semver-checks 0.51.0 with its normal feature selection.
+The public crate's features cannot enable the private verifier. API comparison
+begins after the first registry publication supplies a baseline. Review CLI,
+configuration, record-format, and contract migrations separately.
+
+### One-time bootstrap
+
+1. Sign into crates.io through GitHub and verify the account email. Confirm the
+   intended crate owners and the initial version and release notes before publishing.
+2. Create a fine-grained token in **personal GitHub settings**, with resource owner
+   `anchor-book`, repository `anchor-book/anchor-book`, and **Contents** and
+   **Pull requests** read/write permissions. Obtain organization approval if its
+   policy requires it. Save it in this repository's Actions secrets as
+   `RELEASE_PLZ_TOKEN`. Use it only for GitHub automation, never as a Cargo token.
+3. After release authorization, publish the first crate manually from the exact
+   merged revision whose engine, Book, installed-engine, proof, mutation, and
+   package checks passed. Use a crates.io credential with `cargo publish --locked`;
+   the first crate cannot bootstrap itself through trusted publishing. Keep the
+   initial version's changelog, crate source revision, `vVERSION` tag, and GitHub
+   release consistent. Test installation from the registry before advertising it.
+4. On the crate's crates.io settings page, register a trusted publisher for owner
+   `anchor-book`, repository `anchor-book`, and workflow **`release-plz.yml`**.
+   This workflow has no GitHub environment. Subsequent publications request the
+   registry credential through OIDC; no persistent Cargo token belongs in Actions.
+5. Enable `RELEASE_AUTOMATION_ENABLED=true` in repository Actions variables. Run
+   **Main and release** manually on `main` to create the first automated release PR.
+   This dispatch prepares a PR; publication waits for a release-PR merge and CI.
+
+### Recurring releases and recovery
+
+Release-plz proposes version and changelog updates after changes reach `main`.
+Review scope, compatibility, migrations, and required checks before merging.
+Both merge commits and squash merges are supported.
+
+`Main and release` selects the revision release-plz will publish: a merged release
+PR's head when it is an ancestor, otherwise the main commit produced by squash or
+rebase. It passes that immutable revision to the reusable Book, proof, mutation,
+and Package workflows. Those same workflows run directly on PRs. Publication uses
+GitHub Actions `needs` dependencies and starts only if every validation job succeeds;
+there is no service that queries CI history to decide readiness. The Book workflow
+includes both Rust versions and installed-engine acceptance. Automatic publication
+is disabled during bootstrap, while main validation continues to run.
+
+If validation fails, fix it through a PR and rerun the affected checks. For an
+interrupted publication, inspect crates.io, the tag, and the GitHub release before
+retrying the original `Main and release` run for the same revision. Do not change
+the version, republish different bytes, move an existing tag, or delete a published
+crate to recover. If a retry leaves a tag or GitHub release missing, complete those
+only after confirming the published crate's version and source SHA. A conflict
+requires inspection before manual repair. GitHub/OIDC publication and interruption
+recovery still need live trials after bootstrap; local package tests do not establish
+them.

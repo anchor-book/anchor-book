@@ -2,18 +2,21 @@ name: Formal verification
 
 # No path filters: a future required check must appear on every PR.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        default: ""
 
 permissions:
   contents: read
 
 concurrency:
   group: proof-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   authority:
@@ -30,6 +33,8 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
       - name: Identify evidence
         run: |
           mkdir -p target/proof-results

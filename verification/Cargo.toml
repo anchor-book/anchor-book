@@ -1,0 +1,31 @@
+# Repository-only proof build of the production library. Never publish this package.
+[package]
+name = "anchor-book-verification"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Keep the proof's dependency resolution and lockfile out of consumer builds.
+[workspace]
+
+[lib]
+name = "anchor_book"
+path = "../src/lib.rs"
+
+[dependencies]
+mdbook-summary = "=0.5.4"
+mdbook-core = "=0.5.4"
+pulldown-cmark = { version = "0.13.4", default-features = false }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0"
+toml_edit = { version = "0.25.6", default-features = false, features = ["parse", "serde"] }
+# Rust source parsing for evidence links: items, attributes, and line positions only.
+syn = { version = "2.0.119", default-features = false, features = ["full", "parsing"] }
+proc-macro2 = { version = "1.0.107", default-features = false, features = ["span-locations"] }
+vstd = "=0.0.0-2026-10-18-0147"
+
+[package.metadata.verus]
+verify = true
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(verus_only)', 'cfg(anchorbook_verification)'] }

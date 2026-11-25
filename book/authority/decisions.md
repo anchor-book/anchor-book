@@ -109,7 +109,7 @@ Each decision states its own status. These choices govern the system being built
 > Reconsider when: Cargo can run binaries provided by dependencies, which would make a project-local wrapper unnecessary.
 
 > **`D-isolate-engine-verification`** (draft): **Engine proofs stay inside the engine; projects verify with their own Verus**
-> Choice: The engine's own proofs, vstd, and Verus toolchain are excluded from what consuming projects build. Verifying a project's code runs the Verus installation and verification toolchain that the project configures.
+> Choice: The engine's own vstd and Verus toolchain belong to an unpublished, isolated proof workspace and are absent from the distributed package's dependency graph and public features. Its proofs apply to the same maintained executable source that consumers build. Verifying a project's code runs the Verus installation and verification toolchain that the project configures.
 > Requirements: `R-project-adoption`; `R-project-verification`
 > Rationale: Projects verifying their own code choose their own Verus and vstd versions, which are pinned exactly and change frequently. An exact vstd requirement in the engine's dependency graph would conflict with them or force the engine's choice, and a verification toolchain must not replace a project's build toolchain.
 > Alternatives:

@@ -293,7 +293,13 @@ and Z3 identities are checked and retained. An explicit installation must contai
 `verus`, `cargo-verus`, and `z3`; missing tools cannot fall back to another
 installation on PATH. The first adapter supports Verus
 0.2026.10.18.7d82994, Rust 1.99.1, and Z3 4.16.0. Library names come from the Cargo
-manifest, including an explicit `[lib].name`.
+manifest, including an explicit `[lib].name`. An alternate, unpublished proof
+manifest is supported when its package name matches the linked production package
+and its library root resolves to the identical production file and module directory. A separate copy or
+redirected library is rejected. Both manifests, their lockfiles, and enabled build
+scripts contribute to input identity; changing them during verification makes its
+result incomplete. The [packaging design](verified-code-packaging.md) owns the
+configuration and executable-source correspondence obligations.
 
 The first proof links use ordinary Rust functions with Verus contract attributes;
 `#[verifier::proof]` identifies proof mode, including inside `cfg_attr`.

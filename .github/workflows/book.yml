@@ -1,10 +1,13 @@
 name: Book
 
 on:
-  push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -17,6 +20,8 @@ jobs:
   engine:
     name: Engine checks
     uses: ./.github/workflows/engine.yml
+    with:
+      revision: ${{ inputs.revision }}
 
   build:
     name: Build mdBook
@@ -25,6 +30,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
 
       - name: Install current stable Rust
         run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
@@ -73,6 +80,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
 
       - name: Install current stable Rust
         run: rustup toolchain install stable --profile minimal
@@ -80,7 +89,7 @@ jobs:
       - name: Install the engine the documented way
         env:
           # The revision under test: the PR head, or the pushed commit on main.
-          REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+          REVISION: ${{ inputs.revision || github.event.pull_request.head.sha || github.sha }}
           REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}', github.server_url, github.repository) }}
         run: |
           cargo install --git "$REPOSITORY" --rev "$REVISION" --locked \

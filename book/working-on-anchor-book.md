@@ -156,6 +156,11 @@ installed-engine, proof, and mutation checks to pass, for a revision current wit
 [Mutation Testing roadmap](implementation-roadmaps/mutation-testing.md#mutation-testing-2-enforcement-evidence)
 records the demonstration.
 
+The unpublished `verification/` workspace holds the engine's verifier dependency
+and lockfile. Its library target is the production `src/lib.rs`; the public crate
+has no Verus feature or dependency. Use the configured native proof command,
+which selects this private manifest.
+
 The [authority proof](design/rust-engine.md#authority-proof) is a Verus proof of the
 production authority-validation functions, run locally and in a GitHub workflow.
 Its [roadmap](implementation-roadmaps/formal-verification.md) records evidence and
@@ -235,6 +240,18 @@ artifacts, commit messages, and published logs. Context access is not publicatio
 permission. Review the exact files and changes, relevant generated output, and
 Git author metadata before committing or publishing. Leave material with uncertain
 publication permission outside the repository.
+
+## Registry release planning
+
+[Project Integration milestone 7](implementation-roadmaps/project-integration.md#project-integration-7)
+tracks crates.io distribution and release-plz automation, informed by the
+[Sparkle assessment](research.md#registry-release-automation). The package and
+workflows are being prepared; automatic publication remains disabled until
+bootstrap finishes. Existing consumers continue to use their pinned Git installation
+until an authorized release supplies a tested registry command. CONTRIBUTING owns
+Rust package tests, the private proof workspace, account setup, the automation
+switch, reusable validation jobs, and recovery. First publication, ownership, trusted-publisher registration, and
+consumer adoption remain outstanding.
 
 ## Contract source
 

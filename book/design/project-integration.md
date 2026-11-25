@@ -31,8 +31,9 @@ situations other projects bring.
 > - Criterion `unsupported-versions` [test]: Configurations and Books declaring unsupported schema or record-syntax versions produce incomplete results identifying the declared and supported versions.
 
 > **`A-project-no-imposed-dependencies`** (draft): **Depending on the engine does not constrain the project's own tools**
-> Property: Adding the crate as a dependency builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
+> Property: Adding the crate as a dependency, with any published feature selection, builds no formal-verification library and adds no exact-version requirement on a package that a project may use for its own work, so a project can choose its Verus and vstd versions independently. Ordinary builds need neither Verus nor the engine's verification toolchain, and the engine builds with a project's pinned toolchain at or above its minimum Rust version, including nightly. The mdBook versions the preprocessor supports are declared, and an unsupported version fails with a diagnostic naming them.
 > Authority: `R-project-adoption`; `D-isolate-engine-verification`
+> - Criterion `verifier-isolation` [test]: The published manifest, feature set, lockfile, and resolved dependency graph contain no engine Verus dependencies. Default and all-feature consumers build on the minimum and stable Rust toolchains; a consumer can independently select a different vstd version. The private verification workspace is excluded from the package.
 > - Criterion `independent-resolution` [test]: A fixture workspace that depends on the crate and on a different vstd version resolves and builds, and the crate's default dependency tree contains no vstd, Verus, or exact-version requirement on shared packages.
 > - Criterion `dependency-review` [test]: Inspect packaged Cargo metadata and feature-resolution fixtures with an executable dependency audit: require optional verifier dependencies to be absent from ordinary builds and every exact-version requirement to match the declared compatibility policy and recorded reason. Reject an undeclared pin or default verifier dependency.
 > - Criterion `renderer-versions` [test]: The preprocessor accepts each declared supported mdBook version and rejects an unsupported one with a diagnostic naming the supported versions.
@@ -164,6 +165,56 @@ a Book declares the configuration schema and record syntax it uses, and an engin
 that does not support them reports incomplete evaluation. Compatibility and
 migration rules for those versions are part of
 [release readiness](rust-engine.md#rust-development-conventions).
+
+## Registry distribution
+
+One crates.io package, `anchor-book`, distributes the `anchor_book` library and
+`anchorbook` executable. Projects select the same exact released version in
+Cargo dependencies and CLI installation. A registry release packages its own
+contract, templates, licenses, and source identity; installing it does not depend
+on this checkout. Publication does not by itself provide automatic version
+mismatch enforcement, project initialization, or optional tool installation.
+Those capabilities retain their own design and work.
+
+A release PR presents the version, changelog, supported interfaces and toolchains,
+and migrations for review. Compatibility includes library APIs, CLI behavior,
+configuration and record formats, and changes to the working contract. Automated
+Rust API comparison assists this review but cannot judge every compatibility
+change. Early versions state their supported prototype scope explicitly.
+
+The release flow uses release-plz with release-PR-controlled publication:
+ordinary changes reach `main`, automation proposes a release PR, normal checks
+and engineer review establish the release, and publication uses the validated
+release commit. Publication cannot race ahead of checks for that exact commit.
+The workflow must select and validate a fixed revision rather than looking up
+whatever `main` names later. Repeated execution must not create a second version
+or move an existing release tag; recovery retains the crate/version/commit identity.
+
+The GitHub automation identity needs permission to update release branches, PRs,
+tags, and releases while allowing their events to trigger CI. Crates.io
+publication uses its separate trusted-publisher identity, bound to the repository
+and publishing workflow, and an environment if selected. The first publication
+establishes crate ownership through the registry's supported bootstrap procedure;
+subsequent releases use OIDC. Merging a release PR is the recurring release
+control; setup does not add another routine approval ceremony.
+
+The release workflow selects the source revision release-plz will publish and
+passes it to reusable validation jobs. Publication depends on their successful
+completion through GitHub Actions job dependencies. This supports release-plz's
+merge and squash behavior without a separate service that interprets CI history.
+Package validation and library compatibility checks exercise the published feature
+set; the engine's Verus dependencies exist only in its private proof workspace.
+The [dependency](#what-the-crate-must-not-impose) and
+[packaged-source](verified-code-packaging.md#A-package-verified-bodies) guarantees
+still apply. Release notes report unresolved scope honestly rather than treating
+successful Cargo packaging as full verification of those guarantees.
+
+Crates.io installation is the initial distribution path. Prebuilt CLI archives
+can follow for supported and tested platforms, built from the same release tag
+with locked dependencies and checksums. They contain the `anchorbook` executable;
+ACP extension metadata is not part of this engine's distribution. Project guidance
+owns the concrete release commands, workflow locations, credentials setup, and
+recovery procedure.
 
 ## What the crate must not impose
 

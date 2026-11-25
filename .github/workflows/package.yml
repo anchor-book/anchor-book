@@ -1,0 +1,32 @@
+name: Package
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Packaged engine
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install minimum supported Rust
+        run: rustup toolchain install 1.88.0 --profile minimal
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: mdbook@0.5.4
+      - name: Exercise package and source-boundary checks
+        run: cargo test --locked --test package
+      - name: Install and use the packaged crate
+        run: cargo test --locked --test package -- --ignored --nocapture
