@@ -239,12 +239,14 @@ publication permission outside the repository.
 ## Registry release planning
 
 [Project Integration milestone 7](implementation-roadmaps/project-integration.md#project-integration-7)
-proposes crates.io distribution and release-plz automation, informed by the
-[Sparkle assessment](research.md#registry-release-automation). Publishing remains
-disabled. Existing consumers continue to use their pinned Git installation until
-an authorized release supplies a tested registry command. Release credentials,
-workflow configuration, and first-publication ownership still need setup; the
-plan does not enable publication.
+tracks crates.io distribution and release-plz automation, informed by the
+[Sparkle assessment](research.md#registry-release-automation). The package and
+workflows are being prepared; automatic publication remains disabled until
+bootstrap finishes. Existing consumers continue to use their pinned Git installation
+until an authorized release supplies a tested registry command. CONTRIBUTING owns
+package checks, account setup, the automation switch, squash merging release PRs,
+and recovery. First publication, ownership, trusted-publisher registration, and
+consumer adoption remain outstanding.
 
 ## Contract source
 

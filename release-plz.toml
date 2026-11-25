@@ -1,0 +1,7 @@
+[workspace]
+# A merged release PR is the publication decision.
+release_always = false
+publish_all_features = false
+# release-plz's built-in scan enables `verus`. Package CI runs an explicit
+# cargo-semver-checks --default-features check against the published baseline.
+semver_check = false

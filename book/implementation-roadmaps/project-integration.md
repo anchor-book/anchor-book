@@ -436,7 +436,7 @@ pinning do not establish conversational usefulness.
 `anchor_book` library without a Git revision pin. Release PRs control repeatable
 subsequent publication and describe compatibility changes.
 
-**Status:** Proposed
+**Status:** In progress
 
 **Identifier:** `project-integration-7`
 
@@ -454,7 +454,7 @@ The [Sparkle assessment](../research.md#registry-release-automation) supplies so
 
 **Tasks**
 
-- [ ] Prepare the initial `anchor-book` version (proposed: 0.1.0). Review public APIs, CLI/configuration/record compatibility, licenses, README install examples, documentation metadata, package contents, and changelog. Keep publishing disabled until the release is prepared and authorized.
+- [ ] Prepare the initial `anchor-book` version (proposed: 0.1.0). Review public APIs, CLI/configuration/record compatibility, licenses, README install examples, documentation metadata, package contents, and changelog. Keep automatic publishing disabled until the release is prepared and authorized.
 - [ ] Exercise a fresh consumer and an installation from the packaged crate without Git or Verus. Check default dependency resolution, including a consumer selecting a different vstd version, runtime source identity, contract and template retrieval, structural checks, and rendering. Record unresolved package guarantees instead of inferring them from a successful build.
 - [ ] Add `release-plz.toml` and `.github/workflows/release-plz.yml`, with `release_always = false`, ordinary-feature publication, explicit GitHub job permissions, and a GitHub app token or appropriately scoped `RELEASE_PLZ_TOKEN`. Confirm library semver checking works without enabling `verus`. Generated release PRs must trigger the existing protected checks.
 - [ ] Add a package/install acceptance gate and require successful checks for the exact release revision before publication. Wire the existing separate workflows into a gate or reuse their validation; do not publish concurrently with unchecked main-branch runs.
@@ -472,7 +472,7 @@ complete, verifier tools are unnecessary for ordinary use, and any intentionally
 unsupported scope is explicit in release notes.
 
 - **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `contract-retrieval` — Partial: registry-installed CLI; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution`, `dependency-review` — Partial: release package and consumer fixtures.
-- **Evidence:** Initial packaging at `70355d4` passed `cargo package --locked`, including extracted-crate compilation and the expected contract, template, license, and revision files. Registry installation, consumer-resolution and source-correspondence checks remain outstanding.
+- **Evidence:** Initial packaging at `70355d4` passed `cargo package --locked`. Preparation on `crates-io-release-plan`, based on `0f2db3f`, passes the package acceptance script: archive installation outside the checkout, revision identity, contract and template comparison, fixture Book checking/rendering, and a library consumer both without vstd and with its own different version. The extracted package also passes Rust 1.88.0 checking. A default-feature cargo-semver-checks 0.51.0 comparison against merged main `3699fe5` passes 202 checks, with 58 skipped; it is not a published-version comparison. Registry installation and the broader packaged-proof source-correspondence guarantees remain outstanding.
 
 #### Controlled releases {#project-integration-7-release-flow}
 
@@ -484,7 +484,7 @@ same version and commit. A repeated run preserves that identity. Failed checks
 and a non-release main-branch change do not publish a new version.
 
 - **Anchor coverage:** None: project release-workflow acceptance; publishing is not evidence that all engine anchors are satisfied.
-- **Evidence:** Pending implementation and an authorized live release.
+- **Evidence:** The branch prepares `release-plz.toml`, disabled release automation, and Package CI. Seven local publication-gate tests pass, covering missing, failed, pending, stale, wrong-revision and foreign-repository evidence, non-release changes, retry eligibility, API failure, and rejected merge strategies. Workflow lint passes. These tests establish gate decisions, not live GitHub triggering, registry ownership, OIDC publication, or interrupted-release recovery; those trials remain outstanding.
 
 #### Consumer adoption {#project-integration-7-adoption}
 
@@ -499,8 +499,10 @@ working installation command for the prior release.
 
 ### Completion record
 
-Proposed. The package build and Sparkle automation assessment establish a feasible
-starting point; publication settings, credentials, and release workflows are unchanged.
+In progress on the preparation branch. Package metadata permits crates.io, while
+`RELEASE_AUTOMATION_ENABLED` keeps automation off until bootstrap. The initial
+version and compatibility review, account setup, authorized first publication,
+live automation and recovery trials, and consumer adoption remain outstanding.
 Prebuilt macOS/Linux/Windows downloads are a separate follow-up after the crate
 path works; only validated targets should be offered. Automatic Book creation,
 terminology distribution, and the draft RFD capability are not release prerequisites.

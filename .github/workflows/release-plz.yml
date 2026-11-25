@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [Book, Formal verification, Mutation testing, Package]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-pr:
+    if: >-
+      github.repository == 'anchor-book/anchor-book' &&
+      vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
+      github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: release-pr
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: release-plz/action@v0.5
+        with:
+          command: release-pr
+          version: '0.4.3'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}
+
+  release:
+    if: >-
+      github.repository == 'anchor-book/anchor-book' &&
+      vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == 'anchor-book/anchor-book'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+      id-token: write
+    concurrency:
+      group: release-publication-${{ github.event.workflow_run.head_sha }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check the exact release revision
+        id: checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: python3 scripts/release_readiness.py "$RELEASE_SHA"
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.checks.outputs.ready == 'true'
+      - uses: release-plz/action@v0.5
+        if: steps.checks.outputs.ready == 'true'
+        with:
+          command: release
+          version: '0.4.3'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}

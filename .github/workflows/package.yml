@@ -1,0 +1,29 @@
+name: Package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Packaged engine
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install minimum supported Rust
+        run: rustup toolchain install 1.88.0 --profile minimal
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: mdbook@0.5.4,cargo-semver-checks@0.51.0
+      - name: Exercise publication gate failures
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Install and use the packaged crate
+        run: python3 scripts/check-package.py
+      - name: Check ordinary library API compatibility
+        run: python3 scripts/check-release-api.py

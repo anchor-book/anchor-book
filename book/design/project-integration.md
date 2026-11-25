@@ -197,7 +197,9 @@ establishes crate ownership through the registry's supported bootstrap procedure
 subsequent releases use OIDC. Merging a release PR is the recurring release
 control; setup does not add another routine approval ceremony.
 
-Package validation and library compatibility checks exercise ordinary consumer
+Release PRs use squash merges so the publication revision remains the checked
+main commit. A gate rejects merge strategies that let release-plz select a different
+commit. Package validation and library compatibility checks exercise ordinary consumer
 features without implicitly enabling the engine's Verus verification feature.
 The [dependency](#what-the-crate-must-not-impose) and
 [packaged-source](verified-code-packaging.md#A-package-verified-bodies) guarantees

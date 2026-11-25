@@ -445,3 +445,83 @@ PR's GitHub results and repeat the loop for remote failures. New commits invalid
 prior CI success; required checks must pass for the revision being merged.
 The [Mutation Testing roadmap](book/implementation-roadmaps/mutation-testing.md)
 tracks setup, findings, and validation of that loop and merge enforcement.
+
+
+## Preparing and publishing a crate release
+
+The package is publishable to crates.io, but automation remains off until the
+repository Actions variable `RELEASE_AUTOMATION_ENABLED` is `true`. Adding the
+GitHub token alone cannot publish. `release-plz.toml` and
+`.github/workflows/release-plz.yml` own recurring release configuration.
+
+For a local package trial, with mdBook and Rust 1.88.0 installed:
+
+```sh
+python3 -m unittest discover -s scripts -p 'test_*.py'
+python3 scripts/check-package.py
+```
+
+The package check installs the extracted archive outside the checkout, compares
+its source revision, contract and template, checks and renders a fixture Book,
+and runs a library consumer with ordinary dependencies and with its own different
+vstd version. Use `--allow-dirty` only for a local preparation trial; release CI
+requires a clean source revision. Cargo also compiles the extracted package with stable and Rust 1.88.0.
+
+Package CI installs cargo-semver-checks 0.51.0 and runs
+`python3 scripts/check-release-api.py`. It compares default features with the
+latest stable crates.io version; before the first publication it explicitly
+reports the absent baseline. Release-plz's implicit API scan is disabled because
+its feature heuristic enables `verus`, which requires the separate verifier
+toolchain. A detected API break requires an appropriate version bump in the PR;
+do not disable the check to get a release through. The check cannot assess CLI,
+configuration, record-format, or contract migrations.
+
+### One-time bootstrap
+
+1. Sign into crates.io through GitHub and verify the account email. Confirm the
+   intended crate owners and the initial version and release notes before publishing.
+2. Create a fine-grained token in **personal GitHub settings**, with resource owner
+   `anchor-book`, repository `anchor-book/anchor-book`, and **Contents** and
+   **Pull requests** read/write permissions. Obtain organization approval if its
+   policy requires it. Save it in this repository's Actions secrets as
+   `RELEASE_PLZ_TOKEN`. Use it only for GitHub automation, never as a Cargo token.
+3. After release authorization, publish the first crate manually from the exact
+   merged revision whose engine, Book, installed-engine, proof, mutation, and
+   package checks passed. Use a crates.io credential with `cargo publish --locked`;
+   the first crate cannot bootstrap itself through trusted publishing. Keep the
+   initial version's changelog, crate source revision, `vVERSION` tag, and GitHub
+   release consistent. Test installation from the registry before advertising it.
+4. On the crate's crates.io settings page, register a trusted publisher for owner
+   `anchor-book`, repository `anchor-book`, and workflow **`release-plz.yml`**.
+   This workflow has no GitHub environment. Subsequent publications request the
+   registry credential through OIDC; no persistent Cargo token belongs in Actions.
+5. Enable `RELEASE_AUTOMATION_ENABLED=true` in repository Actions variables. Run
+   **Release** manually on `main` to create the first automated release PR.
+   This dispatch prepares a PR; publication waits for a release-PR merge and CI.
+
+### Recurring releases and recovery
+
+Release-plz proposes version and changelog updates after changes reach `main`.
+Review scope, compatibility, migrations, and the required checks, then use
+**Squash and merge for release PRs**. Other PRs retain their usual merge options.
+The publication gate rejects merge commits and ancestor PR heads because
+release-plz can otherwise switch away from the checked revision.
+
+After a release PR merges, completion of the Book, Formal verification, Mutation
+testing, and Package workflows reevaluates publication. All four latest **main
+push runs for that exact SHA** must succeed. The Book run includes both Rust
+versions and installed-engine acceptance. Missing, running, skipped, cancelled,
+or failed checks cannot publish. The publishing job checks out that SHA and
+`release_always=false` restricts it to a release PR. CI on a fork or PR revision
+cannot supply the release evidence.
+
+If validation fails, fix it through a PR and rerun the affected checks. If a
+release PR was merged using the wrong method, prepare a new `release-plz-...` PR
+from main with the corrected release contents and squash it; do not rewrite main.
+For an interrupted publication, inspect crates.io, the tag, and the GitHub release
+before retrying. Rerun a validation workflow's original main-push run to trigger
+the gate for the same SHA. Do not change the version, republish different bytes,
+move an existing tag, or delete a published crate to recover. Release-plz normally
+reconciles existing release state; a conflict requires inspection before any
+manual repair. The first live release and interrupted-publication trial remain
+milestone evidence to collect, not behavior established by local gate tests.

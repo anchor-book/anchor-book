@@ -116,3 +116,13 @@ or verify independent consumer dependency resolution.
 
 The proposed target is [registry distribution](design/project-integration.md#registry-distribution),
 with work and acceptance in [Project Integration milestone 7](implementation-roadmaps/project-integration.md#project-integration-7).
+
+
+Two release-tool details affect the preparation. Release-plz's
+[commit selection](https://github.com/release-plz/release-plz/blob/c9e4ab586016cb5fa0ba9760387f3dcde26c543b/website/docs/usage/release.md#what-commit-is-released)
+can publish the release PR's head instead of its merge commit. Squash merging
+keeps the selected publication at the main commit; the proposed gate validates
+that relationship. Cargo-semver-checks 0.51.0's default feature heuristic selects
+`verus`. An Anchor Book all-features build on ordinary stable Rust failed at its
+Verus-only unstable attributes. An explicit `--default-features` API comparison
+avoids that verifier-only build; it is separate from release-plz's automatic scan.
