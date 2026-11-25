@@ -37,7 +37,8 @@ and never select the engine's verifier libraries. An unpublished package in an
 isolated workspace under `verification/` owns `vstd`, its lockfile, and its build
 configuration. It is excluded from the distributed crate.
 
-The private manifest names the same package and points its library target directly
+The private package has a distinct name, `anchor-book-verification`, so standard
+Cargo tooling can distinguish it from the public package. Its library target points directly
 to the production `src/lib.rs`; Rust resolves the production modules and embedded
 assets from those same files. It maintains no second implementation. Its ordinary
 dependency declarations match the public manifest, with that correspondence checked
@@ -45,9 +46,11 @@ by tests. Only the private build script sets `anchorbook_verification`, enabling
 Verus attributes, ghost functions, proof blocks, and imports in the shared source.
 The public package has no switch that enables this configuration.
 
-A configured proof target can use this private manifest only when its package
-identity matches the linked production package and its library root resolves to
-the identical file and module directory. An alternate source file, even an initially identical copy,
+A configured proof target can use an unpublished private manifest only when its
+library root resolves to the identical production file and module directory.
+The selection must be unique; multiple matching targets are rejected. The proof
+report names both the linked production package and the verification package.
+An alternate source file, even an initially identical copy,
 is rejected. The private manifest, lockfile, and build script participate in input
 identity, so changing them invalidates an in-flight proof result. A manifest
 redirect does not make a proof-only implementation evidence for production.

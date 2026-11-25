@@ -36,6 +36,8 @@ pub struct FunctionEvidence {
 pub struct TargetEvidence {
     /// Package selected from the Book's proof links.
     pub package: String,
+    /// Actual Cargo package used for verification, which may be private.
+    pub verification_package: String,
     /// Cargo target kind.
     pub target: String,
     /// Cargo features used for this invocation.
@@ -283,17 +285,23 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
         .as_ref()
         .expect("tools require settings");
     for (index, (package, target)) in plan.proof_targets.iter().enumerate() {
-        let Some(configured) = settings.targets.iter().find(|t| {
-            &t.package == package
-                && *target == Target::Lib
+        let mut candidates = settings.targets.iter().filter(|t| {
+            *target == Target::Lib
                 && plan.manifests.get(package).is_some_and(|production| {
-                    production == &t.manifest || same_library_source(production, &t.manifest)
+                    (production == &t.manifest && &t.package == package)
+                        || same_library_source(production, &t.manifest)
                 })
-        }) else {
+        });
+        let Some(configured) = candidates.next() else {
             return ProofResult::Unusable(format!(
                 "no matching configured library target for `{package}` ({target})"
             ));
         };
+        if candidates.next().is_some() {
+            return ProofResult::Unusable(format!(
+                "ambiguous configured library targets for `{package}` ({target})"
+            ));
+        }
         let manifest_text = match fs::read_to_string(&configured.manifest) {
             Ok(s) => s,
             Err(_) => return ProofResult::Unusable("cannot read target manifest".into()),
@@ -307,7 +315,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             .and_then(|l| l.get("name"))
             .and_then(|n| n.as_str())
             .map(str::to_owned)
-            .unwrap_or_else(|| package.replace('-', "_"));
+            .unwrap_or_else(|| configured.package.replace('-', "_"));
         let links: Vec<_> = plan
             .links
             .iter()
@@ -336,7 +344,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             "--manifest-path".into(),
             display(&configured.manifest, &plan.base),
             "--package".into(),
-            package.clone(),
+            configured.package.clone(),
             "--target-dir".into(),
             display(&target_dir, &plan.base),
         ];
@@ -358,6 +366,7 @@ fn execute(plan: &Plan, report: &mut ProofReport) -> ProofResult {
             .output();
         let mut target_report = TargetEvidence {
             package: package.clone(),
+            verification_package: configured.package.clone(),
             target: target.to_string(),
             features: configured.features.clone(),
             command: std::iter::once("cargo".into()).chain(args).collect(),

@@ -1,6 +1,6 @@
 # Repository-only proof build of the production library. Never publish this package.
 [package]
-name = "anchor-book"
+name = "anchor-book-verification"
 version = "0.1.0"
 edition = "2024"
 publish = false

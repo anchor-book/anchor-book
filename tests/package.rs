@@ -121,10 +121,11 @@ fn packaged_engine_is_usable_and_contains_no_verifier_dependency() {
     let private_values: Value =
         toml_edit::de::from_str(&fs::read_to_string(root.join("verification/Cargo.toml")).unwrap())
             .unwrap();
-    assert_eq!(
+    assert_ne!(
         public_values["package"]["name"],
         private_values["package"]["name"]
     );
+    assert_eq!(private_values["lib"]["name"], "anchor_book");
     for (name, dependency) in public_values["dependencies"].as_object().unwrap() {
         assert_eq!(
             dependency, &private_values["dependencies"][name],

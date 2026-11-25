@@ -857,13 +857,16 @@ fn native_proof_failure_support_failure_trust_and_correction() {
 }
 
 fn private_manifest(b: &fixture::Book) {
-    b.write("verification/Cargo.toml", "[package]\nname = \"modes\"\nversion = \"0.1.0\"\npublish = false\n[lib]\npath = \"../src/lib.rs\"\n");
+    b.write("verification/Cargo.toml", "[package]\nname = \"modes-verification\"\nversion = \"0.1.0\"\npublish = false\n[lib]\nname = \"modes\"\npath = \"../src/lib.rs\"\n");
     b.write("verification/Cargo.lock", "# private lock\n");
     b.write("verification/build.rs", "fn main() {}\n");
-    let configuration = fs::read_to_string(b.config()).unwrap().replace(
-        "manifest = \"Cargo.toml\"",
-        "manifest = \"verification/Cargo.toml\"",
-    );
+    let configuration = fs::read_to_string(b.config())
+        .unwrap()
+        .replace(
+            "manifest = \"Cargo.toml\"",
+            "manifest = \"verification/Cargo.toml\"",
+        )
+        .replace("package = \"modes\"", "package = \"modes-verification\"");
     b.write("anchorbook.toml", &configuration);
 }
 
@@ -884,6 +887,16 @@ fn private_proof_manifest_must_compile_the_identical_library_file() {
         fs::read_to_string(b.path("tools/calls"))
             .unwrap()
             .contains("--manifest-path\nverification/Cargo.toml\n")
+    );
+    assert_eq!(report(&output)["targets"][0]["package"], "modes");
+    assert_eq!(
+        report(&output)["targets"][0]["verification_package"],
+        "modes-verification"
+    );
+    assert!(
+        fs::read_to_string(b.path("tools/calls"))
+            .unwrap()
+            .contains("--package\nmodes-verification\n")
     );
     // A symlink in another directory could select different relative modules.
     std::os::unix::fs::symlink(b.path("src/lib.rs"), b.path("verification/alias.rs")).unwrap();
@@ -990,4 +1003,30 @@ fn proof_identity_follows_enabled_custom_build_scripts() {
         "{}",
         String::from_utf8_lossy(&output.stdout)
     );
+}
+
+/// anchorbook: A-verify-runs-linked-checks#selected-run
+#[test]
+fn private_proof_targets_cannot_ambiguously_select_the_same_source() {
+    let b = book();
+    recording(&b);
+    private_manifest(&b);
+    let manifest = fs::read_to_string(b.path("verification/Cargo.toml")).unwrap();
+    b.write(
+        "second/Cargo.toml",
+        &manifest.replace("modes-verification", "modes-second"),
+    );
+    let configuration = fs::read_to_string(b.config()).unwrap().replace(
+        "features = [\"verus\"]}]",
+        "features = [\"verus\"]}, {manifest = \"second/Cargo.toml\", package = \"modes-second\", target = \"lib\", features = []}]",
+    );
+    b.write("anchorbook.toml", &configuration);
+    let output = run(&b);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        report(&output)["reasons"]
+            .to_string()
+            .contains("ambiguous configured library targets")
+    );
+    assert!(!b.path("tools/calls").exists());
 }

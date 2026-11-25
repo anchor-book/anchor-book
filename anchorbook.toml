@@ -22,4 +22,4 @@ runners = ["nextest", "verus"]
 [verification.verus]
 version = "0.2026.10.18.7d82994"
 rust-toolchain = "1.99.1"
-targets = [{ manifest = "verification/Cargo.toml", package = "anchor-book", target = "lib", features = [] }]
+targets = [{ manifest = "verification/Cargo.toml", package = "anchor-book-verification", target = "lib", features = [] }]

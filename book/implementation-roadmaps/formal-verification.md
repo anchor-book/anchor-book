@@ -344,6 +344,14 @@ the single maintained executable implementation.
   with the pinned verifier. Replacing the accepted-status condition with `false`
   fails verification, and restoring it passes. All seven linked functions are
   checked through the private manifest over the production library.
+- **Tooling integration:** The follow-up to `8478ac9` gives the private package
+  the distinct name `anchor-book-verification`; duplicate package names prevented
+  standard API scanning. The native runner selects it by the identical library
+  file and module directory, rejects ambiguous candidates, and reports both
+  production and verification package names. The native gate passes all seven
+  linked functions. Package acceptance and 197 ordinary/doc tests pass on stable
+  and Rust 1.88. Standard cargo-semver-checks passes against the extracted local
+  candidate; no published registry baseline exists yet.
 - **Scope:** These checks establish source/dependency isolation and native target
   preservation. They do not supply the separate proof-criterion guards or general
   dependency-policy coverage. Ordinary tests and Clippy pass on stable and Rust
