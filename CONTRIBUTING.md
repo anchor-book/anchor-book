@@ -2,6 +2,8 @@
 
 ## Working on the Book
 
+Write each prose paragraph on one source line, separated by blank lines, and use editor soft wrapping to read it. Preserve structural line breaks in lists, tables, code blocks, and records. The working contract’s “Keep the Book precise and concise” section supplies the shared authoring rule.
+
 Install the versions used by the Book workflow:
 
 ```sh

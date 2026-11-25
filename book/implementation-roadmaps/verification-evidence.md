@@ -41,12 +41,7 @@ Exercise each engine capability in this Book before Symposium relies on it.
 Symposium trials later assess adoption and return findings to the engine; new
 project tests and coding trials do not gate this reporting increment.
 
-[Milestone 11](#verification-evidence-11) removes judgments from verification;
-[milestone 12](#verification-evidence-12) owns executable checks for migrated
-review criteria. The proposed assessment reader in milestone 8 is retired.
-Broader programmatic proof guards and the brief remain in milestone 6; consumer
-proofs in milestone 5 also need [optional Verus packaging](formal-verification.md#formal-verification-4).
-They are separate from Symposium's test workflow.
+[Milestone 11](#verification-evidence-11) removes judgments from verification; [milestone 12](#verification-evidence-12) owns executable checks for migrated review criteria. The proposed assessment reader in milestone 8 is retired. Broader programmatic proof guards and the brief remain in milestone 6; consumer proofs in milestone 5 also need [private Verus packaging](formal-verification.md#formal-verification-4). They are separate from Symposium's test workflow.
 
 Milestone 4 records criteria/configuration identities and Git context; milestones
 1 and 2 add code/lockfile identities and current-run checks. Milestones 3 and 9
@@ -355,10 +350,11 @@ Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correctio
 
 **Dependencies:** Deferred until milestones 2, 3, and 6 are complete on this Book, and [Formal Verification milestone 4](formal-verification.md#formal-verification-4). Use a locally packaged release candidate; registry publication and contract delivery are not prerequisites for the fixtures.
 
-**Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence), and [verification responsibilities](../design/verification.md#responsibilities).
+**Design basis:** [Project verification](../design/project-integration.md#formal-verification-in-a-project), [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence), [verification responsibilities](../design/verification.md#responsibilities), and the [shared adapter boundary](../design/verification.md#shared-verification-adapters).
 
 **Tasks**
 
+- [ ] Exercise the standard adapter through both the engine's private proof workspace and the independent consumers. Use configuration to select their tools and targets; retain one invocation and result interpretation path. Custom-command configuration and separately distributed adapters need the [extension design](../open-questions.md#verification-adapter-extensions) before implementation.
 - [ ] Prepare two independent packaged consumer fixtures with different Book/module layouts, a build toolchain separate from verification, and a consumer-selected `vstd` version different from the engine's proof workspace.
 - [ ] Link a production executable contract and a supporting proof function to the consumer's criteria. Establish the runtime call path, preconditions, and excluded conversion/caller boundaries through tests and review.
 - [ ] Exercise passing, deliberate proof failure and correction, incomplete/unsupported reports, unavailable tools, and trust-policy rejection through the real CLI. Add supported-version adapters only with native report fixtures.
@@ -369,7 +365,7 @@ Complete on 2026-11-10; merged in PR #33 as `efefa3c`, and the scanner correctio
 
 #### Consumer tools {#verification-evidence-5-consumer-tools}
 
-Both consumers build the packaged engine without its verifier dependencies and run their configured Verus installations using verification Rust separate from build Rust. A different consumer `vstd` resolves and builds; reports identify the actual tools and supported adapter used.
+Both consumers build the packaged engine without its verifier dependencies and run their configured Verus installations using verification Rust separate from build Rust. A different consumer `vstd` resolves and builds; reports identify the actual tools and supported adapter used. The engine proof workspace and independent consumers use the same adapter path, with source correspondence checked for the private workspace.
 
 - **Anchor coverage:** [A-project-verus-evidence](../design/project-integration.md#A-project-verus-evidence) · `separate-toolchain` — Full; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution` — Partial: proof dependencies and consumer `vstd` choice. Other exact pins and general release compatibility remain separate work.
 - **Evidence:** Pending.

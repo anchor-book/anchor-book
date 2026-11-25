@@ -168,8 +168,7 @@ guidance and the ownership split between standard and project terms. Versioned
 core content supplies the standard vocabulary; consumers maintain their own
 guidance and terminology alongside it.
 
-The contract includes Rust guidance. Extensions for other languages are outside
-this design.
+The contract includes Rust guidance and Markdown authoring conventions. Prose paragraphs occupy one physical source line, separated by blank lines; structural line breaks in lists, tables, code blocks, and records are preserved. Paragraph wrapping is an authoring convention, not an additional structural-check requirement. Extensions for other programming languages are outside this design.
 
 `anchorbook contract` prints the common contract packaged with the running engine.
 Without arguments it reads no project files, so its output is the same for every
