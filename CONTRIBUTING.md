@@ -76,7 +76,13 @@ prints the common AI Working Contract; `--config PATH` adds guidance for the
 configured phase, currently the Port section for `port`. Source files live in
 `contract/`; see `contract/README.md`. Invalid configuration fails without printing
 a partial contract; the command without arguments remains available for diagnosis.
-Materialization remains future work.
+The configured `book.sections.project-guidance` page is
+`book/working-on-anchor-book.md`. It owns local workflow and review instructions.
+For a consumer starter, run `cargo run --quiet --locked --bin anchorbook --
+template project-guidance`. This prints Markdown without changing files; reconcile
+existing guidance rather than overwriting it. Map the adapted page and link it at
+the top level of `SUMMARY.md` after upgrading the engine. Materialization remains
+future work.
 
 The Book's preprocessor entry runs the local binary through Cargo with locked
 dependencies, after mdBook's include/link processing and before Mermaid. A first

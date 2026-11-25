@@ -40,9 +40,9 @@ from the record inventory.
 
 ## Managed content requirement
 
-> **`R-managed-content-boundary`** (draft): **Automation preserves project-authored design and authority**
-> Statement: Operations that create or reconcile Book content must distinguish managed content from project-authored design and authority, preserve the latter, expose conflicts, and leave already-conforming managed content unchanged.
-> Source: The materialization design promises bounded ownership, conflict detection, preservation, and idempotence. Unlike read-only checking, content management intentionally writes files and needs its own reviewable constraint.
+> **`R-managed-content-boundary`** (draft): **Automation preserves project-authored content**
+> Statement: Operations that create or reconcile Book content must distinguish managed content from project-authored content, including design, authority, local guidance, and project terminology; preserve the latter, expose conflicts, and leave already-conforming managed content unchanged.
+> Source: The materialization design promises bounded ownership, conflict detection, preservation, and idempotence. The engineer's terminology split makes Anchor Book responsible for standard terms and consumers responsible for project terms. Unlike read-only checking, content management intentionally writes files and needs its own reviewable constraint.
 
 ## Authority traceability requirement
 

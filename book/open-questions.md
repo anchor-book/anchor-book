@@ -42,6 +42,18 @@ already requires preservation, conflict reporting, and a conforming no-op.
 needs these choices before implementation; atomic writes are not implied by the
 current design.
 
+## Guidance and terminology
+
+Should every Book include the standard terminology page, and should configuration
+map it explicitly? Its [separate ownership](design/project-guidance.md#terminology)
+is defined; mandatory adoption and any mapping remain open. Project guidance is
+now a defined engine-managed role with an optional schema-1 mapping for existing
+Book compatibility; setup and assigned reconciliation establish it. Standard
+terminology delivery uses the versioned-authoring-reference work in
+[Project Integration milestone 4](implementation-roadmaps/project-integration.md#project-integration-4).
+Managed-content questions still apply to boundaries and updates within a terminology
+page. Contract and template retrieval do not synchronize either page.
+
 ## Evidence integration
 
 1. **Build configuration.** The native configuration and report-handoff interface

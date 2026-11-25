@@ -4,9 +4,12 @@
 
 [Working on Anchor Book](working-on-anchor-book.md)
 
+[Terminology](glossary.md)
+
 - [Design](design/index.md)
   - [System Overview](design/system-overview.md)
   - [Using Anchor Book with an Agent](design/user-guidance.md)
+  - [Project Guidance and Terminology](design/project-guidance.md)
   - [Anchor Definitions](design/anchor-definitions.md)
   - [Authority Definitions](design/authority-definitions.md)
   - [Configuration](design/configuration.md)
@@ -40,5 +43,3 @@
 [Open Questions](open-questions.md)
 
 [Research](research.md)
-
-[Glossary](glossary.md)

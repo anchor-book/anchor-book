@@ -12,6 +12,7 @@ mdbook = "book.toml"
 design = "design/index.md"
 authority = "authority/index.md"
 implementation-roadmaps = "implementation-roadmaps/index.md"
+project-guidance = "working-on-anchor-book.md"
 
 [verification]
 sources = ["src", "tests"]

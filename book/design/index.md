@@ -19,6 +19,7 @@ read the general execution workflow before the proof-specific details.
 | --- | --- |
 | [System Overview](system-overview.md) | Components, Book concepts, operations, and how the engine will develop using its own Book |
 | [Using Anchor Book with an Agent](user-guidance.md) | User flow, example prompts, contextual next steps, and guidance delivered through the contract |
+| [Project Guidance and Terminology](project-guidance.md) | Local guidance alongside the contract, standard and project vocabulary, and preservation during updates |
 | [Anchor Definitions](anchor-definitions.md) | One structured authoring format, authority references, and verification criteria |
 | [Authority Definitions](authority-definitions.md) | Typed requirements and decisions, identity, and authority-link validation |
 | [Configuration](configuration.md) | Mapping a project's layout into Book roles |

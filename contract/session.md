@@ -23,8 +23,8 @@ project guidance.
 
 ## Start a session
 
-Read this contract, then the project guidance identified by the repository's
-bootstrap instructions. Use that guidance to locate the Book source, current
+Read this contract, then the configured project-guidance page identified by the
+repository's bootstrap instructions. Use that guidance to locate the Book source, current
 phase, authoring references, and development commands. Read the Book's `SUMMARY.md`
 and every chapter it lists in full, using current Markdown sources so unpublished
 changes are included; no Book build is needed.

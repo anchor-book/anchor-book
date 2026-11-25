@@ -32,6 +32,8 @@ struct Sections {
     design: String,
     authority: String,
     implementation_roadmaps: String,
+    #[serde(default)]
+    project_guidance: Option<String>,
 }
 
 pub(super) struct Settings {
@@ -40,6 +42,7 @@ pub(super) struct Settings {
     pub output: String,
     pub mdbook: String,
     pub sections: [String; 3],
+    pub project_guidance: Option<String>,
     spans: BTreeMap<String, Range<usize>>,
 }
 impl Settings {
@@ -70,7 +73,12 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
         ("book", &["source", "output", "mdbook", "sections"][..]),
         (
             "book.sections",
-            &["design", "authority", "implementation-roadmaps"][..],
+            &[
+                "design",
+                "authority",
+                "implementation-roadmaps",
+                "project-guidance",
+            ][..],
         ),
     ] {
         let mut keys = table_path.split('.');
@@ -134,6 +142,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
         "book.sections.design",
         "book.sections.authority",
         "book.sections.implementation-roadmaps",
+        "book.sections.project-guidance",
     ]
     .into_iter()
     .filter_map(|field| field_span(field).map(|span| (field.to_owned(), span)))
@@ -148,6 +157,7 @@ pub(super) fn parse(path: &Path, text: &str) -> Result<Settings, Error> {
             raw.book.sections.authority,
             raw.book.sections.implementation_roadmaps,
         ],
+        project_guidance: raw.book.sections.project_guidance,
         spans,
     })
 }

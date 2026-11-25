@@ -1,6 +1,40 @@
 ## Apply project guidance
 
-Read the project's Book for its supported commands, source and output locations,
+Read the page mapped by `book.sections.project-guidance`, relative to the Book's
+configured source. Keep the repository bootstrap pointing to that page. Anchor
+Book manages this role and its starter structure; the project owns its instructions.
+Organize it around project context and phase; Book sources and references;
+developer workflow and checks; design and review practices; and project logistics,
+including contribution, preview, delivery, and publication. Identify where research,
+questions, approvals, and audit reports belong. Projects choose the title, path,
+and headings and may add local sections. Link authoritative configuration,
+roadmaps, and contributor instructions rather than duplicating their facts.
+
+Establish this page and its top-level navigation and mapping during new setup or
+assigned adoption and reconciliation. `anchorbook template project-guidance`
+prints the starter without modifying files; adapt it to known practices. Reconcile
+an existing page in place and preserve its instructions; never overwrite it with
+the template. Older Books can omit the mapping during migration: read any guidance
+identified by their bootstrap, report the missing mapping, and repair it within
+the assignment after upgrading engine entry points. Do not invent project policy
+or commands to fill gaps.
+
+Keep review instructions here and link individual audits and milestone evidence.
+Do not map this page as implementation roadmaps or put ongoing working instructions
+in design chapters. Roadmaps own work and completion evidence; an otherwise empty
+roadmap index can state that no milestones are proposed. The structural checker
+validates mapped placement and paths, not whether the instructions are adequate.
+
+Use the Book's terminology page for shared and project-specific meanings. Keep
+its Anchor Book terminology table owned by the selected engine version and its
+project terminology table owned by the consumer. Agents maintain project terms
+from agreed design; surface ambiguous or conflicting meanings for the engineer
+instead of silently redefining a standard term. Use qualified names when helpful.
+Updating standard content must preserve project terms, guidance, and surrounding
+authored content. Follow explicit ownership boundaries and the project's supported
+update procedure; the contract command itself does not synchronize these pages.
+
+Use project guidance for supported commands, source and output locations,
 toolchain, contribution workflow, and publication boundaries. Distinguish
 implemented tools from planned commands. For Book changes, run the
 [structural check](#check-the-books-structure), build the Book, and check
