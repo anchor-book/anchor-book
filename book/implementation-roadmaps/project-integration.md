@@ -128,6 +128,7 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 - [ ] Expose the library CLI entry point and exercise the documented workspace-binary and installed-binary paths. Implement the exact engine-version declaration and mismatch checks; settle configuration and record-syntax version declarations and migration before changing their schema.
 - [ ] Exercise library, CLI, and preprocessor equivalence through independent consumer fixtures, including failing and incomplete Books and mismatched versions. Keep this repository's Book acceptance separate from its ordinary tests so a broken Book cannot prevent building its engine.
 - [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, standard terminology, supported tools, and normal commands. Supply a separate project terminology table; decide how the engine distributes portable versioned references and exercise that delivery here before consumers rely on it. Settle terminology adoption and any additional configuration migration before enforcing new requirements.
+- [x] Define standard and project terminology ownership and manual maintenance; apply the two-table structure in this Book, preserving existing concepts and distinguishing acceptance, progress, and verification.
 - [x] Deliver the project-guidance role, read-only starter command, contract instructions, and own-Book adoption. Check legacy compatibility, top-level placement, distinct paths including aliases, rendering gates, and preservation of authored instructions.
 - [ ] Exercise the contract's required readiness-report template in fresh Codex and Claude sessions. Check all sections, every open milestone and completion criterion, evidence limitations, and assignment prerequisites; record versions, assistance, omissions, and differences.
 - [ ] Trial the common design-before-roadmaps guidance in fresh Prototyping and Port sessions using disposable fixtures; assess design quality, ordering, missing-design readiness findings, and concise milestone updates.
@@ -175,6 +176,12 @@ trials, and automated updates remain outstanding. The existing
 now explicitly includes local guidance and terminology, including two tables in
 one file; its expanded `ownership-preservation` criterion remains unlinked.
 No new anchors are needed for headings or individual terms.
+The terminology page now has 27 shared terms and 13 project terms. Record status
+and milestone status are qualified separately; anchor satisfaction distinguishes
+computed evidence from design acceptance and omitted obligations. The planned
+brief command is explicitly unavailable in this revision. Copied tables identify
+their selected engine version and use matching references, while project terms
+remain owned by the consumer. No record identities changed.
 
 Local validation of this preparation passes formatting, all six contract tests,
 structural checking, four current-Book checks, and rendered record/link acceptance.

@@ -25,14 +25,20 @@ in design chapters. Roadmaps own work and completion evidence; an otherwise empt
 roadmap index can state that no milestones are proposed. The structural checker
 validates mapped placement and paths, not whether the instructions are adequate.
 
-Use the Book's terminology page for shared and project-specific meanings. Keep
+Use the terminology page identified by project guidance for shared and
+project-specific meanings. Preserve an existing glossary path where practical. Keep
 its Anchor Book terminology table owned by the selected engine version and its
 project terminology table owned by the consumer. Agents maintain project terms
 from agreed design; surface ambiguous or conflicting meanings for the engineer
 instead of silently redefining a standard term. Use qualified names when helpful.
 Updating standard content must preserve project terms, guidance, and surrounding
-authored content. Follow explicit ownership boundaries and the project's supported
-update procedure; the contract command itself does not synchronize these pages.
+authored content. For a copied standard table, identify the engine version and
+use references to its authoring material; reconcile both when upgrading. A term
+change alone does not revise governing design or authority. If the page or its
+versioned sources are missing, report that context gap and establish them within
+the assignment without inventing definitions or configuration keys. Follow explicit
+ownership boundaries and the project's supported update procedure; the contract
+command itself does not synchronize these pages.
 
 Use project guidance for supported commands, source and output locations,
 toolchain, contribution workflow, and publication boundaries. Distinguish

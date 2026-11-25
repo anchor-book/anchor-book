@@ -89,6 +89,8 @@ The terminology page's mandatory status and mapping remain
 A top-level terminology page has two separately owned tables. Each entry gives
 a term, a concise meaning, and a link to its defining material when available.
 The definition remains authoritative; the table helps readers find and use it.
+Keep an existing glossary filename when it serves this purpose, preserving its
+links. Project guidance identifies the page and its place in top-level navigation.
 
 | Table | Owner | Contents |
 | --- | --- | --- |
@@ -114,6 +116,32 @@ Optional or proposed concepts stay visibly conditional. Listing RFD terminology,
 for example, neither enables RFD support nor makes that proposal an accepted
 capability. General technical vocabulary belongs in the project table when it
 is specific to understanding that system; not every word needs an entry.
+
+### Authoring and maintenance
+
+Use the selected engine version's standard definitions and record that version
+when copying them into a consumer Book. Resolve their links to that version's
+authoring material rather than copying this repository's relative paths into
+another project. If references are unavailable, identify the gap; do not invent
+definitions or claim the copy is current. Project entries link to the consumer's
+own definitions. A changed definition is reviewed in its owning design before
+the table is reconciled; editing the glossary alone does not change a requirement,
+anchor, or accepted decision.
+
+On upgrade, compare standard terms with the newly selected engine version and
+reconcile the standard table and its references. Preserve project terms and
+surrounding prose; surface collisions or local edits to shared meanings for
+resolution. A project-specific sense gets a qualified name and its own entry.
+For example, “record status” describes design acceptance, “milestone status”
+describes work progress, and an evidence state describes verification. None
+substitutes for the others. Keep obsolete terminology only when a compatibility
+note helps readers find the current definition.
+
+This structure supports manual adoption without a new configuration key.
+The guidance template asks for the terminology location; it does not supply
+standard definitions or create the page. Engine installation, contract retrieval,
+and structural checking do not update tables or assess their meanings. Packaged
+terminology delivery and automatic updates have their own implementation work.
 
 ## Ownership through updates
 

@@ -32,7 +32,12 @@ Use these definitions and conventions while authoring this Book:
   targets; use the implementation state below to determine supported commands.
 - [Terminology](glossary.md) separates standard Anchor Book terms from this
   project's vocabulary. Maintain project terms from agreed design, surface new
-  meanings or conflicts, and preserve the ownership of both tables.
+  meanings or conflicts, and preserve the ownership of both tables. This engine's
+  checkout supplies its standard definitions; consumers identify their selected
+  revision and use matching authoring references. Reconcile terminology after
+  changes to its owning design, distinguishing record acceptance, milestone
+  progress, and computed verification. The glossary does not supply runtime
+  capability: use the available-tool descriptions below.
 - [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
   structure, identifiers, planned coverage, statuses, and evidence records.
 
