@@ -206,6 +206,14 @@ and did not run its linked tests. Automatic content synchronization, standard
 terminology delivery, fresh-agent trials, mutation CI, and publication remain
 outside this local result.
 
+The CI independence experiment at `22f2195` exposed an omitted compile-time
+asset in its temporary engine copy: `templates/project-guidance.md`. The fixture
+now includes `templates/` alongside source, contract, and tests. The complete
+`scripts/check-engine-independence.sh` passed locally on stable and Rust 1.88:
+ordinary engine tests run with an absent, invalid, or incomplete Book, while
+Book acceptance rejects each seeded defect. This correction preserves the
+independence boundary and the checks it exercises.
+
 #### Design before roadmaps {#project-integration-4-design-before-roadmaps}
 
 In disposable Prototyping and Port fixtures, fresh sessions establish a capability's
