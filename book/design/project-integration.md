@@ -165,6 +165,52 @@ that does not support them reports incomplete evaluation. Compatibility and
 migration rules for those versions are part of
 [release readiness](rust-engine.md#rust-development-conventions).
 
+## Registry distribution
+
+One crates.io package, `anchor-book`, distributes the `anchor_book` library and
+`anchorbook` executable. Projects select the same exact released version in
+Cargo dependencies and CLI installation. A registry release packages its own
+contract, templates, licenses, and source identity; installing it does not depend
+on this checkout. Publication does not by itself provide automatic version
+mismatch enforcement, project initialization, or optional tool installation.
+Those capabilities retain their own design and work.
+
+A release PR presents the version, changelog, supported interfaces and toolchains,
+and migrations for review. Compatibility includes library APIs, CLI behavior,
+configuration and record formats, and changes to the working contract. Automated
+Rust API comparison assists this review but cannot judge every compatibility
+change. Early versions state their supported prototype scope explicitly.
+
+The release flow uses release-plz with release-PR-controlled publication:
+ordinary changes reach `main`, automation proposes a release PR, normal checks
+and engineer review establish the release, and publication uses the validated
+release commit. Publication cannot race ahead of checks for that exact commit.
+The workflow must select and validate a fixed revision rather than looking up
+whatever `main` names later. Repeated execution must not create a second version
+or move an existing release tag; recovery retains the crate/version/commit identity.
+
+The GitHub automation identity needs permission to update release branches, PRs,
+tags, and releases while allowing their events to trigger CI. Crates.io
+publication uses its separate trusted-publisher identity, bound to the repository
+and publishing workflow, and an environment if selected. The first publication
+establishes crate ownership through the registry's supported bootstrap procedure;
+subsequent releases use OIDC. Merging a release PR is the recurring release
+control; setup does not add another routine approval ceremony.
+
+Package validation and library compatibility checks exercise ordinary consumer
+features without implicitly enabling the engine's Verus verification feature.
+The [dependency](#what-the-crate-must-not-impose) and
+[packaged-source](verified-code-packaging.md#A-package-verified-bodies) guarantees
+still apply. Release notes report unresolved scope honestly rather than treating
+successful Cargo packaging as full verification of those guarantees.
+
+Crates.io installation is the initial distribution path. Prebuilt CLI archives
+can follow for supported and tested platforms, built from the same release tag
+with locked dependencies and checksums. They contain the `anchorbook` executable;
+ACP extension metadata is not part of this engine's distribution. Project guidance
+owns the concrete release commands, workflow locations, credentials setup, and
+recovery procedure.
+
 ## What the crate must not impose
 
 The engine is a development tool inside someone else's build, so its

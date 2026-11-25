@@ -11,8 +11,9 @@ pinned engine revision runs it. The project roadmaps then apply that groundwork;
 the [Symposium Integration roadmap](symposium-integration.md) is the first.
 
 [Project Integration](../design/project-integration.md) defines the goal design.
-This roadmap is the shared groundwork that exercises it; it does not replace the
-release work in [later work](index.md#later-work-retained-from-the-design).
+This roadmap owns the shared integration groundwork and the proposed registry
+release in milestone 7. Other distribution work remains in
+[later work](index.md#later-work-retained-from-the-design).
 Milestone 4 supplies the remaining native integration and setup needed for the
 [first major milestone](index.md#first-major-milestone-symposium-adopts-anchor-book),
 upstream adoption in Symposium.
@@ -46,7 +47,7 @@ direct structured verification results using engine fixtures and this Book, with
 for new project tests. Symposium owns test semantics, and
 Anchor Book trusts current runner outcomes. Milestone 4 below uses those trials
 to settle the minimum setup for reproducible native-command and CI integration.
-Registry publication is a separate outcome; a pinned Git dependency and installed
+Registry publication is the separate proposed outcome in [milestone 7](#project-integration-7); a pinned Git dependency and installed
 engine can support the first adoption.
 
 [Milestone 5](#project-integration-5) adds the Port phase and configuration-selected
@@ -428,3 +429,78 @@ Guide design and contract delivery merged in
 `7966c9fddb3e9b9a710444c365cd698550de9b5f`. The checks above retain their original
 tested revision. Conversational trials remain outstanding; merge and downstream
 pinning do not establish conversational usefulness.
+
+## Milestone 7. Projects install a versioned release from crates.io {#project-integration-7}
+
+**Outcome:** A project installs a released `anchorbook` CLI and uses the matching
+`anchor_book` library without a Git revision pin. Release PRs control repeatable
+subsequent publication and describe compatibility changes.
+
+**Status:** Proposed
+
+**Identifier:** `project-integration-7`
+
+**Dependencies:** Agreement on the first release's scope, version, owners, and
+compatibility policy; crates.io first-publication access; an automation identity
+for GitHub and a crates.io trusted-publisher registration. Existing installed-engine
+and Book checks supply the baseline. Milestone 4's automatic version alignment
+and shared CLI entry point are separate work; publication must not advertise them
+as implemented.
+
+**Design basis:** [Registry distribution](../design/project-integration.md#registry-distribution),
+[package and adapters](../design/rust-engine.md#package-and-adapters), and
+[consumer proof packaging](../design/verified-code-packaging.md#proof-packaging-for-consumers).
+The [Sparkle assessment](../research.md#registry-release-automation) supplies source observations.
+
+**Tasks**
+
+- [ ] Prepare the initial `anchor-book` version (proposed: 0.1.0). Review public APIs, CLI/configuration/record compatibility, licenses, README install examples, documentation metadata, package contents, and changelog. Keep publishing disabled until the release is prepared and authorized.
+- [ ] Exercise a fresh consumer and an installation from the packaged crate without Git or Verus. Check default dependency resolution, including a consumer selecting a different vstd version, runtime source identity, contract and template retrieval, structural checks, and rendering. Record unresolved package guarantees instead of inferring them from a successful build.
+- [ ] Add `release-plz.toml` and `.github/workflows/release-plz.yml`, with `release_always = false`, ordinary-feature publication, explicit GitHub job permissions, and a GitHub app token or appropriately scoped `RELEASE_PLZ_TOKEN`. Confirm library semver checking works without enabling `verus`. Generated release PRs must trigger the existing protected checks.
+- [ ] Add a package/install acceptance gate and require successful checks for the exact release revision before publication. Wire the existing separate workflows into a gate or reuse their validation; do not publish concurrently with unchecked main-branch runs.
+- [ ] With explicit publication authorization, perform the initial publish, establish the intended crate owners, configure trusted publishing for this repository and workflow, and enable recurring release publication. Coordinate the initial version's crate, tag, changelog, and GitHub release.
+- [ ] Exercise the next release PR, publication, and a retry; document recovery from a partially completed registry/tag/GitHub-release sequence. Update consumer instructions to exact registry versions and run a real Symposium adoption trial after the release.
+
+### Completion criteria
+
+#### Usable package {#project-integration-7-package}
+
+The exact packaged release builds on supported toolchains and installs outside
+the engine checkout. The CLI and library use the selected version; contract,
+template, checking, and rendering acceptance pass. Metadata and licenses are
+complete, verifier tools are unnecessary for ordinary use, and any intentionally
+unsupported scope is explicit in release notes.
+
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `contract-retrieval` — Partial: registry-installed CLI; [A-project-no-imposed-dependencies](../design/project-integration.md#A-project-no-imposed-dependencies) · `independent-resolution`, `dependency-review` — Partial: release package and consumer fixtures.
+- **Evidence:** Initial packaging at `70355d4` passed `cargo package --locked`, including extracted-crate compilation and the expected contract, template, license, and revision files. Registry installation, consumer-resolution and source-correspondence checks remain outstanding.
+
+#### Controlled releases {#project-integration-7-release-flow}
+
+An automated release PR triggers normal CI and explains its version and migrations.
+No publication occurs before the exact release revision passes its required checks.
+First-publication ownership is established, subsequent publishing obtains its
+registry credential through OIDC, and crate, tag, and GitHub release identify the
+same version and commit. A repeated run preserves that identity. Failed checks
+and a non-release main-branch change do not publish a new version.
+
+- **Anchor coverage:** None: project release-workflow acceptance; publishing is not evidence that all engine anchors are satisfied.
+- **Evidence:** Pending implementation and an authorized live release.
+
+#### Consumer adoption {#project-integration-7-adoption}
+
+A fresh Symposium session follows versioned registry setup and exercises the
+contract, guidance, Book checks, rendering, and configured verification with the
+same selected engine release. Record engine and tool versions, commands, results,
+and remaining evidence gaps. Verify the second-release upgrade and retain a
+working installation command for the prior release.
+
+- **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: registry-based setup in Symposium.
+- **Evidence:** Pending the first published release and consumer trial.
+
+### Completion record
+
+Proposed. The package build and Sparkle automation assessment establish a feasible
+starting point; publication settings, credentials, and release workflows are unchanged.
+Prebuilt macOS/Linux/Windows downloads are a separate follow-up after the crate
+path works; only validated targets should be offered. Automatic Book creation,
+terminology distribution, and the draft RFD capability are not release prerequisites.

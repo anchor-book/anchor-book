@@ -71,3 +71,48 @@ runtime setting. No additional execution-report protocol is required.
 retains passing/failing/restored verification results, the coverage gaps, and the
 platform limits. The governing [project-test trust decision](authority/decisions.md#D-project-test-results-trusted)
 separates the engine's result mapping from the meaning of a project's assertions.
+
+## Registry release automation
+
+The 2026-11-25 assessment inspected Sparkle MCP at
+[`fd0840b45af23e5ad3900bb5b251c7188bd0ff30`](https://github.com/sparkle-ai-space/sparkle-mcp/tree/fd0840b45af23e5ad3900bb5b251c7188bd0ff30).
+Its latest release, `v0.7.0`, has a matching crates.io version and five binary
+archives plus `extension.json` on GitHub.
+
+- [`release-plz.yml`](https://github.com/sparkle-ai-space/sparkle-mcp/blob/fd0840b45af23e5ad3900bb5b251c7188bd0ff30/.github/workflows/release-plz.yml)
+  runs separate `release-pr` and `release` jobs on pushes to `main`. The former
+  updates version and changelog in a release PR. The latter publishes eligible
+  package versions, tags, and GitHub releases. Both restrict the repository owner.
+- Both jobs use `RELEASE_PLZ_TOKEN` for GitHub operations, including checkout.
+  The publishing job grants `id-token: write` and supplies no registry token.
+  This matches release-plz's automatic crates.io trusted-publishing flow. The
+  actual crates.io publisher registration and the token's scope were not inspected.
+- No release-plz configuration file was present. Its default `release_always`
+  behavior attempts publication whenever the release command runs; it is not
+  restricted to release-PR merges.
+- [`release-binaries.yml`](https://github.com/sparkle-ai-space/sparkle-mcp/blob/fd0840b45af23e5ad3900bb5b251c7188bd0ff30/.github/workflows/release-binaries.yml)
+  runs on `release: published`. It builds macOS ARM64/x86-64, Linux musl
+  ARM64/x86-64, and Windows x86-64 archives, then uploads an ACP extension manifest.
+  The manifest serves Sparkle's ACP distribution and is not an Anchor Book need.
+
+Release-plz's [quickstart](https://github.com/release-plz/release-plz/blob/c9e4ab586016cb5fa0ba9760387f3dcde26c543b/website/docs/github/quickstart.md)
+explains that OIDC needs `id-token: write` and no separately supplied registry
+token, but a new crate needs its first publication before trusted publishing can
+be configured. Its [GitHub token guidance](https://github.com/release-plz/release-plz/blob/c9e4ab586016cb5fa0ba9760387f3dcde26c543b/website/docs/github/token.md)
+explains why an app token or PAT is needed when generated release PRs and release
+events must trigger other workflows. Its [configuration reference](https://github.com/release-plz/release-plz/blob/c9e4ab586016cb5fa0ba9760387f3dcde26c543b/website/docs/config.md#the-release_always-field)
+defines `release_always = false` for release-PR-controlled publication.
+
+Anchor Book at `70355d4d55f81667fd2b9a851987cc6a2b84befd` still sets
+`publish = false`, has no release workflow or listed repository release secret,
+and uses read-only default Actions permissions. Its existing main ruleset
+requires the Rust, Book, installed-engine, proof, and mutation checks. Public
+crates.io lookups for `anchor-book` and `anchorbook` returned 404; this is not a
+reservation. `cargo package --locked` successfully packaged 159 files (1.6 MiB,
+445.1 KiB compressed) and compiled the extracted crate. The archive contains
+contract and template sources, licenses, `build.rs`, and Cargo's revision metadata.
+This did not publish, establish crate ownership, test a registry installation,
+or verify independent consumer dependency resolution.
+
+The proposed target is [registry distribution](design/project-integration.md#registry-distribution),
+with work and acceptance in [Project Integration milestone 7](implementation-roadmaps/project-integration.md#project-integration-7).
