@@ -76,6 +76,7 @@ pub struct Configuration {
     output: PathBuf,
     mdbook: PathBuf,
     sections: [PathBuf; 3],
+    project_guidance: Option<PathBuf>,
 }
 impl Configuration {
     /// Canonical location of the configuration file actually read.
@@ -110,6 +111,24 @@ impl Configuration {
             SectionRole::Authority => 1,
             SectionRole::ImplementationRoadmaps => 2,
         }]
+    }
+
+    /// Resolved project-guidance chapter, when explicitly configured. Omission
+    /// supports older Books and never infers a page from its title or filename.
+    pub fn project_guidance(&self) -> Option<&Path> {
+        self.project_guidance.as_deref()
+    }
+
+    /// Every mapped role and its resolved chapter, in stable order. Configured
+    /// optional roles have the same navigation obligations as required roles.
+    pub fn mapped_sections(&self) -> impl Iterator<Item = (&'static str, &Path)> {
+        SectionRole::ALL
+            .into_iter()
+            .map(|role| (role.as_str(), self.section(role)))
+            .chain(
+                self.project_guidance()
+                    .map(|path| ("project-guidance", path)),
+            )
     }
 }
 
@@ -189,6 +208,28 @@ pub fn load(path: &Path) -> Result<Configuration, Error> {
             ));
         }
     }
+    let project_guidance = settings
+        .project_guidance
+        .as_deref()
+        .map(|value| {
+            let field = "book.sections.project-guidance";
+            let target = resolve(
+                &source,
+                value,
+                field,
+                source_state == SourceState::Directory,
+            )?;
+            if sections.contains(&target) {
+                return Err(Error::invalid_path(
+                    path,
+                    field,
+                    settings.span(field),
+                    "project guidance and other section roles must resolve to distinct chapter paths",
+                ));
+            }
+            Ok(target)
+        })
+        .transpose()?;
     Ok(Configuration {
         path: actual,
         phase: settings.phase,
@@ -197,5 +238,6 @@ pub fn load(path: &Path) -> Result<Configuration, Error> {
         output,
         mdbook,
         sections,
+        project_guidance,
     })
 }

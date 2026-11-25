@@ -25,9 +25,9 @@ work. mdBook presents the same Book and results for people to inspect.
 > - Criterion `independent-pipeline` [test]: A fixture pipeline runs verification before rendering, without recursive tests or Book builds, preserves source files, and leaves engine compilation and independent tests usable with invalid Book input. A record-only build without evidence configuration explicitly indicates that verification was not evaluated.
 
 > **`A-materialize-owned-content`** (draft): **Materialization respects explicit content ownership**
-> Property: Materialization plans changes within explicit managed-content boundaries, preserves project-authored design and authority, and reports conflicting content. Running it against already-conforming managed content produces no changes. These constraints do not select an ownership declaration format or an atomic-application policy.
+> Property: Materialization plans changes within explicit managed-content boundaries, preserves project-authored content including design, authority, guidance, and terminology, and reports conflicting content. Running it against already-conforming managed content produces no changes. These constraints do not select an ownership declaration format or an atomic-application policy.
 > Authority: `R-managed-content-boundary`
-> - Criterion `ownership-preservation` [test]: Independent mixed-ownership fixtures show that plans and applied changes affect only declared managed content and preserve authored design, authority, and unrelated directory entries.
+> - Criterion `ownership-preservation` [test]: Independent mixed-ownership fixtures show that plans and applied changes affect only declared managed content and preserve authored design, authority, guidance, terminology, and unrelated directory entries. Include a standard-table update beside a project table and authored prose in the same file, and missing or ambiguous ownership declarations that permit no overwrite.
 > - Criterion `conflict-reporting` [test]: Divergent managed/authored content is identified as a located conflict; inspection and conflict handling preserve project-authored content.
 > - Criterion `conforming-noop` [test]: Already-conforming fixtures and a second application of a successful plan leave file contents and directory entries unchanged.
 
@@ -69,6 +69,8 @@ checking operates independently of the renderer and its output.
 | Anchors | Named properties grounded in at least one authority, with criteria for verification |
 | Implementation Roadmaps | AI-proposed work reviewed and agreed with people, including dependencies and completion evidence |
 | Evidence and progress | What has been built, which verification mechanisms exist, what they establish, and which agreed work is complete |
+| Project guidance | Engine-managed role and starter for project-owned developer workflow, review guidance, and logistics alongside the reusable contract |
+| Terminology | Separate tables for Anchor Book's standard terms and the consuming project's own vocabulary |
 
 A design change updates the goal; it does not establish that the change is
 implemented. A roadmap defines agreed implementation work; evidence establishes
@@ -160,6 +162,11 @@ state, paths, commands, and policies remain in normal Book content and configura
 Repository bootstrap instructions identify the contract, project guidance, and
 Book source. Agents read all three; retrieving the contract alone does not supply
 project context.
+
+[Project Guidance and Terminology](project-guidance.md) defines that local
+guidance and the ownership split between standard and project terms. Versioned
+core content supplies the standard vocabulary; consumers maintain their own
+guidance and terminology alongside it.
 
 The contract includes Rust guidance. Extensions for other languages are outside
 this design.

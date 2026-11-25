@@ -6,6 +6,14 @@ directs agents to retrieve with `anchorbook contract`.
 The contract defines the reusable working method; this chapter identifies the
 current state and resources for applying it in this repository.
 
+## Project context
+
+We develop the engine described in the [System Overview](design/system-overview.md).
+This page is our configured, project-owned instance of
+[Project Guidance](design/project-guidance.md#project-guidance), with additional
+sections for this engine's verification and development needs. The
+[current phase](#current-phase) points to its authoritative configuration setting.
+
 ## Book sources and authoring references
 
 Read `book/SUMMARY.md` and every chapter it lists from the current checkout.
@@ -22,8 +30,14 @@ Use these definitions and conventions while authoring this Book:
 - [RFD Source Format](design/rfd-format.md) specifies the proposed schema-2
   extension, format-1 blocks, templates, and compatibility. These are design
   targets; use the implementation state below to determine supported commands.
-- The [Glossary](glossary.md) lists the Book's terms. Use them in text and
-  identifiers; propose a new term to the engineer before introducing it.
+- [Terminology](glossary.md) separates standard Anchor Book terms from this
+  project's vocabulary. Maintain project terms from agreed design, surface new
+  meanings or conflicts, and preserve the ownership of both tables. This engine's
+  checkout supplies its standard definitions; consumers identify their selected
+  revision and use matching authoring references. Reconcile terminology after
+  changes to its owning design, distinguishing record acceptance, milestone
+  progress, and computed verification. The glossary does not supply runtime
+  capability: use the available-tool descriptions below.
 - [Implementation Roadmaps](implementation-roadmaps/index.md) defines milestone
   structure, identifiers, planned coverage, statuses, and evidence records.
 
@@ -86,6 +100,16 @@ uses the same Verus runner as a strict proof-target gate. Target success leaves
 criterion guards outstanding. This Book's tests are linked to its anchors' criteria
 with `/// anchorbook:` doc comments. Materialization remains planned. Loading configuration
 alone does not check Book format.
+
+`book.sections.project-guidance` maps this page. Structural checking enforces its
+file, top-level navigation, and separation from other roles. The engine prints a
+portable starter with `anchorbook template project-guidance`; agents adapt it or
+reconcile existing instructions without overwriting project content. In this
+checkout, invoke it through `cargo run --quiet --locked --bin anchorbook --
+template project-guidance`. The common contract explains the role and ownership.
+Standard terminology delivery and automatic content synchronization remain
+[contributor setup and materialization work](implementation-roadmaps/project-integration.md#project-integration-4);
+the engine does not enforce or synchronize the terminology page.
 
 The contract includes conditional RFD guidance. The optional RFD role, source
 format reader, broader Book relationship index, template commands, and RFD views are planned in the
@@ -194,7 +218,16 @@ to later project adoption and do not block this engine work. A readiness report
 and the earlier verification trial do not establish that the full development
 workflow has been demonstrated.
 
-## Public content
+## Review and project logistics {#public-content}
+
+`CONTRIBUTING.md` at the repository root owns exact development and validation commands.
+Review consequential design choices and key correctness anchors with the engineer;
+use code and executable verification evidence to assess implementation. Human
+review does not satisfy an anchor. Record scoped audit findings and results with
+the owning milestone or linked research, keeping reusable review instructions
+here. Preserve prior agreements when reorganizing the Book. Use the project's
+review workflow for delivery; work on the Book does not itself authorize publishing. The [development priority](#development-priority) links the
+current work and its remaining prerequisites.
 
 This repository is public. Keep private reference material, credentials, personal
 contact information, and local machine paths out of its content, generated

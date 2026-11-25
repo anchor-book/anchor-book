@@ -27,6 +27,7 @@ pub mod contract;
 pub mod records;
 pub mod rendering;
 pub mod roadmaps;
+pub mod templates;
 pub mod verification;
 
 // Preserve the initial API while offering a capability-scoped namespace.

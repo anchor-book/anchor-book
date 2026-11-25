@@ -22,7 +22,7 @@ choices. Role names describe responsibilities, independently of page titles.
 
 ## Initial schema
 
-This repository's `anchorbook.toml`:
+A minimal schema-1 configuration:
 
 ```toml
 schema-version = 1
@@ -51,6 +51,27 @@ The three section roles are the initial required set. Each maps to a distinct
 chapter at the top level of `SUMMARY.md`. The display title can differ.
 Later schemas can add more detailed roles and policies; the initial mapping
 does not establish semantic validity of requirements, decisions, or anchors.
+
+## Project guidance section
+
+Schema 1 also accepts `book.sections.project-guidance`, naming the engine-managed
+[project guidance page](project-guidance.md#project-guidance):
+
+```toml
+[book.sections]
+design = "design/index.md"
+authority = "authority/index.md"
+implementation-roadmaps = "implementation-roadmaps/index.md"
+project-guidance = "working-on-anchor-book.md"
+```
+
+The guidance page follows the same containment, distinct-path, and top-level
+navigation rules as the three required roles. Its title and filename are project
+choices. A review guide or developer workflow belongs here, not in the roadmap
+role. The field is optional for compatibility with existing schema-1 Books;
+new setup and assigned reconciliation establish it. Omission never guesses a
+page from navigation. Older engines reject the new field, so upgrade all entry
+points before adding it. No operation silently migrates configuration or content.
 
 ## Optional RFD section
 

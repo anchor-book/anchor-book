@@ -21,6 +21,9 @@ fn main() -> ExitCode {
     if args.first().is_some_and(|a| a == "contract") {
         return contract(&args[1..]);
     }
+    if args.first().is_some_and(|a| a == "template") {
+        return template(&args[1..]);
+    }
     if args.len() == 1 && (args[0] == "--version" || args[0] == "-V") {
         return if writeln!(
             io::stdout().lock(),
@@ -38,7 +41,7 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         };
     }
-    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | verify --config PATH | proof --config PATH | md [supports html] | contract [--config PATH] | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the common AI Working Contract; --config appends guidance for the configured phase.\nMaterialization is not implemented.\n";
+    let help = "Anchor Book engine prototype\n\nUsage: anchorbook check --config PATH | verify --config PATH | proof --config PATH | md [supports html] | contract [--config PATH] | template project-guidance | --help | --version\n\nRecord reading is available through the Rust library.\nThe mdBook 0.5.4 HTML adapter is available through md; it checks structure before rendering.\nStructural checking and configuration loading are available.\ncontract prints the common AI Working Contract; --config appends guidance for the configured phase.\ntemplate project-guidance prints a starter for project-owned working instructions without changing files.\nMaterialization is not implemented.\n";
     if args.len() == 1 && (args[0] == "--help" || args[0] == "-h") {
         return if writeln!(io::stdout().lock(), "{help}").is_ok() {
             ExitCode::SUCCESS
@@ -48,6 +51,25 @@ fn main() -> ExitCode {
     }
     let _ = writeln!(io::stderr().lock(), "Unknown or missing operation.\n{help}");
     ExitCode::from(2)
+}
+
+fn template(args: &[std::ffi::OsString]) -> ExitCode {
+    if args.len() != 1 || args[0] != "project-guidance" {
+        let _ = writeln!(
+            io::stderr().lock(),
+            "Usage: anchorbook template project-guidance"
+        );
+        return ExitCode::from(2);
+    }
+    if io::stdout()
+        .lock()
+        .write_all(anchor_book::templates::PROJECT_GUIDANCE.as_bytes())
+        .is_ok()
+    {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    }
 }
 
 fn contract(args: &[std::ffi::OsString]) -> ExitCode {

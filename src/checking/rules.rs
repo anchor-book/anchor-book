@@ -3,7 +3,7 @@ use super::{
     CheckReport, Finding, Group, Kind, Location,
     inspect::{Chapter, Input, Setting, Target},
 };
-use crate::configuration::{Configuration, SectionRole};
+use crate::configuration::Configuration;
 use std::{io, path::Path};
 
 fn operation(path: &Path, group: Group, error: io::Error) -> Finding {
@@ -148,19 +148,19 @@ pub(super) fn navigation(
     }
     // Unresolvable identities cannot establish that a required role is absent.
     if unknown_targets
-        && SectionRole::ALL.iter().any(|role| {
+        && config.mapped_sections().any(|(_, chapter)| {
             !local
                 .iter()
-                .any(|(path, depth, _)| path == config.section(*role) && *depth == 0)
+                .any(|(path, depth, _)| path == chapter && *depth == 0)
         })
     {
         report.block(Group::Roles, "operation.read-failed");
         return;
     }
-    for role in SectionRole::ALL {
+    for (role, chapter) in config.mapped_sections() {
         let matches: Vec<_> = local
             .iter()
-            .filter(|(target, _, _)| target == config.section(role))
+            .filter(|(target, _, _)| target == chapter)
             .collect();
         if matches.iter().any(|(_, depth, _)| *depth == 0) {
             continue;
@@ -179,11 +179,11 @@ pub(super) fn navigation(
             )
         };
         let mut finding=Finding::new(Group::Roles,Kind::Structure,code,"Required section is not at its configured top-level location",location).details(
-            format!("{} at {} as a top-level linked chapter",role.as_str(),display_path(config.section(role),config.source())),found,
+            format!("{} at {} as a top-level linked chapter",role,display_path(chapter,config.source())),found,
             "Restore the required navigation entry at the top level, preserving its intended content and children.");
         finding.related.push(Location::key(
             config.path(),
-            &format!("book.sections.{}", role.as_str()),
+            &format!("book.sections.{role}"),
         ));
         report.push(finding);
     }
@@ -208,6 +208,7 @@ mod fixture;
 mod tests {
     use super::*;
     use crate::checking::{Outcome, State};
+    use crate::configuration::SectionRole;
 
     fn observed_roles(config: &Configuration) -> Vec<Chapter> {
         [

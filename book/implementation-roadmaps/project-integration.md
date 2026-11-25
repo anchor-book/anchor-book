@@ -115,19 +115,21 @@ Complete on 2026-11-10. This Book names its `book.toml`, its agents retrieve the
 
 **Outcome:** This Book and independent consumer fixtures exercise the native entry points, version alignment, and contributor setup that Symposium needs, before its own Cargo and CI integration adopts them.
 
-**Status:** Proposed
+**Status:** In progress
 
 **Identifier:** `project-integration-4`
 
 **Dependencies:** Milestone 1, complete; findings from the [development sequence](index.md#first-major-milestone-symposium-adopts-anchor-book). The existing pinned installed-engine workflow supports early Symposium coding trials. This milestone supplies the version alignment and native contributor setup needed for ordinary-command and upstream adoption, not a prerequisite for that baseline. Settle the version and authoring-reference interfaces before implementation. Existing milestone identifiers 2 and 3 remain retired.
 
-**Design basis:** [Running the engine](../design/project-integration.md#running-the-engine), [agent bootstrap](../design/project-integration.md#agent-bootstrap), [A-project-native-commands](../design/project-integration.md#A-project-native-commands), and [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version).
+**Design basis:** [Running the engine](../design/project-integration.md#running-the-engine), [agent bootstrap](../design/project-integration.md#agent-bootstrap), [project guidance and terminology](../design/project-guidance.md), [A-project-native-commands](../design/project-integration.md#A-project-native-commands), and [A-project-one-engine-version](../design/project-integration.md#A-project-one-engine-version).
 
 **Tasks**
 
 - [ ] Expose the library CLI entry point and exercise the documented workspace-binary and installed-binary paths. Implement the exact engine-version declaration and mismatch checks; settle configuration and record-syntax version declarations and migration before changing their schema.
 - [ ] Exercise library, CLI, and preprocessor equivalence through independent consumer fixtures, including failing and incomplete Books and mismatched versions. Keep this repository's Book acceptance separate from its ordinary tests so a broken Book cannot prevent building its engine.
-- [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, supported tools, and normal commands. Decide how the engine distributes those references and exercise that delivery here before Symposium relies on it.
+- [ ] Provide reproducible bootstrap and authoring references for the engine version the project uses, including the record and roadmap forms, standard terminology, supported tools, and normal commands. Supply a separate project terminology table; decide how the engine distributes portable versioned references and exercise that delivery here before consumers rely on it. Settle terminology adoption and any additional configuration migration before enforcing new requirements.
+- [x] Define standard and project terminology ownership and manual maintenance; apply the two-table structure in this Book, preserving existing concepts and distinguishing acceptance, progress, and verification.
+- [x] Deliver the project-guidance role, read-only starter command, contract instructions, and own-Book adoption. Check legacy compatibility, top-level placement, distinct paths including aliases, rendering gates, and preservation of authored instructions.
 - [ ] Exercise the contract's required readiness-report template in fresh Codex and Claude sessions. Check all sections, every open milestone and completion criterion, evidence limitations, and assignment prerequisites; record versions, assistance, omissions, and differences.
 - [ ] Trial the common design-before-roadmaps guidance in fresh Prototyping and Port sessions using disposable fixtures; assess design quality, ordering, missing-design readiness findings, and concise milestone updates.
 - [ ] Document a full pinned Git revision for dependency and installation before registry publication, with upgrade steps keeping configuration, locked dependency, and invoked binary aligned. Test the setup outside the development checkout without Verus.
@@ -150,12 +152,67 @@ usable with a broken Book.
 #### Contributor setup {#project-integration-4-contributor-setup}
 
 A fresh consumer setup retrieves the correct contract and authoring references,
-checks and renders its Book, and runs its documented tests using the pinned engine
-without this development checkout or Verus. Record tools, commands, versions,
-results, and any assistance. General registry release remains separate.
+including standard terminology for its engine version, checks and renders its
+Book, and runs its documented tests using the pinned engine without this
+development checkout or Verus.
+The project guidance identifies its local context, sources, workflow, commands,
+and publication rules; its terminology page distinguishes standard and project
+terms. Exercise different project layouts and assert that delivered references
+resolve without assumptions about a consumer's design paths. Record tools,
+commands, versions, results, and any assistance. General registry release remains
+separate; automated table updates belong to deferred materialization work.
 
 - **Anchor coverage:** [A-project-agent-bootstrap](../design/project-integration.md#A-project-agent-bootstrap) · `fresh-session` — Partial: reproducible bootstrap and versioned references in a consumer fixture.
 - **Evidence:** Pending.
+
+**Local preparation.** On `project-guidance-terminology`, based on merged cleanup
+`02945a9990de3481144edc8cd47808cdf231c135`, this Book adopts the guidance section
+responsibilities and separates standard and project terminology. The common
+contract supplies the corresponding agent instructions. The assigned guidance integration adds an optional schema-1 mapping and a
+packaged starter; the checker enforces mapped placement and separation. Terminology
+remains manually authored. Portable reference delivery, consumer setup, fresh-session
+trials, and automated updates remain outstanding. The existing
+[ownership anchor](../design/system-overview.md#A-materialize-owned-content)
+now explicitly includes local guidance and terminology, including two tables in
+one file; its expanded `ownership-preservation` criterion remains unlinked.
+No new anchors are needed for headings or individual terms.
+The terminology page now has 27 shared terms and 13 project terms. Record status
+and milestone status are qualified separately; anchor satisfaction distinguishes
+computed evidence from design acceptance and omitted obligations. The planned
+brief command is explicitly unavailable in this revision. Copied tables identify
+their selected engine version and use matching references, while project terms
+remain owned by the consumer. No record identities changed.
+
+Local validation of this preparation passes formatting, all six contract tests,
+structural checking, four current-Book checks, and rendered record/link acceptance.
+Scoped verification reports the ownership anchor's three criteria unlinked;
+these authoring checks do not verify materialization or consumer delivery.
+
+#### Project guidance integration {#project-integration-4-project-guidance}
+
+Projects retrieve a portable starter, adapt existing working instructions, and
+map guidance separately from design, authority, and roadmaps. Library, CLI, and
+mdBook reject invalid mapped placement and paths while preserving project content.
+Existing schema-1 configurations without the mapping keep their prior behavior.
+
+- **Anchor coverage:** [A-check-configuration-validity](../design/configuration.md#A-check-configuration-validity) · `schema-rejection`, `path-boundaries` — Partial: the additional guidance mapping; [A-check-navigation-conformance](../design/structural-checking.md#A-check-navigation-conformance) · `required-roles` — Partial: configured guidance; [A-check-observation-only](../design/structural-checking.md#A-check-observation-only) · `file-preservation` — Partial: guidance integration.
+- **Evidence:** On 2026-11-25, the guidance changes on `project-guidance-terminology`, based on `02945a9990de3481144edc8cd47808cdf231c135`, passed 189 ordinary and documentation tests. The 41 configuration, structural, contract, and guidance integration tests also passed on Rust 1.88. Formatting and all-target Clippy passed on stable and Clippy passed on Rust 1.88. The five independent guidance tests exercise compatibility, invalid types and paths, role collisions including symlinks, missing and nested navigation, read-only starter retrieval, and the actual mdBook preprocessor's failure and repair behavior. Four current-Book checks and rendered acceptance passed, with 68 records and 3,038 local links. Scoped verification using cargo-nextest 0.9.151 satisfied `required-roles` through its four linked tests with no link findings; the navigation anchor remains Partial because its independent `mdbook-compatibility` criterion is still unlinked.
+
+A disposable copy of Symposium's Book at `2c0e00e7` mapped `review.md` as project
+guidance and added a separate roadmap index. Structural checking and rendering
+passed. Assigning both guidance and roadmaps to `review.md` produced a located
+configuration error and exit 2. This trial changed no Symposium checkout or design
+and did not run its linked tests. Automatic content synchronization, standard
+terminology delivery, fresh-agent trials, mutation CI, and publication remain
+outside this local result.
+
+The CI independence experiment at `22f2195` exposed an omitted compile-time
+asset in its temporary engine copy: `templates/project-guidance.md`. The fixture
+now includes `templates/` alongside source, contract, and tests. The complete
+`scripts/check-engine-independence.sh` passed locally on stable and Rust 1.88:
+ordinary engine tests run with an absent, invalid, or incomplete Book, while
+Book acceptance rejects each seeded defect. This correction preserves the
+independence boundary and the checks it exercises.
 
 #### Design before roadmaps {#project-integration-4-design-before-roadmaps}
 

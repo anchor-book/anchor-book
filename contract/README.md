@@ -16,3 +16,7 @@ because the joined text is one document.
 and prompt examples. The Book's `design/user-guidance.md` owns the user-flow design
 and fuller reader guide; update them together. Consuming projects retrieve the
 packaged contract and supply their own context rather than copying either file.
+
+`project.md` defines how agents use project-owned guidance and the separate
+standard and project terminology tables. The Book's `design/project-guidance.md`
+owns that structure and its content-ownership rules; update them together.

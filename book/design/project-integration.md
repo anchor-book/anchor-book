@@ -201,14 +201,20 @@ A project's `AGENTS.md` contains a short bootstrap section. It directs agents to
 
 1. Run `anchorbook contract --config PATH`, using the project's explicit
    configuration path, and read the output in full before project work.
-2. Read the project's guidance chapter, which identifies its phase, commands,
-   and authoring references.
+2. Read the page mapped by `book.sections.project-guidance`, following the
+   [standard guidance structure](project-guidance.md#project-guidance). It
+   identifies the phase setting, commands, authoring references, and terminology
+   page with its separately owned standard and project tables.
 3. Read the Book's `SUMMARY.md` and every chapter it lists.
 
 The contract comes from the engine version the project declares; no generated
 copy is checked in. Project-specific instructions belong in the guidance chapter,
 not in the contract or a modified copy of it. Other agent integrations, such as a
 skill that retrieves the contract, follow the same three steps.
+
+The [guidance and terminology design](project-guidance.md) defines the pages'
+responsibilities and ownership. Local instructions and domain terms remain
+project-authored content when the engine's standard terminology is updated.
 
 Configured retrieval selects the common contract and any additional phase section;
 Port adds guidance for reconstructing the source, asking the engineer for missing
@@ -231,8 +237,13 @@ project's current Book. An explicit request for guidance or next-step advice get
 a concise answer; a request to read the Book or report readiness retains the full
 template. Projects do not copy the user guide or maintain their own prompt catalog.
 
-The engine documents the section as a template that the project adds by hand;
-whether initialization writes it is [open question 3](#open-questions).
+The engine supplies `anchorbook template project-guidance` to print the guidance
+starter. The agent reconciles it with project practices, adds the dedicated
+mapping and top-level navigation, and preserves existing instructions. Bootstrap
+instructions are still authored by the project; automatic initialization and
+materialization remain separate work. Older configurations can omit the mapping
+during migration; [setup and compatibility](project-guidance.md#setup-and-compatibility)
+defines that transition.
 
 ## Formal verification in a project
 
