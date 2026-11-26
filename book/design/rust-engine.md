@@ -373,15 +373,11 @@ are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
 Reviewed equivalent mutations, and mutations that only verification rejects, have
 exact exclusions; no engine files are excluded.
 
-Agents run tests locally, investigate findings against the goal design, correct
-test gaps or implementation defects, and repeat verification. On GitHub, pull requests
-mutate the lines they change, and changes to mutation settings, manifests, or the
-toolchain run the full campaign; every merge to `main` runs the full campaign, so
-effects outside a change's own lines are found shortly after merge rather than
-before it. Ordinary tests precede mutation tests in both places.
-Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests
-detected a fault. Equivalent-mutation exclusions require specific reasoning and
-review; the default is to preserve findings for investigation.
+Agents run tests locally, investigate findings against the goal design, correct test gaps or implementation defects, and repeat verification. On GitHub, pull requests mutate changed source, contract, and test lines. Changes to mutation settings or scope detection, build scripts, lockfiles, the toolchain, or build-affecting manifest values require the full campaign. Every merge to `main` and every manual run also runs the full campaign, covering effects outside the changed lines. Ordinary tests precede mutation tests.
+
+Manifest classification compares parsed TOML after removing only descriptive fields from `[package]`: description, documentation, homepage, repository, authors, keywords, categories, readme, license, and license-file. Unknown or inherited values remain significant, as do package identity, versions, dependencies, features, targets, profiles, lints, and arbitrary metadata. A missing or unparseable manifest requires the full campaign; an unreadable Git comparison fails scope detection. A descriptive manifest edit never hides accompanying source or build changes.
+
+A PR with only documentation or permitted manifest metadata changes passes the required mutation check with an explicit campaign-skipped result. It supplies no mutation-coverage evidence. Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests detected a fault. Equivalent-mutation exclusions require specific reasoning and review; the default is to preserve findings for investigation.
 
 The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
 separates usable local support from a full reviewed campaign, demonstrated CI,

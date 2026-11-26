@@ -390,18 +390,11 @@ when deciding scope; a changed-line-only run can miss effects elsewhere. The
 unfiltered command covers the entire crate with the tool's supported mutations,
 not every possible defect. Rust or test changes invalidate affected earlier results.
 
-Choose local mutation runs for affected ordinary Rust behavior, including parsing,
-conversion, and error propagation. For the verified validator, run the proof as
-well as tests and mutations. Specification changes also need review against
-the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only
-changes need their relevant checks, not a new local mutation campaign on unchanged
-engine logic. The GitHub mutation workflow reports on every PR. A PR that changes
-`src/`, `contract/`, or `tests/` mutates only the lines it changes, with
-`--in-diff`; one that changes Cargo manifests, the toolchain file, `.cargo/`, or the
-workflow itself runs the full campaign, because those settings affect every
-mutation. Other PRs pass with a notice. Every merge to `main` and every manual
-dispatch runs the full campaign, which covers effects of a change outside its own
-lines. A survivor found there is corrected in a follow-up change.
+Choose local mutation runs for affected ordinary Rust behavior, including parsing, conversion, and error propagation. For the verified validator, run the proof as well as tests and mutations. Specification changes also need review against the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only changes need their relevant checks, not a new local mutation campaign on unchanged engine logic.
+
+The GitHub mutation workflow reports on every PR. A PR changing `src/`, `contract/`, or `tests/` mutates changed lines with `--in-diff`. Changes to lockfiles, build scripts, the toolchain, `.cargo/`, the mutation workflow or its scope scripts, or build-affecting Cargo manifest values run the full campaign. The [mutation design](book/design/rust-engine.md#mutation-testing) defines the descriptive `[package]` fields ignored during semantic TOML comparison; this never suppresses accompanying code changes. Other PRs pass with a campaign-skipped notice. Every merge to `main` and every manual dispatch runs the full campaign. A survivor found there is corrected in a follow-up change.
+
+Scope detection uses Python 3.11 or newer and its standard-library TOML parser; Ubuntu 24.04 supplies it. Run its independent Git-fixture tests with `python3 -B -m unittest discover -s .github/scripts -p 'test_mutation_scope.py'`. No Python dependency is added to the Rust crate.
 
 Results are in ignored `target/mutants.out/`; the next run rotates the previous
 results to `target/mutants.out.old/`. Preserve needed evidence before rerunning.
