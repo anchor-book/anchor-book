@@ -13,7 +13,7 @@ SCRIPT = Path(__file__).with_name("mutation_scope.py").resolve()
 MANIFEST = '[package]\nname = "fixture"\nversion = "0.1.0"\ndescription = "old"\n[dependencies]\nserde = "1"\n'
 
 
-class MutationScopeTests(unittest.TestCase):
+class GitFixture(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
@@ -42,6 +42,8 @@ class MutationScopeTests(unittest.TestCase):
         head = self.commit(after)
         self.assertEqual(select_scope(self.repo, base, head), expected)
 
+
+class MutationScopeTests(GitFixture):
     def test_descriptive_fields_and_formatting(self):
         fields = {
             "description": '"new"', "documentation": '"https://example.invalid/docs"',
@@ -86,7 +88,9 @@ class MutationScopeTests(unittest.TestCase):
     def test_settings_and_nested_manifests(self):
         for path in ["Cargo.lock", "verification/Cargo.lock", "build.rs", "verification/build.rs",
                      "rust-toolchain.toml", ".cargo/mutants.toml", ".github/workflows/mutation.yml",
-                     ".github/scripts/mutation_scope.py", ".github/scripts/test_mutation_scope.py"]:
+                     ".github/scripts/mutation_scope.py", ".github/scripts/test_mutation_scope.py",
+                     ".github/scripts/ci_scope.py", ".github/scripts/test_ci_scope.py",
+                     ".github/workflows/release-plz.yml", "verification/support.txt", "examples/example.rs"]:
             with self.subTest(path=path):
                 self.compare({path: "before"}, {path: "after"}, "full")
         self.compare({"verification/Cargo.toml": MANIFEST},

@@ -1,4 +1,4 @@
-"""Select PR mutation scope from Git changes; requires Python 3.11+."""
+"""Classify mutation inputs from Git changes; requires Python 3.11+."""
 
 from pathlib import Path
 import subprocess
@@ -14,6 +14,9 @@ SCOPE_FILES = {
     ".github/workflows/mutation.yml",
     ".github/scripts/mutation_scope.py",
     ".github/scripts/test_mutation_scope.py",
+    ".github/scripts/ci_scope.py",
+    ".github/scripts/test_ci_scope.py",
+    ".github/workflows/release-plz.yml",
 }
 
 
@@ -46,10 +49,14 @@ def build_manifest(raw):
     return typed_value(manifest)
 
 
-def select_scope(repo, base, head):
+def changed_paths(repo, base, head):
     # NUL separation preserves filenames; no rename inference hides a deleted manifest.
     changed = git(repo, "diff", "--name-only", "--no-renames", "-z", base, head)
-    paths = [path.decode("utf-8") for path in changed.split(b"\0") if path]
+    return [path.decode("utf-8") for path in changed.split(b"\0") if path]
+
+
+def select_scope(repo, base, head):
+    paths = changed_paths(repo, base, head)
     for path in paths:
         name = Path(path).name
         if (
@@ -66,6 +73,9 @@ def select_scope(repo, base, head):
                 return "full"
             if before != after:
                 return "full"
+    if any(path.startswith("verification/") or path.endswith(".rs")
+           and not path.startswith(("src/", "tests/")) for path in paths):
+        return "full"
     if any(path.startswith(("src/", "contract/", "tests/")) for path in paths):
         return "diff"
     return "none"

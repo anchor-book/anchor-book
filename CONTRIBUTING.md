@@ -321,11 +321,9 @@ automates this check.
 
 ### GitHub authority proof
 
-`.github/workflows/proof.yml` defines **Formal verification / Authority proof**
-for PRs targeting `main`, pushes to `main`, and manual dispatch. It uses Ubuntu
-24.04, the pinned Linux Verus archive with a SHA-256 check, and the verifier's
-Rust toolchain. Ordinary tests run on Rust 1.88.0 against the same checkout;
-the separate Engine workflow also checks stable Rust. No Book build is required.
+`.github/workflows/proof.yml` defines **Formal verification / Authority proof** for PRs targeting `main`, pushes to `main`, and manual dispatch. Its scope check skips native verification for changes confined to `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `AGENTS.md`, `LICENSE`, permitted descriptive Cargo metadata, and Book Markdown chapters containing no blockquotes in either revision. `book/SUMMARY.md` and all unclassified inputs still require proof. Record-bearing chapters are conservatively treated as proof inputs even when only their prose changes; see [CI proof selection](book/design/rust-engine.md#ci-proof-selection). Scope selection runs before downloading tools. A valid skip supplies no new proof evidence or artifact.
+
+When required, the campaign uses Ubuntu 24.04, the pinned Linux Verus archive with a SHA-256 check, and the verifier's Rust toolchain. Ordinary tests run on Rust 1.88.0 against the same checkout; the separate Engine workflow also checks stable Rust. No Book build is required.
 
 The job calls `anchorbook proof` through the checkout's engine. The shared runner
 requires exactly one supported report from each fresh target run, full-crate
@@ -393,9 +391,11 @@ not every possible defect. Rust or test changes invalidate affected earlier resu
 
 Choose local mutation runs for affected ordinary Rust behavior, including parsing, conversion, and error propagation. For the verified validator, run the proof as well as tests and mutations. Specification changes also need review against the anchor; a passing weaker claim is not equivalent assurance. Book or workflow-only changes need their relevant checks, not a new local mutation campaign on unchanged engine logic.
 
-The GitHub mutation workflow reports on every PR. A PR changing `src/`, `contract/`, or `tests/` mutates changed lines with `--in-diff`. Changes to lockfiles, build scripts, the toolchain, `.cargo/`, the mutation workflow or its scope scripts, or build-affecting Cargo manifest values run the full campaign. The [mutation design](book/design/rust-engine.md#mutation-testing) defines the descriptive `[package]` fields ignored during semantic TOML comparison; this never suppresses accompanying code changes. Other PRs pass with a campaign-skipped notice. Every merge to `main` and every manual dispatch runs the full campaign. A survivor found there is corrected in a follow-up change.
+The GitHub mutation workflow reports on every PR and main push. A PR changing `src/`, `contract/`, or `tests/` mutates changed lines with `--in-diff`. Changes to lockfiles, build scripts, the toolchain, `.cargo/`, mutation selection or its caller, build-affecting Cargo manifest values, `verification/`, or Rust files outside `src/` and `tests/` run the full campaign. The [mutation design](book/design/rust-engine.md#mutation-testing) defines the descriptive `[package]` fields ignored during semantic TOML comparison; this never suppresses accompanying code changes. PRs and main pushes without mutation inputs pass with a campaign-skipped notice. Main pushes with relevant changes and every manual dispatch run the full campaign. A survivor found there is corrected in a follow-up change.
 
-Scope detection uses Python 3.11 or newer and its standard-library TOML parser; Ubuntu 24.04 supplies it. Run its independent Git-fixture tests with `python3 -B -m unittest discover -s .github/scripts -p 'test_mutation_scope.py'`. No Python dependency is added to the Rust crate.
+Both expensive workflows compare a PR merge commit with its first parent, or the selected main validation revision with `github.event.before` for a push. They fetch history so multi-commit pushes cannot hide an earlier code change behind a final documentation commit. Initial pushes without a baseline and manual runs use full scope; invalid comparisons fail the check. `.github/scripts/ci_scope.py` owns event selection and proof scope, using the semantic manifest comparison in `mutation_scope.py`. Run their Git-fixture regressions with Python 3.11 or newer: `python3 -B -m unittest discover -s .github/scripts -p 'test_*scope.py'`. Engine, Book, and package checks remain separate.
+
+Scope detection uses Python's standard-library TOML parser; Ubuntu 24.04 supplies a supported Python version. No Python dependency is added to the Rust crate.
 
 Results are in ignored `target/mutants.out/`; the next run rotates the previous
 results to `target/mutants.out.old/`. Preserve needed evidence before rerunning.

@@ -88,6 +88,14 @@ attribute syntax through a repository-only proof manifest; the distributed crate
 has no Verus dependency or public verification feature. Reading, checking,
 and rendering a Book never run the verifier.
 
+### CI proof selection
+
+The required authority-proof check selects whether a fresh native campaign is needed before installing verifier tools. Pull requests compare the tested merge commit with its first parent; main pushes compare the selected validation revision with the previous main SHA from the push event, including every commit in that push. Manual runs and pushes without a baseline require a full campaign. An unreadable comparison fails selection rather than passing as an empty change.
+
+Known prose files and descriptive manifest metadata may skip the campaign when no proof inputs change. Source, tests, embedded contract text, build inputs, verification machinery, configuration, navigation, and unclassified paths remain significant. Book Markdown chapters without blockquotes may skip; a changed chapter containing any blockquote in either revision requires proof, conservatively covering records, removals, and changes to their Markdown context without duplicating the record parser. This deliberately also verifies some prose edits in record-bearing chapters.
+
+A selected campaign runs the complete authority proof and native acceptance checks. A valid skip passes the CI scope gate with an explicit notice but creates no proof artifact, reuses no earlier result, and supplies no new anchor evidence. Failed selection or a failed, incomplete, or cancelled required campaign cannot pass the check. Contributor instructions own the selected paths, commands, and tool versions.
+
 ## Package and adapters
 
 The distributed Cargo package contains a library and a CLI: package
@@ -373,11 +381,11 @@ are in root `CONTRIBUTING.md`, with shared settings in `.cargo/mutants.toml`.
 Reviewed equivalent mutations, and mutations that only verification rejects, have
 exact exclusions; no engine files are excluded.
 
-Agents run tests locally, investigate findings against the goal design, correct test gaps or implementation defects, and repeat verification. On GitHub, pull requests mutate changed source, contract, and test lines. Changes to mutation settings or scope detection, build scripts, lockfiles, the toolchain, or build-affecting manifest values require the full campaign. Every merge to `main` and every manual run also runs the full campaign, covering effects outside the changed lines. Ordinary tests precede mutation tests.
+Agents run tests locally, investigate findings against the goal design, correct test gaps or implementation defects, and repeat verification. On GitHub, pull requests mutate changed source, contract, and test lines. Changes to mutation settings or scope detection, build scripts, lockfiles, the toolchain, build-affecting manifest values, the private verification workspace, or Rust files outside the usual source and test trees require the full campaign. A main push with mutation inputs changed runs the full campaign, covering effects outside the changed lines. Every manual run also runs the full campaign. Ordinary tests precede mutation tests.
 
 Manifest classification compares parsed TOML after removing only descriptive fields from `[package]`: description, documentation, homepage, repository, authors, keywords, categories, readme, license, and license-file. Unknown or inherited values remain significant, as do package identity, versions, dependencies, features, targets, profiles, lints, and arbitrary metadata. A missing or unparseable manifest requires the full campaign; an unreadable Git comparison fails scope detection. A descriptive manifest edit never hides accompanying source or build changes.
 
-A PR with only documentation or permitted manifest metadata changes passes the required mutation check with an explicit campaign-skipped result. It supplies no mutation-coverage evidence. Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests detected a fault. Equivalent-mutation exclusions require specific reasoning and review; the default is to preserve findings for investigation.
+A PR or main push with only documentation or permitted manifest metadata changes passes the required mutation check with an explicit campaign-skipped result. Comparisons use the same event boundaries and failure handling as [CI proof selection](#ci-proof-selection). A skip supplies no mutation-coverage evidence. Timeouts, interrupted runs, and unbuildable mutations are not evidence that tests detected a fault. Equivalent-mutation exclusions require specific reasoning and review; the default is to preserve findings for investigation.
 
 The [Mutation Testing roadmap](../implementation-roadmaps/mutation-testing.md)
 separates usable local support from a full reviewed campaign, demonstrated CI,
