@@ -147,3 +147,42 @@ Keep the engine's independent tests usable with an invalid Book. Mutation testin
 does not invoke mdBook, structural checking, or the ignored current-Book test.
 The roadmap retains unresolved findings until addressed; passing a scoped run
 does not complete milestone 2 or authorize merging.
+
+
+## Milestone 3. Metadata-only edits skip mutation campaigns {#mutation-testing-3}
+
+**Outcome:** Descriptive package edits avoid a full mutation campaign while changes affecting builds, tests, or mutation selection retain their required scope.
+
+**Status:** In progress
+
+**Identifier:** `mutation-testing-3`
+
+**Dependencies:** The existing required Mutation tests check and its successful scope-detection prerequisite remain in place.
+
+**Design basis:** [Mutation testing](../design/rust-engine.md#mutation-testing).
+
+**Tasks**
+
+- [x] Compare parsed Cargo manifests, ignoring only permitted descriptive package fields and retaining full scope for unknown, missing, or unparseable build inputs.
+- [x] Exercise scope selection with independent Git fixtures, including metadata alongside source or dependency changes, nested manifests, malformed input, and scope-script changes.
+- [ ] Demonstrate that the release PR's description-only manifest change skips shards and passes the required check after adopting the fixed workflow; a cancelled earlier campaign is not a pass.
+
+### Completion criteria
+
+#### Accurate scope {#mutation-testing-3-scope}
+
+Fixture comparisons skip documentation and descriptive metadata only, select changed-line scope for accompanying source or test changes, and select full scope for build inputs and mutation machinery. Invalid Git comparisons fail detection. Metadata-looking keys outside the package table cannot hide a build change.
+
+- **Anchor coverage:** None — repository CI selection, with engine obligations unchanged.
+- **Evidence:** The local candidate based on `7f16ec0` passes nine Git-fixture tests on Python 3.12.16 and workflow lint. Applying the classifier to PR #57 at `9491735` returns `code=false` and `scope=none`. Remote validation is pending.
+
+#### Required check {#mutation-testing-3-required-check}
+
+On a metadata-only PR, the mutation scope job succeeds, campaign shards are skipped, and the required Mutation tests job succeeds by recognizing that no campaign is required. An operational failure or a cancelled required campaign never supplies a passing result. Non-PR runs retain full scope.
+
+- **Anchor coverage:** None — repository merge enforcement.
+- **Evidence:** Pending a run with the updated workflow. PR #57's original full campaign was cancelled at the engineer's request; that cancellation supplies no verification evidence.
+
+### Completion record
+
+In progress. The workflow fix is separate from the release PR because changes to mutation machinery still require the full campaign. Once the fix is merged, updating the release branch onto that revision allows its own metadata-only scope to be evaluated without bypassing the required check.

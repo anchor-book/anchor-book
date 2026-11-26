@@ -2,8 +2,9 @@ name: Mutation testing
 
 # Run on every PR so a required check is never absent due to a path filter.
 # PRs that change no code, tests, or mutation settings pass without a campaign.
-# A PR mutates only the lines it changes; changes to mutation settings, manifests,
-# the toolchain, or this workflow run the full campaign, as do merges to main and
+# A PR mutates only the lines it changes; descriptive manifest metadata is ignored.
+# Build-affecting manifest values, mutation machinery, and toolchain changes run
+# the full campaign, as do merges to main and
 # manual runs, which also cover effects of a change outside its own lines.
 # Every campaign is split into four shards that together test each mutation once;
 # the "Mutation tests" job, the required check, passes only when every shard does.
@@ -37,6 +38,8 @@ jobs:
         with:
           ref: ${{ inputs.revision || github.sha }}
           fetch-depth: 2
+      - name: Test mutation scope selection
+        run: python3 -B -m unittest discover -s .github/scripts -p 'test_mutation_scope.py'
       - name: Detect code changes
         id: scope
         run: |
@@ -44,17 +47,8 @@ jobs:
           if [ "${{ github.event_name }}" != pull_request ]; then
             echo "code=true" >> "$GITHUB_OUTPUT"
             echo "scope=full" >> "$GITHUB_OUTPUT"
-          elif git diff --name-only HEAD^1 HEAD |
-              grep -Eq '^(Cargo\.(toml|lock)$|rust-toolchain\.toml$|\.cargo/|\.github/workflows/mutation\.yml$)'; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "scope=full" >> "$GITHUB_OUTPUT"
-            echo "::notice::Mutation settings, manifests, or toolchain changed; running the full campaign."
-          elif git diff --name-only HEAD^1 HEAD | grep -Eq '^(src/|contract/|tests/)'; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "scope=diff" >> "$GITHUB_OUTPUT"
           else
-            echo "code=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No engine code, tests, or mutation settings changed; mutation campaign skipped."
+            python3 -B .github/scripts/mutation_scope.py HEAD^1 HEAD >> "$GITHUB_OUTPUT"
           fi
 
   shard:
