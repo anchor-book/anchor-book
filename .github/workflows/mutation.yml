@@ -1,11 +1,10 @@
 name: Mutation testing
 
 # Run on every PR so a required check is never absent due to a path filter.
-# PRs that change no code, tests, or mutation settings pass without a campaign.
+# PRs and main pushes without mutation inputs pass without a campaign.
 # A PR mutates only the lines it changes; descriptive manifest metadata is ignored.
 # Build-affecting manifest values, mutation machinery, and toolchain changes run
-# the full campaign, as do merges to main and
-# manual runs, which also cover effects of a change outside its own lines.
+# the full campaign, as do relevant main pushes and all manual runs.
 # Every campaign is split into four shards that together test each mutation once;
 # the "Mutation tests" job, the required check, passes only when every shard does.
 on:
@@ -37,19 +36,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.revision || github.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Test mutation scope selection
-        run: python3 -B -m unittest discover -s .github/scripts -p 'test_mutation_scope.py'
+        run: python3 -B -m unittest discover -s .github/scripts -p 'test_*scope.py'
       - name: Detect code changes
         id: scope
-        run: |
-          # A PR checkout is a merge commit; its first parent is the target branch.
-          if [ "${{ github.event_name }}" != pull_request ]; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "scope=full" >> "$GITHUB_OUTPUT"
-          else
-            python3 -B .github/scripts/mutation_scope.py HEAD^1 HEAD >> "$GITHUB_OUTPUT"
-          fi
+        env:
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: python3 -B .github/scripts/ci_scope.py mutation >> "$GITHUB_OUTPUT"
 
   shard:
     name: Mutation shard ${{ matrix.shard }}
@@ -107,6 +101,8 @@ jobs:
         run: |
           echo "scope: ${{ needs.scope.result }} (${{ needs.scope.outputs.scope || 'none' }}); shards: ${{ needs.shard.result }}"
           test "${{ needs.scope.result }}" = success
-          if [ "${{ needs.scope.outputs.code }}" = true ]; then
-            test "${{ needs.shard.result }}" = success
-          fi
+          case "${{ needs.scope.outputs.code }}:${{ needs.scope.outputs.scope }}" in
+            false:none) test "${{ needs.shard.result }}" = skipped ;;
+            true:diff|true:full) test "${{ needs.shard.result }}" = success ;;
+            *) exit 1 ;;
+          esac

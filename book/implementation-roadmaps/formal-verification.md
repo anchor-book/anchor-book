@@ -193,6 +193,8 @@ A real PR demonstrates a failed required verification check preventing merge, fo
 
 Complete on 2026-11-10. Remote proof and integration pass for recorded revisions, a deliberate proof defect fails a required check that blocks merging, and its correction passes.
 
+The later change to skip native campaigns when verification inputs are unchanged is tracked with the shared [CI scope work](mutation-testing.md#mutation-testing-3). It preserves this evidence and the required proof check; a scope skip supplies no new proof result.
+
 ## Milestone 3. Criteria declare their required verification methods {#formal-verification-3}
 
 **Outcome:** Engineers and agents can read explicit verification obligations on each criterion; the engine validates and renders those selections without claiming results. The original migration included review; [milestone 11](verification-evidence.md#verification-evidence-11) subsequently restricted current methods to test and proof.

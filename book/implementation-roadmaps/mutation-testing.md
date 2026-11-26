@@ -149,9 +149,9 @@ The roadmap retains unresolved findings until addressed; passing a scoped run
 does not complete milestone 2 or authorize merging.
 
 
-## Milestone 3. Metadata-only edits skip mutation campaigns {#mutation-testing-3}
+## Milestone 3. Unchanged verification inputs skip expensive campaigns {#mutation-testing-3}
 
-**Outcome:** Descriptive package edits avoid a full mutation campaign while changes affecting builds, tests, or mutation selection retain their required scope.
+**Outcome:** Documentation and descriptive package edits avoid unnecessary mutation and native proof campaigns before and after merge, while changed verification inputs retain their required scope.
 
 **Status:** In progress
 
@@ -159,30 +159,39 @@ does not complete milestone 2 or authorize merging.
 
 **Dependencies:** The existing required Mutation tests check and its successful scope-detection prerequisite remain in place.
 
-**Design basis:** [Mutation testing](../design/rust-engine.md#mutation-testing).
+**Design basis:** [Mutation testing](../design/rust-engine.md#mutation-testing) and [CI proof selection](../design/rust-engine.md#ci-proof-selection).
 
 **Tasks**
 
 - [x] Compare parsed Cargo manifests, ignoring only permitted descriptive package fields and retaining full scope for unknown, missing, or unparseable build inputs.
 - [x] Exercise scope selection with independent Git fixtures, including metadata alongside source or dependency changes, nested manifests, malformed input, and scope-script changes.
-- [ ] Demonstrate that the release PR's description-only manifest change skips shards and passes the required check after adopting the fixed workflow; a cancelled earlier campaign is not a pass.
+- [x] Demonstrate that the release PR's description-only manifest change skips shards and passes the required check after adopting the fixed workflow; a cancelled earlier campaign is not a pass.
+- [x] Apply event-aware comparisons to main pushes and proof selection, including multi-commit pushes, selected release heads, absent baselines, record-bearing chapters, and invalid comparisons.
+- [ ] Confirm the revised required checks on GitHub; demonstrate a subsequent documentation-only main push skipping campaigns.
 
 ### Completion criteria
 
 #### Accurate scope {#mutation-testing-3-scope}
 
-Fixture comparisons skip documentation and descriptive metadata only, select changed-line scope for accompanying source or test changes, and select full scope for build inputs and mutation machinery. Invalid Git comparisons fail detection. Metadata-looking keys outside the package table cannot hide a build change.
+Fixture comparisons skip documentation and descriptive metadata only, select changed-line mutation scope for accompanying source or test changes on PRs and full scope on main, and select full scope for build inputs and mutation machinery. A multi-commit push includes earlier code edits. Invalid Git comparisons fail detection. Metadata-looking keys outside the package table cannot hide a build change.
 
 - **Anchor coverage:** None — repository CI selection, with engine obligations unchanged.
-- **Evidence:** The local candidate based on `7f16ec0` passes nine Git-fixture tests on Python 3.12.16 and workflow lint. Applying the classifier to PR #57 at `9491735` returns `code=false` and `scope=none`. Remote validation is pending.
+- **Evidence:** The original candidate based on `7f16ec0` passed nine Git-fixture tests on Python 3.12.16 and workflow lint. The follow-up based on `6e2ba57` passes 19 Git-fixture tests and workflow lint, including actual CLI output, multi-commit pushes, selected release-head comparisons, and symlinked chapters. Applied directly to PR #57's merged `6e2ba57` against previous main `2bbeebc`, both classifiers return `code=false` and `scope=none`.
 
 #### Required check {#mutation-testing-3-required-check}
 
-On a metadata-only PR, the mutation scope job succeeds, campaign shards are skipped, and the required Mutation tests job succeeds by recognizing that no campaign is required. An operational failure or a cancelled required campaign never supplies a passing result. Non-PR runs retain full scope.
+On a metadata-only PR or main push, the mutation scope job succeeds, campaign shards are skipped, and the required Mutation tests job succeeds by recognizing that no campaign is required. An operational failure or a cancelled required campaign never supplies a passing result. Manual runs and initial pushes without a baseline retain full scope.
 
 - **Anchor coverage:** None — repository merge enforcement.
-- **Evidence:** Pending a run with the updated workflow. PR #57's original full campaign was cancelled at the engineer's request; that cancellation supplies no verification evidence.
+- **Evidence:** PR #57 at `b861d2a` passed [mutation run 45735053537](https://github.com/anchor-book/anchor-book/actions/runs/45735053537): scope succeeded, shards were skipped, and the required check succeeded. Its original campaign was cancelled and supplies no verification evidence. The subsequent merge exposed the unconditional main campaign; the follow-up removes that behavior. Remote validation of the follow-up remains pending.
+
+#### Proof selection {#mutation-testing-3-proof-selection}
+
+Known prose and descriptive metadata skip native proof on PRs and main pushes. Source, build settings, configuration, navigation, machinery, unclassified inputs, and changes to chapters containing records still require the full campaign. A valid skip produces no proof evidence; invalid comparisons fail selection.
+
+- **Anchor coverage:** None — CI scheduling; anchor verification obligations are unchanged.
+- **Evidence:** The same Git-fixture suite covers proof selection, record deletion and fencing, manual dispatch, missing baselines, and failed CLI comparisons. Native proof execution is unchanged; remote workflow validation remains pending.
 
 ### Completion record
 
-In progress. The workflow fix is separate from the release PR because changes to mutation machinery still require the full campaign. Once the fix is merged, updating the release branch onto that revision allows its own metadata-only scope to be evaluated without bypassing the required check.
+In progress. PR #58 established the PR metadata skip and PR #57 demonstrated it. The follow-up extends selection to main pushes and native proof; because it changes selection machinery, its own CI requires full campaigns. A later documentation-only push is still needed to demonstrate the main skip remotely.
